@@ -22,7 +22,8 @@
     </header>
 
     <div class="chapter-modal-grid">
-      <button class="chapter-modal-card" type="button" onclick="chonTamChuong(1, this)">
+
+      <!-- <button class="chapter-modal-card" type="button" onclick="chonTamChuong(1, this)">
         <strong>1</strong><span>Chương 1<br>Khởi nguồn</span>
       </button>
       <button class="chapter-modal-card" type="button" onclick="chonTamChuong(2, this)">
@@ -30,7 +31,19 @@
       </button>
       <button class="chapter-modal-card" type="button" onclick="chonTamChuong(3, this)">
         <strong>3</strong><span>Chương 3<br>Giữ nước</span>
+      </button> -->
+
+      <!-- update sau -->
+      <button class="chapter-modal-card locked" type="button" onclick="clickChuongKhoa()">
+        <strong>1</strong><span>Chương 1<br>Khởi nguồn</span>
       </button>
+      <button class="chapter-modal-card locked" type="button" onclick="clickChuongKhoa()">
+        <strong>2</strong><span>Chương 2<br>Dựng nước</span>
+      </button>
+      <button class="chapter-modal-card locked" type="button" onclick="clickChuongKhoa()">
+        <strong>3</strong><span>Chương 3<br>Giữ nước</span>
+      </button>
+
       <button class="chapter-modal-card" type="button" onclick="chonTamChuong(4, this)">
         <strong>4</strong><span>Chương 4<br>Thời Bắc thuộc</span>
       </button>
@@ -54,7 +67,8 @@
       </button>
     </div> <!-- Kết thúc thẻ div của chapter-modal-grid -->
 
-    <!-- NOTE FIX CODE: Đã xóa bỏ chữ "z" thừa và nút Quay lại bị lặp ở khu vực này -->
+    
+
     <div class="chapter-modal-actions" style="display: flex; justify-content: center; gap: 15px; margin-top: 25px;">
         <button class="chapter-modal-back" type="button" onclick="closeChapterModal()" style="margin: 0;">
           ← Quay lại

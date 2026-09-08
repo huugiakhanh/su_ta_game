@@ -17,7 +17,8 @@
     </section>
 
     <section class="stage-wrap">
-      <canvas id="gameCanvas" width="1280" height="360" aria-label="Màn chơi Trưng Trắc"></canvas>
+      <canvas id="gameCanvas" width="896" height="360" aria-label="Màn chơi Trưng Trắc"></canvas>
+      <div id="playerSprite" class="player-sprite" aria-hidden="true" hidden></div>
       <div id="loadingPanel" class="panel panel--visible">
         <h1>Màn thử Trưng Trắc</h1>
         <p id="loadingText">Đang tải bản đồ...</p>
@@ -46,7 +47,7 @@
     <section class="help">
       <span><kbd>A</kbd><kbd>D</kbd> di chuyển</span>
       <span><kbd>W</kbd> hoặc <kbd>Space</kbd> nhảy</span>
-      <span><kbd>S</kbd> lướt</span>
+      <span><kbd>S</kbd> hoặc <kbd>Shift</kbd> lướt</span>
       <span><kbd>J</kbd> tấn công</span>
       <span><kbd>R</kbd> chơi lại</span>
     </section>
@@ -57,7 +58,7 @@
         <button class="control" data-control="right" aria-label="Đi sang phải">▶</button>
       </div>
       <div class="mobile-controls__group">
-        <button class="control control--slide" data-control="slide">LƯỚT</button>
+        <button class="control control--slide" data-control="dash">LƯỚT</button>
         <button class="control control--attack" data-control="attack">ĐÁNH</button>
         <button class="control control--jump" data-control="jump">NHẢY</button>
       </div>

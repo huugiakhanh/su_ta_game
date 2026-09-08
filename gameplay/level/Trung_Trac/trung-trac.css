@@ -18,15 +18,16 @@ html, body {
 }
 
 body {
-  display: grid;
-  place-items: center;
-  padding: 16px;
+  width: 100%;
+  overflow-x: hidden;
+  padding: 0;
 }
 
 button { font: inherit; }
 
 .game-shell {
-  width: min(1280px, 100%);
+  width: 100vw;
+  max-width: none;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -87,11 +88,28 @@ canvas {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 1280 / 360;
+  /* Camera 896 x 360 phủ toàn bộ chiều ngang: cảnh lớn hơn nhưng không bị méo. */
+  aspect-ratio: 896 / 360;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   touch-action: none;
 }
+
+.player-sprite {
+  position: absolute;
+  z-index: 1;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  transform-origin: center bottom;
+  filter: drop-shadow(0 8px 0 rgba(0, 0, 0, .2));
+  pointer-events: none;
+  will-change: left, bottom, transform;
+}
+
+.player-sprite[hidden] { display: none !important; }
 
 .panel {
   position: absolute;
@@ -104,6 +122,7 @@ canvas {
   text-align: center;
   background: rgba(9, 7, 5, .72);
   backdrop-filter: blur(2px);
+  z-index: 3;
 }
 
 .panel--visible { display: grid; }

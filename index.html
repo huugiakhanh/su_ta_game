@@ -353,27 +353,56 @@
             }
         }
 
-        // NOTE FIX CODE: Logic chọn chương mới (Sử dụng biến tạm và nút OK)
+        // Logic chọn chương mới (Sử dụng biến tạm và nút OK)
         let chuongDangChon = null; 
 
-        // 1. Hàm highlight chương khi click (Chưa lưu)
         function chonTamChuong(chapterNumber, element) {
+            const btnOk = document.getElementById('btnXacNhanChuong');
+
+            // 1. Nếu BẤM LẠI vào đúng chương đang chọn -> HỦY CHỌN (Bỏ viền vàng, khóa nút OK)
+            if (chuongDangChon === chapterNumber) {
+                chuongDangChon = null;
+                element.classList.remove('selected');
+
+                if (btnOk) {
+                    btnOk.disabled = true;
+                    btnOk.style.opacity = '0.5';
+                    btnOk.style.cursor = 'not-allowed';
+                }
+                return;
+            }
+
+            // 2. Nếu BẤM SANG CHƯƠNG MỚI KHÁC -> Xóa viền chương cũ, gán viền vàng cho chương mới
             chuongDangChon = chapterNumber;
-            
-            // Xóa hiệu ứng sáng ở các thẻ cũ
+
+            // Xóa class 'selected' ở TẤT CẢ các thẻ chương
             document.querySelectorAll('.chapter-modal-card').forEach(card => {
                 card.classList.remove('selected');
             });
-            
-            // Bật hiệu ứng sáng cho thẻ vừa click
+
+            // Thêm class 'selected' để GIỮ VIỀN VÀNG SÁNG MÃI cho thẻ vừa bấm
             element.classList.add('selected');
-            
-            // Bật nút OK cho phép click
-            const btnOk = document.getElementById('btnXacNhanChuong');
+
+            // Bật sáng nút OK
             if (btnOk) {
                 btnOk.disabled = false;
                 btnOk.style.opacity = '1';
                 btnOk.style.cursor = 'pointer';
+            }
+        }
+
+        function clickChuongKhoa() {
+            chuongDangChon = null;
+
+            document.querySelectorAll('.chapter-modal-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            const btnOk = document.getElementById('btnXacNhanChuong');
+            if (btnOk) {
+                btnOk.disabled = true;
+                btnOk.style.opacity = '0.5';
+                btnOk.style.cursor = 'not-allowed';
             }
         }
 

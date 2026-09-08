@@ -3,13 +3,32 @@
 
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
+  const playerSprite = document.getElementById('playerSprite');
   ctx.imageSmoothingEnabled = false;
 
-  const VIEW_W = 1280;
+  // Camera hẹp hơn canvas map 1280 px để cảnh hiển thị lớn và rõ hơn.
+  // Kích thước gốc của từng map chunk vẫn giữ nguyên 1280 x 360 px.
+  const VIEW_W = 896;
   const VIEW_H = 360;
   const CHUNK_W = 1280;
-  const GROUND_Y = 310;
   const MAP_ROAD_TARGET_Y = 290;
+  const GROUND_Y = MAP_ROAD_TARGET_Y;
+  const SEAM_BLEND_W = 34;
+  const FOOT_MARGIN = 9;
+  const MOVE_SPEED = 280;
+  const GRAVITY = 2200;
+  const JUMP_FORCE = 780;
+  const DASH_SPEED = 720;
+  const DASH_TIME = 0.30;
+  const GROUND_SNAP_DISTANCE = 18;
+  const PLAYER_FRAME_SIZE = 96;
+  const PLAYER_JUMP_SCALE = 1.25;
+  const OBSTACLE_GROUND_SINK = 7;
+
+  // Giữ đúng độ phân giải camera kể cả khi HTML cũ vẫn còn width="1280".
+  canvas.width = VIEW_W;
+  canvas.height = VIEW_H;
+  ctx.imageSmoothingEnabled = false;
 
   // Vị trí mặt đường trong từng ảnh gốc. Khi vẽ, code đưa tất cả các điểm này
   // về cùng MAP_ROAD_TARGET_Y để đường không bị giật lên/xuống ở mép nối map.
@@ -52,8 +71,25 @@
     'contain obstacles.png'
   ];
 
-  // Đổi dòng này nếu sau này bạn có sprite riêng cho Trưng Trắc.
-  const PLAYER_SPRITE_PATH = '';
+  // Bộ GIF đang được level-test sử dụng.
+  const PLAYER_ROOT_CANDIDATES = [
+    '../../../ảnh/characters/origin male/',
+    '../../ảnh/characters/origin male/',
+    '../ảnh/characters/origin male/',
+    './ảnh/characters/origin male/',
+    'ảnh/characters/origin male/',
+    '/ảnh/characters/origin male/',
+    '../../../anh/characters/origin male/',
+    '../../anh/characters/origin male/',
+    '/anh/characters/origin male/'
+  ];
+
+  const PLAYER_ANIMATION_FILES = {
+    idle: 'stance.gif',
+    run: 'run.gif',
+    jump: 'jump.gif',
+    dash: 'dash.gif'
+  };
 
   const ui = {
     health: document.getElementById('healthValue'),
@@ -71,13 +107,14 @@
     message: document.getElementById('messageBox')
   };
 
-  const images = { maps: [], obstacles: null, player: null };
-  const keys = { left: false, right: false, jump: false, slide: false, attack: false };
-  const pressed = { jump: false, attack: false };
+  const images = { maps: [], obstacles: null, player: {}, playerRoot: '' };
+  const keys = { left: false, right: false, jump: false, dash: false, attack: false };
+  const pressed = { jump: false, dash: false, attack: false };
 
   let state;
   let lastTime = 0;
   let messageTimer = 0;
+  let currentPlayerAnimation = '';
 
   const atlas = {
     rock:       { col: 0, row: 0 },
@@ -103,19 +140,36 @@
   }
 
   function makeObstacle(type, chunk, localX, width, height, options = {}) {
-    const drawScale = options.drawScale || 1.45;
+    const drawScale = options.drawScale || 1.65;
+    const groundY = options.groundY || groundYAt(worldX(chunk, localX) + width / 2);
     return {
       type,
       x: worldX(chunk, localX),
-      y: options.overhead ? GROUND_Y - 77 : GROUND_Y - height,
+      y: options.overhead ? groundY - 77 : groundY - height,
       w: width,
       h: options.overhead ? 34 : height,
       drawW: Math.round(width * drawScale),
       drawH: Math.round(height * drawScale),
+      groundY,
       harmful: Boolean(options.harmful),
       overhead: Boolean(options.overhead),
+      requiresDash: options.requiresDash ?? Boolean(options.overhead),
       active: true
     };
+  }
+
+  function groundYAt(worldXPosition) {
+    const terrain = [
+      // Gò có bia đá trong map chunk 1.7. Các điểm bám đúng mặt dốc của ảnh sau khi
+      // ảnh 2048 px được thu về 1280 px và căn mặt đường ở MAP_ROAD_TARGET_Y.
+      { x1: worldX(7, 580), x2: worldX(7, 710), y1: GROUND_Y, y2: 216 },
+      { x1: worldX(7, 710), x2: worldX(7, 948), y1: 216, y2: 216 },
+      { x1: worldX(7, 948), x2: worldX(7, 1020), y1: 216, y2: GROUND_Y }
+    ];
+    const segment = terrain.find(item => worldXPosition >= item.x1 && worldXPosition <= item.x2);
+    if (!segment) return GROUND_Y;
+    const t = (worldXPosition - segment.x1) / (segment.x2 - segment.x1);
+    return segment.y1 + (segment.y2 - segment.y1) * t;
   }
 
   function newState() {
@@ -137,12 +191,12 @@
         w: 42,
         h: 70,
         normalH: 70,
-        slideH: 38,
         vx: 0,
         vy: 0,
         facing: 1,
         grounded: true,
-        sliding: false,
+        dashing: false,
+        dashTimer: 0,
         attacking: false,
         attackTimer: 0,
         attackCooldown: 0,
@@ -157,7 +211,6 @@
         makeObstacle('gate', 5, 850, 150, 120, { overhead: true }),
         makeObstacle('barrel', 6, 390, 64, 64),
         makeObstacle('punji', 6, 820, 90, 53, { harmful: true }),
-        makeObstacle('ropeTrap', 7, 620, 105, 34, { harmful: true }),
         makeObstacle('spikeRow', 11, 350, 120, 56, { harmful: true })
       ],
       holes: [
@@ -220,26 +273,47 @@
     return null;
   }
 
+  async function findPlayerAnimations() {
+    for (const root of PLAYER_ROOT_CANDIDATES) {
+      const entries = await Promise.all(Object.entries(PLAYER_ANIMATION_FILES).map(async ([stateName, fileName]) => [
+        stateName,
+        await loadImage(joinAssetPath(root, fileName), true)
+      ]));
+      const animations = Object.fromEntries(entries);
+      if (animations.idle) return { root, animations };
+    }
+    return { root: PLAYER_ROOT_CANDIDATES[0], animations: {} };
+  }
+
   async function loadAssets() {
     const found = await findAssetSet();
     const mapPaths = Array.from({ length: 12 }, (_, index) =>
       joinAssetPath(found.root, found.mapPattern(index + 1))
     );
-    const loadedMaps = await Promise.all(mapPaths.map((path, index) =>
-      index === 0 && found.firstMap ? Promise.resolve(found.firstMap) : loadImage(path, true)
-    ));
+    const [loadedMaps, playerSet] = await Promise.all([
+      Promise.all(mapPaths.map((path, index) =>
+        index === 0 && found.firstMap ? Promise.resolve(found.firstMap) : loadImage(path, true)
+      )),
+      findPlayerAnimations()
+    ]);
     images.maps = loadedMaps.map(item => item && !item.failed ? item : null);
     images.obstacles = found.obstacleSprite || await findObstacleSprite(found.root);
-    images.player = PLAYER_SPRITE_PATH ? await loadImage(PLAYER_SPRITE_PATH, true) : null;
+    images.player = playerSet.animations;
+    images.playerRoot = playerSet.root;
 
     const missingMaps = images.maps.filter(image => !image).length;
-    const missing = missingMaps + (images.obstacles ? 0 : 1);
-    ui.loadingText.textContent = missing
-      ? `Thiếu ${missing} ảnh. Hãy kiểm tra thư mục ảnh/mapchunk_1 và giữ nguyên tên file.`
-      : `Đã gọi ảnh từ ${found.root}: đủ 12 map chunk và contains obstacles.png.`;
+    const missingAnimations = Object.keys(PLAYER_ANIMATION_FILES).filter(name => !images.player[name]);
+    const notices = [];
+    if (missingMaps) notices.push(`thiếu ${missingMaps} map chunk`);
+    if (!images.obstacles) notices.push('thiếu contains obstacles.png');
+    if (missingAnimations.length) notices.push(`thiếu GIF nhân vật: ${missingAnimations.join(', ')}`);
+    ui.loadingText.textContent = notices.length
+      ? `Chưa tải đủ ảnh: ${notices.join('; ')}. Hãy kiểm tra thư mục ảnh.`
+      : 'Đã tải đủ 12 map chunk, sheet chướng ngại vật và 4 hoạt ảnh nhân vật.';
     console.info('SUTA asset root:', found.root);
     console.info('SUTA map paths:', mapPaths);
     console.info('SUTA obstacle loaded:', Boolean(images.obstacles));
+    console.info('SUTA player root:', images.playerRoot);
     ui.start.disabled = false;
     draw();
   }
@@ -259,6 +333,7 @@
   function clearInput() {
     Object.keys(keys).forEach(key => { keys[key] = false; });
     pressed.jump = false;
+    pressed.dash = false;
     pressed.attack = false;
     document.querySelectorAll('.control').forEach(button => button.classList.remove('is-pressed'));
   }
@@ -277,8 +352,33 @@
     ui.progress.style.width = `${percent}%`;
   }
 
-  function currentGroundExists(centerX) {
-    return !state.holes.some(hole => centerX > hole.x && centerX < hole.x + hole.w);
+  function pointHasGround(worldXPosition) {
+    return !state.holes.some(hole => worldXPosition > hole.x && worldXPosition < hole.x + hole.w);
+  }
+
+  function currentGroundExists(player) {
+    // Kiểm tra cả hai chân thay vì chỉ lấy tâm nhân vật.
+    // Như vậy ở mép hố/cầu nhân vật không bị "giật" hoặc rơi sớm khi hình nền còn thấy đất.
+    const leftFoot = player.x + FOOT_MARGIN;
+    const rightFoot = player.x + player.w - FOOT_MARGIN;
+    return pointHasGround(leftFoot) || pointHasGround(rightFoot);
+  }
+
+  function playerGroundY(player, moveDirection = 0) {
+    const leftFoot = player.x + FOOT_MARGIN;
+    const rightFoot = player.x + player.w - FOOT_MARGIN;
+    const samples = [];
+
+    if (pointHasGround(leftFoot)) samples.push({ side: -1, y: groundYAt(leftFoot) });
+    if (pointHasGround(rightFoot)) samples.push({ side: 1, y: groundYAt(rightFoot) });
+    if (!samples.length) return null;
+
+    // Dùng chân phía trước để nhân vật lên và xuống dốc theo đúng hướng đang chạy.
+    if (moveDirection !== 0) {
+      const leadingFoot = samples.find(sample => sample.side === Math.sign(moveDirection));
+      if (leadingFoot) return leadingFoot.y;
+    }
+    return Math.min(...samples.map(sample => sample.y));
   }
 
   function aabb(a, b) {
@@ -291,6 +391,8 @@
     state.health -= 1;
     state.score = Math.max(0, state.score - 50);
     p.invulnerable = 1.25;
+    p.dashing = false;
+    p.dashTimer = 0;
     p.vy = -330;
     p.vx = -230 * p.facing;
     showMessage(reason);
@@ -306,8 +408,10 @@
     }
     const chunkStart = Math.floor(p.x / CHUNK_W) * CHUNK_W;
     p.x = Math.max(80, chunkStart + 120);
-    p.y = GROUND_Y - p.normalH;
+    p.y = groundYAt(p.x + p.w / 2) - p.normalH;
     p.h = p.normalH;
+    p.dashing = false;
+    p.dashTimer = 0;
     p.vx = 0;
     p.vy = 0;
     p.invulnerable = 1.5;
@@ -340,6 +444,16 @@
     });
   }
 
+  // Cơ chế lướt lấy theo level-test: một cú lao nhanh, có thời gian cố định,
+  // không thu nhỏ nhân vật thành tư thế quỳ và có thể dùng cả khi đang ở trên không.
+  function startDash() {
+    const p = state.player;
+    if (p.dashing) return;
+    p.dashing = true;
+    p.dashTimer = DASH_TIME;
+    p.vx = p.facing * DASH_SPEED;
+  }
+
   function update(dt) {
     if (!state.running || state.paused || state.won) return;
     const p = state.player;
@@ -357,16 +471,20 @@
     state.enemies.forEach(enemy => { enemy.hitTimer = Math.max(0, enemy.hitTimer - dt); });
 
     const move = Number(keys.right) - Number(keys.left);
-    if (move !== 0) {
-      p.vx += move * 1150 * dt;
-      p.facing = move;
-    } else {
-      p.vx *= Math.pow(.002, dt);
-    }
-    p.vx = Math.max(-310, Math.min(310, p.vx));
+    if (!p.dashing && move !== 0) p.facing = move;
 
-    if (pressed.jump && p.grounded) {
-      p.vy = -600;
+    if (pressed.dash) startDash();
+    pressed.dash = false;
+
+    if (p.dashing) {
+      p.dashTimer -= dt;
+      p.vx = p.facing * DASH_SPEED;
+    } else {
+      p.vx = move * MOVE_SPEED;
+    }
+
+    if (pressed.jump && p.grounded && !p.dashing) {
+      p.vy = -JUMP_FORCE;
       p.grounded = false;
     }
     pressed.jump = false;
@@ -374,30 +492,27 @@
     if (pressed.attack) startAttack();
     pressed.attack = false;
 
-    const shouldSlide = keys.slide && p.grounded;
-    if (shouldSlide !== p.sliding) {
-      const feet = p.y + p.h;
-      p.sliding = shouldSlide;
-      p.h = shouldSlide ? p.slideH : p.normalH;
-      p.y = feet - p.h;
-    }
-
-    p.vy += 1550 * dt;
+    const wasGrounded = p.grounded;
+    p.vy += GRAVITY * dt;
     p.x += p.vx * dt;
     p.y += p.vy * dt;
     p.x = Math.max(20, Math.min(state.finishX + 160, p.x));
 
     p.grounded = false;
-    const hasGround = currentGroundExists(p.x + p.w / 2);
-    if (hasGround && p.y + p.h >= GROUND_Y && p.vy >= 0) {
-      p.y = GROUND_Y - p.h;
+    const groundY = playerGroundY(p, move);
+    const feetY = p.y + p.h;
+    const mayFollowSlope = wasGrounded && groundY !== null && Math.abs(feetY - groundY) <= GROUND_SNAP_DISTANCE;
+    const landedOnGround = groundY !== null && feetY >= groundY && p.vy >= 0;
+    if (mayFollowSlope || landedOnGround) {
+      p.y = groundY - p.h;
       p.vy = 0;
       p.grounded = true;
     }
 
     for (const obstacle of state.obstacles) {
       if (!obstacle.active || !aabb(p, obstacle)) continue;
-      if (obstacle.overhead && p.sliding) continue;
+      // Chướng ngại vật bắt buộc lướt không gây sát thương trong suốt cú dash.
+      if (obstacle.requiresDash && p.dashing) continue;
       if (!obstacle.overhead && !obstacle.harmful && p.vy >= 0 && previousBottom <= obstacle.y + 8) {
         p.y = obstacle.y - p.h;
         p.vy = 0;
@@ -405,6 +520,16 @@
       } else {
         hurtPlayer(obstacle.harmful ? 'Bạn va vào bẫy!' : 'Hãy nhảy hoặc lướt qua chướng ngại vật.');
       }
+    }
+
+    // Nếu thời gian lướt vừa hết khi nhân vật còn nằm trong vùng vật cản,
+    // duy trì dash tới khi ra khỏi vật để không bị mất máu ở khung hình cuối.
+    const insideDashObstacle = state.obstacles.some(obstacle =>
+      obstacle.active && obstacle.requiresDash && aabb(p, obstacle)
+    );
+    if (p.dashing && p.dashTimer <= 0 && !insideDashObstacle) {
+      p.dashing = false;
+      p.dashTimer = 0;
     }
 
     state.books.forEach(book => {
@@ -501,6 +626,29 @@
       }
       else drawFallbackMap(i, screenX);
     }
+    drawSeamBlends(first, last);
+  }
+
+  function drawSeamBlends(first, last) {
+    // Che nhẹ đường ráp giữa 2 mapchunk. Nếu 2 ảnh nền lệch vài pixel thì mắt sẽ thấy mềm hơn,
+    // vẫn giữ từng chunk riêng để dễ thay ảnh/sửa màn chơi.
+    ctx.save();
+    for (let seam = first + 1; seam <= last; seam += 1) {
+      const seamX = Math.round(seam * CHUNK_W - state.cameraX);
+      const x = seamX - SEAM_BLEND_W / 2;
+      const gradient = ctx.createLinearGradient(x, 0, x + SEAM_BLEND_W, 0);
+      gradient.addColorStop(0, 'rgba(35, 67, 45, 0)');
+      gradient.addColorStop(.5, 'rgba(35, 67, 45, .16)');
+      gradient.addColorStop(1, 'rgba(35, 67, 45, 0)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(x, 188, SEAM_BLEND_W, VIEW_H - 188);
+
+      ctx.fillStyle = 'rgba(76, 105, 54, .20)';
+      ctx.fillRect(x, MAP_ROAD_TARGET_Y - 3, SEAM_BLEND_W, 12);
+      ctx.fillStyle = 'rgba(88, 61, 38, .18)';
+      ctx.fillRect(x, MAP_ROAD_TARGET_Y + 9, SEAM_BLEND_W, 28);
+    }
+    ctx.restore();
   }
 
   function drawAtlasSprite(name, x, y, width, height, alpha = 1) {
@@ -548,7 +696,9 @@
       if (!obstacle.active) return;
       const x = obstacle.x - state.cameraX - (obstacle.drawW - obstacle.w) / 2;
       if (x + obstacle.drawW < -80 || x > VIEW_W + 80) return;
-      const drawY = obstacle.overhead ? GROUND_Y - obstacle.drawH : GROUND_Y - obstacle.drawH;
+      // Neo theo mặt đất thật tại vị trí vật cản và chìm nhẹ 7 px để phần trong
+      // suốt ở đáy ô sprite không khiến chướng ngại vật trông như đang bay.
+      const drawY = obstacle.groundY - obstacle.drawH + OBSTACLE_GROUND_SINK;
       drawAtlasSprite(obstacle.type, x, drawY, obstacle.drawW, obstacle.drawH);
     });
   }
@@ -570,19 +720,32 @@
     const p = state.player;
     const x = Math.round(p.x - state.cameraX);
     const y = Math.round(p.y);
-    if (p.invulnerable > 0 && Math.floor(p.invulnerable * 12) % 2 === 0) return;
+    const blinkHidden = p.invulnerable > 0 && Math.floor(p.invulnerable * 12) % 2 === 0;
 
-    if (images.player) {
-      ctx.save();
-      if (p.facing < 0) {
-        ctx.translate(x + p.w, 0);
-        ctx.scale(-1, 1);
-        ctx.drawImage(images.player, 0, y, p.w, p.h);
-      } else {
-        ctx.drawImage(images.player, x, y, p.w, p.h);
+    const animationName = p.dashing ? 'dash' : !p.grounded ? 'jump' : Math.abs(p.vx) > 1 ? 'run' : 'idle';
+    const playerImage = images.player[animationName] || images.player.idle;
+    if (playerSprite && playerImage) {
+      // Để trình duyệt chạy GIF trực tiếp trong một phần tử HTML giống level-test.
+      // Canvas chỉ còn vẽ map, vì vẽ GIF vào canvas có thể bị giữ ở khung đầu.
+      const scale = animationName === 'jump' ? PLAYER_JUMP_SCALE : 1;
+      const drawX = x + p.w / 2 - PLAYER_FRAME_SIZE / 2;
+      const footY = y + p.h;
+      if (currentPlayerAnimation !== animationName) {
+        const imageUrl = playerImage.currentSrc || playerImage.src;
+        playerSprite.style.backgroundImage = `url(${JSON.stringify(imageUrl)})`;
+        currentPlayerAnimation = animationName;
       }
-      ctx.restore();
+      playerSprite.hidden = false;
+      playerSprite.style.left = `${drawX / VIEW_W * 100}%`;
+      playerSprite.style.bottom = `${(VIEW_H - footY) / VIEW_H * 100}%`;
+      playerSprite.style.width = `${PLAYER_FRAME_SIZE / VIEW_W * 100}%`;
+      playerSprite.style.height = `${PLAYER_FRAME_SIZE / VIEW_H * 100}%`;
+      playerSprite.style.transform = `scaleX(${p.facing < 0 ? -1 : 1}) scale(${scale})`;
+      playerSprite.style.visibility = blinkHidden ? 'hidden' : 'visible';
+      playerSprite.classList.toggle('is-dashing', p.dashing);
     } else {
+      if (playerSprite) playerSprite.hidden = true;
+      if (blinkHidden) return;
       // Nhân vật pixel tạm để game chạy ngay khi chưa có sprite Trưng Trắc.
       ctx.save();
       ctx.translate(x + (p.facing < 0 ? p.w : 0), y);
@@ -642,12 +805,12 @@
       ArrowLeft: 'left', KeyA: 'left',
       ArrowRight: 'right', KeyD: 'right',
       ArrowUp: 'jump', KeyW: 'jump', Space: 'jump',
-      ArrowDown: 'slide', KeyS: 'slide', ShiftLeft: 'slide',
+      ArrowDown: 'dash', KeyS: 'dash', ShiftLeft: 'dash', ShiftRight: 'dash', KeyK: 'dash',
       KeyJ: 'attack'
     };
     const action = mapping[code];
     if (!action) return false;
-    if (down && !keys[action] && (action === 'jump' || action === 'attack')) pressed[action] = true;
+    if (down && !keys[action] && (action === 'jump' || action === 'dash' || action === 'attack')) pressed[action] = true;
     keys[action] = down;
     return true;
   }
@@ -668,7 +831,7 @@
     const action = button.dataset.control;
     const press = event => {
       event.preventDefault();
-      if (!keys[action] && (action === 'jump' || action === 'attack')) pressed[action] = true;
+      if (!keys[action] && (action === 'jump' || action === 'dash' || action === 'attack')) pressed[action] = true;
       keys[action] = true;
       button.classList.add('is-pressed');
       button.setPointerCapture?.(event.pointerId);
