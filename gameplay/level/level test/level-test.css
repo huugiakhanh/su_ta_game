@@ -1,0 +1,214 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #fff7d6;
+    background: #17110d;
+}
+
+.game-wrap {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    gap: 10px;
+    padding: 14px;
+    background:
+        linear-gradient(rgba(24, 16, 10, 0.25), rgba(24, 16, 10, 0.35)),
+        radial-gradient(circle at 20% 15%, rgba(255, 188, 77, 0.32), transparent 28%),
+        linear-gradient(180deg, #29374b 0%, #d99343 56%, #4e2c1c 100%);
+}
+
+.hud {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    border: 2px solid #b7782c;
+    border-radius: 8px;
+    background: rgba(43, 27, 18, 0.82);
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+}
+
+.hud strong {
+    display: block;
+    color: #ffd05a;
+    font-size: 18px;
+}
+
+.hud span {
+    display: block;
+    margin-top: 3px;
+    color: #f5dfbb;
+    font-size: 13px;
+}
+
+.back-link {
+    color: #ffd05a;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.stage {
+    position: relative;
+    overflow: hidden;
+    min-height: 420px;
+    border: 3px solid #9f6528;
+    border-radius: 8px;
+    background:
+        linear-gradient(rgba(23, 14, 9, 0.05), rgba(23, 14, 9, 0.3)),
+        linear-gradient(180deg, #476b8c 0%, #f0a84f 52%, #3f2b1f 100%);
+    box-shadow: inset 0 0 0 3px rgba(255, 218, 133, 0.2);
+}
+
+.sky {
+    position: absolute;
+    inset: 0;
+}
+
+.cloud {
+    position: absolute;
+    width: 170px;
+    height: 46px;
+    border-radius: 999px;
+    background: rgba(255, 223, 172, 0.45);
+    filter: blur(1px);
+}
+
+.cloud::before,
+.cloud::after {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    border-radius: 50%;
+    background: inherit;
+}
+
+.cloud::before {
+    left: 24px;
+    width: 60px;
+    height: 60px;
+}
+
+.cloud::after {
+    right: 28px;
+    width: 76px;
+    height: 76px;
+}
+
+.cloud-one {
+    top: 58px;
+    left: 10%;
+}
+
+.cloud-two {
+    top: 96px;
+    right: 12%;
+    transform: scale(0.76);
+    opacity: 0.7;
+}
+
+.ground {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 96px;
+    border-top: 5px solid #d0933f;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 216, 130, 0.14) 0 26px,
+            transparent 26px 52px
+        ),
+        linear-gradient(180deg, #62402a 0%, #2b1b13 100%);
+}
+
+/* player  */
+
+.player {
+    position: absolute;
+    left: 120px;
+    bottom: 92px;
+    width: 128px;
+    height: 128px; /* Đưa về khung vuông chuẩn */
+    image-rendering: pixelated;
+    
+    /* NOTE FIX CODE: Cấu hình hiển thị chuẩn cho ảnh GIF */
+    background-image: url("/ảnh/characters/origin male/stance.gif"); /* Ảnh đứng yên mặc định */
+    background-repeat: no-repeat;
+    background-size: contain; /* Ép ảnh vừa khít với khung 128px */
+    background-position: center bottom; /* Luôn bám sát mặt đất */
+    
+    transform-origin: center bottom;
+    filter: drop-shadow(0 12px 0 rgba(0, 0, 0, 0.22));
+    transition: transform 0.1s ease;
+}
+
+.player.facing-left {
+    transform: scaleX(-1);
+}
+
+.player.dashing {
+    filter:
+        drop-shadow(0 12px 0 rgba(0, 0, 0, 0.22))
+        /* drop-shadow(0 0 12px rgba(255, 207, 82, 0.9)); */
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.control-btn {
+    min-height: 48px;
+    border: 2px solid #f1bd67;
+    border-radius: 8px;
+    color: #fff3c4;
+    background: linear-gradient(180deg, #8f592a, #55311d);
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
+}
+
+.control-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
+}
+
+.guide {
+    margin: 0;
+    color: #f5dfbb;
+    text-align: center;
+    font-size: 13px;
+}
+
+@media (max-width: 720px) {
+    .game-wrap {
+        padding: 8px;
+    }
+
+    .stage {
+        min-height: 360px;
+    }
+
+    .hud {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .controls {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

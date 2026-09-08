@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sử Ta - Hào Khí Ngàn Năm</title>
+    <link rel="stylesheet" href="history.css">
+</head>
+<body>
+
+    <!-- Phần mở đầu -->
+    <header class="hero-section">
+        <div class="overlay">
+            <h1 class="title-glow">SỬ TA</h1>
+            <p class="subtitle">Chạm Lịch Sử, Đánh Thức Tự Hào</p>
+            <button class="btn-explore" onclick="scrollToTimeline()">Khám phá ngay</button>
+        </div>
+    </header>
+
+    
+    <section class="content-section">
+        <h2 class="section-title">Tiến Trình Lịch Sử</h2>
+        
+        <!-- 4 Tab Giai Đoạn -->
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="openEra(event, 'tab-1')">Khởi Nguồn & Dựng Nước</button>
+            <button class="tab-btn" onclick="openEra(event, 'tab-2')">Thời Bắc Thuộc</button>
+            <button class="tab-btn" onclick="openEra(event, 'tab-3')">Kỷ Nguyên Độc Lập</button>
+            <button class="tab-btn" onclick="openEra(event, 'tab-4')">Kỷ Nguyên Mới</button>
+        </div>
+
+        <!-- Khung Nội Dung Tab 1 -->
+        <div id="tab-1" class="era-content active">
+            <h3>Giai Đoạn Khởi Nguồn & Dựng Nước (Chương 1, 2, 3)</h3>
+            <p>update again</p>
+        </div>
+
+        <!-- Khung Nội Dung Tab 2 -->
+        <div id="tab-2" class="era-content">
+            <h3>Giai Đoạn Thời Bắc Thuộc (Chương 4)</h3>
+            <p>update again</p>
+        </div>
+
+        <!-- Khung Nội Dung Tab 3 -->
+        <div id="tab-3" class="era-content">
+            <h3>Giai Đoạn Kỷ Nguyên Độc Lập (Chương 5, 6, 7, 8, 9)</h3>
+            <p>update again</p>
+        </div>
+
+        <!-- Khung Nội Dung Tab 4 -->
+        <div id="tab-4" class="era-content">
+            <h3>Giai Đoạn Kỷ Nguyên Mới (Chương 10)</h3>
+            <p>update again</p>
+        </div>
+        
+    </section>
+
+    <!-- Điểm nhấn Văn hóa & Kiến trúc -->
+    <section class="content-section reveal">
+        <h2 class="section-title">Dấu Ấn Kiến Trúc Cổ</h2>
+        <div class="culture-card">
+            <div class="card-text">
+                <p>Không chỉ lẫy lừng trong chiến trận, người Việt còn để lại di sản đồ sộ qua nghệ thuật tổ chức không gian sống. Từ những nếp nhà sàn truyền thống mộc mạc thích ứng với thiên nhiên khắc nghiệt, đình làng mái cong vút vươn lên bầu trời, cho đến các hệ thống thành lũy kiên cố bằng đá, gạch nung. Mỗi viên gạch, mỗi vì kèo gỗ đều mang đậm tư duy thẩm mỹ và đôi bàn tay tài hoa của những người thợ, những vị kiến trúc sư thầm lặng đi trước thời đại.</p>
+            </div>
+        </div>
+    </section>
+    
+    <button id="btnBackToGame" 
+        onclick="window.location.href='/'" 
+        style="position: fixed; bottom: 30px; right: 30px; z-index: 1000; padding: 12px 22px; background: linear-gradient(180deg, #5d331d, #2b1509); color: #ffcc00; border: 2px solid #ffcc00; border-radius: 30px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.8); opacity: 0; pointer-events: none; transition: opacity 0.4s ease, transform 0.2s ease;">
+    ← Quay lại Game
+</button>
+
+    <footer class="site-footer">
+        <p>© 2026 SỬ TA - Phát triển bởi thế hệ trẻ yêu sử Việt</p>
+    </footer>
+
+
+    <script src="history.js"></script>
+
+</body>
+</html>
+

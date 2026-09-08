@@ -1,0 +1,68 @@
+<!-- Cửa sổ chọn chương: nội dung này được index.html tải tự động -->
+<div
+  id="chapterModalOverlay"
+  class="chapter-modal-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="chapterModalTitle"
+  hidden
+  onclick="if (event.target === this) closeChapterModal()"
+>
+  <section class="chapter-modal-window">
+    <button
+      class="chapter-modal-close"
+      type="button"
+      aria-label="Đóng cửa sổ chọn chương"
+      onclick="closeChapterModal()"
+    >×</button>
+
+    <header class="chapter-modal-heading">
+      <h2 id="chapterModalTitle">Chọn chương</h2>
+      <p>Khám phá lịch sử Việt Nam qua từng thời kỳ</p>
+    </header>
+
+    <div class="chapter-modal-grid">
+      <button class="chapter-modal-card" type="button" onclick="chonTamChuong(1, this)">
+        <strong>1</strong><span>Chương 1<br>Khởi nguồn</span>
+      </button>
+      <button class="chapter-modal-card" type="button" onclick="chonTamChuong(2, this)">
+        <strong>2</strong><span>Chương 2<br>Dựng nước</span>
+      </button>
+      <button class="chapter-modal-card" type="button" onclick="chonTamChuong(3, this)">
+        <strong>3</strong><span>Chương 3<br>Giữ nước</span>
+      </button>
+      <button class="chapter-modal-card" type="button" onclick="chonTamChuong(4, this)">
+        <strong>4</strong><span>Chương 4<br>Thời Bắc thuộc</span>
+      </button>
+      <button class="chapter-modal-card" type="button" onclick="chonTamChuong(5, this)">
+        <strong>5</strong><span>Chương 5<br>Kỷ ngúyên độc lập</span>
+      </button>
+      <button class="chapter-modal-card" type="button" onclick="chonTamChuong(6, this)">
+        <strong>6</strong><span>Chương 6<br>Nhà Lý</span>
+      </button>
+      <button class="chapter-modal-card" type="button" onclick="chonTamChuong(7, this)">
+        <strong>7</strong><span>Chương 7<br>Nhà Trần</span>
+      </button>
+      <button class="chapter-modal-card" type="button" onclick="chonTamChuong(8, this)">
+        <strong>8</strong><span>Chương 8<br>Khởi nghĩa Lam Sơn</span>
+      </button>
+      <button class="chapter-modal-card" type="button" onclick="chonTamChuong(9, this)">
+        <strong>9</strong><span>Chương 9<br>Tây Sơn</span>
+      </button>
+      <button class="chapter-modal-card" type="button" onclick="chonTamChuong(10, this)">
+        <strong>10</strong><span>Chương 10<br>Kỷ nguyên mới</span>
+      </button>
+    </div> <!-- Kết thúc thẻ div của chapter-modal-grid -->
+
+    <!-- NOTE FIX CODE: Đã xóa bỏ chữ "z" thừa và nút Quay lại bị lặp ở khu vực này -->
+    <div class="chapter-modal-actions" style="display: flex; justify-content: center; gap: 15px; margin-top: 25px;">
+        <button class="chapter-modal-back" type="button" onclick="closeChapterModal()" style="margin: 0;">
+          ← Quay lại
+        </button>
+        <button id="btnXacNhanChuong" class="chapter-modal-ok" type="button" onclick="xacNhanChonChuong()" disabled style="opacity: 0.5; cursor: not-allowed;">
+          OK
+        </button>
+    </div>
+
+  </section>
+</div>

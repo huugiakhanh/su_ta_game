@@ -1,0 +1,165 @@
+/* Thiết lập cơ bản */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a100b;
+    color: #f5dfbb;
+    line-height: 1.6;
+}
+
+/* Banner Mở Đầu */
+.hero-section {
+    height: 100vh;
+    background: linear-gradient(rgba(26, 16, 11, 0.7), rgba(26, 16, 11, 0.9)), 
+                url('https://images.unsplash.com/photo-1540205082585-a6f95bb5d2db?q=80&w=2000&auto=format&fit=crop'); /* Có thể thay bằng ảnh nền trống đồng */
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.title-glow {
+    font-size: 5rem;
+    color: #ffcc00;
+    text-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+    margin-bottom: 10px;
+    letter-spacing: 5px;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    color: #d8b888;
+}
+
+.btn-explore {
+    margin-top: 25px;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #110a07;
+    background: linear-gradient(180deg, #ffcc00, #d4a000);
+    border: 2px solid #fff3c4;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #8f6b00, 0 8px 15px rgba(0, 0, 0, 0.6);
+    transition: all 0.15s ease;
+}
+
+.btn-explore:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 0 #8f6b00, 0 0 15px rgba(255, 204, 0, 0.5);
+}
+
+.btn-explore:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 #8f6b00;
+}
+
+/* Khu vực Nội dung */
+.content-section {
+    padding: 80px 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #ffcc00;
+    margin-bottom: 40px;
+    border-bottom: 2px solid #5d331d;
+    display: inline-block;
+    padding-bottom: 10px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Tabs Dòng thời gian */
+.tab-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 12px 24px;
+    background: #3e2723;
+    color: #d8b888;
+    border: 2px solid #5d331d;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.tab-btn:hover, .tab-btn.active {
+    background: #5d331d;
+    color: #ffcc00;
+    border-color: #ffcc00;
+}
+
+.era-content {
+    display: none;
+    background: #2b1d14;
+    padding: 30px;
+    border-radius: 8px;
+    border-left: 4px solid #ffcc00;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.era-content.active {
+    display: block;
+}
+
+.era-content h3 {
+    color: #ffcc00;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+/* Kiến trúc cổ */
+.culture-card {
+    background: rgba(62, 39, 35, 0.6);
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid #5d331d;
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+/* Hiệu ứng trượt khi cuộn trang */
+.reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s ease-out;
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.site-footer {
+    text-align: center;
+    padding: 30px;
+    background: #110a07;
+    color: #7a6a58;
+    border-top: 1px solid #2b1d14;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

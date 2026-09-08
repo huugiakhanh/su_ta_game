@@ -1,0 +1,335 @@
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    user-select: none;
+}
+
+body {
+    background-color: #000;
+    color: #fff;
+    overflow: hidden;
+}
+
+/* Container chính bọc toàn màn hình */
+.game-screen {
+    width: 100vw;
+    height: 100vh;
+    background: url('ảnh/background/home game 4.gif') center/cover no-repeat;
+    position: relative;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Lớp phủ mờ nhẹ giúp các nút bấm UI nổi bật trên nền ảnh */
+.game-screen::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 0;
+}
+
+/* NOTE FIX CODE: Tạo style cho logo mới */
+.game-logo {
+    max-width: 350px; /* Bạn có thể tăng giảm số này để chỉnh độ to nhỏ của logo */
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.6)); /* Tạo bóng đổ giúp logo nổi bật trên nền game */
+}
+
+
+/* KHUNG CHUNG CHO CÁC PANEL (Viền gỗ pixel) */
+.panel {
+    background: rgba(35, 24, 16, 0.88);
+    border: 3px solid #6b4d32;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 2px #3a2517, 2px 2px 8px rgba(0,0,0,0.7);
+    padding: 10px;
+    backdrop-filter: blur(2px);
+}
+
+/* NÚT BẤM CHUNG */
+.btn {
+    background: linear-gradient(to bottom, #b88b4a, #8c6231);
+    border: 3px solid #fce8b2;
+    color: #3e2723;
+    font-weight: 900;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.4), 2px 2px 5px rgba(0,0,0,0.6);
+    transition: all 0.1s;
+    text-align: center;
+    /* NOTE FIX CODE: Bo tròn góc để nút mềm mại hơn */
+    border-radius: 12px; /* Tăng số này lên nếu muốn góc tròn hơn nữa (vd: 20px) */
+    
+    /* NOTE FIX CODE: Hiệu ứng chuyển động mượt mà khi hover */
+    transition: all 0.2s ease;
+}
+.btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+.btn:active {
+    transform: translateY(2px);
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.4), 1px 1px 2px rgba(0,0,0,0.6);
+}
+
+/* thêm */
+/* NOTE FIX CODE: Cấu hình mặc định khi chưa di chuột (Trạng thái nhẹ nhàng, không chói) */
+.btn-main {
+    position: relative;
+    border-radius: 16px !important;
+    padding: 14px 24px;
+    font-weight: bold;
+    cursor: pointer;
+    
+    /* Viền mặc định chìm nhẹ */
+    border: 3px solid #7c522d !important;
+    outline: 2px solid #1a0f07 !important;
+    outline-offset: -5px !important;
+
+    /* Đổ bóng chìm cơ bản */
+    box-shadow: 0 4px 0 #1e1107, 0 4px 8px rgba(0, 0, 0, 0.4) !important;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+/* Nền mặc định của từng nút */
+.btn-main { background: linear-gradient(180deg, #7a4f27 0%, #4a2d13 100%) !important; color: #fce8a6; }
+.btn-main.btn-green { background: linear-gradient(180deg, #3d6b24 0%, #234212 100%) !important; color: #d1f7b0; }
+.btn-main.btn-purple { background: linear-gradient(180deg, #39247d 0%, #20134d 100%) !important; color: #e0d5ff; }
+
+/* ----------------------------------------------------
+   KHI DI CHUỘT VÀO (HOVER): PHÁT SÁNG & HIỆN VIỀN NỔI 3D
+---------------------------------------------------- */
+
+/* Effect chung khi Hover: Nổi nhô lên + Hiện hào quang sáng */
+.btn-main:hover {
+    transform: translateY(-3px);
+    outline-color: #1a0f07 !important;
+}
+
+/* 1. Nút Bắt đầu chơi: Bừng sáng Vàng rực */
+.btn-main:not(.btn-green):not(.btn-purple):hover {
+    background: linear-gradient(180deg, #b87c3b 0%, #7d4d21 100%) !important;
+    border-color: #ffe066 !important; /* Viền vàng viền đôi hiện rõ */
+    box-shadow: 
+        0 8px 0 #1e1107, 
+        0 0 20px rgba(255, 224, 102, 0.7), /* Phát sáng vàng */
+        inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* 2. Nút Chọn chương: Bừng sáng Xanh lá */
+.btn-main.btn-green:hover {
+    background: linear-gradient(180deg, #5aa035 0%, #36661e 100%) !important;
+    border-color: #b0f573 !important; /* Viền xanh sáng hiện rõ */
+    box-shadow: 
+        0 8px 0 #1e1107, 
+        0 0 20px rgba(176, 245, 115, 0.7), /* Phát sáng xanh */
+        inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* 3. Nút Thư viện: Bừng sáng Tím */
+.btn-main.btn-purple:hover {
+    background: linear-gradient(180deg, #593bbd 0%, #35217d 100%) !important;
+    border-color: #c7b3ff !important; /* Viền tím sáng hiện rõ */
+    box-shadow: 
+        0 8px 0 #1e1107, 
+        0 0 20px rgba(199, 179, 255, 0.7), /* Phát sáng tím */
+        inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ----------------------------------------------------
+   KHI BẤM CHUỘT VÀO (ACTIVE): LÚN XUỐNG CỰC THẬT
+---------------------------------------------------- */
+.btn-main:active {
+    transform: translateY(3px) !important;
+    box-shadow: 0 2px 0 #1e1107, 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* --- TOP BAR --- */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    z-index: 2;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 260px;
+}
+.avatar {
+    width: 55px; height: 55px;
+    background: #d1c4e9;
+    border: 2px solid #ffca28;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.info-text h3 {
+    color: #f1c40f; font-size: 16px; margin-bottom: 2px;
+    text-shadow: 1px 1px 3px #000;
+}
+.exp-bar-container {
+    width: 100%; height: 10px;
+    background: #111; border: 1px solid #666;
+    position: relative;
+    margin-top: 4px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+.exp-bar {
+    width: 50%; height: 100%; background: linear-gradient(to right, #f39c12, #f1c40f);
+}
+
+.resources {
+    display: flex;
+    gap: 10px;
+}
+.res-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    font-weight: bold; font-size: 14px;
+    color: #fff;
+}
+.btn-plus {
+    background: #4caf50; color: #fff; border: 1px solid #fff;
+    width: 18px; height: 18px; line-height: 14px; font-size: 14px;
+    border-radius: 3px; cursor: pointer; font-weight: bold;
+}
+
+/* --- MAIN CONTENT --- */
+.main-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-grow: 1;
+    position: relative;
+    z-index: 2;
+    padding: 0 10px;
+}
+
+/* Cột Trái */
+.left-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 210px;
+}
+.btn-side {
+    padding: 12px; font-size: 13px;
+    background: linear-gradient(to bottom, #4a3828, #2e2117);
+    color: #f1f1f1;
+    border-color: #8d6e63;
+    text-shadow: 1px 1px 2px #000;
+}
+
+/* Cột Giữa */
+.center-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+.logo-area {
+    text-align: center;
+    margin-bottom: 10px;
+}
+.logo-area h1 {
+    font-size: 76px; color: #f1c40f;
+    text-shadow: 0px 5px 0 #795548, 0 -2px 0 #fff, 3px 3px 12px #000;
+    line-height: 1;
+    letter-spacing: 4px;
+    margin-bottom: 15px;
+}
+.subtitle {
+    background: linear-gradient(to right, #8b0000, #b22222, #8b0000);
+    color: #fff;
+    padding: 6px 18px; font-weight: bold;
+    border: 2px solid #ffc107;
+    font-size: 13px;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    letter-spacing: 1px;
+}
+.btn-main {
+    width: 290px; padding: 14px; font-size: 18px;
+}
+.btn-green { background: linear-gradient(to bottom, #689f38, #33691e); border-color: #c5e1a5; color: #fff; }
+.btn-blue { background: linear-gradient(to bottom, #455a64, #263238); border-color: #b0bec5; color: #fff; }
+.btn-purple { background: linear-gradient(to bottom, #512da8, #311b92); border-color: #d1c4e9; color: #fff; }
+
+/* Cột Phải */
+.right-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 330px;
+}
+.event-banner {
+    height: 110px;
+    background: #3e2723;
+    border-radius: 4px;
+    position: relative;
+    text-align: center;
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #795548;
+}
+.event-banner span {
+    background: rgba(0,0,0,0.6); font-weight: bold; color: #ffeb3b; padding: 5px 10px; border-radius: 4px;
+    font-size: 13px; line-height: 1.4;
+}
+
+.reward-grid {
+    display: flex; justify-content: space-between; gap: 6px;
+    margin-top: 8px;
+}
+.reward-item {
+    background: #2b1d14; border: 1px solid #5d4037;
+    text-align: center; padding: 6px 2px; font-size: 10px; color: #ccc;
+    flex-grow: 1; border-radius: 3px;
+}
+.reward-item .icon {
+    width: 28px; height: 28px; background: #4e342e; border: 1px solid #8d6e63; margin: 0 auto 4px; border-radius: 3px;
+}
+
+.action-grid {
+    display: flex; justify-content: space-between; gap: 8px;
+}
+.btn-action {
+    flex-grow: 1; padding: 10px 4px; font-size: 11px;
+}
+
+/* --- BOTTOM BAR --- */
+.bottom-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: relative;
+    z-index: 2;
+}
+.social-icons {
+    display: flex; gap: 8px;
+}
+.btn-social {
+    width: 38px; height: 38px; font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.welcome-msg {
+    text-align: center; margin: 0 auto;
+    padding: 8px 25px;
+}
+.version {
+    font-size: 12px; color: #ddd; text-shadow: 1px 1px 2px #000;
+}
