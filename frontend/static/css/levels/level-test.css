@@ -145,7 +145,7 @@ body {
     image-rendering: pixelated;
     
     /* NOTE FIX CODE: Cấu hình hiển thị chuẩn cho ảnh GIF */
-    background-image: url("/ảnh/characters/origin male/stance.gif"); /* Ảnh đứng yên mặc định */
+    background-image: url("/static/assets/images/characters/origin male/stance.gif"); /* Ảnh đứng yên mặc định */
     background-repeat: no-repeat;
     background-size: contain; /* Ép ảnh vừa khít với khung 128px */
     background-position: center bottom; /* Luôn bám sát mặt đất */

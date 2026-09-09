@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUTA - Level Test</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/levels/level-test.css') }}">
+</head>
+<body>
+    <main class="game-wrap">
+        <section class="hud">
+            <div>
+                <strong>LEVEL TEST</strong>
+                <span>Di chuyen, nhay, luot</span>
+            </div>
+            <a href="/" class="back-link">Ve trang chinh</a>
+        </section>
+
+        <section class="stage" id="stage">
+            <div class="sky">
+                <div class="cloud cloud-one"></div>
+                <div class="cloud cloud-two"></div>
+            </div>
+
+            <div class="player" id="player" aria-label="Nhan vat chinh"></div>
+            <div class="ground"></div>
+        </section>
+
+        <section class="controls">
+            <button type="button" class="control-btn" data-key="left">Trai</button>
+            <button type="button" class="control-btn" data-key="right">Phai</button>
+            <button type="button" class="control-btn" data-key="jump">Nhay</button>
+            <button type="button" class="control-btn" data-key="dash">Luot</button>
+        </section>
+
+        <p class="guide">
+            Phim may tinh: A/D hoac mui ten de di chuyen, Space de nhay, Shift de luot.
+        </p>
+    </main>
+    <script src="{{ url_for('static', filename='js/levels/level-test.js') }}"></script>
+</body>
+</html>
