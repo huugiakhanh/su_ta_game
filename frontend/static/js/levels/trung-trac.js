@@ -33,56 +33,18 @@
   // Vị trí mặt đường trong từng ảnh gốc. Khi vẽ, code đưa tất cả các điểm này
   // về cùng MAP_ROAD_TARGET_Y để đường không bị giật lên/xuống ở mép nối map.
   const MAP_ROAD_SOURCE_Y = [577, 573, 533, 493, 550, 468, 610, 598, 575, 552, 598, 566];
-  // Nơi để ảnh theo cấu trúc bạn đang dùng:
+  // Tài nguyên level được phục vụ từ frontend/static/assets/images.
   // ảnh/mapchunk_1/
   //   contains obstacles.png
   //   map chunk 1.1.png ... map chunk 1.12.png
   //
-  // Nếu HTML ở gameplay/level/Trung_Trac: ../../../ảnh/mapchunk_1/
-  // Nếu HTML ở game_play/trungtrac: ../../ảnh/mapchunk_1/
-  // Dùng dấu / trong đường dẫn web, không dùng dấu \\ của Windows.
-  const MAP_ROOT_CANDIDATES = [
-    '../../../ảnh/mapchunk_1/',
-    '../../ảnh/mapchunk_1/',
-    '../ảnh/mapchunk_1/',
-    './ảnh/mapchunk_1/',
-    'ảnh/mapchunk_1/',
-    '/ảnh/mapchunk_1/',
-    '../../../anh/mapchunk_1/',
-    '../../anh/mapchunk_1/',
-    '../../../mapchunk_1/',
-    '../../mapchunk_1/',
-    '../mapchunk_1/',
-    './mapchunk_1/',
-    'mapchunk_1/',
-    '../../../../mapchunk_1/'
-  ];
+  const MAP_ROOT_CANDIDATES = ['/static/assets/images/mapchunk_1/'];
 
-  const MAP_FILE_PATTERNS = [
-    number => `map chunk 1.${number}.png`,
-    number => `map_chunk_1.${number}.png`,
-    number => `mapchunk 1.${number}.png`,
-    number => `mapchunk_1.${number}.png`
-  ];
+  const MAP_FILE_PATTERNS = [number => `map chunk 1.${number}.png`];
 
-  const OBSTACLE_FILE_NAMES = [
-    'contains obstacles.png',
-    'contains_obstacles.png',
-    'contain obstacles.png'
-  ];
+  const OBSTACLE_FILE_NAMES = ['contains obstacles.png'];
 
-  // Bộ GIF đang được level-test sử dụng.
-  const PLAYER_ROOT_CANDIDATES = [
-    '../../../ảnh/characters/origin male/',
-    '../../ảnh/characters/origin male/',
-    '../ảnh/characters/origin male/',
-    './ảnh/characters/origin male/',
-    'ảnh/characters/origin male/',
-    '/ảnh/characters/origin male/',
-    '../../../anh/characters/origin male/',
-    '../../anh/characters/origin male/',
-    '/anh/characters/origin male/'
-  ];
+  const PLAYER_ROOT_CANDIDATES = ['/static/assets/images/characters/origin male/'];
 
   const PLAYER_ANIMATION_FILES = {
     idle: 'stance.gif',

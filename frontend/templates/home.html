@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Sử Ta - Game Lịch Sử Việt Nam</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/chapter-modal.css') }}">
+</head>
+<body>
+
+    <div class="game-screen">
+        
+        <div class="top-bar">
+            
+            <div class="panel player-info" style="justify-content: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(55, 38, 26, 0.9)'" onmouseout="this.style.background='rgba(35, 24, 16, 0.88)'" onclick="moBangDangNhap()">
+                
+                <div class="avatar" style="background: #444; border-color: #888; display: flex; justify-content: center; align-items: center; color: #aaa; font-size: 24px; font-weight: bold;">
+                    ?
+                </div>
+                
+                <div class="info-text">
+                    <h3 style="color: #fff; text-shadow: none; font-size: 15px;">KHÁCH TRUY CẬP</h3>
+                    <div style="font-size: 12px; color: #f1c40f; margin-top: 5px; font-weight: bold; text-transform: uppercase;">
+                        Chạm để Đăng nhập
+                    </div>
+                </div>
+            </div>
+
+            <div class="resources">
+                <div class="panel res-item">🪙 0 <button class="btn-plus">+</button></div>
+                <div class="panel res-item">💎 0 <button class="btn-plus">+</button></div>
+                <div class="panel res-item">⚡ 0/30 <button class="btn-plus">+</button></div>
+                <button class="btn panel
+                " style="padding: 6px 12px;">⚙️</button>
+            </div>
+        </div>
+
+        <div class="main-area">
+            
+            <div class="left-menu">
+                
+                <button class="btn btn-side">🏆 THÀNH TỰU</button>
+                <button class="btn btn-side">💼 NHIỆM VỤ HẰNG NGÀY</button>
+                <button class="btn btn-side">📊 BẢNG XẾP HẠNG</button>
+                <button class="btn btn-side">🏪 CỬA HÀNG</button> 
+            </div>
+
+            <div class="center-menu">
+                <!-- LOGO -->
+                <div class="logo-area">
+                    <!-- <h1>SỬ TA</h1> -->
+                    <img src="{{ url_for('static', filename='assets/images/logo2.png') }}" alt="Logo Sử Ta" class="game-logo">
+                    <div class="subtitle">HỌC LỊCH SỬ BẰNG CÁCH SỐNG TRONG LỊCH SỬ</div>
+                </div>
+
+                <!-- NÚT CHÍNH: NOTE FIX CODE - Đã thêm class btn-3d -->
+                <button class="btn btn-main btn-3d"
+                        type="button"
+                        onclick="openChapterModal()">
+                    ⚔️ BẮT ĐẦU CHƠI
+                </button>
+                <button class="btn btn-main btn-green btn-3d"
+                        type="button"
+                        onclick="openChapterModal()">
+                    🗺️ CHỌN CHƯƠNG
+                </button>
+                <button class="btn btn-main btn-purple btn-3d" 
+                        type="button"
+                        onclick="window.location.href='/history'">
+                    📖 THƯ VIỆN LỊCH SỬ
+                </button>
+                <!-- <button class="btn btn-main btn-blue">⚔️ ĐẤU TRƯỜNG</button> -->
+                <!-- <button class="btn btn-main btn-purple">🤖 LUYỆN TẬP</button> -->
+            </div>
+
+            <div class="right-menu">
+                <div class="panel">
+                    <h4 style="text-align: center; margin-bottom: 6px; color:#f1c40f; font-size:13px;">SỰ KIỆN</h4>
+                    <div class="event-banner">
+                        <span>SỰ KIỆN ĐẶC BIỆT<br>CHIẾN THẮNG NHẬN QUÀ LỚN!</span>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h4 style="text-align: center; color:#f1c40f; font-size:13px;">THƯỞNG ĐĂNG NHẬP</h4>
+                    <div class="reward-grid">
+                        <div class="reward-item"><div class="icon"></div>Ngày 1</div>
+                        <div class="reward-item"><div class="icon"></div>Ngày 2</div>
+                        <div class="reward-item"><div class="icon"></div>Ngày 3</div>
+                        <div class="reward-item"><div class="icon"></div>Ngày 4</div>
+                        <div class="reward-item"><div class="icon"></div>Ngày 5</div>
+                        <div class="reward-item"><div class="icon"></div>Ngày 6</div>
+                        <div class="reward-item"><div class="icon"></div>Ngày 7</div>
+                        
+                    </div>
+                </div>
+
+                <div class="action-grid">
+                    <button class="btn btn-action">📜 TIN TỨC</button>
+                    <button class="btn btn-action">✉️ THƯ</button>
+                    <button class="btn btn-action">🎁 QUÀ</button>
+                    <button class="btn btn-action">👥 BẠN BÈ</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="bottom-bar">
+            <!-- <div class="social-icons">
+                <button class="btn btn-social">f</button>
+                <button class="btn btn-social">▶</button>
+                <button class="btn btn-social">🎮</button>
+                <button class="btn btn-social">🎵</button>
+            </div> -->
+            
+            <div class="panel welcome-msg">
+                <h4 style="color:#f1c40f; font-size: 14px;">Chào mừng bạn đến với Sử Ta!</h4>
+                <p style="font-size:12px; color: #ddd; margin-top: 2px;">Hãy đăng nhập để lưu lại quá trình chơi nhé!</p>
+            </div>
+
+            <div class="version">Phiên bản 0.0.1</div>
+        </div>
+
+    </div> 
+
+
+    <!-- Component chọn chương được render cùng template để không cần fetch HTML lần hai. -->
+    {% include "components/chapter-modal.html" %}
+
+
+    {% include "components/login-modal.html" %}
+
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+</body>
+</html>
