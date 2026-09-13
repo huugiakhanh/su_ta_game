@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sử Ta - Hào Khí Trưng Nữ Vương</title>
+    <!-- Nhúng Font Google: Playfair Display (Sử thi) & Be Vietnam Pro (Hiện đại, chuẩn tiếng Việt) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,600&display=swap" rel="stylesheet">
+    
+    <!-- NOTE FIX CODE: Chuyển đường dẫn CSS tĩnh sang url_for trong static/css/library/ -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/library/trung-trac.css') }}">
+</head>
+<body>
+
+<body>
+
+    <!-- Nút Quay lại -->
+    <!-- NOTE FIX CODE: Nút Quay lại chuyển về Route /history thay vì dùng history.back() -->
+    <button class="btn-back" onclick="window.location.href='/history'">← Quay lại Thư Viện</button>
+
+    <!-- Header Banner Tươi Sáng & Tráng Lệ -->
+    <header class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <!-- NOTE FIX CODE: Thêm ảnh chân dung Hai Bà Trưng và cập nhật url_for chuẩn Flask -->
+            <div class="hero-avatar-box">
+                <img src="{{ url_for('static', filename='assets/images/library/trung_trac_1.jpg') }}" alt="Chân dung Trưng Trắc" class="hero-avatar">
+            </div>
+
+            <span class="hero-badge">Hào Khí Mê Linh - Năm 40 SCN</span>
+            <h1 class="hero-title">TRƯNG NỮ VƯƠNG</h1>
+            <p class="hero-subtitle">Mở Đầu Kỷ Nguyên Độc Lập - Đập Tan Ách Đô Hộ Phương Bắc</p>
+            <div class="scroll-indicator">
+                <span>CUỘN ĐỂ KHÁM PHÁ HÀO KHÍ</span>
+                <div class="arrow-down"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="timeline-container">
+        
+        <article class="epic-card left">
+            <div class="card-glow"></div>
+            <div class="card-number">01</div>
+            <div class="card-body">
+                <h2>Lãnh Đạo Khởi Nghĩa Toàn Dân Đầu Tiên</h2>
+                <p>Trước sự cai trị tàn bạo và lòng tham không đáy của Thái thú Tô Định (nhà Đông Hán), Trưng Trắc đã biến bi kịch gia đình thành sức mạnh giải phóng dân tộc. Cuộc khởi nghĩa nổ ra mùa xuân năm 40 SCN là cuộc nổi dậy quy mô lớn đầu tiên thời Bắc thuộc. Chỉ trong thời gian ngắn, nghĩa quân đã đánh đuổi bộ máy đô hộ, thu phục 65 thành trì trên toàn cõi Lĩnh Nam.</p>
+                
+                <!-- NOTE FIX CODE: Thêm ảnh minh họa bài viết vào dưới thẻ số 01 -->
+                <div class="card-img-box">
+                    <img src="frontend\static\assets\images\library\trung_trac_1.jpg" alt="Trưng Trắc khởi nghĩa" class="card-img">
+                </div>
+            </div>
+        </article>
+
+    <!-- Khung Nội Dung Sử Thi Với Hiệu Ứng Cuộn -->
+    <main class="timeline-container">
+
+        <article class="epic-card right">
+            <div class="card-glow"></div>
+            <div class="card-number">02</div>
+            <div class="card-body">
+                <h2>Thiết Lập Độc Lập & "Khoan Thức Sức Dân"</h2>
+                <p>Sau chiến thắng, Trưng Trắc xưng là Trưng Nữ Vương, đóng đô tại Mê Linh, chính thức tái lập nền độc lập. Đóng góp nổi bật nhất trong 3 năm trị vì ngắn ngủi là chính sách nhân đạo, thương dân sâu sắc: Bà ra lệnh miễn thuế 2 năm liền cho nhân dân 65 thành trì, giúp nhân dân nhanh chóng phục hồi sau thời gian dài bị bóc lột kiệt quệ.</p>
+            </div>
+        </article>
+
+        <article class="epic-card left">
+            <div class="card-glow"></div>
+            <div class="card-number">03</div>
+            <div class="card-body">
+                <h2>Nghệ Thuật Quy Tụ Đại Đoàn Kết Dân Tộc</h2>
+                <p>Trưng Trắc sở hữu khả năng quy tụ nhân tâm xuất chúng. Dưới ngọn cờ khởi nghĩa, các Lạc tướng từ Mê Linh, Chu Diên đến hào kiệt khắp nơi đều đồng lòng quy tụ. Lực lượng nghĩa quân phần lớn là nhân dân tự nguyện, vũ khí thô sơ nhưng nhờ tinh thần đoàn kết sắt đá đã đánh bại hoàn toàn quân đội chính quy nhà Hán thời kỳ đầu.</p>
+            </div>
+        </article>
+
+        <article class="epic-card right">
+            <div class="card-glow"></div>
+            <div class="card-number">04</div>
+            <div class="card-body">
+                <h2>Khẳng Định Khí Phách Phụ Nữ Việt Nam</h2>
+                <p>Khởi nghĩa Hai Bà Trưng là hiện tượng độc nhất vô nhị trong lịch sử thế giới cổ đại khi bộ chỉ huy tối cao và hàng loạt tướng lĩnh xuất sắc đều là phụ nữ như Lê Chân, Bát Nàn, Thánh Thiên, Thiều Hoa... Bà chính là minh chứng sống động nhất cho chân lý "Giặc đến nhà, đàn bà cũng đánh", đập tan định kiến trọng nam khinh nữ.</p>
+            </div>
+        </article>
+
+        <article class="epic-card center">
+            <div class="card-glow"></div>
+            <div class="card-number">05</div>
+            <div class="card-body">
+                <h2>Di Sản Tinh Thần Bất Khuất Muôn Đời</h2>
+                <p>Dù cuộc kháng chiến cuối cùng thất bại trước đạo quân khổng lồ của Mã Viện (năm 43 SCN), sự hy sinh của Trưng Trắc khi gieo mình xuống sông Hát đã thể hiện triết lý "thà chết vinh còn hơn sống nhục". Sự kiện này đã gieo mầm cho khát vọng độc lập cháy bỏng của dân tộc, khiến quân thù muôn đời sau vẫn phải e dè, nể phục.</p>
+            </div>
+        </article>
+
+    </main>
+
+    <script src="frontend\static\assets\js\library\trung-trac.js"></script>
+    
+</body>
+</html>

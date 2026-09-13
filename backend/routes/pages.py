@@ -14,6 +14,9 @@ def home():
 def history():
     return render_template("history.html")
 
+@pages_bp.route('/history/trung-trac')
+def library_trung_trac():
+    return render_template('gameplay/library/trung-trac.html')
 
 @pages_bp.get("/gameplay/level/Trung_Trac/trung-trac.html")
 @pages_bp.get("/gameplay/levels/trung-trac")

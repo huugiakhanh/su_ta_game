@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sử Ta - Hào Khí Ngàn Năm</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,600&display=swap" rel="stylesheet">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sử Ta - Hào Khí Ngàn Năm</title>
+    
+    <!-- Nhúng CSS qua Flask static -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
 </head>
 <body>
@@ -21,7 +23,6 @@
         </div>
     </header>
 
-    
     <section class="content-section">
         <h2 class="section-title">Tiến Trình Lịch Sử</h2>
         
@@ -36,21 +37,21 @@
         <!-- Khung Nội Dung Tab 1 -->
         <div id="tab-1" class="era-content active">
             <h3>Giai Đoạn Khởi Nguồn & Dựng Nước (Chương 1, 2, 3)</h3>
-            <p>update again</p>
+            <p style="color: #d8b888;">Nội dung đang được cập nhật...</p>
         </div>
 
         <!-- Khung Nội Dung Tab 2 -->
-        <!-- NOTE FIX CODE: Danh sách nhân vật lịch sử Thời Bắc Thuộc (Chương 4) -->
         <div id="tab-2" class="era-content">
             <h3>Giai Đoạn Thời Bắc Thuộc (Chương 4)</h3>
             <p style="color: #d8b888; margin-bottom: 20px;">Các vị anh hùng tiêu biểu lãnh đạo các cuộc khởi nghĩa giành độc lập:</p>
             
             <div class="hero-grid">
-                <div class="hero-card" onclick="openEraModal('Trưng Trắc', 'Khởi nghĩa Hai Bà Trưng (Năm 40)')">
+
+                <div class="hero-card" onclick="window.location.href='/history/trung-trac'">
                     <span class="hero-year">Năm 40</span>
                     <strong class="hero-name">Trưng Trắc</strong>
                     <span class="hero-sub">(Hai Bà Trưng)</span>
-                </div>
+                </div>  
 
                 <div class="hero-card" onclick="openEraModal('Bà Triệu', 'Khởi nghĩa Bà Triệu (Năm 248)')">
                     <span class="hero-year">Năm 248</span>
@@ -81,19 +82,19 @@
                     <strong class="hero-name">Phùng Hưng</strong>
                     <span class="hero-sub">(Bố Cái Đại Vương)</span>
                 </div>
-            </div>
+            </div> <!-- Đóng hero-grid tại đây -->
         </div>
 
         <!-- Khung Nội Dung Tab 3 -->
         <div id="tab-3" class="era-content">
             <h3>Giai Đoạn Kỷ Nguyên Độc Lập (Chương 5, 6, 7, 8, 9)</h3>
-            <p>update again</p>
+            <p style="color: #d8b888;">Nội dung đang được cập nhật...</p>
         </div>
 
         <!-- Khung Nội Dung Tab 4 -->
         <div id="tab-4" class="era-content">
             <h3>Giai Đoạn Kỷ Nguyên Mới (Chương 10)</h3>
-            <p>update again</p>
+            <p style="color: #d8b888;">Nội dung đang được cập nhật...</p>
         </div>
         
     </section>
@@ -111,16 +112,15 @@
     <button id="btnBackToGame" 
         onclick="window.location.href='/'" 
         style="position: fixed; bottom: 30px; right: 30px; z-index: 1000; padding: 12px 22px; background: linear-gradient(180deg, #5d331d, #2b1509); color: #ffcc00; border: 2px solid #ffcc00; border-radius: 30px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.8); opacity: 0; pointer-events: none; transition: opacity 0.4s ease, transform 0.2s ease;">
-    ← Quay lại Game
-</button>
+        ← Quay lại Game
+    </button>
 
     <footer class="site-footer">
         <p>© 2026 SỬ TA - Phát triển bởi thế hệ trẻ yêu sử Việt</p>
     </footer>
 
-
+    <!-- NOTE FIX CODE: Nhúng JS qua Flask static -->
     <script src="{{ url_for('static', filename='js/history.js') }}"></script>
 
 </body>
 </html>
-
