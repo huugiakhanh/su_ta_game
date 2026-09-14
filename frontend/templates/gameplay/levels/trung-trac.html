@@ -10,7 +10,7 @@
   <main class="game-shell">
     <section class="hud" aria-label="Thông tin màn chơi">
       <div class="hud__brand">SUTA · TRƯNG TRẮC</div>
-      <div class="hud__item"><span>Máu</span><strong id="healthValue">5</strong></div>
+      <div class="hud__item"><span>Máu</span><div id="healthHearts" class="hud__hearts"></div></div>
       <div class="hud__item"><span>Sách</span><strong id="bookValue">0/5</strong></div>
       <div class="hud__item"><span>Điểm</span><strong id="scoreValue">0</strong></div>
       <div class="hud__progress"><i id="progressBar"></i></div>
@@ -65,6 +65,6 @@
     </section>
   </main>
 
-  <script src="{{ url_for('static', filename='js/levels/trung-trac.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/levels/trung-trac/main.js') }}"></script>
 </body>
 </html>

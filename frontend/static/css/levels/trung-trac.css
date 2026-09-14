@@ -60,6 +60,9 @@ button { font: inherit; }
 .hud__item span { color: #d5c39e; font-size: 14px; }
 .hud__item strong { color: #fff4d5; }
 
+.hud__hearts { display: flex; gap: 3px; align-items: center; }
+.hud__hearts img { width: 18px; height: 18px; image-rendering: pixelated; }
+
 .hud__progress {
   grid-column: 1 / -1;
   height: 5px;
