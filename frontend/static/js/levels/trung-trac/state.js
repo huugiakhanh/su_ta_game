@@ -45,18 +45,19 @@ export function createLevelState() {
     },
     // Phần 1: mỗi loại lấy đúng 1 ảnh riêng trong assets/images/obstacles.
     // width/height truyền vào giữ đúng tỉ lệ khung hình thật của từng ảnh
-    // (đã đo qua bounding box) để sprite không bị méo khi scale.
+    // (đã đo qua bounding box sau khi nhóm tự crop sát nội dung) để sprite
+    // không bị méo khi scale.
     obstacles: [
-      makeObstacle('fallenBranch', 1, 700, 55, 48),
-      makeObstacle('stoneBlock', 2, 300, 46, 61),
-      makeObstacle('fenceLow', 2, 800, 32, 39),
-      makeObstacle('bambooSlope', 3, 300, 110, 48),
-      makeObstacle('spikesTrap', 3, 800, 79, 53, { harmful: true }),
-      makeObstacle('reedCurtain', 5, 300, 133, 61, { overhead: true }),
-      makeObstacle('slideBar', 5, 800, 145, 57, { overhead: true }),
-      makeObstacle('bridge', 6, 300, 82, 55),
-      makeObstacle('fenceHigh', 6, 800, 44, 67),
-      makeObstacle('logDrift', 9, 750, 67, 64)
+      makeObstacle('fallenBranch', 1, 700, 52, 39),
+      makeObstacle('stoneBlock', 2, 300, 76, 39),
+      makeObstacle('fenceLow', 2, 800, 42, 36),
+      makeObstacle('bambooSlope', 3, 300, 116, 42),
+      makeObstacle('spikesTrap', 3, 800, 79, 48, { harmful: true }),
+      makeObstacle('reedCurtain', 5, 300, 133, 53, { overhead: true }),
+      makeObstacle('slideBar', 5, 800, 145, 55, { overhead: true }),
+      makeObstacle('bridge', 6, 300, 97, 52),
+      makeObstacle('fenceHigh', 6, 800, 48, 64),
+      makeObstacle('logDrift', 9, 750, 73, 52)
     ],
     holes: [
       { x: worldX(4, 455), w: 155 },

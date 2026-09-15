@@ -3,7 +3,7 @@
 import { images } from './assets.js';
 import { state } from './state.js';
 import {
-  VIEW_W, VIEW_H, CHUNK_W, LEVEL_CHUNKS, OBSTACLE_GROUND_SINK,
+  VIEW_W, VIEW_H, CHUNK_W, LEVEL_CHUNKS, OBSTACLE_GROUND_SINK, GROUND_Y,
   PLAYER_FRAME_SIZE, PLAYER_JUMP_SCALE, BACKDROP_LAYERS, LANDMARKS, atlas
 } from './config.js';
 
@@ -50,7 +50,50 @@ function drawLandmarks() {
     const x = landmark.worldX - state.cameraX;
     if (x + landmark.w < -80 || x > VIEW_W + 80) return;
     const image = images.landmarkCache[landmark.file];
-    if (image) ctx.drawImage(image, Math.round(x), Math.round(landmark.y), landmark.w, landmark.h);
+    if (image) {
+      ctx.drawImage(image, Math.round(x), Math.round(landmark.y), landmark.w, landmark.h);
+    } else {
+      drawLandmarkFallback(landmark, x);
+    }
+  });
+}
+
+// Cổng gỗ tạm (2 cột + xà ngang + cờ nhỏ) — dùng tới khi có finish-gate.png thật.
+function drawLandmarkFallback(landmark, x) {
+  const y = Math.round(landmark.y);
+  const postW = 16;
+  ctx.fillStyle = '#5a3a22';
+  ctx.fillRect(Math.round(x), y, postW, landmark.h);
+  ctx.fillRect(Math.round(x + landmark.w - postW), y, postW, landmark.h);
+  ctx.fillStyle = '#7a4f2c';
+  ctx.fillRect(Math.round(x) - 4, y, landmark.w + 8, 18);
+  ctx.fillStyle = '#b23325';
+  ctx.beginPath();
+  ctx.moveTo(x + landmark.w - postW, y + 18);
+  ctx.lineTo(x + landmark.w - postW + 30, y + 27);
+  ctx.lineTo(x + landmark.w - postW, y + 36);
+  ctx.closePath();
+  ctx.fill();
+}
+
+// Hố rơi (state.holes) trước đây không có hình gì đại diện — nhân vật rơi
+// xuống "hố vô hình" trông như bug. Vẽ 1 hố tối đơn giản đè lên dải đất để
+// người chơi thấy rõ chỗ cần nhảy/lướt qua.
+function drawHoles() {
+  state.holes.forEach(hole => {
+    const x = hole.x - state.cameraX;
+    if (x + hole.w < -40 || x > VIEW_W + 40) return;
+    const left = Math.round(x);
+    const width = Math.round(hole.w);
+    const gradient = ctx.createLinearGradient(0, GROUND_Y, 0, VIEW_H);
+    gradient.addColorStop(0, '#120a06');
+    gradient.addColorStop(1, '#000000');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(left, GROUND_Y, width, VIEW_H - GROUND_Y);
+    // Viền mép hố để rõ ranh giới với cỏ xung quanh.
+    ctx.fillStyle = 'rgba(0, 0, 0, .55)';
+    ctx.fillRect(left, GROUND_Y, 4, VIEW_H - GROUND_Y);
+    ctx.fillRect(left + width - 4, GROUND_Y, 4, VIEW_H - GROUND_Y);
   });
 }
 
@@ -104,7 +147,43 @@ function drawObstacleSprite(type, x, y, width, height) {
     ctx.fillRect(Math.round(x), Math.round(y), width, height);
     return;
   }
+  // Ảnh nguồn đã được crop sát nội dung (không còn viền trong suốt thừa),
+  // vẽ nguyên cả ảnh scale theo drawW/drawH là đủ.
   ctx.drawImage(image, Math.round(x), Math.round(y), width, height);
+}
+
+// Quầng mờ phía sau obstacle để tách khỏi nền cây cối bận rộn — harmful thì
+// dùng quầng đỏ cảnh báo, loại thường dùng quầng tối trung tính.
+function drawObstacleContrastHalo(obstacle, x, y) {
+  const cx = x + obstacle.drawW / 2;
+  const cy = y + obstacle.drawH / 2;
+  if (obstacle.harmful) {
+    // Bẫy gây sát thương cần nổi bật rõ — quầng đỏ đậm hơn + viền sáng mỏng
+    // quanh đáy để không bị chìm vào màu nâu/xanh của nền cây cối.
+    const radius = Math.max(obstacle.drawW, obstacle.drawH) * 0.85;
+    const gradient = ctx.createRadialGradient(cx, cy, radius * 0.2, cx, cy, radius);
+    gradient.addColorStop(0, 'rgba(255, 60, 30, .75)');
+    gradient.addColorStop(0.6, 'rgba(224, 32, 20, .4)');
+    gradient.addColorStop(1, 'rgba(224, 32, 20, 0)');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 210, 90, .8)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(cx, y + obstacle.drawH - 3, obstacle.drawW * 0.48, 5, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    return;
+  }
+  const radius = Math.max(obstacle.drawW, obstacle.drawH) * 0.62;
+  const gradient = ctx.createRadialGradient(cx, cy, radius * 0.25, cx, cy, radius);
+  gradient.addColorStop(0, 'rgba(8, 6, 3, .4)');
+  gradient.addColorStop(1, 'rgba(8, 6, 3, 0)');
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 function drawObstacles() {
@@ -115,6 +194,7 @@ function drawObstacles() {
     // Neo theo mặt đất thật tại vị trí vật cản và chìm nhẹ 7 px để phần trong
     // suốt ở đáy ô sprite không khiến chướng ngại vật trông như đang bay.
     const drawY = obstacle.groundY - obstacle.drawH + OBSTACLE_GROUND_SINK;
+    drawObstacleContrastHalo(obstacle, x, drawY);
     drawObstacleSprite(obstacle.type, x, drawY, obstacle.drawW, obstacle.drawH);
   });
 }
@@ -227,6 +307,7 @@ export function draw(time = 0) {
   drawBackdrops();
   if (!state) return;
   drawLandmarks();
+  drawHoles();
   drawBooks(time);
   drawObstacles();
   drawEnemies();

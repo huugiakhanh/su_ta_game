@@ -52,6 +52,8 @@ Mô tả nhân vật: nữ tướng Việt cổ thế kỷ 1, tóc dài búi/bu�
 | `fenceHigh` | fence_high.png | thường |
 | `logDrift` | log.png | thường |
 
+Lưu ý ảnh: crop sát nội dung ở đáy (không để viền trong suốt thừa dưới chân) — game không tự crop nữa, vẽ nguyên cả file nên viền thừa sẽ làm obstacle trông lơ lửng.
+
 Đây **không phải** 8 hazard cốt truyện gốc (lính thu thuế, kỵ binh, hổ báo, thuyền, kiệu quan lại) — những cái đó cần ảnh nhân vật/sinh vật riêng (chưa có), vẫn để dành roadmap bên dưới nếu sau này muốn làm đúng lore hơn:
 
 1. Lính thu thuế nhà Hán (ném túi tiền xu — tấn công tầm xa, cần hệ thống projectile mới)
@@ -62,6 +64,16 @@ Mô tả nhân vật: nữ tướng Việt cổ thế kỷ 1, tóc dài búi/bu�
 6. Lính kỵ binh (cưỡi ngựa, lướt nhanh ngang màn hình, cần obstacle di chuyển được)
 7. Thuyền tuần tra sông Hát (bắn tên lửa từ dưới sông, cần projectile + bối cảnh sông)
 8. Kiệu quan lại (4 lính khiêng, ném phi tiêu, cần projectile)
+
+## 3b. Cổng đích cuối màn — đã có fallback vẽ tay, thiếu ảnh thật
+
+`LANDMARKS` trong `trung-trac/config.js` đã khai báo sẵn slot `finish-gate.png` (170×170px) tại đúng vị trí kết thúc màn (world-X khớp `finishX`). Chưa có ảnh thì game tự vẽ 1 cổng gỗ đơn giản (2 cột + xà ngang + cờ đỏ) bằng canvas — không trống trơn nhưng chưa đẹp. Muốn thay ảnh thật:
+
+```
+[Style anchor] + A single standalone wooden torii-style finish gate with a small red flag flying on top, viewed from the side, matching the game's art style. Transparent background, approximately 170x170px square framing. No text, no watermark.
+```
+
+Đặt tại `frontend/static/assets/images/backdrops/chapter1/finish-gate.png` — không cần sửa code.
 
 ## 4. Phần 2 — 3 NPC gặp gỡ (roadmap)
 
