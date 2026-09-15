@@ -26,14 +26,18 @@ export const OBSTACLE_GROUND_SINK = 7;
 // Thiếu ảnh nào thì layer đó tự vẽ fallback thay thế — không lỗi, không seam.
 export const BACKDROP_ROOT = '/static/assets/images/backdrops/chapter1/';
 export const BACKDROP_LAYERS = [
-  { key: 'sky', file: 'sky.png', y: 0, height: VIEW_H, speed: 0.3, fallbackColor: '#8bc9dc' },
+  { key: 'sky', file: 'sky.png', y: -70, height: VIEW_H, speed: 0.3, fallbackColor: '#8bc9dc' },
   { key: 'foreground', file: 'foreground.png', y: 0, height: VIEW_H, speed: 0.7, fallbackColor: '#795238', fallbackBandHeight: VIEW_H - GROUND_Y }
 ];
 
 // Set-piece cốt truyện (cổng làng, cầu, cổng thành...) đặt theo toạ độ world-X
-// riêng lẻ, vẽ đè lên layer nền. Rỗng ở bản nền tảng này — thêm entry
-// { file, worldX, y, w, h } khi có ảnh landmark cho từng phần cốt truyện.
-export const LANDMARKS = [];
+// riêng lẻ, vẽ đè lên layer nền. Thiếu ảnh thì render.js tự vẽ fallback bằng
+// canvas (xem drawLandmarkFallback), không lỗi, không trống trơn.
+export const LANDMARKS = [
+  // Cổng đích cuối màn 12/12. worldX=15150 khớp finishX = worldX(12, 1030) khai
+  // báo trong state.js (12-1)*1280+1030 — sửa 1 trong 2 chỗ thì nhớ sửa chỗ kia.
+  { file: 'finish-gate.png', worldX: 15150 - 85, y: 120, w: 170, h: 170 }
+];
 
 // Dốc/địa hình đặc biệt (nếu cần) khai báo tại đây thay vì gắn cứng theo
 // số chunk như trước. Rỗng = mặt đất phẳng theo GROUND_Y trên toàn bộ level.
