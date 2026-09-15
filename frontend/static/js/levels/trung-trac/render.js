@@ -4,7 +4,7 @@ import { images } from './assets.js';
 import { state } from './state.js';
 import {
   VIEW_W, VIEW_H, CHUNK_W, LEVEL_CHUNKS, OBSTACLE_GROUND_SINK, GROUND_Y,
-  PLAYER_FRAME_SIZE, PLAYER_JUMP_SCALE, BACKDROP_LAYERS, LANDMARKS, atlas
+  PLAYER_SPRITE_HEIGHT, PLAYER_SPRITE_ANCHOR_X, BACKDROP_LAYERS, LANDMARKS, atlas
 } from './config.js';
 
 export const canvas = document.getElementById('gameCanvas');
@@ -47,31 +47,40 @@ function drawBackdrops() {
 
 function drawLandmarks() {
   LANDMARKS.forEach(landmark => {
-    const x = landmark.worldX - state.cameraX;
-    if (x + landmark.w < -80 || x > VIEW_W + 80) return;
     const image = images.landmarkCache[landmark.file];
+    // Rộng suy từ tỉ lệ ảnh thật để thay ảnh khác kích thước vẫn không méo;
+    // chưa có ảnh thì dùng tỉ lệ 1:1 cho hình vẽ tạm.
+    const aspect = image && image.naturalHeight
+      ? image.naturalWidth / image.naturalHeight
+      : 1;
+    const h = landmark.height;
+    const w = h * aspect;
+    const left = landmark.worldX - w / 2 - state.cameraX;
+    if (left + w < -80 || left > VIEW_W + 80) return;
+    const top = GROUND_Y + (landmark.sink || 0) - h;
     if (image) {
-      ctx.drawImage(image, Math.round(x), Math.round(landmark.y), landmark.w, landmark.h);
+      ctx.drawImage(image, Math.round(left), Math.round(top), Math.round(w), h);
     } else {
-      drawLandmarkFallback(landmark, x);
+      drawLandmarkFallback(left, top, w, h);
     }
   });
 }
 
-// Cổng gỗ tạm (2 cột + xà ngang + cờ nhỏ) — dùng tới khi có finish-gate.png thật.
-function drawLandmarkFallback(landmark, x) {
-  const y = Math.round(landmark.y);
-  const postW = 16;
+// Cổng gỗ tạm (2 cột + xà ngang + cờ nhỏ) — dùng tới khi có ảnh landmark thật.
+function drawLandmarkFallback(left, top, w, h) {
+  const x = Math.round(left);
+  const y = Math.round(top);
+  const postW = Math.max(8, Math.round(w * 0.09));
   ctx.fillStyle = '#5a3a22';
-  ctx.fillRect(Math.round(x), y, postW, landmark.h);
-  ctx.fillRect(Math.round(x + landmark.w - postW), y, postW, landmark.h);
+  ctx.fillRect(x, y, postW, h);
+  ctx.fillRect(Math.round(x + w - postW), y, postW, h);
   ctx.fillStyle = '#7a4f2c';
-  ctx.fillRect(Math.round(x) - 4, y, landmark.w + 8, 18);
+  ctx.fillRect(x - 4, y, Math.round(w) + 8, 18);
   ctx.fillStyle = '#b23325';
   ctx.beginPath();
-  ctx.moveTo(x + landmark.w - postW, y + 18);
-  ctx.lineTo(x + landmark.w - postW + 30, y + 27);
-  ctx.lineTo(x + landmark.w - postW, y + 36);
+  ctx.moveTo(x + w - postW, y + 18);
+  ctx.lineTo(x + w - postW + 30, y + 27);
+  ctx.lineTo(x + w - postW, y + 36);
   ctx.closePath();
   ctx.fill();
 }
@@ -223,8 +232,15 @@ function drawPlayer() {
   if (playerSprite && playerImage) {
     // Để trình duyệt chạy GIF trực tiếp trong một phần tử HTML giống level-test.
     // Canvas chỉ còn vẽ map, vì vẽ GIF vào canvas có thể bị giữ ở khung đầu.
-    const scale = animationName === 'jump' ? PLAYER_JUMP_SCALE : 1;
-    const drawX = x + p.w / 2 - PLAYER_FRAME_SIZE / 2;
+    // Chiều rộng ô vẽ suy ra từ tỉ lệ ảnh thật để không bao giờ méo; ô được đặt
+    // sao cho điểm neo (đầu nhân vật) trùng tâm hitbox, và lật trái/phải cũng
+    // xoay quanh đúng điểm neo đó.
+    const aspect = playerImage.naturalHeight
+      ? playerImage.naturalWidth / playerImage.naturalHeight
+      : 1;
+    const boxH = PLAYER_SPRITE_HEIGHT;
+    const boxW = boxH * aspect;
+    const drawX = x + p.w / 2 - boxW * PLAYER_SPRITE_ANCHOR_X;
     const footY = y + p.h;
     if (currentPlayerAnimation !== animationName) {
       const imageUrl = playerImage.currentSrc || playerImage.src;
@@ -234,9 +250,10 @@ function drawPlayer() {
     playerSprite.hidden = false;
     playerSprite.style.left = `${drawX / VIEW_W * 100}%`;
     playerSprite.style.bottom = `${(VIEW_H - footY) / VIEW_H * 100}%`;
-    playerSprite.style.width = `${PLAYER_FRAME_SIZE / VIEW_W * 100}%`;
-    playerSprite.style.height = `${PLAYER_FRAME_SIZE / VIEW_H * 100}%`;
-    playerSprite.style.transform = `scaleX(${p.facing < 0 ? -1 : 1}) scale(${scale})`;
+    playerSprite.style.width = `${boxW / VIEW_W * 100}%`;
+    playerSprite.style.height = `${boxH / VIEW_H * 100}%`;
+    playerSprite.style.transformOrigin = `${PLAYER_SPRITE_ANCHOR_X * 100}% bottom`;
+    playerSprite.style.transform = `scaleX(${p.facing < 0 ? -1 : 1})`;
     playerSprite.style.visibility = blinkHidden ? 'hidden' : 'visible';
     playerSprite.classList.toggle('is-dashing', p.dashing);
   } else {

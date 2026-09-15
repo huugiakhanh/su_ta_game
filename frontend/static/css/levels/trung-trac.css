@@ -106,7 +106,8 @@ canvas {
   background-size: contain;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  transform-origin: center bottom;
+  /* transform-origin do render.js đặt theo PLAYER_SPRITE_ANCHOR_X (điểm neo đầu
+     nhân vật), không cố định ở đây để tránh lệch khi lật trái/phải. */
   filter: drop-shadow(0 8px 0 rgba(0, 0, 0, .2));
   pointer-events: none;
   will-change: left, bottom, transform;
