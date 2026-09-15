@@ -35,6 +35,15 @@ Gợi ý thêm (chưa bắt buộc, dùng cho các phần sau): `attack.gif`, `h
 
 Mô tả nhân vật: nữ tướng Việt cổ thế kỷ 1, tóc dài búi/buộc sau, khăn/đai đầu, giáp phục đỏ-vàng, có thể cầm kiếm/giáo ngắn.
 
+**Bắt buộc: chuẩn hoá GIF trước khi dùng.** AI tạo mỗi file một khung ảnh khác nhau và vẽ nhân vật to nhỏ khác nhau; game co ảnh theo *khung* nên nhân vật sẽ phình to/thu nhỏ mỗi khi đổi animation (jump từng bị to gấp đôi lúc đứng yên). Thả file mới vào thư mục rồi chạy:
+
+```bash
+python tools/normalize_player_gifs.py          # chạy thử, xem preview
+APPLY=1 python tools/normalize_player_gifs.py  # ghi đè thật (tự backup vào _original/)
+```
+
+Script tự đo khuôn mặt để cân tỉ lệ nhân vật, đưa 4 (hoặc 6) file về cùng khung, chân cùng baseline, đầu cùng toạ độ ngang. Nếu nó in ra `PLAYER_SPRITE_ANCHOR_X` khác giá trị đang có trong `trung-trac/config.js` thì cập nhật lại hằng số đó.
+
 ## 3. Phần 1 — chướng ngại vật — ĐÃ CODE (dùng asset có sẵn, không phải 8 hazard cốt truyện)
 
 `obstacles: [...]` trong `createLevelState()` (`trung-trac/state.js`) hiện dùng đúng 10 ảnh có sẵn trong `frontend/static/assets/images/obstacles/`, mỗi ảnh 1 type riêng (không dùng atlas cắt ô nữa) — xem `OBSTACLE_SPRITE_FILES` trong `trung-trac/config.js`:
