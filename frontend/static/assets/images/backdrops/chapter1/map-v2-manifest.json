@@ -1,0 +1,90 @@
+{
+  "schema": "su-ta-game.side-scroll-map.v2",
+  "mapMode": "side_scroll_mode",
+  "visualModel": "parallax_layers",
+  "engineTarget": "project-native-canvas",
+  "stageCanvas": { "width": 896, "height": 360 },
+  "stageLength": 15360,
+  "cameraWidthSegmentCount": 18,
+  "logicalChunkCount": 12,
+  "logicalChunkWidth": 1280,
+  "groundY": 290,
+  "layers": [
+    {
+      "id": "sky",
+      "file": "sky.png",
+      "sourceSize": { "width": 1792, "height": 720 },
+      "displayY": 0,
+      "displayHeight": 360,
+      "scrollFactor": 0.22,
+      "repeatX": true,
+      "collisionSource": false
+    },
+    {
+      "id": "foreground",
+      "file": "foreground.png",
+      "sourceSize": { "width": 1792, "height": 720 },
+      "displayY": 0,
+      "displayHeight": 360,
+      "scrollFactor": 0.58,
+      "repeatX": true,
+      "collisionSource": false
+    },
+    {
+      "id": "ground",
+      "file": "ground.png",
+      "sourceSize": { "width": 1792, "height": 70 },
+      "displayY": 290,
+      "displayHeight": 70,
+      "scrollFactor": 1.0,
+      "repeatX": true,
+      "collisionSource": false,
+      "platformSkin": "flat-ground-strip"
+    }
+  ],
+  "platformLibrary": {
+    "flat-ground-strip": {
+      "image": "ground.png",
+      "anchor": "top-left",
+      "repeatAxis": "x",
+      "collision": "explicit-floor-segments"
+    }
+  },
+  "collision": {
+    "floorSegments": [
+      { "x": 0, "y": 290, "w": 4295, "h": 70 },
+      { "x": 4450, "y": 290, "w": 255, "h": 70 },
+      { "x": 4757, "y": 290, "w": 10603, "h": 70 }
+    ],
+    "holes": [
+      { "x": 4295, "y": 290, "w": 155, "h": 70 },
+      { "x": 4705, "y": 290, "w": 52, "h": 70 }
+    ],
+    "runtimeSource": "frontend/static/js/levels/trung-trac/state.js"
+  },
+  "sceneHooks": {
+    "playerSpawn": { "x": 140, "y": 220 },
+    "finish": {
+      "x": 15150,
+      "file": "finish-gate.png",
+      "anchor": "bottom-center",
+      "displayHeight": 250,
+      "sink": 14,
+      "sourceSize": { "width": 865, "height": 989 }
+    },
+    "cameraBounds": { "minX": 0, "maxX": 14464 },
+    "actorAndHazardSource": "frontend/static/js/levels/trung-trac/state.js"
+  },
+  "objectLibrary": {
+    "staticObstacles": "frontend/static/assets/images/obstacles",
+    "animatedHazards": "frontend/static/assets/images/obstacles/*_stripN.png",
+    "projectiles": "frontend/static/assets/images/items/*_stripN.png",
+    "landmarks": ["finish-gate.png"]
+  },
+  "qa": {
+    "backgroundPreview": "../../../../../../artifacts/map-trung-trac-v2/references/stage-background.png",
+    "stageReference": "../../../../../../artifacts/map-trung-trac-v2/references/stage-reference.png",
+    "runtimeObjectPreview": "../../../../../../artifacts/map-trung-trac-v2/references/stage-preview.png",
+    "finishGatePreview": "../../../../../../artifacts/map-trung-trac-v2/references/finish-gate-preview.png"
+  }
+}

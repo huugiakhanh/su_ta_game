@@ -34,15 +34,14 @@ async function initAssets() {
   const missing = await loadAssets();
   const notices = [];
   if (missing.missingBackdrops) notices.push(`thiếu ${missing.missingBackdrops} lớp nền (đang dùng màu tạm)`);
-  if (!images.obstacles) notices.push('thiếu contains obstacles.png');
   if (missing.missingObstacleSprites) notices.push(`thiếu ${missing.missingObstacleSprites} ảnh chướng ngại vật`);
+  if (missing.missingStrips.length) notices.push(`thiếu sprite strip động: ${missing.missingStrips.join(', ')}`);
   if (missing.missingItems) notices.push(`thiếu ${missing.missingItems} ảnh vật phẩm`);
   if (missing.missingAnimations.length) notices.push(`thiếu GIF nhân vật (đang dùng hình tạm): ${missing.missingAnimations.join(', ')}`);
   ui.loadingText.textContent = notices.length
     ? `Đang chạy với placeholder tạm: ${notices.join('; ')}.`
     : 'Đã tải đủ lớp nền, chướng ngại vật, vật phẩm và hoạt ảnh nhân vật.';
   console.info('SUTA backdrop root:', BACKDROP_ROOT);
-  console.info('SUTA obstacle loaded:', Boolean(images.obstacles));
   console.info('SUTA player root:', images.playerRoot);
   ui.start.disabled = false;
   draw();

@@ -4,10 +4,11 @@
 import { state } from './state.js';
 import { keys, pressed, clearInput } from './input.js';
 import { ui, showMessage, tickMessage, updateHud } from './ui.js';
-import { aabb, groundYAt, worldX } from './geometry.js';
+import { aabb, groundYAt, worldX, reskinHazard, makeProjectile } from './geometry.js';
 import {
   CHUNK_W, VIEW_W, VIEW_H, LEVEL_WORLD_WIDTH, FOOT_MARGIN,
-  MOVE_SPEED, GRAVITY, JUMP_FORCE, DASH_SPEED, DASH_TIME, GROUND_SNAP_DISTANCE
+  MOVE_SPEED, GRAVITY, JUMP_FORCE, DASH_SPEED, DASH_TIME, GROUND_SNAP_DISTANCE,
+  HURT_ANIMATION_TIME, PROJECTILE_SPEED, HAZARD_DESPAWN_MARGIN, OBSTACLE_GROUND_SINK
 } from './config.js';
 
 export function pointHasGround(worldXPosition) {
@@ -37,6 +38,7 @@ export function hurtPlayer(reason) {
   state.health -= 1;
   state.score = Math.max(0, state.score - 50);
   p.invulnerable = 1.25;
+  p.hurtTimer = HURT_ANIMATION_TIME;
   p.dashing = false;
   p.dashTimer = 0;
   p.vy = -330;
@@ -88,6 +90,149 @@ export function startAttack() {
       showMessage(enemy.boss ? 'Đã đánh bại toán lính giữ thành!' : 'Đã đánh bại lính canh.');
     }
   });
+
+  // Hazard có `hp` (hổ, kỵ binh, xe cống, lính thu thuế) cũng chém được; loại
+  // hp = 0 (kiệu, thuyền, bẫy, tháp canh) thì phải né chứ không phá được.
+  state.hazards.forEach(hazard => {
+    if (!hazard.alive || hazard.hp <= 0 || hazard.hitTimer > 0 || !aabb(attackBox, hazard)) return;
+    hazard.hp -= 1;
+    hazard.hitTimer = .18;
+    state.score += 100;
+    if (hazard.hp <= 0) breakHazard(hazard);
+  });
+
+  // Đạn đang bay bị chém thì tan — thưởng cho người chơi phản ứng đúng lúc.
+  state.projectiles.forEach(projectile => {
+    if (projectile.alive && aabb(attackBox, projectile)) {
+      projectile.alive = false;
+      state.score += 30;
+    }
+  });
+}
+
+// Hazard hết máu: loại có `wreckSprite` (xe cống) để lại đống đổ nát vô hại
+// nằm luôn trên map thay vì biến mất — vừa dùng được sprite xe vỡ, vừa cho
+// người chơi thấy dấu vết việc mình vừa làm.
+function breakHazard(hazard) {
+  state.score += 250;
+  if (hazard.wreckSprite) {
+    reskinHazard(hazard, hazard.wreckSprite);
+    hazard.kind = 'prop';
+    hazard.harmful = false;
+    hazard.speed = 0;
+    hazard.projectile = null;
+    hazard.hp = 0;
+    showMessage('Xe cống phẩm vỡ tan!');
+    return;
+  }
+  hazard.alive = false;
+  showMessage('Đã hạ chướng ngại vật!');
+}
+
+function fireProjectile(hazard) {
+  const player = state.player;
+  const originX = hazard.x + hazard.w / 2;
+  const direction = Math.sign(player.x + player.w / 2 - originX) || -1;
+  // Điểm bắn tính theo Ô VẼ chứ không theo hitbox: hitbox của thuyền nằm chìm
+  // dưới mặt nước nên lấy theo nó thì tên lửa bay ngang mặt đất, khuất sau
+  // lớp tối của khe sông.
+  const drawTop = hazard.baseY - hazard.drawH + (hazard.grounded ? OBSTACLE_GROUND_SINK : 0);
+  state.projectiles.push(makeProjectile(
+    hazard.projectile,
+    originX + direction * (hazard.w / 2 + 6),
+    drawTop + hazard.drawH * .3,
+    direction
+  ));
+}
+
+// Vật cản/kẻ địch có trạng thái. Mỗi `kind` là một hành vi tách bạch:
+//   roller  — nằm chờ tới khi người chơi vượt triggerX (hoặc bị gọi bằng báo
+//             động) rồi lao sang trái, ra khỏi tầm thì xoá.
+//   thrower — đứng yên, vào tầm thì bắn đạn theo chu kỳ.
+//   boat    — trôi chậm trên sông và bắn như thrower.
+//   trap    — đứng yên, vô hại tới khi người chơi tới sát thì đổi sprite và
+//             bắt đầu gây sát thương.
+//   prop    — chỉ để vẽ (tháp canh, xác xe cống), không va chạm.
+function updateHazards(dt) {
+  const player = state.player;
+  const playerCenter = player.x + player.w / 2;
+
+  state.hazards.forEach(hazard => {
+    if (!hazard.alive) return;
+    hazard.hitTimer = Math.max(0, hazard.hitTimer - dt);
+
+    if (hazard.kind === 'roller') {
+      if (!hazard.active) {
+        if (hazard.triggerX !== null && player.x >= hazard.triggerX) hazard.active = true;
+        else return;
+      }
+      hazard.x += hazard.speed * dt;
+      hazard.y = hazard.baseY - hazard.h;
+      if (hazard.x + hazard.w < playerCenter - HAZARD_DESPAWN_MARGIN) {
+        hazard.alive = false;
+        return;
+      }
+    }
+
+    if (hazard.kind === 'boat' && hazard.speed !== 0) {
+      hazard.x += hazard.speed * dt;
+      if (hazard.x + hazard.w < playerCenter - HAZARD_DESPAWN_MARGIN) {
+        hazard.alive = false;
+        return;
+      }
+    }
+
+    if (hazard.kind === 'trap' && !hazard.sprung) {
+      if (Math.abs(playerCenter - (hazard.x + hazard.w / 2)) <= hazard.triggerDistance) {
+        hazard.sprung = true;
+        hazard.harmful = true;
+        reskinHazard(hazard, hazard.sprungSprite);
+        showMessage('Bẫy hố chông bật lên!');
+      }
+    }
+
+    const distance = Math.abs(playerCenter - (hazard.x + hazard.w / 2));
+
+    // Lính gác trên tháp thấy người chơi thì thổi tù và, đánh thức kỵ binh
+    // đang chờ (hazard cùng id) — báo động chỉ kêu một lần mỗi lượt chơi.
+    if (hazard.alarmFor && !hazard.alarmed && distance <= hazard.fireRange) {
+      hazard.alarmed = true;
+      const summoned = state.hazards.find(item => item.id === hazard.alarmFor);
+      if (summoned) summoned.active = true;
+      showMessage('Lính gác thổi tù và báo động — kỵ binh Hán xông tới!', 2600);
+    }
+
+    if (hazard.projectile && distance <= hazard.fireRange) {
+      hazard.fireTimer -= dt;
+      if (hazard.fireTimer <= 0) {
+        hazard.fireTimer = hazard.fireInterval;
+        fireProjectile(hazard);
+      }
+    }
+
+    if (hazard.harmful && player.invulnerable <= 0 && aabb(player, hazard)) {
+      hurtPlayer(hazard.sprung ? 'Bạn giẫm phải hố chông!' : 'Bạn va phải quân Hán!');
+    }
+  });
+
+  state.hazards = state.hazards.filter(hazard => hazard.alive);
+}
+
+function updateProjectiles(dt) {
+  const player = state.player;
+  state.projectiles.forEach(projectile => {
+    if (!projectile.alive) return;
+    projectile.x += projectile.direction * PROJECTILE_SPEED * dt;
+    if (Math.abs(projectile.x - state.cameraX) > VIEW_W + HAZARD_DESPAWN_MARGIN) {
+      projectile.alive = false;
+      return;
+    }
+    if (player.invulnerable <= 0 && aabb(player, projectile)) {
+      projectile.alive = false;
+      hurtPlayer('Bạn trúng đạn của quân Hán!');
+    }
+  });
+  state.projectiles = state.projectiles.filter(projectile => projectile.alive);
 }
 
 // Cơ chế lướt lấy theo level-test: một cú lao nhanh, có thời gian cố định,
@@ -108,6 +253,7 @@ export function update(dt) {
   tickMessage(dt);
 
   p.invulnerable = Math.max(0, p.invulnerable - dt);
+  p.hurtTimer = Math.max(0, p.hurtTimer - dt);
   p.attackCooldown = Math.max(0, p.attackCooldown - dt);
   p.attackTimer = Math.max(0, p.attackTimer - dt);
   p.attacking = p.attackTimer > 0;
@@ -174,6 +320,9 @@ export function update(dt) {
     p.dashing = false;
     p.dashTimer = 0;
   }
+
+  updateHazards(dt);
+  updateProjectiles(dt);
 
   state.books.forEach(book => {
     if (book.collected) return;
