@@ -1,5 +1,7 @@
 # Asset brief — Chương Trưng Trắc
 
+> Cần đặc tả chi tiết để giao cho agent vẽ sprite (tạo hình nhân vật, animation, chướng ngại vật động/tĩnh, ràng buộc kỹ thuật)? Xem [sprite-spec-trung-trac.md](sprite-spec-trung-trac.md). File này là checklist asset đang có/đang thiếu.
+
 Checklist ảnh cần tạo bằng AI cho chương Trưng Trắc. Thả đúng file vào đúng đường dẫn bên dưới — engine (`frontend/static/js/levels/trung-trac/`, xem `config.js`/`assets.js`) tự nhận diện, không cần sửa code. Nếu thiếu file nào, game vẫn chạy được với placeholder màu/hình khối tạm.
 
 ## Nguyên tắc chung
@@ -22,7 +24,7 @@ Kỹ thuật chốt: 2 lớp chồng theo chuẩn parallax game 2D — `foregrou
 
 ## 2. Nhân vật chính — Trưng Trắc
 
-Đặt tại `frontend/static/assets/images/characters/trung-trac/`, khung hình vuông 96×96px (khớp `PLAYER_FRAME_SIZE`), nền trong suốt:
+Đặt tại `frontend/static/assets/images/characters/trung-trac/`, nền trong suốt. Không cần canh kích thước khung khi tạo — script chuẩn hoá (mục dưới) sẽ tự đưa mọi file về cùng khung:
 
 | File | Trạng thái |
 |---|---|
@@ -30,8 +32,10 @@ Kỹ thuật chốt: 2 lớp chồng theo chuẩn parallax game 2D — `foregrou
 | `run.gif` | Chạy |
 | `jump.gif` | Nhảy |
 | `dash.gif` | Lướt |
+| `attack.gif` | Vung kiếm |
+| `hurt.gif` | Trúng đòn |
 
-Gợi ý thêm (chưa bắt buộc, dùng cho các phần sau): `attack.gif`, `hurt.gif`.
+Cả 6 đã có và đã chuẩn hoá về khung 1202×610.
 
 Mô tả nhân vật: nữ tướng Việt cổ thế kỷ 1, tóc dài búi/buộc sau, khăn/đai đầu, giáp phục đỏ-vàng, có thể cầm kiếm/giáo ngắn.
 
@@ -44,9 +48,9 @@ APPLY=1 python tools/normalize_player_gifs.py  # ghi đè thật (tự backup v�
 
 Script tự đo khuôn mặt để cân tỉ lệ nhân vật, đưa 4 (hoặc 6) file về cùng khung, chân cùng baseline, đầu cùng toạ độ ngang. Nếu nó in ra `PLAYER_SPRITE_ANCHOR_X` khác giá trị đang có trong `trung-trac/config.js` thì cập nhật lại hằng số đó.
 
-## 3. Phần 1 — chướng ngại vật — ĐÃ CODE (dùng asset có sẵn, không phải 8 hazard cốt truyện)
+## 3. Phần 1 — chướng ngại vật tĩnh — ĐÃ CODE
 
-`obstacles: [...]` trong `createLevelState()` (`trung-trac/state.js`) hiện dùng đúng 10 ảnh có sẵn trong `frontend/static/assets/images/obstacles/`, mỗi ảnh 1 type riêng (không dùng atlas cắt ô nữa) — xem `OBSTACLE_SPRITE_FILES` trong `trung-trac/config.js`:
+`obstacles: [...]` trong `createLevelState()` (`trung-trac/state.js`) dùng ảnh tĩnh có sẵn trong `frontend/static/assets/images/obstacles/`, mỗi ảnh 1 type riêng (không dùng atlas cắt ô nữa) — xem `OBSTACLE_SPRITE_FILES` trong `trung-trac/config.js`:
 
 | Type trong code | File ảnh | Hành vi |
 |---|---|---|
@@ -54,7 +58,6 @@ Script tự đo khuôn mặt để cân tỉ lệ nhân vật, đưa 4 (hoặc 6
 | `stoneBlock` | stone_block.png | thường |
 | `fenceLow` | fence_low.png | thường |
 | `bambooSlope` | bamboo_slope.png | thường |
-| `spikesTrap` | spikes.png | **harmful** (mất máu) |
 | `reedCurtain` | reed_curtain.png | **overhead** (bắt buộc dash) |
 | `slideBar` | slide_bar.png | **overhead** (bắt buộc dash) |
 | `bridge` | bridge.png | thường |
@@ -63,43 +66,52 @@ Script tự đo khuôn mặt để cân tỉ lệ nhân vật, đưa 4 (hoặc 6
 
 Lưu ý ảnh: crop sát nội dung ở đáy (không để viền trong suốt thừa dưới chân) — game không tự crop nữa, vẽ nguyên cả file nên viền thừa sẽ làm obstacle trông lơ lửng.
 
-Đây **không phải** 8 hazard cốt truyện gốc (lính thu thuế, kỵ binh, hổ báo, thuyền, kiệu quan lại) — những cái đó cần ảnh nhân vật/sinh vật riêng (chưa có), vẫn để dành roadmap bên dưới nếu sau này muốn làm đúng lore hơn:
+## 4. Phần 1 — 8 hazard cốt truyện — ĐÃ CODE
 
-1. Lính thu thuế nhà Hán (ném túi tiền xu — tấn công tầm xa, cần hệ thống projectile mới)
-2. Xe gỗ chở cống phẩm (lăn nhanh, có thể phá vỡ, cần obstacle di chuyển được)
-3. Phu trạm canh gác (trên tháp canh, thổi còi báo động, cần cơ chế gọi thêm lính)
-4. Hổ báo rừng sâu (cần sprite enemy riêng, hiện enemy vẫn dùng atlas `hanGuards`)
-5. ~~Cạm bẫy hố chông sắt~~ → đã có `spikesTrap`
-6. Lính kỵ binh (cưỡi ngựa, lướt nhanh ngang màn hình, cần obstacle di chuyển được)
-7. Thuyền tuần tra sông Hát (bắn tên lửa từ dưới sông, cần projectile + bối cảnh sông)
-8. Kiệu quan lại (4 lính khiêng, ném phi tiêu, cần projectile)
+Bộ sprite mới (sinh ra trong `artifacts/sprite-forge-trung-trac/`, xem
+[prompts/generation-prompts.md](../artifacts/sprite-forge-trung-trac/prompts/generation-prompts.md))
+đã được ráp vào màn qua mảng `hazards: [...]` trong `createLevelState()`. Khác
+`obstacles` (vật tĩnh thuần), hazard là vật **có trạng thái**: di chuyển, bắn
+đạn, hoặc đổi sprite giữa chừng.
 
-## 3b. Cổng đích cuối màn — đã có fallback vẽ tay, thiếu ảnh thật
+Vật ĐỘNG giao dạng **PNG strip ngang** (canvas không chạy được GIF) — khai báo
+số khung/tốc độ trong `OBSTACLE_STRIP_FILES` / `ITEM_STRIP_FILES`, cỡ vẽ và
+hitbox trong `HAZARD_SPRITE_SIZES` / `PROJECTILE_SIZES` (`trung-trac/config.js`).
 
-`LANDMARKS` trong `trung-trac/config.js` đã khai báo sẵn slot `finish-gate.png` (170×170px) tại đúng vị trí kết thúc màn (world-X khớp `finishX`). Chưa có ảnh thì game tự vẽ 1 cổng gỗ đơn giản (2 cột + xà ngang + cờ đỏ) bằng canvas — không trống trơn nhưng chưa đẹp. Muốn thay ảnh thật:
+| File | Vị trí trong màn | `kind` | Hành vi trong game |
+|---|---|---|---|
+| `official_palanquin_strip4.png` | chunk 2 | roller | Kiệu quan đi ngược chiều, chậm (74 px/s), không phá được — phải nhảy qua |
+| `spike_pit_hidden.png` → `spike_pit_open.png` | chunk 3 | trap | Chỉ thấy bụi cỏ; tới sát 96 px thì bật thành hố chông và bắt đầu gây sát thương |
+| `patrol_boat_strip4.png` | *(bỏ khỏi màn)* | boat | Neo trong khe sông (`holes[0]`), bắn `fire_arrow` lên bờ |
+| `fire_arrow_strip2.png` | *(bỏ khỏi màn)* | đạn | Đạn của thuyền tuần tra |
+| `han_tax_soldier_strip4.png` | chunk 7 | thrower | Đứng ném `coin_pouch`, 2 máu, chém được |
+| `coin_pouch_strip2.png` | — | đạn | Đạn của lính thu thuế |
+| `jungle_tiger_strip6.png` | chunk 8 | roller | Lao tới 232 px/s khi người chơi qua mốc, 2 máu |
+| `tribute_cart_strip4.png` | chunk 9 | roller | Xe cống lăn tới 168 px/s, 2 máu |
+| `tribute_cart_broken.png` | chunk 9 | prop | Xác xe sau khi bị chém vỡ — nằm lại map, vô hại |
+| `watchtower.png` | chunk 10 | prop | Cảnh trí, không va chạm |
+| `watchtower_guard_strip4.png` | chunk 10 | thrower | Ném `throwing_dart`; tới gần thì thổi tù và gọi kỵ binh (`alarmFor`) |
+| `throwing_dart_strip2.png` | — | đạn | Đạn của lính gác tháp |
+| `han_cavalry_strip6.png` | chunk 10 | roller | Nằm chờ, chỉ xông ra khi có báo động; 316 px/s, 3 máu |
 
-```
-[Style anchor] + A single standalone wooden torii-style finish gate with a small red flag flying on top, viewed from the side, matching the game's art style. Transparent background, approximately 170x170px square framing. No text, no watermark.
-```
+Ngoài ra `han_tax_soldier_strip4.png` và `han_cavalry_strip6.png` còn được dùng
+làm ảnh cho `enemies` (lính thường / boss) thay atlas `hanGuards` cũ — xem
+`ENEMY_SPRITES` trong `config.js`. Atlas `mapchunk_1/contains obstacles.png`
+**không còn module nào đọc tới**.
 
-Đặt tại `frontend/static/assets/images/backdrops/chapter1/finish-gate.png` — không cần sửa code.
+Hai điều chỉnh so với spec gốc, do tỉ lệ ảnh thật:
 
-## 4. Phần 2 — 3 NPC gặp gỡ (roadmap)
+- Lính gác đứng **dưới chân tháp** chứ không đứng trên sàn tháp: sàn trong
+  `watchtower.png` nằm ở ~37% chiều cao (cao 68 px so với mặt đất) mà lính cao
+  86 px nên đặt lên sàn thì đầu lính chồi qua mái tranh.
+- Thuyền tuần tra **neo một chỗ** trong khe sông và được vẽ *dưới* lớp hố
+  (`drawHazards(time, true)` chạy trước `drawHoles()`): thuyền rộng 190 px còn
+  khe chỉ 155 px, nếu vẽ đè lên thì thuyền che mất miệng hố và người chơi không
+  thấy chỗ phải nhảy.
 
-- Thi Sách (hào trưởng Chu Diên)
-- Lê Chân (nữ tướng An Biên)
-- Trưng Nhị (em gái, đồng minh)
+Bẫy hố chông cũ (`spikes.png` / type `spikesTrap`) đã **gỡ khỏi màn**, thay bằng
+cặp `spike_pit_hidden`/`spike_pit_open`; ảnh vẫn còn trong repo và vẫn khai báo
+trong `OBSTACLE_SPRITE_FILES` nếu muốn dùng lại.
 
-Mỗi NPC: 1 pose tĩnh là đủ cho demo (không cần animation đầy đủ).
-
-## 5. Phần 3 — Boss Tô Định (roadmap)
-
-- Tô Định (dáng hèn nhát, núp sau xe)
-- Xe bọc thép (Shield Chariot) — có thể có 2 trạng thái: nguyên vẹn / hư hỏng
-- Lính ngự lâm bảo vệ boss
-
-## Asset đã có sẵn nhưng chưa dùng
-
-`frontend/static/assets/images/items/`: `armor.png`, `book_gold.png`, `book-open.png`, `question_scroll.png` — chưa có mechanic tương ứng (giáp, sách đặc biệt, đánh dấu điểm hỏi đáp...). `book.png` và `heart.png` đã dùng (sách thu thập + HUD máu).
-
-`frontend/static/assets/images/obstacles/` — cả 10 ảnh đã dùng hết cho Phần 1 (xem mục 3 ở trên). Atlas `contains obstacles.png` (`mapchunk_1/`) giờ chỉ còn dùng cho enemy (`hanGuards`).
+Tuỳ chọn chưa làm: `spike_pit_trigger_strip3.png` (3 khung cỏ bật tung → chông
+nhô lên) để chuyển cảnh bẫy mượt hơn thay vì đổi ảnh tức thì.
