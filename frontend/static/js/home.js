@@ -134,15 +134,46 @@
     okButton.style.cursor = 'not-allowed';
   };
 
-  window.xacNhanChonChuong = function xacNhanChonChuong() {
+ window.xacNhanChonChuong = function xacNhanChonChuong() {
     if (!selectedChapter) return;
     localStorage.setItem('sutaSelectedChapter', String(selectedChapter));
     updateStartButton(selectedChapter);
+
+    // 1. Đóng Modal Chọn Chương
     window.closeChapterModal();
+
+    // 2. Mở Modal Chọn Tướng
+    window.openHeroSelectModal();
+  };
+
+  window.openHeroSelectModal = function openHeroSelectModal() {
+    const heroModal = document.getElementById('heroSelectModal');
+    if (!heroModal) return;
+    heroModal.hidden = false;
+    document.body.classList.add('chapter-modal-open');
+  };
+
+  window.closeHeroSelectModal = function closeHeroSelectModal() {
+    const heroModal = document.getElementById('heroSelectModal');
+    if (!heroModal) return;
+    heroModal.hidden = true;
+    document.body.classList.remove('chapter-modal-open');
+  };
+
+  window.backToChapterModal = function backToChapterModal() {
+    window.closeHeroSelectModal();
+    window.openChapterModal();
+  };
+
+  window.playHeroLevel = function playHeroLevel(routeUrl) {
+    window.location.href = routeUrl;
   };
 
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') window.closeChapterModal();
+    if (event.key === 'Escape') {
+      window.closeChapterModal();
+      window.closeHeroSelectModal();
+    }
   });
 
   updateStartButton(localStorage.getItem('sutaSelectedChapter'));

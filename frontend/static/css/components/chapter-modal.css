@@ -228,3 +228,76 @@ body.chapter-modal-open {
   opacity: 1;
 }
 
+/* Hero Select Modal Styling */
+.hero-select-box {
+    max-width: 850px !important;
+}
+
+.hero-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.hero-select-card {
+    background: linear-gradient(180deg, #3d2112 0%, #201007 100%);
+    border: 2px solid #8b5a2b;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero-select-card:hover {
+    transform: translateY(-4px);
+    border-color: #ffcc00;
+    box-shadow: 0 6px 20px rgba(255, 204, 0, 0.3);
+}
+
+.hero-select-card.locked {
+    opacity: 0.6;
+    filter: grayscale(0.5);
+}
+
+.hero-badge-year {
+    font-size: 11px;
+    background: #ffcc00;
+    color: #1a0d00;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.hero-select-name {
+    color: #fff8e7;
+    font-size: 18px;
+    font-family: 'Cinzel Decorative', 'Playfair Display', serif;
+    margin-bottom: 4px;
+}
+
+.hero-select-sub {
+    color: #d8b888;
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+.btn-play-now {
+    font-size: 13px;
+    font-weight: bold;
+    color: #ffcc00;
+    background: rgba(255, 204, 0, 0.1);
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 204, 0, 0.4);
+}
+
+@media (max-width: 768px) {
+    .hero-selection-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

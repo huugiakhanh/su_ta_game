@@ -80,3 +80,76 @@
 
   </section>
 </div>
+
+<div
+  id="heroSelectModal"
+  class="chapter-modal-overlay"
+  role="dialog"
+  aria-modal="true"
+  hidden
+  onclick="if (event.target === this) closeHeroSelectModal()"
+>
+  <section class="chapter-modal-window hero-select-box">
+    <button
+      class="chapter-modal-close"
+      type="button"
+      aria-label="Đóng cửa sổ chọn tướng"
+      onclick="closeHeroSelectModal()"
+    >×</button>
+
+    <header class="chapter-modal-heading">
+      <h2>CHỌN TƯỚNG - CHƯƠNG 4</h2>
+      <p>Thập đại anh hùng lãnh đạo các cuộc khởi nghĩa Thời Bắc Thuộc</p>
+    </header>
+
+    <div class="hero-selection-grid">
+      <div class="hero-select-card active" onclick="playHeroLevel('/gameplay/levels/trung-trac')">
+        <span class="hero-badge-year">Năm 40 SCN</span>
+        <strong class="hero-select-name">Trưng Trắc</strong>
+        <small class="hero-select-sub">(Hai Bà Trưng)</small>
+        <span class="btn-play-now">▶ Bắt đầu chơi</span>
+      </div>
+
+      <div class="hero-select-card locked" onclick="alert('Màn chơi Bà Triệu đang phát triển!')">
+        <span class="hero-badge-year">Năm 248</span>
+        <strong class="hero-select-name">Bà Triệu</strong>
+        <small class="hero-select-sub">(Triệu Thị Trinh)</small>
+        <span class="btn-play-now">🔒 Sắp ra mắt</span>
+      </div>
+
+      <div class="hero-select-card locked" onclick="alert('Màn chơi Lý Nam Đế đang phát triển!')">
+        <span class="hero-badge-year">Năm 544</span>
+        <strong class="hero-select-name">Lý Nam Đế</strong>
+        <small class="hero-select-sub">(Lý Bôn)</small>
+        <span class="btn-play-now">🔒 Sắp ra mắt</span>
+      </div>
+
+      <div class="hero-select-card locked" onclick="alert('Màn chơi Triệu Quang Phục đang phát triển!')">
+        <span class="hero-badge-year">Năm 550</span>
+        <strong class="hero-select-name">Triệu Quang Phục</strong>
+        <small class="hero-select-sub">(Dạ Trạch Vương)</small>
+        <span class="btn-play-now">🔒 Sắp ra mắt</span>
+      </div>
+
+      <div class="hero-select-card locked" onclick="alert('Màn chơi Mai Hắc Đế đang phát triển!')">
+        <span class="hero-badge-year">Năm 722</span>
+        <strong class="hero-select-name">Mai Hắc Đế</strong>
+        <small class="hero-select-sub">(Mai Thúc Loan)</small>
+        <span class="btn-play-now">🔒 Sắp ra mắt</span>
+      </div>
+
+      <div class="hero-select-card locked" onclick="alert('Màn chơi Phùng Hưng đang phát triển!')">
+        <span class="hero-badge-year">Năm 766</span>
+        <strong class="hero-select-name">Phùng Hưng</strong>
+        <small class="hero-select-sub">(Bố Cái Đại Vương)</small>
+        <span class="btn-play-now">🔒 Sắp ra mắt</span>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; margin-top: 20px;">
+      <button class="chapter-modal-back" type="button" onclick="backToChapterModal()">
+        ← Quay lại chọn chương
+      </button>
+    </div>
+  </section>
+</div>
