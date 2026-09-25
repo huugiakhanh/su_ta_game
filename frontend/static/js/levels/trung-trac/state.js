@@ -4,7 +4,7 @@
 // thấy giá trị mới nhất — đây là hành vi chuẩn của ES module named export.
 
 import { worldX, makeObstacle, makeHazard } from './geometry.js';
-import { GROUND_Y } from './config.js';
+import { GROUND_Y, FINISH_X } from './config.js';
 import { createAnim } from './animation.js';
 
 export let state = null;
@@ -90,6 +90,38 @@ function shuffle(list) {
   return result;
 }
 
+// Layout THỬ `?layout=p2` (chỉ để test TT-MAP-01, không ảnh hưởng màn thường):
+// nền phẳng, 6 vật cản P2 đặt lần lượt ở chunk 1–2, một hố 96px (căn lưới
+// tile 16px) có `bridge` bắc qua. Không hazard/enemy/sách. Hitbox P2 là
+// DESIGN_BASELINE.
+function p2TestLayout() {
+  const hole = { x: worldX(2, 192), w: 96 };
+  return {
+    obstacles: [
+      makeObstacle('fenceLow', 1, 260, 40, 18),
+      makeObstacle('fenceHigh', 1, 400, 16, 48),
+      makeObstacle('bambooSlope', 1, 520, 56, 30),
+      makeObstacle('slideBar', 1, 660, 40, 20),
+      makeObstacle('logDrift', 2, 40, 56, 14),
+      makeObstacle('bridge', 2, 192, 96, 8)
+    ],
+    hazards: [],
+    enemies: [],
+    holes: [hole]
+  };
+}
+
+// Vật cản `requiresHole` (cầu) chỉ được giữ khi có hố phủ đúng nhịp cầu;
+// thiếu hố thì cảnh báo và bỏ qua (không đặt cầu lơ lửng trên đất liền).
+function keepValidBridges(obstacles, holes) {
+  return obstacles.filter(obstacle => {
+    if (!obstacle.requiresHole) return true;
+    const spans = holes.some(hole => hole.x <= obstacle.x && hole.x + hole.w >= obstacle.x + obstacle.w);
+    if (!spans) console.warn(`${obstacle.type} ở x=${obstacle.x} không có hố tương ứng — bỏ qua.`);
+    return spans;
+  });
+}
+
 function randomizeObstacles() {
   const easy = OBSTACLE_GROUPS.filter(group => group.easy);
   const first = easy[Math.floor(Math.random() * easy.length)];
@@ -105,8 +137,11 @@ function randomizeObstacles() {
   return layout;
 }
 
-export function createLevelState() {
-  const layout = randomizeObstacles();
+// `options.layout === 'p2'` -> layout thử P2; mặc định màn thường (12 chướng
+// ngại vật xáo ngẫu nhiên + boss + 5 sách).
+export function createLevelState(options = {}) {
+  const testP2 = options.layout === 'p2';
+  const layout = testP2 ? p2TestLayout() : { ...randomizeObstacles(), holes: [] };
   return {
     running: false,
     paused: false,
@@ -118,7 +153,7 @@ export function createLevelState() {
     questionShown: false,
     storyShown: false,
     restUsed: false,
-    finishX: worldX(12, 618),
+    finishX: FINISH_X,
     player: {
       x: 84,
       y: GROUND_Y - 42,
@@ -144,18 +179,18 @@ export function createLevelState() {
     },
     // 12 chướng ngại vật (kể cả boss) được XẾP NGẪU NHIÊN mỗi lượt chơi —
     // xem randomizeObstacles() bên dưới.
-    obstacles: layout.obstacles,
+    obstacles: keepValidBridges(layout.obstacles, layout.holes),
     hazards: layout.hazards,
     projectiles: [],
-    holes: [],
-    books: [
+    holes: layout.holes,
+    books: testP2 ? [] : [
       { x: worldX(2, 390), y: GROUND_Y - 56, collected: false },
       { x: worldX(3, 390), y: GROUND_Y - 52, collected: false },
       { x: worldX(4, 420), y: GROUND_Y - 87, collected: false },
       { x: worldX(7, 258), y: GROUND_Y - 60, collected: false },
       { x: worldX(7, 558), y: GROUND_Y - 72, collected: false }
     ],
-    enemies: [
+    enemies: testP2 ? [] : [
       ...layout.enemies,
       makeEnemy(worldX(11, 510), 90, 80, 5, true)
       // Ảnh enemy lấy theo cờ `boss` (xem ENEMY_SPRITES trong config.js):

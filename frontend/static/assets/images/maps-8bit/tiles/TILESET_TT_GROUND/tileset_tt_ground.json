@@ -1,0 +1,465 @@
+{
+  "schema_version": 1,
+  "id": "TILESET_TT_GROUND",
+  "file": "tileset_tt_ground.png",
+  "tile_size": {
+    "w": 16,
+    "h": 16
+  },
+  "sheet_size": {
+    "w": 48,
+    "h": 320
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 20,
+    "gutter": 0,
+    "margin": 0
+  },
+  "region_layout": {
+    "Z1": { "start_row": 0, "row_count": 4, "material": "packed-earth-and-village-grass" },
+    "Z3": { "start_row": 4, "row_count": 4, "material": "dense-forest-grass-and-roots" },
+    "Z5": { "start_row": 8, "row_count": 4, "material": "packed-red-earth-and-wheel-ruts" },
+    "Z2": { "start_row": 12, "row_count": 4, "material": "wet-rice-field-embankment" },
+    "Z4": { "start_row": 16, "row_count": 4, "material": "muddy-sandy-river-bank" }
+  },
+  "collision": {
+    "surface": "top-edge",
+    "surface_world_y": 248,
+    "decoration_collision": false
+  },
+  "runtime_slice": {
+    "surface_height": 16,
+    "fill_visible_height": 6,
+    "total_ground_height": 22
+  },
+  "tiles": [
+    {
+      "id": "TT_GROUND_SURFACE_01",
+      "column": 0,
+      "row": 0,
+      "region": "Z1",
+      "role": "surface",
+      "rect": { "x": 0, "y": 0, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_GROUND_SURFACE_02",
+      "column": 1,
+      "row": 0,
+      "region": "Z1",
+      "role": "surface",
+      "rect": { "x": 16, "y": 0, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_GROUND_SURFACE_03",
+      "column": 2,
+      "row": 0,
+      "region": "Z1",
+      "role": "surface",
+      "rect": { "x": 32, "y": 0, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_GROUND_FILL_01",
+      "column": 0,
+      "row": 1,
+      "region": "Z1",
+      "role": "fill",
+      "rect": { "x": 0, "y": 16, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_GROUND_FILL_02",
+      "column": 1,
+      "row": 1,
+      "region": "Z1",
+      "role": "fill",
+      "rect": { "x": 16, "y": 16, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_GROUND_EDGE_LEFT",
+      "column": 0,
+      "row": 2,
+      "region": "Z1",
+      "role": "left-edge",
+      "rect": { "x": 0, "y": 32, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_GROUND_EDGE_RIGHT",
+      "column": 1,
+      "row": 2,
+      "region": "Z1",
+      "role": "right-edge",
+      "rect": { "x": 16, "y": 32, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_GROUND_DECOR_GRASS",
+      "column": 0,
+      "row": 3,
+      "region": "Z1",
+      "role": "decoration",
+      "rect": { "x": 0, "y": 48, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_GROUND_DECOR_RICE_SPROUT",
+      "column": 1,
+      "row": 3,
+      "region": "Z1",
+      "role": "decoration",
+      "rect": { "x": 16, "y": 48, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_GROUND_DECOR_DRY_GRASS",
+      "column": 2,
+      "row": 3,
+      "region": "Z1",
+      "role": "decoration",
+      "rect": { "x": 32, "y": 48, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_Z3_SURFACE_01",
+      "column": 0,
+      "row": 4,
+      "region": "Z3",
+      "role": "surface",
+      "rect": { "x": 0, "y": 64, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z3_SURFACE_02",
+      "column": 1,
+      "row": 4,
+      "region": "Z3",
+      "role": "surface",
+      "rect": { "x": 16, "y": 64, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z3_SURFACE_03",
+      "column": 2,
+      "row": 4,
+      "region": "Z3",
+      "role": "surface",
+      "rect": { "x": 32, "y": 64, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z3_FILL_01",
+      "column": 0,
+      "row": 5,
+      "region": "Z3",
+      "role": "fill",
+      "rect": { "x": 0, "y": 80, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z3_FILL_02",
+      "column": 1,
+      "row": 5,
+      "region": "Z3",
+      "role": "fill",
+      "rect": { "x": 16, "y": 80, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z3_EDGE_LEFT",
+      "column": 0,
+      "row": 6,
+      "region": "Z3",
+      "role": "left-edge",
+      "rect": { "x": 0, "y": 96, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z3_EDGE_RIGHT",
+      "column": 1,
+      "row": 6,
+      "region": "Z3",
+      "role": "right-edge",
+      "rect": { "x": 16, "y": 96, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z3_DECOR_FERN",
+      "column": 0,
+      "row": 7,
+      "region": "Z3",
+      "role": "decoration",
+      "rect": { "x": 0, "y": 112, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_Z3_DECOR_BROADLEAF",
+      "column": 1,
+      "row": 7,
+      "region": "Z3",
+      "role": "decoration",
+      "rect": { "x": 16, "y": 112, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_Z3_DECOR_VINE_ROOT",
+      "column": 2,
+      "row": 7,
+      "region": "Z3",
+      "role": "decoration",
+      "rect": { "x": 32, "y": 112, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_Z5_SURFACE_01",
+      "column": 0,
+      "row": 8,
+      "region": "Z5",
+      "role": "surface",
+      "rect": { "x": 0, "y": 128, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z5_SURFACE_02",
+      "column": 1,
+      "row": 8,
+      "region": "Z5",
+      "role": "surface",
+      "rect": { "x": 16, "y": 128, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z5_SURFACE_03",
+      "column": 2,
+      "row": 8,
+      "region": "Z5",
+      "role": "surface",
+      "rect": { "x": 32, "y": 128, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z5_FILL_01",
+      "column": 0,
+      "row": 9,
+      "region": "Z5",
+      "role": "fill",
+      "rect": { "x": 0, "y": 144, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z5_FILL_02",
+      "column": 1,
+      "row": 9,
+      "region": "Z5",
+      "role": "fill",
+      "rect": { "x": 16, "y": 144, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z5_EDGE_LEFT",
+      "column": 0,
+      "row": 10,
+      "region": "Z5",
+      "role": "left-edge",
+      "rect": { "x": 0, "y": 160, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z5_EDGE_RIGHT",
+      "column": 1,
+      "row": 10,
+      "region": "Z5",
+      "role": "right-edge",
+      "rect": { "x": 16, "y": 160, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z5_DECOR_DRY_GRASS",
+      "column": 0,
+      "row": 11,
+      "region": "Z5",
+      "role": "decoration",
+      "rect": { "x": 0, "y": 176, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_Z5_DECOR_BROKEN_REED",
+      "column": 1,
+      "row": 11,
+      "region": "Z5",
+      "role": "decoration",
+      "rect": { "x": 16, "y": 176, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_Z5_DECOR_RUT_RIDGE",
+      "column": 2,
+      "row": 11,
+      "region": "Z5",
+      "role": "decoration",
+      "rect": { "x": 32, "y": 176, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_Z2_SURFACE_01",
+      "column": 0,
+      "row": 12,
+      "region": "Z2",
+      "role": "surface",
+      "rect": { "x": 0, "y": 192, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z2_SURFACE_02",
+      "column": 1,
+      "row": 12,
+      "region": "Z2",
+      "role": "surface",
+      "rect": { "x": 16, "y": 192, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z2_SURFACE_03",
+      "column": 2,
+      "row": 12,
+      "region": "Z2",
+      "role": "surface",
+      "rect": { "x": 32, "y": 192, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z2_FILL_01",
+      "column": 0,
+      "row": 13,
+      "region": "Z2",
+      "role": "fill",
+      "rect": { "x": 0, "y": 208, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z2_FILL_02",
+      "column": 1,
+      "row": 13,
+      "region": "Z2",
+      "role": "fill",
+      "rect": { "x": 16, "y": 208, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z2_EDGE_LEFT",
+      "column": 0,
+      "row": 14,
+      "region": "Z2",
+      "role": "left-edge",
+      "rect": { "x": 0, "y": 224, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z2_EDGE_RIGHT",
+      "column": 1,
+      "row": 14,
+      "region": "Z2",
+      "role": "right-edge",
+      "rect": { "x": 16, "y": 224, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z2_DECOR_RICE_SPROUT",
+      "column": 0,
+      "row": 15,
+      "region": "Z2",
+      "role": "decoration",
+      "rect": { "x": 0, "y": 240, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_Z2_DECOR_SEDGE",
+      "column": 1,
+      "row": 15,
+      "region": "Z2",
+      "role": "decoration",
+      "rect": { "x": 16, "y": 240, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_Z2_DECOR_MUD_RUT",
+      "column": 2,
+      "row": 15,
+      "region": "Z2",
+      "role": "decoration",
+      "rect": { "x": 32, "y": 240, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_Z4_SURFACE_01",
+      "column": 0,
+      "row": 16,
+      "region": "Z4",
+      "role": "surface",
+      "rect": { "x": 0, "y": 256, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z4_SURFACE_02",
+      "column": 1,
+      "row": 16,
+      "region": "Z4",
+      "role": "surface",
+      "rect": { "x": 16, "y": 256, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z4_SURFACE_03",
+      "column": 2,
+      "row": 16,
+      "region": "Z4",
+      "role": "surface",
+      "rect": { "x": 32, "y": 256, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z4_FILL_01",
+      "column": 0,
+      "row": 17,
+      "region": "Z4",
+      "role": "fill",
+      "rect": { "x": 0, "y": 272, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z4_FILL_02",
+      "column": 1,
+      "row": 17,
+      "region": "Z4",
+      "role": "fill",
+      "rect": { "x": 16, "y": 272, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z4_EDGE_LEFT",
+      "column": 0,
+      "row": 18,
+      "region": "Z4",
+      "role": "left-edge",
+      "rect": { "x": 0, "y": 288, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z4_EDGE_RIGHT",
+      "column": 1,
+      "row": 18,
+      "region": "Z4",
+      "role": "right-edge",
+      "rect": { "x": 16, "y": 288, "w": 16, "h": 16 }
+    },
+    {
+      "id": "TT_Z4_DECOR_REED_TUFT",
+      "column": 0,
+      "row": 19,
+      "region": "Z4",
+      "role": "decoration",
+      "rect": { "x": 0, "y": 304, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_Z4_DECOR_PEBBLES",
+      "column": 1,
+      "row": 19,
+      "region": "Z4",
+      "role": "decoration",
+      "rect": { "x": 16, "y": 304, "w": 16, "h": 8 }
+    },
+    {
+      "id": "TT_Z4_DECOR_DRIFTWOOD",
+      "column": 2,
+      "row": 19,
+      "region": "Z4",
+      "role": "decoration",
+      "rect": { "x": 32, "y": 304, "w": 16, "h": 8 }
+    }
+  ],
+  "unused_cells": [
+    { "column": 2, "row": 1 },
+    { "column": 2, "row": 2 },
+    { "column": 0, "row": 3, "lower_half_only": true },
+    { "column": 1, "row": 3, "lower_half_only": true },
+    { "column": 2, "row": 3, "lower_half_only": true },
+    { "column": 2, "row": 5 },
+    { "column": 2, "row": 6 },
+    { "column": 0, "row": 7, "lower_half_only": true },
+    { "column": 1, "row": 7, "lower_half_only": true },
+    { "column": 2, "row": 7, "lower_half_only": true },
+    { "column": 2, "row": 9 },
+    { "column": 2, "row": 10 },
+    { "column": 0, "row": 11, "lower_half_only": true },
+    { "column": 1, "row": 11, "lower_half_only": true },
+    { "column": 2, "row": 11, "lower_half_only": true },
+    { "column": 2, "row": 13 },
+    { "column": 2, "row": 14 },
+    { "column": 0, "row": 15, "lower_half_only": true },
+    { "column": 1, "row": 15, "lower_half_only": true },
+    { "column": 2, "row": 15, "lower_half_only": true },
+    { "column": 2, "row": 17 },
+    { "column": 2, "row": 18 },
+    { "column": 0, "row": 19, "lower_half_only": true },
+    { "column": 1, "row": 19, "lower_half_only": true },
+    { "column": 2, "row": 19, "lower_half_only": true }
+  ]
+}

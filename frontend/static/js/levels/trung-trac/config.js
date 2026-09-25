@@ -13,15 +13,10 @@ export const VIEW_H = LOGICAL_H;
 export const CHUNK_W = 768;
 export const LEVEL_CHUNKS = 12;
 export const LEVEL_WORLD_WIDTH = CHUNK_W * LEVEL_CHUNKS;
-// Dải đất ground.png (1792x70) vẽ thu theo k (70 -> 42px), sát đáy khung nhìn.
-// Ảnh có ~34 hàng gốc (-> 20px) trong suốt phía trên mép cỏ, nên mặt sàn vật
-// lý (GROUND_Y) phải nằm ở MÉP CỎ chứ không phải mép trên của ảnh — nếu không
-// nhân vật/vật cản sẽ lơ lửng. Tạo lại ground.png với lề khác thì chỉ cần sửa
-// GROUND_GRASS_OFFSET. TODO_MAP: nền sẽ vẽ lại theo brief môi trường.
-export const GROUND_LAYER_HEIGHT = 42;
-export const GROUND_LAYER_TOP = VIEW_H - GROUND_LAYER_HEIGHT;
-export const GROUND_GRASS_OFFSET = 20;
-export const GROUND_Y = GROUND_LAYER_TOP + GROUND_GRASS_OFFSET;
+// Mặt sàn vật lý = mép trên hàng tile `surface` của tileset mặt đất (TT-MAP-01):
+// tile surface 16px (248–264) + 6px tile fill (264–270, bị cắt ở đáy khung).
+// Khớp `stage.ground_y` trong maps_tt.json (assets.js cảnh báo nếu lệch).
+export const GROUND_Y = 248;
 export const FOOT_MARGIN = 5;
 export const MOVE_SPEED = 168;
 export const GRAVITY = 1320;
@@ -29,68 +24,103 @@ export const JUMP_FORCE = 468;
 export const DASH_SPEED = 432;
 export const DASH_TIME = 0.30;
 export const GROUND_SNAP_DISTANCE = 11;
-export const OBSTACLE_GROUND_SINK = 4;
 
-// Nền map v2 tách thành 3 plate tile ngang để gameplay dễ đọc:
-// - sky: trời/núi xa, opaque, parallax chậm;
-// - foreground: làng tre trung tầng có alpha fade trước lane chơi;
-// - ground: dải cỏ/đất riêng, mép cỏ trùng GROUND_Y, chạy cùng tốc độ thế giới.
-// Nhờ tách `ground`, cây/nhà không còn bị bake vào mặt sàn nên obstacle,
-// hazard và nhân vật có thể đặt/chuyển độc lập mà không lộ đường ghép.
-export const BACKDROP_ROOT = '/static/assets/images/backdrops/chapter1/';
-// foreground.png (midground: làng/cây/núi gần) vẽ cao FOREGROUND_HEIGHT (=
-// 360px hệ cũ x k), chỉ có nội dung ở dải y≈60–105 (theo cỡ vẽ đó), mờ dần tới
-// ~138, phần dưới trong suốt hoàn toàn. Vẽ từ y=0 thì dải làng lơ lửng giữa
-// màn hình — dời xuống để CHÂN dải làng/cây (y≈105 trong ảnh) nằm ngay trên
-// mép cỏ; phần sương mờ phía dưới bị layer `ground` (vẽ sau) che đi.
-const FOREGROUND_HEIGHT = 216;
-const MIDGROUND_BASE_IN_IMAGE = 105;
-export const MIDGROUND_Y = GROUND_Y - MIDGROUND_BASE_IN_IMAGE - 5;
+// Bộ môi trường 8-bit (Codex, bản chép từ assets/maps/trung-trac/, giữ cấu trúc
+// thư mục). maps_tt.json là nguồn cho đường dẫn + cỡ ảnh (đọc lúc chạy trong
+// assets.js); các số dưới đây là cách VẼ (parallax, vị trí, vùng). Mọi lớp vẽ
+// x1, không smoothing, lặp ngang theo đúng chiều rộng gốc của ảnh.
+export const MAP_8BIT_ROOT = '/static/assets/images/maps-8bit/';
+export const MAP_MANIFEST_FILE = 'maps_tt.json';
+export const TILESET_ID = 'TILESET_TT_GROUND';
 
-// Khung 480x270 (k = 0.6) cao hơn hệ cũ 54px logic — phần dư là trời phía
-// trên, nên `sky` kéo phủ cả VIEW_H (TODO_MAP: vẽ lại nền đúng tỉ lệ 16:9).
-export const BACKDROP_LAYERS = [
-  { key: 'sky', file: 'sky.png', y: 0, height: VIEW_H, speed: 0.22, fallbackColor: '#43b8e3' },
-  { key: 'foreground', file: 'foreground.png', y: MIDGROUND_Y, height: FOREGROUND_HEIGHT, speed: 0.58, fallbackColor: 'rgba(0, 0, 0, 0)', fallbackBandHeight: 0 },
-  { key: 'ground', file: 'ground.png', y: GROUND_LAYER_TOP, height: GROUND_LAYER_HEIGHT, speed: 1, fallbackColor: '#795238', fallbackBandHeight: VIEW_H - GROUND_Y }
+// Lớp nền từ xa đến gần. `bottomY` = đáy ảnh (null = phủ từ y=0).
+// Parallax DESIGN_BASELINE (bản cũ: 0.22 trời / 0.58 lớp giữa / 1.0 đất).
+export const SKY_PARALLAX = 0.05; // DESIGN_BASELINE
+// Đồi xa vẽ tông trời nắng nên lạc tông dưới trời giông: `hiddenUnderSky` =
+// các ảnh trời mà dưới đó đồi xa tắt dần (cùng hệ số hoà với trời) — ảnh trời
+// giông đã có dãy núi xa riêng (quyết định team, phương án (a) sau Phase B).
+export const FAR_HILLS = { id: 'BG_TT_FAR_HILLS', parallax: 0.2, bottomY: 230, hiddenUnderSky: ['BG_TT_SKY_STORM'] }; // DESIGN_BASELINE
+export const MID_PARALLAX = 0.5; // DESIGN_BASELINE — đáy ảnh lớp giữa ở GROUND_Y
+export const SKY_FALLBACK_COLOR = '#43b8e3';
+export const GROUND_FALLBACK_COLOR = '#795238';
+
+// Vùng cảnh theo world X (chunk đếm từ 1: Z1 = chunk 1–3 = 0–2304...). Vùng
+// chỉ đổi CẢNH, vật cản vẫn xáo ngẫu nhiên (state.js). `tiles` = region
+// trong tileset_tt_ground.json.
+export const ZONES = [
+  { id: 'Z1', x0: 0, x1: 2304, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_VILLAGE', tiles: 'Z1' },
+  { id: 'Z2', x0: 2304, x1: 3840, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FIELDS', tiles: 'Z2' },
+  { id: 'Z3', x0: 3840, x1: 6144, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FOREST', tiles: 'Z3' },
+  { id: 'Z4', x0: 6144, x1: 7680, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_RIVER', tiles: 'Z4' },
+  { id: 'Z5', x0: 7680, x1: 9216, sky: 'BG_TT_SKY_STORM', mid: 'BG_TT_MID_CITADEL', tiles: 'Z5' }
 ];
+// Lớp giữa + trời hoà dần trong ZONE_BLEND_WIDTH px TRƯỚC mỗi ranh giới, tính
+// theo tâm khung nhìn (cameraX + VIEW_W/2) — hoà xong đúng lúc tâm khung nhìn
+// chạm ranh giới, nên trời đã đổi sang giông trước khi người chơi vào chunk 11
+// (quyết định team G3).
+export const ZONE_BLEND_WIDTH = 192; // DESIGN_BASELINE
+// Mặt đất chuyển vùng bằng dải dither pixel art rộng GROUND_BLEND_WIDTH, căn
+// giữa ranh giới (thay cho cắt dứt khoát của task card §3.2 — yêu cầu của team
+// sau khi chơi thử Phase B): mỗi ô GROUND_DITHER_CELL px lấy tile vùng trước
+// hoặc vùng sau theo nhiễu tất định, tỉ lệ vùng sau tăng dần 0 -> 1 qua dải.
+// Phải là bội số của 32 (nửa dải là bội số cỡ tile 16) để dải khớp lưới cột.
+export const GROUND_BLEND_WIDTH = 192; // DESIGN_BASELINE
+export const GROUND_DITHER_CELL = 2; // DESIGN_BASELINE
+// Tỉ lệ cột tile mặt đất có decor (cỏ, lau...) — chọn tất định theo cột.
+export const GROUND_DECOR_DENSITY = 0.25; // DESIGN_BASELINE
 
-// Set-piece cốt truyện (cổng làng, cầu, cổng thành...) đặt theo toạ độ world-X
-// riêng lẻ, vẽ đè lên layer nền. Thiếu ảnh thì render.js tự vẽ fallback bằng
-// canvas (xem drawLandmarkFallback), không lỗi, không trống trơn.
-// worldX = tâm set-piece (không phải mép trái), height = chiều cao vẽ trong game,
-// sink = số px chìm xuống dưới GROUND_Y cho phần chân/nền của ảnh ăn vào mặt đất.
-// Chiều rộng tự suy từ tỉ lệ ảnh thật lúc chạy nên không bao giờ méo.
-export const LANDMARKS = [
-  // Cổng đích cuối màn 12/12. worldX=9090 ứng với finishX = worldX(12, 618)
-  // khai báo trong state.js (12-1)*768+618 = 9066 — sửa 1 trong 2 chỗ thì nhớ
-  // sửa chỗ kia. (Lệch 24px có từ bản cũ 15150 vs 15110, giữ nguyên khi quy đổi.)
-  { file: 'finish-gate.png', worldX: 9090, height: 150, sink: 8 }
-];
+// Trigger về đích (= worldX(12, 618)) — state.js (finishX) và cổng thành dùng
+// chung số này. Cổng Luy Lâu đặt TÂM tại đây (quyết định team G1: bỏ độ lệch
+// +24px của ảnh cũ); cổng 192px trải 8970–9162 < 9216.
+export const FINISH_X = CHUNK_W * 11 + 618;
+// Cổng thành Luy Lâu (prop, KHÔNG có hitbox — trigger về đích giữ nguyên ở
+// physics.js). Vẽ x1, pivot bottom-center lấy từ maps_tt.json, đáy ở GROUND_Y
+// (không chìm). Đổi sang ảnh mở khi đã đủ điều kiện NỘI DUNG (boss đã hạ + nhặt
+// đủ sách), trước khi người chơi chạm FINISH_X; suy ra mỗi frame nên không
+// đóng lại (G7).
+export const FINISH_GATE = { closed: 'PROP_LUYLAU_GATE', open: 'PROP_LUYLAU_GATE_OPEN', worldX: FINISH_X };
 
 // Dốc/địa hình đặc biệt (nếu cần) khai báo tại đây thay vì gắn cứng theo
 // số chunk như trước. Rỗng = mặt đất phẳng theo GROUND_Y trên toàn bộ level.
 export const TERRAIN_RAMPS = [];
 
-// Phần 1: mỗi loại chướng ngại vật là 1 ảnh riêng (không dùng atlas cắt ô
-// nữa) lấy từ frontend/static/assets/images/obstacles — dễ thêm/thay ảnh
-// theo từng type mà không đụng tới sheet chung.
-export const OBSTACLE_SPRITE_ROOT = '/static/assets/images/obstacles/';
-export const OBSTACLE_SPRITE_FILES = {
-  bambooSlope: 'bamboo_slope.png',
-  bridge: 'bridge.png',
-  fallenBranch: 'fallen_branch.png',
-  fenceHigh: 'fence_high.png',
-  fenceLow: 'fence_low.png',
-  logDrift: 'log.png',
-  reedCurtain: 'reed_curtain.png',
-  slideBar: 'slide_bar.png',
-  spikesTrap: 'spikes.png',
-  stoneBlock: 'stone_block.png',
+// Vật cản tĩnh (`obstacles`) -> asset 8-bit trong maps_tt.json + cách neo/cờ.
+// Hitbox (w, h) do state.js truyền vào makeObstacle — KHÔNG lấy từ cỡ ảnh. Vẽ
+// x1 theo cỡ PNG, căn sao cho PHẦN NHÌN THẤY trùng hitbox:
+//   - asset có `visible_bbox` (3 loại P0): góc bbox trùng góc trên-trái hitbox;
+//   - còn lại: đáy-giữa canvas trùng đáy-giữa hitbox + groundSink.
+//   anchor     'bottom' (hitbox đứng trên mặt đất), 'overhead' (hitbox 20px ở
+//              GROUND_Y - 46, khe dash 26px phía dưới), 'top' (mặt trên hitbox
+//              ở GROUND_Y — cầu bắc qua hố).
+//   groundSink số px đáy ảnh chìm dưới đáy hitbox (4 cho 3 loại cũ — khớp
+//              visible_bbox; 0 cho P2).
+//   requiresHole  chỉ được tạo khi có hố tương ứng (state.js kiểm tra).
+// P2 (fenceLow...logDrift): khai báo sẵn, màn thường CHƯA dùng — chỉ có trong
+// layout thử `?layout=p2`. Hitbox P2 là DESIGN_BASELINE (task TT-MAP-01 §3.3.4).
+// spikesTrap: không có asset 8-bit (màn dùng hazard TR_SPIKE_PIT) — giữ khai
+// báo, thiếu ảnh thì render vẽ hộp tạm (G8). Ảnh cũ trong images/obstacles/ đã
+// ngừng tham chiếu nhưng vẫn giữ trên đĩa.
+export const OBSTACLE_TYPES = {
+  fallenBranch: { id: 'OBS_FALLEN_BRANCH', anchor: 'bottom', groundSink: 4 },
+  stoneBlock: { id: 'OBS_STONE_BLOCK', anchor: 'bottom', groundSink: 4 },
+  reedCurtain: { id: 'OBS_REED_CURTAIN', anchor: 'overhead', groundSink: 4 },
+  fenceLow: { id: 'OBS_FENCE_LOW', anchor: 'bottom', groundSink: 0 },
+  fenceHigh: { id: 'OBS_FENCE_HIGH', anchor: 'bottom', groundSink: 0 },
+  bambooSlope: { id: 'OBS_BAMBOO_SLOPE', anchor: 'bottom', groundSink: 0 },
+  slideBar: { id: 'OBS_SLIDE_BAR', anchor: 'overhead', groundSink: 0 },
+  bridge: { id: 'OBS_BRIDGE', anchor: 'top', groundSink: 0, requiresHole: true },
+  logDrift: { id: 'OBS_LOG_DRIFT', anchor: 'bottom', groundSink: 0 },
+  spikesTrap: { id: null, anchor: 'bottom', groundSink: 0 }
 };
 // (Các ảnh hazard cũ spike_pit_*.png, tribute_cart_broken.png, watchtower.png
 // và các strip *_strip*.png đã ngừng tham chiếu — hazard/enemy/đạn giờ dùng
 // bộ sprite 8-bit, xem HAZARD_SPRITES. File ảnh cũ vẫn giữ nguyên trên đĩa.)
+
+// Ảnh 8-bit của map cần tải ngoài các lớp nền/tileset (vật cản, sách, cổng).
+export const MAP_PROPS_IN_GAME = [
+  ...Object.values(OBSTACLE_TYPES).map(type => type.id).filter(Boolean),
+  'ITEM_BINH_THU', FINISH_GATE.closed, FINISH_GATE.open
+];
 
 // Hazard (vật cản/kẻ địch có trạng thái) -> asset 8-bit trong manifest. Khoá
 // (jungleTiger, hanTaxSoldier...) là tên `sprite` state.js dùng.
@@ -163,12 +193,17 @@ export const PROJECTILE_FADE_RANGE = 54;
 // state (tránh mảng phình to vô hạn khi chơi lâu).
 export const HAZARD_DESPAWN_MARGIN = 312;
 
-// Vật phẩm (item icon) lấy từ frontend/static/assets/images/items.
+// Icon HUD lấy từ frontend/static/assets/images/items (heart vẽ bằng DOM ở ui.js).
 export const ITEM_ROOT = '/static/assets/images/items/';
 export const ITEM_FILES = {
-  book: 'book.png',
   heart: 'heart.png'
 };
+// Bình thư (`books`): strip ITEM_BINH_THU (4 ô 16x16) vẽ x1, tâm tại
+// (book.x, book.y + bob), lặp BOOK_FPS (manifest để fps null). Hitbox nhặt
+// 22x26 ở physics.js giữ nguyên (lớn hơn hình — dễ nhặt).
+export const BOOK_SPRITE_ID = 'ITEM_BINH_THU';
+export const BOOK_FPS = 6; // DESIGN_BASELINE
+export const BOOK_BOB_AMPLITUDE = 3;
 
 // Thời gian giữ animation trúng đòn (giây). Ngắn hơn thời gian bất tử (1.25s)
 // để nhân vật quay lại tư thế thường trong lúc vẫn còn nhấp nháy miễn thương.
@@ -201,11 +236,7 @@ export const ATTACK_ACTIVE_TIME = 0.18;
 //   duration: trải strip trên đúng số giây này thay vì fps của manifest.
 //   byVelocity: chọn ô theo vận tốc dọc (lên / gần đỉnh / rơi), không theo giờ.
 //   holdFrame: đứng yên ở 1 ô cố định (-1 = ô cuối).
-//   drawScale: hệ số vẽ bù cho strip bị vẽ SAI TỈ LỆ so với các strip khác.
-//     TẠM THỜI — attack_01 của Codex vẽ nhân vật chỉ cao ~29-30px (đầu cũng
-//     nhỏ theo) trong khi idle/run/dash cao 44px, tức nhỏ hơn ~1.5 lần, không
-//     phải do tư thế cúi. Đã báo NEED_REDRAW (docs/REPORT_TT-INT-01.md); vẽ
-//     lại đúng tỉ lệ thì XOÁ drawScale. DESIGN_BASELINE: 1.5 (44 / 29.5).
+// Mọi strip vẽ x1 — attack_01 đã được vẽ lại đúng tỉ lệ ở Batch R (TT-MAP-01).
 // dash: 4 ô, không lặp (16fps = .25s < DASH_TIME .30s) -> đứng ở ô cuối tới hết cú lướt.
 // death chỉ phát khi thua (endGame(false) ghi player.deathTime).
 export const PLAYER_SPRITE_ID = 'PLAYER_TRUNG_TRAC';
