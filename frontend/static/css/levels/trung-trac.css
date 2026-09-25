@@ -25,9 +25,13 @@ body {
 
 button { font: inherit; }
 
+/* Toàn khung (HUD + màn chơi + nút cảm ứng) rộng đúng bằng canvas hiển thị —
+   --stage-w/--stage-h do fitCanvas() (render.js) đặt theo bội số nguyên của
+   480x270; phần thừa của cửa sổ là viền letterbox (nền body). */
 .game-shell {
-  width: 100vw;
-  max-width: none;
+  width: calc(var(--stage-w, 960px) + 4px);
+  max-width: 100%;
+  margin: 0 auto;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -89,31 +93,13 @@ button { font: inherit; }
 
 canvas {
   display: block;
-  width: 100%;
-  height: auto;
-  /* Camera 896 x 360 phủ toàn bộ chiều ngang: cảnh lớn hơn nhưng không bị méo. */
-  aspect-ratio: 896 / 360;
+  /* Canvas logic 480x270 phóng theo --stage-w/--stage-h (fitCanvas). */
+  width: var(--stage-w, 960px);
+  height: var(--stage-h, 540px);
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   touch-action: none;
 }
-
-.player-sprite {
-  position: absolute;
-  z-index: 1;
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  background-size: contain;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  /* transform-origin do render.js đặt theo PLAYER_SPRITE_ANCHOR_X (điểm neo đầu
-     nhân vật), không cố định ở đây để tránh lệch khi lật trái/phải. */
-  filter: drop-shadow(0 8px 0 rgba(0, 0, 0, .2));
-  pointer-events: none;
-  will-change: left, bottom, transform;
-}
-
-.player-sprite[hidden] { display: none !important; }
 
 .panel {
   position: absolute;
@@ -127,6 +113,9 @@ canvas {
   background: rgba(9, 7, 5, .72);
   backdrop-filter: blur(2px);
   z-index: 3;
+  /* Canvas có thể rất thấp (điện thoại ngang, scale lẻ) -> panel cuộn được
+     thay vì tràn ra ngoài vùng canvas. */
+  overflow: auto;
 }
 
 .panel--visible { display: grid; }
@@ -227,7 +216,8 @@ kbd {
 .control.is-pressed { transform: translateY(2px); filter: brightness(1.25); }
 
 @media (pointer: coarse), (max-width: 820px) {
-  body { display: block; padding: 6px; }
+  body { display: block; }
+  .game-shell { padding: 6px; width: calc(var(--stage-w, 960px) + 16px); }
   .mobile-controls { display: flex; }
   .help { display: none; }
   .hud { grid-template-columns: 1fr repeat(3, auto); gap: 7px; padding-inline: 8px; }

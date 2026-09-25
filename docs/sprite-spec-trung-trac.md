@@ -153,8 +153,12 @@ Script in ra hệ số scale của từng file — **gần 1.00 là đạt**. L�
 | Gây sát thương khi chạm | `harmful` | Phải **nhìn là biết nguy hiểm**: mũi nhọn, kim loại sắc, màu cảnh báo. Đừng lẫn với cây cỏ trang trí. |
 | Bắt buộc lướt qua bên dưới | `overhead` | Là vật **treo/chắn ngang trên cao**, có khoảng hở rõ ràng bên dưới (~45px tính từ mặt đất). |
 
-### 5.2 Mười vật đã có (vẽ mới phải đồng bộ với bộ này)
+### 5.2 Mười vật hiện hành (bộ lịch sử Giao Chỉ, khoảng năm 40)
 `bamboo_slope`, `bridge`, `fallen_branch`, `fence_high`, `fence_low`, `log`, `reed_curtain`, `slide_bar`, `spikes`, `stone_block`
+
+Nguồn tạo và metadata QC: `artifacts/static-obstacles-v2/`. Tất cả dùng tre,
+mây, gỗ thô, đất đá địa phương và giữ đúng pixel style của map; không dùng
+chi tiết kim khí hoặc kết cấu trung đại không cần thiết.
 
 ### 5.3 Cần vẽ mới cho Màn 1
 

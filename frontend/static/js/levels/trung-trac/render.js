@@ -2,25 +2,70 @@
 
 import { images } from './assets.js';
 import { state } from './state.js';
-import { actionStepAt } from './geometry.js';
+import { debug } from './input.js';
+import { getAnimMeta, frameIndex } from './animation.js';
 import {
-  VIEW_W, VIEW_H, CHUNK_W, LEVEL_CHUNKS, OBSTACLE_GROUND_SINK, GROUND_Y,
-  PLAYER_SPRITE_HEIGHT, PLAYER_SPRITE_ANCHOR_X, BACKDROP_LAYERS, LANDMARKS,
-  OBSTACLE_STRIP_FILES, ITEM_STRIP_FILES, ENEMY_SPRITES, HAZARD_SPRITE_SIZES,
-  PROJECTILE_MAX_RANGE, PROJECTILE_FADE_RANGE, THROWER_ANIMATIONS
+  LOGICAL_W, LOGICAL_H, VIEW_W, VIEW_H, CHUNK_W, LEVEL_CHUNKS, OBSTACLE_GROUND_SINK, GROUND_Y,
+  BACKDROP_LAYERS, LANDMARKS,
+  HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES,
+  PROJECTILE_MAX_RANGE, PROJECTILE_FADE_RANGE,
+  PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, PLAYER_JUMP_APEX_VY
 } from './config.js';
 
 export const canvas = document.getElementById('gameCanvas');
 export const ctx = canvas.getContext('2d');
-export const playerSprite = document.getElementById('playerSprite');
+
+// Canvas luôn ở độ phân giải LOGIC; fitCanvas() chỉ đổi cỡ HIỂN THỊ (CSS).
+canvas.width = LOGICAL_W;
+canvas.height = LOGICAL_H;
 ctx.imageSmoothingEnabled = false;
 
-// Giữ đúng độ phân giải camera kể cả khi HTML cũ vẫn còn width="1280".
-canvas.width = VIEW_W;
-canvas.height = VIEW_H;
-ctx.imageSmoothingEnabled = false;
+// Tên animation + ô đang vẽ của từng entity trong frame hiện tại — chỉ để lớp
+// debug F2 in ra, không ảnh hưởng gameplay.
+const debugLabels = new Map();
 
-let currentPlayerAnimation = '';
+// Độ phân giải bộ đệm hiện tại: canvas thật = LOGICAL x backingScale pixel, mọi
+// lệnh vẽ vẫn dùng toạ độ LOGIC nhờ setTransform.
+let backingScale = 0;
+
+// Phóng canvas logic 480x270 PHỦ KÍN vùng trống (giữ tỉ lệ 16:9, scale lẻ được
+// phép — quyết định của team 25/09 thay cho letterbox bội số nguyên).
+// Để pixel vẫn đều khi scale lẻ: vẽ vào bộ đệm ở bội số NGUYÊN N = ceil(scale
+// x DPR) bằng nearest-neighbor (mỗi pixel logic = N x N pixel thật), rồi để
+// trình duyệt thu nhẹ bộ đệm về cỡ hiển thị bằng nội suy mượt. Khi cỡ hiển thị
+// trùng đúng N pixel thiết bị (scale nguyên) thì dùng `pixelated` cho sắc nét.
+export function fitCanvas() {
+  // Tab/khung đang ẩn (cỡ 0) thì bỏ qua — sự kiện resize sau đó sẽ tính lại.
+  if (!window.innerWidth || !window.innerHeight) return null;
+  const shell = document.querySelector('.game-shell');
+  const blockH = selector => {
+    const node = document.querySelector(selector);
+    return node && getComputedStyle(node).display !== 'none' ? node.offsetHeight : 0;
+  };
+  const shellStyle = getComputedStyle(shell);
+  const padX = parseFloat(shellStyle.paddingLeft) + parseFloat(shellStyle.paddingRight);
+  const padY = parseFloat(shellStyle.paddingTop) + parseFloat(shellStyle.paddingBottom);
+  const border = 4; // viền 2px hai bên của .stage-wrap
+  const availW = Math.max(1, document.documentElement.clientWidth - padX - border);
+  const availH = Math.max(1, window.innerHeight - padY - border
+    - blockH('.hud') - blockH('.mobile-controls') - blockH('.help'));
+  const scale = Math.min(availW / LOGICAL_W, availH / LOGICAL_H);
+  const dpr = window.devicePixelRatio || 1;
+  const deviceScale = scale * dpr;
+  const nextBacking = Math.max(1, Math.ceil(deviceScale - 1e-3));
+  if (nextBacking !== backingScale) {
+    backingScale = nextBacking;
+    // Đổi width/height xoá luôn trạng thái context -> đặt lại transform + smoothing.
+    canvas.width = LOGICAL_W * backingScale;
+    canvas.height = LOGICAL_H * backingScale;
+    ctx.setTransform(backingScale, 0, 0, backingScale, 0, 0);
+    ctx.imageSmoothingEnabled = false;
+  }
+  canvas.style.imageRendering = Math.abs(deviceScale - backingScale) < 1e-3 ? 'pixelated' : 'auto';
+  shell.style.setProperty('--stage-w', `${LOGICAL_W * scale}px`);
+  shell.style.setProperty('--stage-h', `${LOGICAL_H * scale}px`);
+  return scale;
+}
 
 function drawBackdropLayer(layer, image) {
   const y = Math.round(layer.y);
@@ -39,12 +84,15 @@ function drawBackdropLayer(layer, image) {
   const scale = height / image.height;
   const drawWidth = Math.max(1, Math.round(image.width * scale));
   const offset = ((state.cameraX * layer.speed) % drawWidth + drawWidth) % drawWidth;
-  for (let x = -offset; x < VIEW_W; x += drawWidth) {
-    ctx.drawImage(image, Math.round(x), y, drawWidth, height);
+  for (let x = -Math.round(offset); x < VIEW_W; x += drawWidth) {
+    ctx.drawImage(image, x, y, drawWidth, height);
   }
 }
 
+// Nền cũ (ảnh lớn) vẽ THU NHỎ theo k nên bật smoothing cho đỡ răng cưa; draw()
+// tắt lại trước khi vẽ sprite. TODO_MAP: nền pixel đúng tỉ lệ sẽ được vẽ lại.
 function drawBackdrops() {
+  ctx.imageSmoothingEnabled = true;
   BACKDROP_LAYERS.forEach(layer => drawBackdropLayer(layer, images.backdrops[layer.key]));
 }
 
@@ -59,7 +107,7 @@ function drawLandmarks() {
     const h = landmark.height;
     const w = h * aspect;
     const left = landmark.worldX - w / 2 - state.cameraX;
-    if (left + w < -80 || left > VIEW_W + 80) return;
+    if (left + w < -48 || left > VIEW_W + 48) return;
     const top = GROUND_Y + (landmark.sink || 0) - h;
     if (image) {
       ctx.drawImage(image, Math.round(left), Math.round(top), Math.round(w), h);
@@ -73,17 +121,17 @@ function drawLandmarks() {
 function drawLandmarkFallback(left, top, w, h) {
   const x = Math.round(left);
   const y = Math.round(top);
-  const postW = Math.max(8, Math.round(w * 0.09));
+  const postW = Math.max(5, Math.round(w * 0.09));
   ctx.fillStyle = '#5a3a22';
   ctx.fillRect(x, y, postW, h);
   ctx.fillRect(Math.round(x + w - postW), y, postW, h);
   ctx.fillStyle = '#7a4f2c';
-  ctx.fillRect(x - 4, y, Math.round(w) + 8, 18);
+  ctx.fillRect(x - 2, y, Math.round(w) + 5, 11);
   ctx.fillStyle = '#b23325';
   ctx.beginPath();
-  ctx.moveTo(x + w - postW, y + 18);
-  ctx.lineTo(x + w - postW + 30, y + 27);
-  ctx.lineTo(x + w - postW, y + 36);
+  ctx.moveTo(x + w - postW, y + 11);
+  ctx.lineTo(x + w - postW + 18, y + 16);
+  ctx.lineTo(x + w - postW, y + 22);
   ctx.closePath();
   ctx.fill();
 }
@@ -94,7 +142,7 @@ function drawLandmarkFallback(left, top, w, h) {
 function drawHoles() {
   state.holes.forEach(hole => {
     const x = hole.x - state.cameraX;
-    if (x + hole.w < -40 || x > VIEW_W + 40) return;
+    if (x + hole.w < -24 || x > VIEW_W + 24) return;
     const left = Math.round(x);
     const width = Math.round(hole.w);
     const gradient = ctx.createLinearGradient(0, GROUND_Y, 0, VIEW_H);
@@ -104,67 +152,43 @@ function drawHoles() {
     ctx.fillRect(left, GROUND_Y, width, VIEW_H - GROUND_Y);
     // Viền mép hố để rõ ranh giới với cỏ xung quanh.
     ctx.fillStyle = 'rgba(0, 0, 0, .55)';
-    ctx.fillRect(left, GROUND_Y, 4, VIEW_H - GROUND_Y);
-    ctx.fillRect(left + width - 4, GROUND_Y, 4, VIEW_H - GROUND_Y);
+    ctx.fillRect(left, GROUND_Y, 2, VIEW_H - GROUND_Y);
+    ctx.fillRect(left + width - 2, GROUND_Y, 2, VIEW_H - GROUND_Y);
   });
 }
 
-// Vẽ 1 khung của PNG strip ngang: ô thứ i nằm ở [i * cellW, 0, cellW, height].
-// Khung chọn theo ĐỒNG HỒ CHUNG của game (`time`) cộng `offset` riêng từng vật,
-// nhờ vậy hai con hổ cạnh nhau không chạy y hệt nhau mà không cần lưu timer.
-// `fixedFrame` != null: vẽ đúng ô đó thay vì chạy vòng theo đồng hồ chung.
-function drawStripSprite(image, meta, x, y, width, height, time, offset = 0, alpha = 1, fixedFrame = null) {
-  const cellW = image.width / meta.frames;
-  const frame = fixedFrame ?? Math.floor(Math.max(0, (time + offset) * meta.fps)) % meta.frames;
-  ctx.globalAlpha = alpha;
-  ctx.drawImage(
-    image,
-    frame * cellW, 0, cellW, image.height,
-    Math.round(x), Math.round(y), Math.round(width), Math.round(height)
-  );
-  ctx.globalAlpha = 1;
-}
-
-// Một `sprite` có thể là strip động (OBSTACLE_STRIP_FILES) hoặc PNG tĩnh
-// (OBSTACLE_SPRITE_FILES) — hazard dùng chung một tên nên gom lựa chọn vào đây.
-function drawHazardArt(sprite, x, y, width, height, time, offset = 0, alpha = 1, direction = -1, fixedFrame = null) {
-  const stripMeta = OBSTACLE_STRIP_FILES[sprite];
-  const stripImage = stripMeta && images.obstacleStrips[sprite];
-  // Lật ngang quanh tâm ô vẽ khi hướng mặt gốc của ảnh khác hướng cần quay.
-  const naturalDirection = stripMeta?.facing === 'right' ? 1 : -1;
-  const flip = direction !== naturalDirection;
-  ctx.save();
-  if (flip) {
-    const centerX = Math.round(x + width / 2);
-    ctx.translate(centerX, 0);
-    ctx.scale(-1, 1);
-    ctx.translate(-centerX, 0);
-  }
-  if (stripImage) {
-    drawStripSprite(stripImage, stripMeta, x, y, width, height, time, offset, alpha, fixedFrame);
-    ctx.restore();
-    return;
-  }
-  const staticImage = images.obstacleSprites[sprite];
-  ctx.globalAlpha = alpha;
-  if (staticImage) {
-    ctx.drawImage(staticImage, Math.round(x), Math.round(y), Math.round(width), Math.round(height));
-  } else {
-    ctx.fillStyle = '#4a3020';
-    ctx.fillRect(Math.round(x), Math.round(y), Math.round(width), Math.round(height));
-  }
-  ctx.globalAlpha = 1;
-  ctx.restore();
-}
-
-// Hướng cần quay (-1 trái / 1 phải): vật đang chạy quay theo hướng chạy; vật
-// đứng yên có thể tấn công (lính, boss) quay về phía người chơi; còn lại (bẫy,
-// tháp, xác xe, thuyền neo) giữ hướng trái mặc định.
-function facingDirection(centerX, speed = 0, watchesPlayer = false) {
-  if (speed !== 0) return Math.sign(speed);
-  if (!watchesPlayer) return -1;
+// Hướng cần quay (-1 trái / 1 phải) cho sprite 8-bit (ảnh gốc quay PHẢI):
+// vật có hướng chạy riêng (`facing` của roller, giữ nguyên cả khi đang chết)
+// quay theo hướng đó; lính/boss quay về phía người chơi; còn lại (bẫy, tháp)
+// giữ hướng gốc.
+function facingDirection(centerX, fixedFacing = 0, watchesPlayer = false) {
+  if (fixedFacing) return fixedFacing;
+  if (!watchesPlayer) return 1;
   const playerCenter = state.player.x + state.player.w / 2;
   return playerCenter > centerX ? 1 : -1;
+}
+
+// Vẽ ô hiện tại của entity có `anim = { name, time }` (đồng hồ riêng, tick ở
+// physics.js). `anims` ánh xạ tên trạng thái -> animation manifest; `durations`
+// ép thời lượng (vd. throw .85s). Trả về { label, top } hoặc null nếu thiếu
+// manifest/ảnh (caller tự vẽ placeholder).
+function drawAnimated(assetId, anims, durations, entity, pivotX, footY, facing, alpha = 1) {
+  const key = entity.anim?.name;
+  const name = anims[key] || anims.idle || anims.move;
+  const meta = name ? getAnimMeta(assetId, name) : null;
+  const image = name ? images.sprites8[assetId]?.[name] : null;
+  if (!meta || !image) return null;
+  const frame = frameIndex(meta, entity.anim?.time || 0, durations?.[key] ?? null);
+  drawSprite8(image, meta, frame, pivotX, footY, facing, alpha);
+  return { label: `${name} ${frame + 1}/${meta.frames}`, top: footY - (meta.frame_h - 1) };
+}
+
+// Hộp tạm theo hitbox khi thiếu sprite 8-bit.
+function drawPlaceholder(entity, alpha = 1) {
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = '#4a3020';
+  ctx.fillRect(Math.round(entity.x - state.cameraX), Math.round(entity.y), Math.round(entity.w), Math.round(entity.h));
+  ctx.globalAlpha = 1;
 }
 
 function drawBooks(time) {
@@ -172,19 +196,19 @@ function drawBooks(time) {
   state.books.forEach((book, index) => {
     if (book.collected) return;
     const x = book.x - state.cameraX;
-    if (x < -60 || x > VIEW_W + 60) return;
-    const y = book.y + Math.sin(time * 4 + index) * 5;
+    if (x < -36 || x > VIEW_W + 36) return;
+    const y = book.y + Math.sin(time * 4 + index) * 3;
     ctx.fillStyle = 'rgba(255, 210, 80, .3)';
     ctx.beginPath();
-    ctx.ellipse(Math.round(x), Math.round(y + 4), 26, 26, 0, 0, Math.PI * 2);
+    ctx.ellipse(Math.round(x), Math.round(y + 2), 16, 16, 0, 0, Math.PI * 2);
     ctx.fill();
     if (bookImage) {
-      const w = 40;
-      const h = w * (bookImage.height / bookImage.width);
+      const w = 24;
+      const h = Math.round(w * (bookImage.height / bookImage.width));
       ctx.drawImage(bookImage, Math.round(x - w / 2), Math.round(y - h / 2), w, h);
     } else {
       ctx.fillStyle = '#f4d05c';
-      ctx.fillRect(Math.round(x - 15), Math.round(y - 19), 30, 38);
+      ctx.fillRect(Math.round(x - 9), Math.round(y - 11), 18, 23);
     }
   });
 }
@@ -219,9 +243,9 @@ function drawObstacleContrastHalo(obstacle, x, y) {
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = 'rgba(255, 210, 90, .8)';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.ellipse(cx, y + obstacle.drawH - 3, obstacle.drawW * 0.48, 5, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx, y + obstacle.drawH - 2, obstacle.drawW * 0.48, 3, 0, 0, Math.PI * 2);
     ctx.stroke();
     return;
   }
@@ -239,249 +263,254 @@ function drawObstacles() {
   state.obstacles.forEach(obstacle => {
     if (!obstacle.active) return;
     const x = obstacle.x - state.cameraX - (obstacle.drawW - obstacle.w) / 2;
-    if (x + obstacle.drawW < -80 || x > VIEW_W + 80) return;
-    // Neo theo mặt đất thật tại vị trí vật cản và chìm nhẹ 7 px để phần trong
+    if (x + obstacle.drawW < -48 || x > VIEW_W + 48) return;
+    // Neo theo mặt đất thật tại vị trí vật cản và chìm nhẹ 4 px để phần trong
     // suốt ở đáy ô sprite không khiến chướng ngại vật trông như đang bay.
     const drawY = obstacle.groundY - obstacle.drawH + OBSTACLE_GROUND_SINK;
     drawObstacleContrastHalo(obstacle, x, drawY);
     drawObstacleSprite(obstacle.type, x, drawY, obstacle.drawW, obstacle.drawH);
+    debugLabels.set(obstacle, obstacle.type);
   });
 }
 
-// Vật có trạng thái. Chia làm 2 lượt vẽ theo `grounded`:
+// Vật có trạng thái (sprite 8-bit, pivot bottom-center = tâm ngang + chân
+// hitbox). Chia làm 2 lượt vẽ theo `grounded`:
 //   submerged (thuyền, grounded = false) vẽ TRƯỚC drawHoles() để thân thuyền
-//     chìm dưới lớp tối của khe sông — nếu vẽ sau, thuyền rộng hơn khe sẽ che
-//     mất miệng hố và người chơi không thấy chỗ phải nhảy.
+//     chìm dưới lớp tối của khe sông.
 //   còn lại vẽ sau vật cản, trước enemy.
-// Ô cố định cho lính có THROWER_ANIMATIONS: ô của bước đang diễn nếu đang
-// ném/báo động, không thì ô đứng yên. Sprite khác trả null (chạy vòng như cũ).
-function throwerFrame(sprite, action) {
-  const animation = THROWER_ANIMATIONS[sprite];
-  if (!animation) return null;
-  if (action) {
-    const current = actionStepAt(animation[action.name], action.time);
-    if (current) return current.step.frame;
-  }
-  return animation.idle;
-}
-
+// Hazard đang chết (dying) vẫn vẽ để phát nốt death/break; xác xe nằm lại.
 function drawHazards(time, submerged = false) {
-  state.hazards.forEach((hazard, index) => {
-    if (!hazard.alive) return;
+  state.hazards.forEach(hazard => {
+    if (!hazard.alive && !hazard.dying) return;
     if (hazard.grounded === submerged) return;
     // Roller chưa được kích hoạt thì chưa xuất hiện trên màn — nó đang "chờ"
     // ngoài tầm nhìn, vẽ ra sẽ thành vật đứng im giữa đường.
     if (hazard.kind === 'roller' && !hazard.active) return;
-    const drawX = hazard.x + hazard.w / 2 - hazard.drawW / 2 - state.cameraX;
-    if (drawX + hazard.drawW < -100 || drawX > VIEW_W + 100) return;
-    const size = HAZARD_SPRITE_SIZES[hazard.sprite] || {};
-    let drawY;
-    if (size.groundLine !== undefined) {
-      // Sprite mặt cắt (hố chông): mép đất trong ảnh trùng mặt đất, phần dưới
-      // chìm vào dải đất. Tô miệng hố tối trước để lòng hố không lộ cỏ/đất
-      // của layer nền qua các khe trong suốt giữa hàng chông.
-      drawY = hazard.baseY - hazard.drawH * size.groundLine;
-      drawPitShadow(
-        drawX + hazard.drawW * size.pitLeft,
-        hazard.baseY,
-        hazard.drawW * (size.pitRight - size.pitLeft)
-      );
-    } else {
-      const sink = hazard.grounded ? OBSTACLE_GROUND_SINK : 0;
-      drawY = hazard.baseY - hazard.drawH + sink;
-    }
-    drawHazardArt(
-      hazard.sprite, drawX, drawY, hazard.drawW, hazard.drawH,
-      time, hazard.animOffset + index * .07, hazard.hitTimer > 0 ? .45 : 1,
-      facingDirection(hazard.x + hazard.w / 2, hazard.kind === 'roller' ? hazard.speed : 0, hazard.kind === 'thrower'),
-      throwerFrame(hazard.sprite, hazard.action)
-    );
-    if (hazard.maxHp > 0 && hazard.hp > 0) drawHealthBar(drawX, drawY - 12, hazard.drawW, hazard.hp / hazard.maxHp, '#e2ad45');
-  });
-}
-
-function drawProjectiles(time) {
-  state.projectiles.forEach((projectile, index) => {
-    const x = projectile.x + projectile.w / 2 - projectile.drawW / 2 - state.cameraX;
-    if (x + projectile.drawW < -60 || x > VIEW_W + 60) return;
-    const y = projectile.y + projectile.h / 2 - projectile.drawH / 2;
-    // Đoạn cuối tầm bay mờ dần để đạn không biến mất đột ngột.
-    const alpha = Math.min(1, (PROJECTILE_MAX_RANGE - projectile.traveled) / PROJECTILE_FADE_RANGE);
-    const meta = ITEM_STRIP_FILES[projectile.sprite];
-    const image = meta && images.itemStrips[projectile.sprite];
-    ctx.save();
-    ctx.globalAlpha = Math.max(0, alpha);
-    if (!image) {
-      ctx.fillStyle = '#e0b24a';
-      ctx.fillRect(Math.round(x), Math.round(y), projectile.drawW, projectile.drawH);
-      ctx.restore();
+    const sprite = HAZARD_SPRITES[hazard.sprite];
+    const centerX = hazard.x + hazard.w / 2;
+    const pivotX = Math.round(centerX - state.cameraX);
+    if (pivotX < -80 || pivotX > VIEW_W + 80) return;
+    const footY = Math.round(hazard.baseY + (sprite?.sink || 0));
+    const facing = facingDirection(centerX, hazard.facing, hazard.kind === 'thrower' || hazard.kind === 'boat');
+    const drawn = sprite && drawAnimated(sprite.id, sprite.anims, sprite.durations, hazard, pivotX, footY, facing);
+    if (!drawn) {
+      drawPlaceholder(hazard);
+      debugLabels.set(hazard, `${hazard.sprite} (placeholder)`);
       return;
     }
-    // Đạn vẽ sẵn hướng sang TRÁI (theo spec), nên chỉ lật khi bay sang phải.
-    if (projectile.direction > 0) {
-      ctx.translate(Math.round(x + projectile.drawW / 2), 0);
-      ctx.scale(-1, 1);
-      ctx.translate(-Math.round(x + projectile.drawW / 2), 0);
+    debugLabels.set(hazard, drawn.label);
+    if (hazard.alive && hazard.maxHp > 0 && hazard.hp > 0) {
+      const barW = hazard.w + 8;
+      drawHealthBar(pivotX - barW / 2, drawn.top - 5, barW, hazard.hp / hazard.maxHp, '#e2ad45');
     }
-    drawStripSprite(image, meta, x, y, projectile.drawW, projectile.drawH, time, index * .05);
-    ctx.restore();
   });
 }
 
-function drawPitShadow(left, top, width) {
-  const gradient = ctx.createLinearGradient(0, top, 0, VIEW_H);
-  gradient.addColorStop(0, '#2a1a0e');
-  gradient.addColorStop(1, '#0c0704');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(Math.round(left), Math.round(top), Math.round(width), Math.round(VIEW_H - top));
+function drawProjectiles() {
+  state.projectiles.forEach(projectile => {
+    const art = PROJECTILE_SPRITES[projectile.sprite];
+    const centerX = Math.round(projectile.x + projectile.w / 2 - state.cameraX);
+    const centerY = Math.round(projectile.y + projectile.h / 2);
+    if (centerX < -40 || centerX > VIEW_W + 40) return;
+    // Đoạn cuối tầm bay mờ dần để đạn không biến mất đột ngột.
+    const alpha = Math.max(0, Math.min(1, (PROJECTILE_MAX_RANGE - projectile.traveled) / PROJECTILE_FADE_RANGE));
+    const meta = art ? getAnimMeta(art.id, art.anim) : null;
+    const image = art ? images.sprites8[art.id]?.[art.anim] : null;
+    if (!meta || !image) {
+      drawPlaceholder(projectile, alpha);
+      return;
+    }
+    // Strip đạn lặp theo tuổi của viên đạn (đồng hồ riêng); tâm ô vẽ trùng
+    // tâm hitbox; ảnh gốc quay PHẢI nên bay sang trái thì lật.
+    const frame = frameIndex(meta, projectile.age);
+    const footY = centerY - Math.round(meta.frame_h / 2) + meta.frame_h - 1;
+    drawSprite8(image, meta, frame, centerX, footY, projectile.direction < 0 ? -1 : 1, alpha);
+    debugLabels.set(projectile, `${art.anim} ${frame + 1}/${meta.frames}`);
+  });
 }
 
 function drawHealthBar(x, y, width, ratio, color) {
   ctx.fillStyle = '#2b110d';
-  ctx.fillRect(Math.round(x), Math.round(y), Math.round(width), 6);
+  ctx.fillRect(Math.round(x), Math.round(y), Math.round(width), 4);
   ctx.fillStyle = color;
-  ctx.fillRect(Math.round(x + 1), Math.round(y + 1), Math.round((width - 2) * ratio), 4);
+  ctx.fillRect(Math.round(x + 1), Math.round(y + 1), Math.round((width - 2) * ratio), 2);
 }
 
-function drawEnemies(time) {
-  state.enemies.forEach((enemy, index) => {
-    if (!enemy.alive) return;
-    const x = enemy.x - state.cameraX;
-    if (x + enemy.w < -80 || x > VIEW_W + 80) return;
-    // Enemy giờ dùng PNG strip riêng (lính Hán / kỵ binh) thay cho atlas cũ.
-    // Hitbox giữ nguyên, chỉ ô VẼ to hơn và neo theo đáy hitbox để sprite
-    // không bị bóp méo theo khung va chạm.
+// Lính canh / boss đứng yên (sprite 8-bit, pivot = tâm ngang + chân hitbox).
+// Boss không có animation `hurt` nên trúng đòn thì nháy mờ như bản cũ.
+function drawEnemies() {
+  state.enemies.forEach(enemy => {
+    if (!enemy.alive && !enemy.dying) return;
     const art = ENEMY_SPRITES[enemy.boss ? 'boss' : 'normal'];
-    const drawX = x + enemy.w / 2 - art.drawW / 2;
-    const drawY = enemy.y + enemy.h - art.drawH;
-    drawHazardArt(
-      art.sprite, drawX, drawY, art.drawW, art.drawH,
-      time, index * .13, enemy.hitTimer > 0 ? .45 : 1,
-      facingDirection(enemy.x + enemy.w / 2, 0, true),
-      throwerFrame(art.sprite, null)
-    );
-    drawHealthBar(drawX, drawY - 12, art.drawW, enemy.hp / enemy.maxHp, enemy.boss ? '#e34c36' : '#e2ad45');
+    const centerX = enemy.x + enemy.w / 2;
+    const pivotX = Math.round(centerX - state.cameraX);
+    if (pivotX < -80 || pivotX > VIEW_W + 80) return;
+    const footY = Math.round(enemy.y + enemy.h);
+    const alpha = enemy.hitTimer > 0 && !art.anims.hurt && enemy.alive ? .45 : 1;
+    const drawn = drawAnimated(art.id, art.anims, null, enemy, pivotX, footY, facingDirection(centerX, 0, true), alpha);
+    if (!drawn) {
+      drawPlaceholder(enemy, alpha);
+      return;
+    }
+    debugLabels.set(enemy, drawn.label);
+    if (enemy.alive) {
+      const barW = enemy.w + 8;
+      drawHealthBar(pivotX - barW / 2, drawn.top - 5, barW, enemy.hp / enemy.maxHp, enemy.boss ? '#e34c36' : '#e2ad45');
+    }
   });
 }
 
-function drawPlayer() {
+// Ô của animation người chơi cần vẽ (0-based) theo cấu hình PLAYER_ANIMATIONS.
+function playerFrame(config, meta, p, animTime) {
+  if (config.holdFrame !== undefined) return config.holdFrame < 0 ? meta.frames - 1 : config.holdFrame;
+  if (config.byVelocity) {
+    // jump 3 ô: bật lên / gần đỉnh / rơi — chọn theo vận tốc dọc, không theo giờ.
+    if (p.vy < -PLAYER_JUMP_APEX_VY) return 0;
+    return p.vy > PLAYER_JUMP_APEX_VY ? Math.min(2, meta.frames - 1) : Math.min(1, meta.frames - 1);
+  }
+  return frameIndex(meta, animTime, config.duration);
+}
+
+// Vẽ 1 ô strip 8-bit, pivot bottom-center: chân (hàng frame_h - 2) nằm ngay
+// trên `footY`, lật ngang quanh pivot khi quay trái (ảnh gốc quay phải).
+// `scale` = 1 cho mọi strip đúng tỉ lệ; khác 1 chỉ dùng bù tạm (drawScale).
+function drawSprite8(image, meta, frame, pivotX, footY, facing, alpha = 1, scale = 1) {
+  const w = meta.frame_w * scale;
+  const h = meta.frame_h * scale;
+  const left = pivotX - w / 2;
+  const top = footY - (meta.frame_h - 1) * scale;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  if (facing < 0) {
+    ctx.translate(pivotX, 0);
+    ctx.scale(-1, 1);
+    ctx.translate(-pivotX, 0);
+  }
+  ctx.drawImage(image, frame * meta.frame_w, 0, meta.frame_w, meta.frame_h, left, top, w, h);
+  ctx.restore();
+}
+
+function drawPlayer(time) {
   const p = state.player;
   const x = Math.round(p.x - state.cameraX);
   const y = Math.round(p.y);
-  const blinkHidden = p.invulnerable > 0 && Math.floor(p.invulnerable * 12) % 2 === 0;
+  const dead = p.deathTime !== null && state.health <= 0;
+  const blinkHidden = !dead && p.invulnerable > 0 && Math.floor(p.invulnerable * 12) % 2 === 0;
 
-  // Thứ tự ưu tiên: trúng đòn > lướt > đánh > nhảy > chạy > đứng yên.
-  // Dùng attackCooldown (.36s) chứ không phải attacking (.18s — chỉ là khung
-  // gây sát thương) để cả cú vung kiếm kịp chạy hết, không bị cắt giữa chừng.
-  const animationName =
-    p.hurtTimer > 0 ? 'hurt'
-      : p.dashing ? 'dash'
-        : p.attackCooldown > 0 ? 'attack'
-          : !p.grounded ? 'jump'
-            : Math.abs(p.vx) > 1 ? 'run' : 'idle';
-  const playerImage = images.player[animationName] || images.player.idle;
-  if (playerSprite && playerImage) {
-    // Để trình duyệt chạy GIF trực tiếp trong một phần tử HTML giống level-test.
-    // Canvas chỉ còn vẽ map, vì vẽ GIF vào canvas có thể bị giữ ở khung đầu.
-    // Chiều rộng ô vẽ suy ra từ tỉ lệ ảnh thật để không bao giờ méo; ô được đặt
-    // sao cho điểm neo (đầu nhân vật) trùng tâm hitbox, và lật trái/phải cũng
-    // xoay quanh đúng điểm neo đó.
-    const aspect = playerImage.naturalHeight
-      ? playerImage.naturalWidth / playerImage.naturalHeight
-      : 1;
-    const boxH = PLAYER_SPRITE_HEIGHT;
-    const boxW = boxH * aspect;
-    const drawX = x + p.w / 2 - boxW * PLAYER_SPRITE_ANCHOR_X;
-    const footY = y + p.h;
-    if (currentPlayerAnimation !== animationName) {
-      const imageUrl = playerImage.currentSrc || playerImage.src;
-      playerSprite.style.backgroundImage = `url(${JSON.stringify(imageUrl)})`;
-      currentPlayerAnimation = animationName;
-    }
-    playerSprite.hidden = false;
-    playerSprite.style.left = `${drawX / VIEW_W * 100}%`;
-    playerSprite.style.bottom = `${(VIEW_H - footY) / VIEW_H * 100}%`;
-    playerSprite.style.width = `${boxW / VIEW_W * 100}%`;
-    playerSprite.style.height = `${boxH / VIEW_H * 100}%`;
-    playerSprite.style.transformOrigin = `${PLAYER_SPRITE_ANCHOR_X * 100}% bottom`;
-    playerSprite.style.transform = `scaleX(${p.facing < 0 ? -1 : 1})`;
-    playerSprite.style.visibility = blinkHidden ? 'hidden' : 'visible';
-    playerSprite.classList.toggle('is-dashing', p.dashing);
-  } else {
-    if (playerSprite) playerSprite.hidden = true;
+  // Trạng thái animation do physics.js chọn (thứ tự ưu tiên hurt > dash >
+  // attack > jump > run > idle); thua thì phát `death` một lần.
+  const key = dead ? 'death' : (p.anim?.name || 'idle');
+  const animTime = dead ? Math.max(0, time - p.deathTime) : (p.anim?.time || 0);
+  const config = PLAYER_ANIMATIONS[key];
+  const meta = getAnimMeta(PLAYER_SPRITE_ID, config.anim);
+  const image = images.sprites8[PLAYER_SPRITE_ID]?.[config.anim];
+
+  if (meta && image) {
+    const frame = playerFrame(config, meta, p, animTime);
+    debugLabels.set(p, `${key}:${config.anim} ${frame + 1}/${meta.frames}`);
     if (blinkHidden) return;
-    // Placeholder canvas cho Trưng Trắc: tóc dài buộc sau, khăn đầu, giáp đỏ-vàng,
-    // váy hình thang thay vì 2 ống quần — dùng tới khi có GIF nhân vật thật.
-    ctx.save();
-    ctx.translate(x + (p.facing < 0 ? p.w : 0), y);
-    ctx.scale(p.facing, 1);
+    const pivotX = Math.round(p.x + p.w / 2 - state.cameraX);
+    const footY = Math.round(p.y + p.h);
+    const facing = p.facing < 0 ? -1 : 1;
+    drawSprite8(image, meta, frame, pivotX, footY, facing, 1, config.drawScale || 1);
+    return;
+  }
 
-    const headTop = 2;
-    const bodyTop = 18;
-    const skirtTop = p.h - 24;
-    const skirtBottom = p.h - 6;
-
-    ctx.fillStyle = '#1c1108';
-    ctx.fillRect(-4, headTop + 6, 10, 30);
-    ctx.fillRect(10, headTop - 2, 20, 12);
-
-    ctx.fillStyle = '#c98c61';
-    ctx.fillRect(14, headTop, 16, 16);
-
-    ctx.fillStyle = '#d2a33e';
-    ctx.fillRect(13, headTop - 2, 18, 4);
-
-    ctx.fillStyle = '#7a1f1f';
-    ctx.fillRect(8, bodyTop, 28, Math.max(14, skirtTop - bodyTop));
-
-    ctx.fillStyle = '#d2a33e';
-    ctx.fillRect(8, bodyTop + 6, 28, 5);
-
-    ctx.beginPath();
-    ctx.moveTo(10, skirtTop);
-    ctx.lineTo(32, skirtTop);
-    ctx.lineTo(37, skirtBottom);
-    ctx.lineTo(5, skirtBottom);
-    ctx.closePath();
-    ctx.fillStyle = '#8b2820';
-    ctx.fill();
-
-    ctx.fillStyle = '#2b1710';
-    ctx.fillRect(6, skirtBottom, 12, p.h - skirtBottom);
-    ctx.fillRect(24, skirtBottom, 12, p.h - skirtBottom);
-
-    if (p.attacking) {
-      ctx.fillStyle = '#d7d5c8';
-      ctx.fillRect(35, bodyTop + 6, 42, 5);
-      ctx.fillStyle = '#6c431f';
-      ctx.fillRect(30, bodyTop + 4, 12, 9);
-    }
-    ctx.restore();
+  // Thiếu manifest/strip: hộp placeholder đúng bằng hitbox (như Phase 1).
+  debugLabels.set(p, `${key} (placeholder)`);
+  if (blinkHidden) return;
+  const colors = { hurt: '#e0564a', dash: '#6fc3e8', attack: '#f0c859', jump: '#c9853f', run: '#a8322c', idle: '#8b2820', death: '#3a2a22' };
+  ctx.fillStyle = '#2b1710';
+  ctx.fillRect(x, y, p.w, p.h);
+  ctx.fillStyle = colors[key];
+  ctx.fillRect(x + 1, y + 1, p.w - 2, p.h - 2);
+  const headX = p.facing > 0 ? x + p.w - 11 : x + 3;
+  ctx.fillStyle = '#c98c61';
+  ctx.fillRect(headX, y + 3, 8, 8);
+  if (p.attacking) {
+    ctx.fillStyle = '#d7d5c8';
+    ctx.fillRect(p.facing > 0 ? x + p.w : x - 48, y + 14, 48, 3);
   }
 }
 
 function drawChunkMarker() {
   const chunk = Math.min(LEVEL_CHUNKS, Math.floor(state.player.x / CHUNK_W) + 1);
   ctx.fillStyle = 'rgba(24, 14, 9, .72)';
-  ctx.fillRect(VIEW_W - 105, 12, 90, 28);
+  ctx.fillRect(VIEW_W - 63, 7, 54, 17);
   ctx.fillStyle = '#ffe7a3';
-  ctx.font = 'bold 15px system-ui';
+  ctx.font = 'bold 9px system-ui';
   ctx.textAlign = 'center';
-  ctx.fillText(`${chunk} / ${LEVEL_CHUNKS}`, VIEW_W - 60, 32);
+  ctx.fillText(`${chunk} / ${LEVEL_CHUNKS}`, VIEW_W - 36, 19);
+}
+
+// Lớp debug (F2): hitbox (đỏ; người chơi xanh), pivot bottom-center (vàng),
+// nhãn animation + ô đang vẽ phía trên entity, vạch GROUND_Y. Không đụng state.
+function drawDebugOverlay() {
+  ctx.save();
+  ctx.lineWidth = 1;
+  ctx.font = '7px monospace';
+  ctx.textAlign = 'center';
+  const entities = [
+    ...state.obstacles.filter(item => item.active),
+    ...state.hazards.filter(item => item.alive && !(item.kind === 'roller' && !item.active)),
+    ...state.enemies.filter(item => item.alive),
+    ...state.projectiles,
+    state.player
+  ];
+  entities.forEach(entity => {
+    const x = Math.round(entity.x - state.cameraX);
+    if (x + entity.w < -20 || x > VIEW_W + 20) return;
+    const y = Math.round(entity.y);
+    ctx.strokeStyle = entity === state.player ? '#00ff9c' : '#ff3b3b';
+    ctx.strokeRect(x + .5, y + .5, Math.round(entity.w) - 1, Math.round(entity.h) - 1);
+    const pivotX = Math.round(x + entity.w / 2);
+    const pivotY = Math.round(y + entity.h);
+    ctx.fillStyle = '#ffe600';
+    ctx.fillRect(pivotX - 1, pivotY - 1, 3, 3);
+    const label = debugLabels.get(entity);
+    if (label) {
+      const textW = Math.ceil(ctx.measureText(label).width) + 4;
+      ctx.fillStyle = 'rgba(0, 0, 0, .6)';
+      ctx.fillRect(Math.round(pivotX - textW / 2), y - 10, textW, 9);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(label, pivotX, y - 3);
+    }
+  });
+  state.books.filter(book => !book.collected).forEach(book => {
+    const x = Math.round(book.x - state.cameraX);
+    ctx.strokeStyle = '#4fa3ff';
+    ctx.strokeRect(x - 11 + .5, Math.round(book.y) - 13 + .5, 21, 25);
+  });
+  ctx.strokeStyle = 'rgba(255, 255, 255, .5)';
+  ctx.beginPath();
+  ctx.moveTo(0, GROUND_Y + .5);
+  ctx.lineTo(VIEW_W, GROUND_Y + .5);
+  ctx.stroke();
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'left';
+  ctx.fillText(`x ${Math.round(state.player.x)}  cam ${Math.round(state.cameraX)}  GROUND_Y ${GROUND_Y}`, 4, 10);
+  ctx.restore();
 }
 
 export function draw(time = 0) {
   ctx.clearRect(0, 0, VIEW_W, VIEW_H);
+  debugLabels.clear();
   drawBackdrops();
-  if (!state) return;
+  if (!state) {
+    ctx.imageSmoothingEnabled = false;
+    return;
+  }
   drawLandmarks();
+  // Hết lớp nền: tắt smoothing trước khi vẽ sprite.
+  ctx.imageSmoothingEnabled = false;
   drawHazards(time, true);
   drawHoles();
   drawBooks(time);
   drawObstacles();
   drawHazards(time);
-  drawEnemies(time);
-  drawProjectiles(time);
-  drawPlayer();
+  drawEnemies();
+  drawProjectiles();
+  drawPlayer(time);
   drawChunkMarker();
+  if (debug.enabled) drawDebugOverlay();
 }

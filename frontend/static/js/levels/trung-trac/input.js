@@ -2,6 +2,8 @@
 
 export const keys = { left: false, right: false, jump: false, dash: false, attack: false };
 export const pressed = { jump: false, dash: false, attack: false };
+// Cờ lớp debug (F2): hitbox, pivot, tên animation — render.js đọc mỗi frame.
+export const debug = { enabled: false };
 
 export function setKey(code, down) {
   const mapping = {
@@ -32,6 +34,11 @@ export function bindInput({ onRestart }) {
   window.addEventListener('keydown', event => {
     if (event.code === 'KeyR') {
       onRestart();
+      return;
+    }
+    if (event.code === 'F2') {
+      event.preventDefault();
+      if (!event.repeat) debug.enabled = !debug.enabled;
       return;
     }
     if (setKey(event.code, true)) event.preventDefault();
