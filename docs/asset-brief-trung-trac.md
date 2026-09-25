@@ -48,9 +48,14 @@ APPLY=1 python tools/normalize_player_gifs.py  # ghi đè thật (tự backup v�
 
 Script tự đo khuôn mặt để cân tỉ lệ nhân vật, đưa 4 (hoặc 6) file về cùng khung, chân cùng baseline, đầu cùng toạ độ ngang. Nếu nó in ra `PLAYER_SPRITE_ANCHOR_X` khác giá trị đang có trong `trung-trac/config.js` thì cập nhật lại hằng số đó.
 
-## 3. Phần 1 — chướng ngại vật tĩnh — ĐÃ CODE
+## 3. Phần 1 — chướng ngại vật tĩnh — ĐÃ TÁI TẠO VÀ GHÉP MAP
 
 `obstacles: [...]` trong `createLevelState()` (`trung-trac/state.js`) dùng ảnh tĩnh có sẵn trong `frontend/static/assets/images/obstacles/`, mỗi ảnh 1 type riêng (không dùng atlas cắt ô nữa) — xem `OBSTACLE_SPRITE_FILES` trong `trung-trac/config.js`:
+
+Bộ hiện hành được tạo lại theo bối cảnh Giao Chỉ khoảng năm 40: tre chẻ, mây buộc,
+gỗ thô và đá ong/đá suối; không dùng đinh thép hoặc kết cấu trung đại. Nguồn,
+prompt và kết quả QC nằm trong `artifacts/static-obstacles-v2/`; script xuất file
+runtime là `tools/finalize_static_obstacles.py`.
 
 | Type trong code | File ảnh | Hành vi |
 |---|---|---|
