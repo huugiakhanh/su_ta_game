@@ -1,36 +1,35 @@
 // Hằng số thuần cho màn Trưng Trắc — không chứa logic, chỉ export để các
 // module khác import dùng chung.
 
-export const VIEW_W = 896;
-export const VIEW_H = 360;
-export const CHUNK_W = 1280;
+// Độ phân giải LOGIC của màn (TT-INT-01): mọi thứ vẽ lên canvas 480x270 rồi
+// phóng to bội số nguyên ra màn hình (xem fitCanvas() trong render.js). Mọi
+// toạ độ/kích thước/tốc độ dưới đây là pixel logic — đã quy đổi từ hệ cũ
+// 896x360 theo hệ số k = 0.6 (khớp tỉ lệ bộ sprite 8-bit mới, xem
+// docs/INTEGRATION_PLAN_TT.md). Hằng số tính theo giây KHÔNG nhân k.
+export const LOGICAL_W = 480;
+export const LOGICAL_H = 270;
+export const VIEW_W = LOGICAL_W;
+export const VIEW_H = LOGICAL_H;
+export const CHUNK_W = 768;
 export const LEVEL_CHUNKS = 12;
 export const LEVEL_WORLD_WIDTH = CHUNK_W * LEVEL_CHUNKS;
-// Dải đất ground.png (1792x70) vẽ ở cỡ GỐC, sát đáy khung nhìn. Ảnh có ~34 hàng
-// trong suốt phía trên mép cỏ, nên mặt sàn vật lý (GROUND_Y) phải nằm ở MÉP CỎ
-// chứ không phải mép trên của ảnh — nếu không nhân vật/vật cản sẽ lơ lửng.
-// Tạo lại ground.png với lề khác thì chỉ cần sửa GROUND_GRASS_OFFSET.
-export const GROUND_LAYER_HEIGHT = 70;
+// Dải đất ground.png (1792x70) vẽ thu theo k (70 -> 42px), sát đáy khung nhìn.
+// Ảnh có ~34 hàng gốc (-> 20px) trong suốt phía trên mép cỏ, nên mặt sàn vật
+// lý (GROUND_Y) phải nằm ở MÉP CỎ chứ không phải mép trên của ảnh — nếu không
+// nhân vật/vật cản sẽ lơ lửng. Tạo lại ground.png với lề khác thì chỉ cần sửa
+// GROUND_GRASS_OFFSET. TODO_MAP: nền sẽ vẽ lại theo brief môi trường.
+export const GROUND_LAYER_HEIGHT = 42;
 export const GROUND_LAYER_TOP = VIEW_H - GROUND_LAYER_HEIGHT;
-export const GROUND_GRASS_OFFSET = 34;
+export const GROUND_GRASS_OFFSET = 20;
 export const GROUND_Y = GROUND_LAYER_TOP + GROUND_GRASS_OFFSET;
-export const FOOT_MARGIN = 9;
-export const MOVE_SPEED = 280;
-export const GRAVITY = 2200;
-export const JUMP_FORCE = 780;
-export const DASH_SPEED = 720;
+export const FOOT_MARGIN = 5;
+export const MOVE_SPEED = 168;
+export const GRAVITY = 1320;
+export const JUMP_FORCE = 468;
+export const DASH_SPEED = 432;
 export const DASH_TIME = 0.30;
-export const GROUND_SNAP_DISTANCE = 18;
-// 6 GIF nhân vật đã được chuẩn hoá về CÙNG 1 khung 1202x610, nhân vật cùng tỉ lệ,
-// chân cùng baseline (đáy khung), đầu cùng toạ độ ngang — nhờ vậy không cần hệ số
-// bù riêng cho từng animation. Ô vẽ lấy chiều cao cố định, chiều rộng suy ra từ
-// tỉ lệ ảnh thật lúc chạy, nên đổi ảnh khác khung vẫn không méo.
-export const PLAYER_SPRITE_HEIGHT = 86;
-// Vị trí đầu nhân vật trong khung (0..1) — khung lệch tâm vì tư thế dash có vệt
-// tóc/bụi kéo dài về sau. Neo theo điểm này để nhân vật không "nhảy ngang" khi
-// đổi animation và để lật trái/phải đúng tâm. Do script chuẩn hoá GIF tính ra.
-export const PLAYER_SPRITE_ANCHOR_X = 0.4583;
-export const OBSTACLE_GROUND_SINK = 7;
+export const GROUND_SNAP_DISTANCE = 11;
+export const OBSTACLE_GROUND_SINK = 4;
 
 // Nền map v2 tách thành 3 plate tile ngang để gameplay dễ đọc:
 // - sky: trời/núi xa, opaque, parallax chậm;
@@ -39,17 +38,20 @@ export const OBSTACLE_GROUND_SINK = 7;
 // Nhờ tách `ground`, cây/nhà không còn bị bake vào mặt sàn nên obstacle,
 // hazard và nhân vật có thể đặt/chuyển độc lập mà không lộ đường ghép.
 export const BACKDROP_ROOT = '/static/assets/images/backdrops/chapter1/';
-// foreground.png (midground: làng/cây/núi gần) chỉ có nội dung ở dải y≈100–175
-// (tính theo cỡ hiển thị 360px), mờ dần tới ~230, phần dưới trong suốt hoàn
-// toàn. Vẽ từ y=0 thì dải làng lơ lửng giữa màn hình — dời xuống để CHÂN dải
-// làng/cây (y≈175 trong ảnh) nằm ngay trên mép cỏ; phần sương mờ phía dưới
-// bị layer `ground` (vẽ sau) che đi.
-const MIDGROUND_BASE_IN_IMAGE = 175;
-export const MIDGROUND_Y = GROUND_Y - MIDGROUND_BASE_IN_IMAGE - 8;
+// foreground.png (midground: làng/cây/núi gần) vẽ cao FOREGROUND_HEIGHT (=
+// 360px hệ cũ x k), chỉ có nội dung ở dải y≈60–105 (theo cỡ vẽ đó), mờ dần tới
+// ~138, phần dưới trong suốt hoàn toàn. Vẽ từ y=0 thì dải làng lơ lửng giữa
+// màn hình — dời xuống để CHÂN dải làng/cây (y≈105 trong ảnh) nằm ngay trên
+// mép cỏ; phần sương mờ phía dưới bị layer `ground` (vẽ sau) che đi.
+const FOREGROUND_HEIGHT = 216;
+const MIDGROUND_BASE_IN_IMAGE = 105;
+export const MIDGROUND_Y = GROUND_Y - MIDGROUND_BASE_IN_IMAGE - 5;
 
+// Khung 480x270 (k = 0.6) cao hơn hệ cũ 54px logic — phần dư là trời phía
+// trên, nên `sky` kéo phủ cả VIEW_H (TODO_MAP: vẽ lại nền đúng tỉ lệ 16:9).
 export const BACKDROP_LAYERS = [
   { key: 'sky', file: 'sky.png', y: 0, height: VIEW_H, speed: 0.22, fallbackColor: '#43b8e3' },
-  { key: 'foreground', file: 'foreground.png', y: MIDGROUND_Y, height: VIEW_H, speed: 0.58, fallbackColor: 'rgba(0, 0, 0, 0)', fallbackBandHeight: 0 },
+  { key: 'foreground', file: 'foreground.png', y: MIDGROUND_Y, height: FOREGROUND_HEIGHT, speed: 0.58, fallbackColor: 'rgba(0, 0, 0, 0)', fallbackBandHeight: 0 },
   { key: 'ground', file: 'ground.png', y: GROUND_LAYER_TOP, height: GROUND_LAYER_HEIGHT, speed: 1, fallbackColor: '#795238', fallbackBandHeight: VIEW_H - GROUND_Y }
 ];
 
@@ -60,9 +62,10 @@ export const BACKDROP_LAYERS = [
 // sink = số px chìm xuống dưới GROUND_Y cho phần chân/nền của ảnh ăn vào mặt đất.
 // Chiều rộng tự suy từ tỉ lệ ảnh thật lúc chạy nên không bao giờ méo.
 export const LANDMARKS = [
-  // Cổng đích cuối màn 12/12. worldX=15150 khớp finishX = worldX(12, 1030) khai
-  // báo trong state.js (12-1)*1280+1030 — sửa 1 trong 2 chỗ thì nhớ sửa chỗ kia.
-  { file: 'finish-gate.png', worldX: 15150, height: 250, sink: 14 }
+  // Cổng đích cuối màn 12/12. worldX=9090 ứng với finishX = worldX(12, 618)
+  // khai báo trong state.js (12-1)*768+618 = 9066 — sửa 1 trong 2 chỗ thì nhớ
+  // sửa chỗ kia. (Lệch 24px có từ bản cũ 15150 vs 15110, giữ nguyên khi quy đổi.)
+  { file: 'finish-gate.png', worldX: 9090, height: 150, sink: 8 }
 ];
 
 // Dốc/địa hình đặc biệt (nếu cần) khai báo tại đây thay vì gắn cứng theo
@@ -84,69 +87,81 @@ export const OBSTACLE_SPRITE_FILES = {
   slideBar: 'slide_bar.png',
   spikesTrap: 'spikes.png',
   stoneBlock: 'stone_block.png',
-  // Bộ sprite mới (artifacts/sprite-forge-trung-trac) — vật tĩnh dùng chung
-  // đường dẫn với 10 vật cũ, chỉ khác là chúng được `hazards` dùng thay vì
-  // `obstacles` vì có trạng thái (bẫy bật, xe vỡ) hoặc chỉ là cảnh trí.
-  spikePitHidden: 'spike_pit_hidden.png',
-  spikePitOpen: 'spike_pit_open.png',
-  tributeCartBroken: 'tribute_cart_broken.png',
-  watchtower: 'watchtower.png'
+};
+// (Các ảnh hazard cũ spike_pit_*.png, tribute_cart_broken.png, watchtower.png
+// và các strip *_strip*.png đã ngừng tham chiếu — hazard/enemy/đạn giờ dùng
+// bộ sprite 8-bit, xem HAZARD_SPRITES. File ảnh cũ vẫn giữ nguyên trên đĩa.)
+
+// Hazard (vật cản/kẻ địch có trạng thái) -> asset 8-bit trong manifest. Khoá
+// (jungleTiger, hanTaxSoldier...) là tên `sprite` state.js dùng.
+//   id      asset trong manifest_tt.json (mọi strip quay mặt PHẢI; render tự lật
+//           để vật chạy quay theo hướng chạy, lính/boss quay về phía người chơi).
+//   w, h    hitbox (px logic) tính từ pivot bottom-center (tâm ngang, chân) —
+//           KHÔNG lấy từ cỡ ảnh. DESIGN_BASELINE (docs/INTEGRATION_PLAN_TT.md §5).
+//   anims   trạng thái gameplay -> animation manifest. Trạng thái: move (roller
+//           đang lao), idle, hurt (hitTimer > 0), throw, alarm, sprung (bẫy
+//           đã bật), death (hết máu — phát 1 lần rồi xoá; vật `corpse` thì
+//           đứng ở ô cuối và nằm lại map). Thiếu trạng thái -> dùng idle/move.
+//   durations  trải animation trên đúng số giây này thay vì fps manifest.
+//           throw .85s = tổng thời lượng chuỗi ném cũ (quyết định team §9.5),
+//           đạn rời tay khi tới ô hit_frame (4) -> .425s (cũ .45s).
+//   alarmTime  thời gian thổi tù và (giây, như bản cũ).
+//   muzzle  độ cao điểm sinh đạn so với chân (px logic) — giữ đúng độ cao đạn
+//           bản cũ quy đổi (≈32) để né/nhảy qua như trước.
+//   sink    số px chìm xuống dưới mặt đất khi vẽ (bẫy chông nằm lọt vào cỏ).
+//   corpse  hết máu thì phát death 1 lần rồi NẰM LẠI map ở ô cuối, vô hại
+//           (xe cống — quyết định team §9.2).
+export const HAZARD_SPRITES = {
+  officialPalanquin: { id: 'EN_HAN_PALANQUIN', w: 76, h: 44, anims: { move: 'walk', idle: 'walk', hurt: 'hurt', death: 'break' } },
+  jungleTiger: { id: 'EN_TIGER', w: 48, h: 24, anims: { move: 'run', idle: 'idle', hurt: 'hurt', death: 'death' } },
+  tributeCart: { id: 'OB_TRIBUTE_CART', w: 48, h: 38, anims: { move: 'roll', idle: 'roll', death: 'break' }, corpse: true },
+  hanCavalry: { id: 'EN_HAN_CAVALRY', w: 56, h: 48, anims: { move: 'gallop', idle: 'gallop', hurt: 'hurt', death: 'death' } },
+  hanTaxSoldier: {
+    id: 'EN_HAN_TAXMAN', w: 20, h: 40, muzzle: 32,
+    anims: { idle: 'idle', throw: 'throw', hurt: 'hurt', death: 'death' }, durations: { throw: .85 }
+  },
+  watchtowerGuard: {
+    id: 'EN_HAN_WATCHTOWER', w: 22, h: 36, muzzle: 32, alarmTime: 1.1,
+    anims: { idle: 'idle', alarm: 'alarm', throw: 'throw', hurt: 'hurt', death: 'death' }, durations: { throw: .85 }
+  },
+  watchtower: { id: 'PROP_WATCHTOWER', w: 29, h: 91, anims: { idle: 'idle' } },
+  // Hố chông mới là hố NÔNG 48x16 (không còn ảnh mặt cắt): cỏ -> chông trồi
+  // lên (reveal 1 lần). Chìm 3px vào dải cỏ; hitbox mỏng sát mặt đất.
+  spikePit: { id: 'TR_SPIKE_PIT', w: 36, h: 6, sink: 3, anims: { idle: 'hidden', sprung: 'reveal' } },
+  // Thuyền tuần tra: khai báo sẵn, KHÔNG có trong màn hiện tại.
+  patrolBoat: {
+    id: 'EN_HAN_BOAT', w: 70, h: 24, muzzle: 22,
+    anims: { idle: 'float', move: 'float', throw: 'shoot', death: 'death' }
+  }
 };
 
-// Sprite ĐỘNG vẽ trên canvas phải là PNG strip ngang (canvas không chạy GIF —
-// chỉ lấy khung đầu), các ô đều nhau: ô thứ i = [i*cellW, 0, cellW, h] với
-// cellW = image.width / frames. `fps` là tốc độ phát, không liên quan tới FPS
-// của game. Xem docs/sprite-spec-trung-trac.md mục 1.3.
-// `facing` = hướng mặt GỐC trong ảnh (mặc định 'left'). Spec yêu cầu vẽ quay
-// trái nhưng ảnh AI sinh ra không phải lúc nào cũng theo — kiệu quan, lính thu
-// thuế, lính gác được vẽ quay phải. render.js tự lật để vật di chuyển quay theo
-// hướng chạy, lính đứng/boss luôn quay về phía người chơi.
-export const OBSTACLE_STRIP_FILES = {
-  hanCavalry: { file: 'han_cavalry_strip6.png', frames: 6, fps: 12 },
-  hanTaxSoldier: { file: 'han_tax_soldier_strip4.png', frames: 4, fps: 6, facing: 'right' },
-  jungleTiger: { file: 'jungle_tiger_strip6.png', frames: 6, fps: 12 },
-  officialPalanquin: { file: 'official_palanquin_strip4.png', frames: 4, fps: 6, facing: 'right' },
-  patrolBoat: { file: 'patrol_boat_strip4.png', frames: 4, fps: 4 },
-  tributeCart: { file: 'tribute_cart_strip4.png', frames: 4, fps: 9 },
-  watchtowerGuard: { file: 'watchtower_guard_strip4.png', frames: 4, fps: 5, facing: 'right' }
+// Enemy (lính canh / boss) -> asset 8-bit. Hitbox nằm trong state.js (enemy
+// là object phẳng). Boss hiện chỉ đứng + nhận đòn (chưa có cơ chế 3 giai
+// đoạn), nên chỉ dùng idle; hết máu phát shield_break 1 lần rồi xoá.
+export const ENEMY_SPRITES = {
+  normal: { id: 'EN_HAN_GUARD', anims: { idle: 'idle', hurt: 'hurt', death: 'death' } },
+  boss: { id: 'BOSS_TO_DINH_CHARIOT', anims: { idle: 'idle', death: 'shield_break' } }
 };
 
-// Cỡ vẽ (drawW/drawH, tính bằng game px) giữ đúng tỉ lệ 1 Ô của strip nên
-// sprite không bao giờ méo; hitbox (w/h) cố tình NHỎ HƠN cỡ vẽ vì phần rìa
-// (bờm ngựa, mái kiệu, cán giáo, buồm thuyền) không nên tính là va chạm.
-// Cỡ bám bảng "thước đo trong game" ở docs/sprite-spec-trung-trac.md mục 2.
-export const HAZARD_SPRITE_SIZES = {
-  jungleTiger: { drawW: 132, drawH: 64, w: 104, h: 52 },
-  hanCavalry: { drawW: 132, drawH: 120, w: 92, h: 96 },
-  tributeCart: { drawW: 168, drawH: 92, w: 120, h: 78 },
-  tributeCartBroken: { drawW: 142, drawH: 90, w: 112, h: 58 },
-  officialPalanquin: { drawW: 175, drawH: 100, w: 140, h: 82 },
-  patrolBoat: { drawW: 190, drawH: 110, w: 150, h: 66 },
-  hanTaxSoldier: { drawW: 74, drawH: 86, w: 46, h: 78 },
-  watchtowerGuard: { drawW: 81, drawH: 86, w: 48, h: 78 },
-  watchtower: { drawW: 111, drawH: 180, w: 111, h: 180 },
-  spikePitHidden: { drawW: 133, drawH: 42, w: 120, h: 16 },
-  // spike_pit_open.png là MẶT CẮT hố: mép cỏ 2 bên nằm ở 36% chiều cao ảnh,
-  // lòng hố + chông ở dưới. `groundLine` = vị trí mép cỏ trong ảnh (0..1) để
-  // render neo mép cỏ vào GROUND_Y (lòng hố chìm xuống dải đất) thay vì neo
-  // đáy ảnh; `pitLeft/pitRight` = miệng hố (0..1 theo chiều ngang) để tô nền
-  // tối phía sau chông. Hitbox chỉ bằng miệng hố, mỏng sát mặt đất: đi qua là
-  // giẫm phải, nhảy qua thì an toàn.
-  spikePitOpen: { drawW: 142, drawH: 60, w: 74, h: 12, groundLine: .36, pitLeft: .25, pitRight: .77 }
+// Đạn -> asset 8-bit (khoá là tên `projectile` hazard khai báo). Hitbox (w, h)
+// nhỏ hơn hình một chút để đuôi lửa/cán giáo không gây sát thương oan. Mọi
+// strip đạn quay PHẢI, bay sang trái thì lật.
+export const PROJECTILE_SPRITES = {
+  coinPouch: { id: 'PJ_COIN_POUCH', anim: 'loop', w: 10, h: 10 },
+  throwingDart: { id: 'PJ_SPEAR', anim: 'idle', w: 22, h: 4 },
+  fireArrow: { id: 'PJ_FIRE_ARROW', anim: 'loop', w: 16, h: 5 }
 };
 
-// Đạn bay: cỡ nhỏ (12–26 px theo spec) nên hitbox chỉ hẹp hơn cỡ vẽ một chút,
-// đủ để lửa/tua đỏ ở đuôi không gây sát thương oan.
-export const PROJECTILE_SIZES = {
-  coinPouch: { drawW: 33, drawH: 26, w: 22, h: 18 },
-  fireArrow: { drawW: 42, drawH: 20, w: 30, h: 14 },
-  throwingDart: { drawW: 46, drawH: 17, w: 32, h: 12 }
-};
-
-export const PROJECTILE_SPEED = 330;
+export const PROJECTILE_SPEED = 198;
+// Tầm bay tối đa của đạn (px tính từ điểm bắn). Bay hết tầm thì đạn tan —
+// ≈1.4s ở PROJECTILE_SPEED. Để hơi lớn hơn fireRange (240–258) để đạn vẫn tới
+// được người chơi đứng ở mép tầm bắn. Đoạn cuối PROJECTILE_FADE_RANGE mờ dần
+// thay vì biến mất đột ngột.
+export const PROJECTILE_MAX_RANGE = 276;
+export const PROJECTILE_FADE_RANGE = 54;
 // Hazard chạy khỏi tầm nhìn phía sau người chơi bao nhiêu px thì xoá khỏi
 // state (tránh mảng phình to vô hạn khi chơi lâu).
-export const HAZARD_DESPAWN_MARGIN = 520;
+export const HAZARD_DESPAWN_MARGIN = 312;
 
 // Vật phẩm (item icon) lấy từ frontend/static/assets/images/items.
 export const ITEM_ROOT = '/static/assets/images/items/';
@@ -155,33 +170,54 @@ export const ITEM_FILES = {
   heart: 'heart.png'
 };
 
-// Đạn nằm trong items/ nhưng là PNG strip (2 khung) giống obstacle động.
-export const ITEM_STRIP_FILES = {
-  coinPouch: { file: 'coin_pouch_strip2.png', frames: 2, fps: 8 },
-  fireArrow: { file: 'fire_arrow_strip2.png', frames: 2, fps: 14 },
-  throwingDart: { file: 'throwing_dart_strip2.png', frames: 2, fps: 12 }
-};
-
-// Nhân vật chính: thư mục riêng cho Trưng Trắc — khi thiếu GIF, engine tự
-// fallback sang hình vẽ canvas (xem render.js/drawPlayer).
-export const PLAYER_ROOT_CANDIDATES = ['/static/assets/images/characters/trung-trac/'];
-
-export const PLAYER_ANIMATION_FILES = {
-  idle: 'stance.gif',
-  run: 'run.gif',
-  jump: 'jump.gif',
-  dash: 'dash.gif',
-  attack: 'attack.gif',
-  hurt: 'hurt.gif'
-};
-
 // Thời gian giữ animation trúng đòn (giây). Ngắn hơn thời gian bất tử (1.25s)
 // để nhân vật quay lại tư thế thường trong lúc vẫn còn nhấp nháy miễn thương.
 export const HURT_ANIMATION_TIME = 0.45;
 
-// Enemy dùng strip riêng (OBSTACLE_STRIP_FILES) — atlas `mapchunk_1/contains
-// obstacles.png` đã bỏ hẳn, không còn module nào đọc tới nó.
-export const ENEMY_SPRITES = {
-  normal: { sprite: 'hanTaxSoldier', drawW: 75, drawH: 88 },
-  boss: { sprite: 'hanCavalry', drawW: 138, drawH: 126 }
+// Bộ sprite 8-bit mới (Codex, bản chép từ assets/sprites/). Manifest là nguồn
+// DUY NHẤT cho frames/fps/loop/hit_frame — đọc lúc chạy (animation.js), không
+// chép các số đó vào đây. Mọi strip vẽ x1 (không co giãn), pivot bottom-center:
+// chân nằm ở hàng frame_h - 2 (1px đệm dưới chân), quay mặt PHẢI trong ảnh.
+export const SPRITE_8BIT_ROOT = '/static/assets/images/sprites-8bit/';
+export const SPRITE_MANIFEST_FILE = 'manifest_tt.json';
+// Các asset 8-bit game cần tải strip (viewer tự tải riêng mọi asset).
+export const SPRITE_8BIT_IN_GAME = [
+  'PLAYER_TRUNG_TRAC',
+  'EN_HAN_PALANQUIN', 'EN_TIGER', 'OB_TRIBUTE_CART', 'EN_HAN_CAVALRY',
+  'EN_HAN_TAXMAN', 'EN_HAN_WATCHTOWER', 'PROP_WATCHTOWER', 'TR_SPIKE_PIT', 'EN_HAN_BOAT',
+  'EN_HAN_GUARD', 'BOSS_TO_DINH_CHARIOT',
+  'PJ_COIN_POUCH', 'PJ_SPEAR', 'PJ_FIRE_ARROW'
+];
+
+// Đòn đánh của người chơi (giây). Animation attack_01 (6 ô) trải trên đúng
+// ATTACK_COOLDOWN; cửa sổ gây sát thương (`attacking`) dài ATTACK_ACTIVE_TIME,
+// BẮT ĐẦU tại ô hit_frame của manifest (ô 3 -> 2/6 x .36 = .12s sau khi bấm).
+export const ATTACK_COOLDOWN = 0.36;
+export const ATTACK_ACTIVE_TIME = 0.18;
+
+// Nhân vật chính: trạng thái gameplay -> animation trong manifest
+// (PLAYER_TRUNG_TRAC). Thứ tự ưu tiên hurt > dash > attack > jump > run > idle
+// nằm ở playerAnimationState() (physics.js).
+//   duration: trải strip trên đúng số giây này thay vì fps của manifest.
+//   byVelocity: chọn ô theo vận tốc dọc (lên / gần đỉnh / rơi), không theo giờ.
+//   holdFrame: đứng yên ở 1 ô cố định (-1 = ô cuối).
+//   drawScale: hệ số vẽ bù cho strip bị vẽ SAI TỈ LỆ so với các strip khác.
+//     TẠM THỜI — attack_01 của Codex vẽ nhân vật chỉ cao ~29-30px (đầu cũng
+//     nhỏ theo) trong khi idle/run/dash cao 44px, tức nhỏ hơn ~1.5 lần, không
+//     phải do tư thế cúi. Đã báo NEED_REDRAW (docs/REPORT_TT-INT-01.md); vẽ
+//     lại đúng tỉ lệ thì XOÁ drawScale. DESIGN_BASELINE: 1.5 (44 / 29.5).
+// dash: 4 ô, không lặp (16fps = .25s < DASH_TIME .30s) -> đứng ở ô cuối tới hết cú lướt.
+// death chỉ phát khi thua (endGame(false) ghi player.deathTime).
+export const PLAYER_SPRITE_ID = 'PLAYER_TRUNG_TRAC';
+export const PLAYER_ANIMATIONS = {
+  idle: { anim: 'idle' },
+  run: { anim: 'run' },
+  jump: { anim: 'jump', byVelocity: true },
+  attack: { anim: 'attack_01', duration: ATTACK_COOLDOWN},
+  hurt: { anim: 'hurt' },
+  dash: { anim: 'dash' },
+  death: { anim: 'death' }
 };
+// Ngưỡng vận tốc dọc (px logic/s) chọn ô `jump`: vy < -N ô 1 (bật lên),
+// |vy| <= N ô 2 (gần đỉnh), vy > N ô 3 (rơi). DESIGN_BASELINE.
+export const PLAYER_JUMP_APEX_VY = 90;

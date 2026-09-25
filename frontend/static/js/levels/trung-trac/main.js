@@ -5,8 +5,8 @@ import { state, setState, createLevelState } from './state.js';
 import { ui, showMessage, updateHud } from './ui.js';
 import { clearInput, bindInput } from './input.js';
 import { update, endGame } from './physics.js';
-import { draw } from './render.js';
-import { BACKDROP_ROOT } from './config.js';
+import { draw, fitCanvas } from './render.js';
+import { BACKDROP_ROOT, SPRITE_8BIT_ROOT } from './config.js';
 
 let lastTime = 0;
 
@@ -35,14 +35,14 @@ async function initAssets() {
   const notices = [];
   if (missing.missingBackdrops) notices.push(`thiếu ${missing.missingBackdrops} lớp nền (đang dùng màu tạm)`);
   if (missing.missingObstacleSprites) notices.push(`thiếu ${missing.missingObstacleSprites} ảnh chướng ngại vật`);
-  if (missing.missingStrips.length) notices.push(`thiếu sprite strip động: ${missing.missingStrips.join(', ')}`);
   if (missing.missingItems) notices.push(`thiếu ${missing.missingItems} ảnh vật phẩm`);
-  if (missing.missingAnimations.length) notices.push(`thiếu GIF nhân vật (đang dùng hình tạm): ${missing.missingAnimations.join(', ')}`);
+  if (!missing.manifestLoaded) notices.push('không tải được manifest sprite 8-bit (nhân vật dùng hộp tạm)');
+  if (missing.missingSprites8.length) notices.push(`thiếu sprite 8-bit: ${missing.missingSprites8.join(', ')}`);
   ui.loadingText.textContent = notices.length
     ? `Đang chạy với placeholder tạm: ${notices.join('; ')}.`
     : 'Đã tải đủ lớp nền, chướng ngại vật, vật phẩm và hoạt ảnh nhân vật.';
   console.info('SUTA backdrop root:', BACKDROP_ROOT);
-  console.info('SUTA player root:', images.playerRoot);
+  console.info('SUTA sprite 8-bit root:', SPRITE_8BIT_ROOT, Object.keys(images.sprites8));
   ui.start.disabled = false;
   draw();
 }
@@ -76,7 +76,19 @@ document.querySelectorAll('[data-answer]').forEach(button => {
   });
 });
 
-setState(createLevelState());
-updateHud();
-initAssets();
-requestAnimationFrame(frame);
+// Chế độ xem sprite (?viewer=1): soát bộ sprite 8-bit theo manifest, không
+// chạy màn chơi. Nạp động để trang chơi bình thường không tải viewer.js.
+const viewerMode = new URLSearchParams(window.location.search).get('viewer') === '1';
+
+if (viewerMode) {
+  import('./viewer.js').then(module => module.startViewer());
+} else {
+  // Letterbox bội số nguyên: tính lại khi đổi cỡ cửa sổ / xoay màn hình.
+  fitCanvas();
+  window.addEventListener('resize', fitCanvas);
+  window.addEventListener('orientationchange', fitCanvas);
+  setState(createLevelState());
+  updateHud();
+  initAssets();
+  requestAnimationFrame(frame);
+}

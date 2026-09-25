@@ -1,12 +1,13 @@
-// Tải ảnh/GIF cho màn chơi. Không đụng tới DOM ngoài Image()/URL — không biết
+// Tải ảnh + manifest sprite 8-bit cho màn chơi. Không đụng tới DOM ngoài Image()/URL — không biết
 // gì về `ui`/canvas, chỉ trả về dữ liệu để main.js quyết định hiển thị gì.
 
 import {
   BACKDROP_ROOT, BACKDROP_LAYERS, LANDMARKS,
-  OBSTACLE_SPRITE_ROOT, OBSTACLE_SPRITE_FILES, OBSTACLE_STRIP_FILES,
-  ITEM_ROOT, ITEM_FILES, ITEM_STRIP_FILES,
-  PLAYER_ROOT_CANDIDATES, PLAYER_ANIMATION_FILES
+  OBSTACLE_SPRITE_ROOT, OBSTACLE_SPRITE_FILES,
+  ITEM_ROOT, ITEM_FILES,
+  SPRITE_8BIT_ROOT, SPRITE_MANIFEST_FILE, SPRITE_8BIT_IN_GAME
 } from './config.js';
+import { registerManifest, getAsset } from './animation.js';
 
 // Cache ảnh đã tải — mutate thuộc tính tại chỗ, các module khác import
 // `images` và đọc trực tiếp (không cần setter riêng vì object không bị gán lại).
@@ -14,13 +15,9 @@ export const images = {
   backdrops: {},
   landmarkCache: {},
   obstacleSprites: {},
-  // Strip động (obstacle/enemy) và strip đạn — tách khỏi cache ảnh tĩnh để
-  // render biết ngay phải cắt ô hay vẽ nguyên ảnh.
-  obstacleStrips: {},
-  itemStrips: {},
   items: {},
-  player: {},
-  playerRoot: ''
+  // Strip bộ sprite 8-bit: sprites8[assetId][animationName] = Image.
+  sprites8: {}
 };
 
 export function loadImage(src, optional = false) {
@@ -61,16 +58,6 @@ async function loadObstacleSprites() {
   return Object.fromEntries(entries);
 }
 
-// Dùng chung cho OBSTACLE_STRIP_FILES và ITEM_STRIP_FILES: giá trị là
-// { file, frames, fps } nên chỉ cần lấy `file` ra tải, meta do config giữ.
-async function loadStripSprites(root, table) {
-  const entries = await Promise.all(Object.entries(table).map(async ([name, meta]) => [
-    name,
-    await loadImage(joinAssetPath(root, meta.file), true)
-  ]));
-  return Object.fromEntries(entries);
-}
-
 async function loadItemSprites() {
   const entries = await Promise.all(Object.entries(ITEM_FILES).map(async ([name, fileName]) => [
     name,
@@ -79,49 +66,64 @@ async function loadItemSprites() {
   return Object.fromEntries(entries);
 }
 
-async function findPlayerAnimations() {
-  for (const root of PLAYER_ROOT_CANDIDATES) {
-    const entries = await Promise.all(Object.entries(PLAYER_ANIMATION_FILES).map(async ([stateName, fileName]) => [
-      stateName,
-      await loadImage(joinAssetPath(root, fileName), true)
-    ]));
-    const animations = Object.fromEntries(entries);
-    if (animations.idle) return { root, animations };
-  }
-  return { root: PLAYER_ROOT_CANDIDATES[0], animations: {} };
+// Tải mọi strip (mọi animation) của các asset 8-bit game dùng. Trả về danh
+// sách "ID.animation" thiếu ảnh hoặc thiếu hẳn trong manifest.
+async function loadSprites8bit() {
+  const manifest = await loadSpriteManifest();
+  registerManifest(manifest);
+  const sprites = {};
+  const missing = [];
+  await Promise.all(SPRITE_8BIT_IN_GAME.map(async id => {
+    const asset = getAsset(id);
+    if (!asset) {
+      missing.push(id);
+      return;
+    }
+    sprites[id] = {};
+    await Promise.all(asset.animations.map(async anim => {
+      const image = await loadImage(joinAssetPath(SPRITE_8BIT_ROOT, anim.file), true);
+      if (image) sprites[id][anim.name] = image;
+      else missing.push(`${id}.${anim.name}`);
+    }));
+  }));
+  return { sprites, missing, manifestLoaded: Boolean(manifest) };
 }
 
 // Tải toàn bộ asset, ghi vào `images`, và trả về số lượng thiếu để caller
 // (main.js) tự quyết định hiển thị thông báo/log thế nào.
 export async function loadAssets() {
   const [
-    backdrops, landmarkCache, obstacleSprites, obstacleStrips, itemSprites, itemStrips, playerSet
+    backdrops, landmarkCache, obstacleSprites, itemSprites, sprite8Set
   ] = await Promise.all([
     loadBackdropLayers(),
     loadLandmarkImages(),
     loadObstacleSprites(),
-    loadStripSprites(OBSTACLE_SPRITE_ROOT, OBSTACLE_STRIP_FILES),
     loadItemSprites(),
-    loadStripSprites(ITEM_ROOT, ITEM_STRIP_FILES),
-    findPlayerAnimations()
+    loadSprites8bit()
   ]);
   images.backdrops = backdrops;
   images.landmarkCache = landmarkCache;
   images.obstacleSprites = obstacleSprites;
-  images.obstacleStrips = obstacleStrips;
   images.items = itemSprites;
-  images.itemStrips = itemStrips;
-  images.player = playerSet.animations;
-  images.playerRoot = playerSet.root;
+  images.sprites8 = sprite8Set.sprites;
 
   return {
     missingBackdrops: BACKDROP_LAYERS.filter(layer => !images.backdrops[layer.key]).length,
     missingObstacleSprites: Object.keys(OBSTACLE_SPRITE_FILES).filter(type => !images.obstacleSprites[type]).length,
-    missingStrips: [
-      ...Object.keys(OBSTACLE_STRIP_FILES).filter(name => !images.obstacleStrips[name]),
-      ...Object.keys(ITEM_STRIP_FILES).filter(name => !images.itemStrips[name])
-    ],
     missingItems: Object.keys(ITEM_FILES).filter(name => !images.items[name]).length,
-    missingAnimations: Object.keys(PLAYER_ANIMATION_FILES).filter(name => !images.player[name])
+    manifestLoaded: sprite8Set.manifestLoaded,
+    missingSprites8: sprite8Set.missing
   };
+}
+
+// Manifest bộ sprite 8-bit (manifest_tt.json) — nguồn duy nhất cho
+// frames/fps/loop/hit_frame. Lỗi mạng/JSON thì trả null để caller tự báo.
+export async function loadSpriteManifest() {
+  try {
+    const response = await fetch(joinAssetPath(SPRITE_8BIT_ROOT, SPRITE_MANIFEST_FILE));
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
 }
