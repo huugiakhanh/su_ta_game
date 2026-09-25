@@ -4,11 +4,12 @@
 import { state } from './state.js';
 import { keys, pressed, clearInput } from './input.js';
 import { ui, showMessage, tickMessage, updateHud } from './ui.js';
-import { aabb, groundYAt, worldX, reskinHazard, makeProjectile } from './geometry.js';
+import { aabb, groundYAt, worldX, reskinHazard, makeProjectile, actionStepAt } from './geometry.js';
 import {
   CHUNK_W, VIEW_W, VIEW_H, LEVEL_WORLD_WIDTH, FOOT_MARGIN,
   MOVE_SPEED, GRAVITY, JUMP_FORCE, DASH_SPEED, DASH_TIME, GROUND_SNAP_DISTANCE,
-  HURT_ANIMATION_TIME, PROJECTILE_SPEED, HAZARD_DESPAWN_MARGIN, OBSTACLE_GROUND_SINK
+  HURT_ANIMATION_TIME, PROJECTILE_SPEED, PROJECTILE_MAX_RANGE, HAZARD_DESPAWN_MARGIN, OBSTACLE_GROUND_SINK,
+  THROWER_ANIMATIONS
 } from './config.js';
 
 export function pointHasGround(worldXPosition) {
@@ -145,6 +146,31 @@ function fireProjectile(hazard) {
   ));
 }
 
+// Bắt đầu một chuỗi hành động của lính (THROWER_ANIMATIONS). Sprite không có
+// chuỗi tương ứng thì trả về false để nơi gọi xử lý tức thì như cũ.
+function startAction(hazard, name) {
+  if (!THROWER_ANIMATIONS[hazard.sprite]?.[name]) return false;
+  hazard.action = { name, time: 0, released: false };
+  return true;
+}
+
+// Chạy tiếp hành động đang diễn: tới bước `release` thì đạn rời tay (khớp đúng
+// ô vung tay), hết chuỗi thì về đứng yên và bắt đầu đếm lại fireInterval.
+function advanceAction(hazard, dt) {
+  const steps = THROWER_ANIMATIONS[hazard.sprite][hazard.action.name];
+  hazard.action.time += dt;
+  const current = actionStepAt(steps, hazard.action.time);
+  const reachedRelease = !current || current.index >= steps.findIndex(step => step.release);
+  if (hazard.action.name === 'throw' && !hazard.action.released && reachedRelease) {
+    hazard.action.released = true;
+    fireProjectile(hazard);
+  }
+  if (!current) {
+    if (hazard.action.name === 'throw') hazard.fireTimer = hazard.fireInterval;
+    hazard.action = null;
+  }
+}
+
 // Vật cản/kẻ địch có trạng thái. Mỗi `kind` là một hành vi tách bạch:
 //   roller  — nằm chờ tới khi người chơi vượt triggerX (hoặc bị gọi bằng báo
 //             động) rồi lao sang trái, ra khỏi tầm thì xoá.
@@ -200,11 +226,16 @@ function updateHazards(dt) {
       const summoned = state.hazards.find(item => item.id === hazard.alarmFor);
       if (summoned) summoned.active = true;
       showMessage('Lính gác thổi tù và báo động — kỵ binh Hán xông tới!', 2600);
+      startAction(hazard, 'alarm');
     }
 
-    if (hazard.projectile && distance <= hazard.fireRange) {
+    // Đang diễn hành động thì diễn cho hết (kể cả khi người chơi vừa ra khỏi
+    // tầm) để cú ném không bị cắt ngang giữa chừng.
+    if (hazard.action) {
+      advanceAction(hazard, dt);
+    } else if (hazard.projectile && distance <= hazard.fireRange) {
       hazard.fireTimer -= dt;
-      if (hazard.fireTimer <= 0) {
+      if (hazard.fireTimer <= 0 && !startAction(hazard, 'throw')) {
         hazard.fireTimer = hazard.fireInterval;
         fireProjectile(hazard);
       }
@@ -223,7 +254,9 @@ function updateProjectiles(dt) {
   state.projectiles.forEach(projectile => {
     if (!projectile.alive) return;
     projectile.x += projectile.direction * PROJECTILE_SPEED * dt;
-    if (Math.abs(projectile.x - state.cameraX) > VIEW_W + HAZARD_DESPAWN_MARGIN) {
+    projectile.traveled += PROJECTILE_SPEED * dt;
+    if (projectile.traveled >= PROJECTILE_MAX_RANGE
+      || Math.abs(projectile.x - state.cameraX) > VIEW_W + HAZARD_DESPAWN_MARGIN) {
       projectile.alive = false;
       return;
     }

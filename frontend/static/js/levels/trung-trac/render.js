@@ -2,10 +2,12 @@
 
 import { images } from './assets.js';
 import { state } from './state.js';
+import { actionStepAt } from './geometry.js';
 import {
   VIEW_W, VIEW_H, CHUNK_W, LEVEL_CHUNKS, OBSTACLE_GROUND_SINK, GROUND_Y,
   PLAYER_SPRITE_HEIGHT, PLAYER_SPRITE_ANCHOR_X, BACKDROP_LAYERS, LANDMARKS,
-  OBSTACLE_STRIP_FILES, ITEM_STRIP_FILES, ENEMY_SPRITES, HAZARD_SPRITE_SIZES
+  OBSTACLE_STRIP_FILES, ITEM_STRIP_FILES, ENEMY_SPRITES, HAZARD_SPRITE_SIZES,
+  PROJECTILE_MAX_RANGE, PROJECTILE_FADE_RANGE, THROWER_ANIMATIONS
 } from './config.js';
 
 export const canvas = document.getElementById('gameCanvas');
@@ -110,9 +112,10 @@ function drawHoles() {
 // Vẽ 1 khung của PNG strip ngang: ô thứ i nằm ở [i * cellW, 0, cellW, height].
 // Khung chọn theo ĐỒNG HỒ CHUNG của game (`time`) cộng `offset` riêng từng vật,
 // nhờ vậy hai con hổ cạnh nhau không chạy y hệt nhau mà không cần lưu timer.
-function drawStripSprite(image, meta, x, y, width, height, time, offset = 0, alpha = 1) {
+// `fixedFrame` != null: vẽ đúng ô đó thay vì chạy vòng theo đồng hồ chung.
+function drawStripSprite(image, meta, x, y, width, height, time, offset = 0, alpha = 1, fixedFrame = null) {
   const cellW = image.width / meta.frames;
-  const frame = Math.floor(Math.max(0, (time + offset) * meta.fps)) % meta.frames;
+  const frame = fixedFrame ?? Math.floor(Math.max(0, (time + offset) * meta.fps)) % meta.frames;
   ctx.globalAlpha = alpha;
   ctx.drawImage(
     image,
@@ -124,7 +127,7 @@ function drawStripSprite(image, meta, x, y, width, height, time, offset = 0, alp
 
 // Một `sprite` có thể là strip động (OBSTACLE_STRIP_FILES) hoặc PNG tĩnh
 // (OBSTACLE_SPRITE_FILES) — hazard dùng chung một tên nên gom lựa chọn vào đây.
-function drawHazardArt(sprite, x, y, width, height, time, offset = 0, alpha = 1, direction = -1) {
+function drawHazardArt(sprite, x, y, width, height, time, offset = 0, alpha = 1, direction = -1, fixedFrame = null) {
   const stripMeta = OBSTACLE_STRIP_FILES[sprite];
   const stripImage = stripMeta && images.obstacleStrips[sprite];
   // Lật ngang quanh tâm ô vẽ khi hướng mặt gốc của ảnh khác hướng cần quay.
@@ -138,7 +141,7 @@ function drawHazardArt(sprite, x, y, width, height, time, offset = 0, alpha = 1,
     ctx.translate(-centerX, 0);
   }
   if (stripImage) {
-    drawStripSprite(stripImage, stripMeta, x, y, width, height, time, offset, alpha);
+    drawStripSprite(stripImage, stripMeta, x, y, width, height, time, offset, alpha, fixedFrame);
     ctx.restore();
     return;
   }
@@ -250,6 +253,18 @@ function drawObstacles() {
 //     chìm dưới lớp tối của khe sông — nếu vẽ sau, thuyền rộng hơn khe sẽ che
 //     mất miệng hố và người chơi không thấy chỗ phải nhảy.
 //   còn lại vẽ sau vật cản, trước enemy.
+// Ô cố định cho lính có THROWER_ANIMATIONS: ô của bước đang diễn nếu đang
+// ném/báo động, không thì ô đứng yên. Sprite khác trả null (chạy vòng như cũ).
+function throwerFrame(sprite, action) {
+  const animation = THROWER_ANIMATIONS[sprite];
+  if (!animation) return null;
+  if (action) {
+    const current = actionStepAt(animation[action.name], action.time);
+    if (current) return current.step.frame;
+  }
+  return animation.idle;
+}
+
 function drawHazards(time, submerged = false) {
   state.hazards.forEach((hazard, index) => {
     if (!hazard.alive) return;
@@ -278,7 +293,8 @@ function drawHazards(time, submerged = false) {
     drawHazardArt(
       hazard.sprite, drawX, drawY, hazard.drawW, hazard.drawH,
       time, hazard.animOffset + index * .07, hazard.hitTimer > 0 ? .45 : 1,
-      facingDirection(hazard.x + hazard.w / 2, hazard.kind === 'roller' ? hazard.speed : 0, hazard.kind === 'thrower')
+      facingDirection(hazard.x + hazard.w / 2, hazard.kind === 'roller' ? hazard.speed : 0, hazard.kind === 'thrower'),
+      throwerFrame(hazard.sprite, hazard.action)
     );
     if (hazard.maxHp > 0 && hazard.hp > 0) drawHealthBar(drawX, drawY - 12, hazard.drawW, hazard.hp / hazard.maxHp, '#e2ad45');
   });
@@ -289,14 +305,18 @@ function drawProjectiles(time) {
     const x = projectile.x + projectile.w / 2 - projectile.drawW / 2 - state.cameraX;
     if (x + projectile.drawW < -60 || x > VIEW_W + 60) return;
     const y = projectile.y + projectile.h / 2 - projectile.drawH / 2;
+    // Đoạn cuối tầm bay mờ dần để đạn không biến mất đột ngột.
+    const alpha = Math.min(1, (PROJECTILE_MAX_RANGE - projectile.traveled) / PROJECTILE_FADE_RANGE);
     const meta = ITEM_STRIP_FILES[projectile.sprite];
     const image = meta && images.itemStrips[projectile.sprite];
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, alpha);
     if (!image) {
       ctx.fillStyle = '#e0b24a';
       ctx.fillRect(Math.round(x), Math.round(y), projectile.drawW, projectile.drawH);
+      ctx.restore();
       return;
     }
-    ctx.save();
     // Đạn vẽ sẵn hướng sang TRÁI (theo spec), nên chỉ lật khi bay sang phải.
     if (projectile.direction > 0) {
       ctx.translate(Math.round(x + projectile.drawW / 2), 0);
@@ -337,7 +357,8 @@ function drawEnemies(time) {
     drawHazardArt(
       art.sprite, drawX, drawY, art.drawW, art.drawH,
       time, index * .13, enemy.hitTimer > 0 ? .45 : 1,
-      facingDirection(enemy.x + enemy.w / 2, 0, true)
+      facingDirection(enemy.x + enemy.w / 2, 0, true),
+      throwerFrame(art.sprite, null)
     );
     drawHealthBar(drawX, drawY - 12, art.drawW, enemy.hp / enemy.maxHp, enemy.boss ? '#e34c36' : '#e2ad45');
   });

@@ -84,8 +84,9 @@ export const OBSTACLE_SPRITE_FILES = {
   slideBar: 'slide_bar.png',
   spikesTrap: 'spikes.png',
   stoneBlock: 'stone_block.png',
-  // Bộ sprite mới (artifacts/sprite-forge-trung-trac) — vật tĩnh dùng chung
-  // đường dẫn với 10 vật cũ, chỉ khác là chúng được `hazards` dùng thay vì
+  // Bộ sprite có trạng thái (artifacts/sprite-forge-trung-trac) dùng chung
+  // đường dẫn với bộ vật cản tĩnh lịch sử đã tái tạo, chỉ khác là chúng được
+  // `hazards` dùng thay vì
   // `obstacles` vì có trạng thái (bẫy bật, xe vỡ) hoặc chỉ là cảnh trí.
   spikePitHidden: 'spike_pit_hidden.png',
   spikePitOpen: 'spike_pit_open.png',
@@ -109,6 +110,33 @@ export const OBSTACLE_STRIP_FILES = {
   patrolBoat: { file: 'patrol_boat_strip4.png', frames: 4, fps: 4 },
   tributeCart: { file: 'tribute_cart_strip4.png', frames: 4, fps: 9 },
   watchtowerGuard: { file: 'watchtower_guard_strip4.png', frames: 4, fps: 5, facing: 'right' }
+};
+
+// Lính ném đạn KHÔNG chạy strip theo đồng hồ chung (vòng lặp đó không liên
+// quan gì tới lúc đạn bay ra). Thay vào đó: bình thường đứng yên ở ô `idle`,
+// tới lượt ném thì chạy chuỗi `throw` một lần — mỗi bước là { frame: ô trong
+// strip, time: số giây giữ ô đó }, bước có `release: true` là lúc đạn rời tay
+// (đạn sinh ra ngay khi bước đó BẮT ĐẦU). `alarm` (nếu có) chạy một lần khi
+// lính gác thổi tù và báo động. Ô trong strip:
+//   hanTaxSoldier   0 đứng · 1 giơ túi tiền · 2 vung tay ném · 3 đứng
+//   watchtowerGuard 0 đứng · 1 đứng · 2 phóng giáo/phi tiêu · 3 thổi tù và
+// Enemy cận chiến dùng chung strip lính thu thuế cũng đứng ở ô `idle`.
+export const THROWER_ANIMATIONS = {
+  hanTaxSoldier: {
+    idle: 0,
+    throw: [
+      { frame: 1, time: .45 },
+      { frame: 2, time: .4, release: true }
+    ]
+  },
+  watchtowerGuard: {
+    idle: 0,
+    alarm: [{ frame: 3, time: 1.1 }],
+    throw: [
+      { frame: 1, time: .45 },
+      { frame: 2, time: .4, release: true }
+    ]
+  }
 };
 
 // Cỡ vẽ (drawW/drawH, tính bằng game px) giữ đúng tỉ lệ 1 Ô của strip nên
@@ -144,6 +172,12 @@ export const PROJECTILE_SIZES = {
 };
 
 export const PROJECTILE_SPEED = 330;
+// Tầm bay tối đa của đạn (px tính từ điểm bắn). Bay hết tầm thì đạn tan —
+// ≈1.4s ở PROJECTILE_SPEED. Để hơi lớn hơn fireRange (400–430) để đạn vẫn tới
+// được người chơi đứng ở mép tầm bắn. Đoạn cuối PROJECTILE_FADE_RANGE mờ dần
+// thay vì biến mất đột ngột.
+export const PROJECTILE_MAX_RANGE = 460;
+export const PROJECTILE_FADE_RANGE = 90;
 // Hazard chạy khỏi tầm nhìn phía sau người chơi bao nhiêu px thì xoá khỏi
 // state (tránh mảng phình to vô hạn khi chơi lâu).
 export const HAZARD_DESPAWN_MARGIN = 520;

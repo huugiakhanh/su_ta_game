@@ -13,7 +13,90 @@ export function setState(nextState) {
   return state;
 }
 
+// Màn có ĐÚNG 12 chướng ngại vật (kể cả boss), ~1 cái/chunk. Mỗi lượt chơi
+// (resetGame -> createLevelState) các nhóm dưới đây được xáo ngẫu nhiên vào
+// chunk 1..10 và lệch thêm ±JITTER px trong chunk:
+//   - chunk 1 chỉ nhận nhóm "easy" (vật tĩnh/bẫy) để người chơi kịp làm quen,
+//     không bị ném đạn/lao vào ngay khi vừa xuất phát.
+//   - tháp canh + lính gác + kỵ binh là 1 nhóm (báo động gọi kỵ binh) nên luôn
+//     đi chung 1 chunk; tháp canh chỉ là cảnh trí nên không tính vào 12.
+//   - boss luôn cố định ở chunk 11 (thêm trong createLevelState).
+// Mỗi nhóm là hàm (chunk, dx) -> { obstacles, hazards, enemies }; dx cộng vào
+// MỌI toạ độ localX/triggerX của nhóm để cả nhóm dịch chung, không lệch nhau.
+// width/height của obstacle giữ đúng tỉ lệ khung hình thật của từng ảnh.
+const JITTER = 100;
+
+const OBSTACLE_GROUPS = [
+  // cành cây đổ — nhảy qua
+  { easy: true, build: (c, dx) => ({ obstacles: [makeObstacle('fallenBranch', c, 700 + dx, 91, 39)] }) },
+  // khối đá — nhảy qua / đứng lên được
+  { easy: true, build: (c, dx) => ({ obstacles: [makeObstacle('stoneBlock', c, 600 + dx, 85, 39)] }) },
+  // bẫy hố chông — tới gần mới bật lên
+  { easy: true, build: (c, dx) => ({ hazards: [makeHazard('trap', 'spikePitHidden', c, 820 + dx, {
+    harmful: false, sprungSprite: 'spikePitOpen', triggerDistance: 96
+  })] }) },
+  // mành lau — bắt buộc lướt (dash)
+  { build: (c, dx) => ({ obstacles: [makeObstacle('reedCurtain', c, 500 + dx, 127, 53, { overhead: true })] }) },
+  // kiệu quan — đi ngược chiều, nhảy qua
+  { build: (c, dx) => ({ hazards: [makeHazard('roller', 'officialPalanquin', c, 1180 + dx, {
+    speed: -74, triggerX: worldX(c, 150 + dx), animOffset: .15
+  })] }) },
+  // lính canh — đánh cận chiến
+  { build: (c, dx) => ({ enemies: [
+    { x: worldX(c, 1040 + dx), y: GROUND_Y - 82, w: 74, h: 82, hp: 2, maxHp: 2, boss: false, alive: true, hitTimer: 0 }
+  ] }) },
+  // lính thu thuế — ném túi tiền
+  { build: (c, dx) => ({ hazards: [makeHazard('thrower', 'hanTaxSoldier', c, 520 + dx, {
+    projectile: 'coinPouch', fireInterval: 3.2, hp: 2
+  })] }) },
+  // hổ rừng — lao tới
+  { build: (c, dx) => ({ hazards: [makeHazard('roller', 'jungleTiger', c, 1220 + dx, {
+    speed: -232, triggerX: worldX(c, 700 + dx), hp: 2, animOffset: .4
+  })] }) },
+  // xe cống phẩm — lăn tới; chém vỡ thì thành đống đổ nát vô hại nằm lại map
+  { build: (c, dx) => ({ hazards: [makeHazard('roller', 'tributeCart', c, 1230 + dx, {
+    speed: -168, triggerX: worldX(c, 250 + dx), hp: 2, wreckSprite: 'tributeCartBroken'
+  })] }) },
+  // tháp canh (cảnh trí) + lính gác ném phi tiêu + kỵ binh xông ra khi báo động.
+  // Lính đứng DƯỚI CHÂN tháp (sàn tháp trong ảnh chỉ cao 68px mà lính cao 86px).
+  { build: (c, dx) => ({ hazards: [
+    makeHazard('prop', 'watchtower', c, 700 + dx, { harmful: false }),
+    makeHazard('thrower', 'watchtowerGuard', c, 790 + dx, {
+      projectile: 'throwingDart', fireInterval: 3.4, fireRange: 400,
+      hp: 2, alarmFor: 'cavalry-charge'
+    }),
+    makeHazard('roller', 'hanCavalry', c, 1300 + dx, {
+      id: 'cavalry-charge', speed: -316, hp: 3, animOffset: .25
+    })
+  ] }) }
+];
+
+function shuffle(list) {
+  const result = [...list];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+function randomizeObstacles() {
+  const easy = OBSTACLE_GROUPS.filter(group => group.easy);
+  const first = easy[Math.floor(Math.random() * easy.length)];
+  const order = [first, ...shuffle(OBSTACLE_GROUPS.filter(group => group !== first))];
+  const layout = { obstacles: [], hazards: [], enemies: [] };
+  order.forEach((group, index) => {
+    const dx = Math.round((Math.random() * 2 - 1) * JITTER);
+    const built = group.build(index + 1, dx);
+    layout.obstacles.push(...(built.obstacles || []));
+    layout.hazards.push(...(built.hazards || []));
+    layout.enemies.push(...(built.enemies || []));
+  });
+  return layout;
+}
+
 export function createLevelState() {
+  const layout = randomizeObstacles();
   return {
     running: false,
     paused: false,
@@ -44,57 +127,10 @@ export function createLevelState() {
       hurtTimer: 0,
       invulnerable: 0
     },
-    // Màn có ĐÚNG 12 chướng ngại vật (kể cả boss), trải đều ~1 cái/chunk, độ
-    // khó tăng dần. Tháp canh ở chunk 10 chỉ là cảnh trí nên không tính.
-    //   1  c1   cành cây đổ        (obstacles)   nhảy qua
-    //   2  c2   kiệu quan          (hazards)     đi ngược chiều, nhảy qua
-    //   3  c3   bẫy hố chông       (hazards)     tới gần mới bật lên
-    //   4  c4   khối đá            (obstacles)   nhảy qua / đứng lên được
-    //   5  c5   mành lau           (obstacles)   bắt buộc lướt (dash)
-    //   6  c6   lính canh          (enemies)     đánh cận chiến
-    //   7  c7   lính thu thuế      (hazards)     ném túi tiền
-    //   8  c8   hổ rừng            (hazards)     lao tới
-    //   9  c9   xe cống phẩm       (hazards)     lăn tới, chém vỡ được
-    //   10 c10  lính gác tháp      (hazards)     ném phi tiêu + báo động
-    //   11 c10  kỵ binh            (hazards)     xông ra khi có báo động
-    //   12 c11  boss               (enemies)
-    // Không còn hố rơi và thuyền tuần tra (bỏ theo yêu cầu thiết kế).
-    //
-    // width/height của obstacle giữ đúng tỉ lệ khung hình thật của từng ảnh
-    // (đã đo qua bounding box sau khi crop sát nội dung) để sprite không méo.
-    obstacles: [
-      makeObstacle('fallenBranch', 1, 700, 52, 39),
-      makeObstacle('stoneBlock', 4, 600, 76, 39),
-      makeObstacle('reedCurtain', 5, 500, 133, 53, { overhead: true })
-    ],
-    hazards: [
-      makeHazard('roller', 'officialPalanquin', 2, 1180, {
-        speed: -74, triggerX: worldX(2, 150), animOffset: .15
-      }),
-      makeHazard('trap', 'spikePitHidden', 3, 820, {
-        harmful: false, sprungSprite: 'spikePitOpen', triggerDistance: 96
-      }),
-      makeHazard('thrower', 'hanTaxSoldier', 7, 520, {
-        projectile: 'coinPouch', fireInterval: 1.9, hp: 2
-      }),
-      makeHazard('roller', 'jungleTiger', 8, 1220, {
-        speed: -232, triggerX: worldX(8, 700), hp: 2, animOffset: .4
-      }),
-      // Xe cống: chém vỡ thì biến thành đống đổ nát vô hại nằm lại map.
-      makeHazard('roller', 'tributeCart', 9, 1230, {
-        speed: -168, triggerX: worldX(9, 250), hp: 2, wreckSprite: 'tributeCartBroken'
-      }),
-      // Tháp canh chỉ là cảnh trí. Lính đứng DƯỚI CHÂN tháp (sàn tháp trong
-      // ảnh chỉ cao 68px mà lính cao 86px); tới gần thì thổi tù và gọi kỵ binh.
-      makeHazard('prop', 'watchtower', 10, 700, { harmful: false }),
-      makeHazard('thrower', 'watchtowerGuard', 10, 790, {
-        projectile: 'throwingDart', fireInterval: 2.2, fireRange: 400,
-        hp: 2, alarmFor: 'cavalry-charge'
-      }),
-      makeHazard('roller', 'hanCavalry', 10, 1300, {
-        id: 'cavalry-charge', speed: -316, hp: 3, animOffset: .25
-      })
-    ],
+    // 12 chướng ngại vật (kể cả boss) được XẾP NGẪU NHIÊN mỗi lượt chơi —
+    // xem randomizeObstacles() bên dưới.
+    obstacles: layout.obstacles,
+    hazards: layout.hazards,
     projectiles: [],
     holes: [],
     books: [
@@ -105,7 +141,7 @@ export function createLevelState() {
       { x: worldX(7, 930), y: GROUND_Y - 120, collected: false }
     ],
     enemies: [
-      { x: worldX(6, 1040), y: GROUND_Y - 82, w: 74, h: 82, hp: 2, maxHp: 2, boss: false, alive: true, hitTimer: 0 },
+      ...layout.enemies,
       { x: worldX(11, 850), y: GROUND_Y - 105, w: 96, h: 105, hp: 5, maxHp: 5, boss: true, alive: true, hitTimer: 0 }
       // Ảnh enemy lấy theo cờ `boss` (xem ENEMY_SPRITES trong config.js):
       // lính thường dùng strip lính Hán, boss dùng strip kỵ binh.

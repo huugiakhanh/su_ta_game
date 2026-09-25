@@ -82,6 +82,8 @@ export function makeHazard(kind, sprite, chunk, localX, options = {}) {
     fireInterval: options.fireInterval ?? 1.8,
     fireRange: options.fireRange ?? 430,
     fireTimer: options.fireDelay ?? 0.9,
+    // Hành động đang diễn (ném/báo động): { name, time, released } hoặc null.
+    action: null,
     animOffset: options.animOffset ?? 0
   };
 }
@@ -101,6 +103,18 @@ export function reskinHazard(hazard, sprite) {
   return hazard;
 }
 
+// Bước hiện tại của một chuỗi hành động (THROWER_ANIMATIONS) tại thời điểm
+// `time` giây kể từ lúc bắt đầu. Hết chuỗi thì trả về null.
+export function actionStepAt(steps, time) {
+  let start = 0;
+  for (let index = 0; index < steps.length; index++) {
+    const step = steps[index];
+    if (time < start + step.time) return { step, index, start };
+    start += step.time;
+  }
+  return null;
+}
+
 export function makeProjectile(sprite, x, y, direction) {
   const size = PROJECTILE_SIZES[sprite];
   return {
@@ -112,6 +126,7 @@ export function makeProjectile(sprite, x, y, direction) {
     drawW: size.drawW,
     drawH: size.drawH,
     direction,
+    traveled: 0,
     alive: true
   };
 }
