@@ -18,6 +18,22 @@
       ? `⚔️ BẮT ĐẦU CHƠI<br><span>(CHƯƠNG ${chapterNumber})</span>`
       : '⚔️ BẮT ĐẦU CHƠI';
   }
+  // cập nhật sau xóa cái này đi 
+  function showUpdateNotice(btn) {
+    const originalText = btn.innerHTML;
+    
+    // Đổi chữ và khóa bấm tạm thời
+    btn.innerHTML = "⏳ ĐANG CẬP NHẬT...";
+    btn.style.opacity = "0.5";
+    btn.disabled = true;
+
+    // Trả lại chữ cũ sau 1.5 giây
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.opacity = "";
+        btn.disabled = false;
+    }, 1500);
+  }
 
   window.openChapterModal = function openChapterModal() {
     const modal = document.getElementById('chapterModalOverlay');
@@ -177,4 +193,6 @@
   });
 
   updateStartButton(localStorage.getItem('sutaSelectedChapter'));
+
+
 })();

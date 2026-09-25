@@ -376,3 +376,14 @@ body {
     pointer-events: auto;
 }
 
+.btn-updating {
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+/* Khi rê chuột vào: làm mờ đi (opacity 0.6) và đổi con trỏ chuột */
+.btn-updating:hover {
+    opacity: 0.65;
+    filter: grayscale(40%); /* Giảm độ tươi màu một chút để rõ cảm giác chưa mở */
+    cursor: not-allowed;     /* Con trỏ báo không khả dụng */
+}
