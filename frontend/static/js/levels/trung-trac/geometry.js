@@ -1,7 +1,7 @@
 // Hàm hình học/vật lý thuần — không phụ thuộc state hay DOM.
 
 import {
-  CHUNK_W, GROUND_Y, TERRAIN_RAMPS,
+  CHUNK_W, GROUND_Y, TERRAIN_RAMPS, OBSTACLE_TYPES,
   HAZARD_SPRITES, PROJECTILE_SPRITES
 } from './config.js';
 import { createAnim } from './animation.js';
@@ -21,21 +21,28 @@ export function aabb(a, b) {
   return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
 
+// Vật cản tĩnh: `localX` là MÉP TRÁI hitbox; width/height là hitbox (px logic).
+// Neo theo OBSTACLE_TYPES[type].anchor: 'bottom' đứng trên mặt đất, 'overhead'
+// là thanh 20px ở groundY - 46 (khe dash 26px), 'top' là mặt trên ở groundY
+// (cầu). Cách vẽ (ảnh x1, căn phần nhìn thấy trùng hitbox) nằm ở render.js.
 export function makeObstacle(type, chunk, localX, width, height, options = {}) {
-  const drawScale = options.drawScale || 1.65;
+  const spec = OBSTACLE_TYPES[type] || {};
+  const anchor = options.overhead ? 'overhead' : (spec.anchor || 'bottom');
+  const overhead = anchor === 'overhead';
   const groundY = options.groundY || groundYAt(worldX(chunk, localX) + width / 2);
+  const y = overhead ? groundY - 46 : (anchor === 'top' ? groundY : groundY - height);
   return {
     type,
     x: worldX(chunk, localX),
-    y: options.overhead ? groundY - 46 : groundY - height,
+    y,
     w: width,
-    h: options.overhead ? 20 : height,
-    drawW: Math.round(width * drawScale),
-    drawH: Math.round(height * drawScale),
+    h: overhead ? 20 : height,
     groundY,
+    groundSink: options.groundSink ?? spec.groundSink ?? 0,
     harmful: Boolean(options.harmful),
-    overhead: Boolean(options.overhead),
-    requiresDash: options.requiresDash ?? Boolean(options.overhead),
+    overhead,
+    requiresDash: options.requiresDash ?? overhead,
+    requiresHole: Boolean(spec.requiresHole),
     active: true
   };
 }

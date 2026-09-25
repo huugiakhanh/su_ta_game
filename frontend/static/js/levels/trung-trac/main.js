@@ -6,12 +6,15 @@ import { ui, showMessage, updateHud } from './ui.js';
 import { clearInput, bindInput } from './input.js';
 import { update, endGame } from './physics.js';
 import { draw, fitCanvas } from './render.js';
-import { BACKDROP_ROOT, SPRITE_8BIT_ROOT } from './config.js';
+import { MAP_8BIT_ROOT, SPRITE_8BIT_ROOT } from './config.js';
 
 let lastTime = 0;
+const params = new URLSearchParams(window.location.search);
+// `?layout=p2`: layout thử 6 vật cản P2 + cầu qua hố (TT-MAP-01), chỉ để test.
+const levelOptions = { layout: params.get('layout') === 'p2' ? 'p2' : null };
 
 function resetGame(startImmediately = true) {
-  setState(createLevelState());
+  setState(createLevelState(levelOptions));
   state.running = startImmediately;
   state.paused = false;
   ui.question.classList.remove('panel--visible');
@@ -33,15 +36,14 @@ function frame(timestamp) {
 async function initAssets() {
   const missing = await loadAssets();
   const notices = [];
-  if (missing.missingBackdrops) notices.push(`thiếu ${missing.missingBackdrops} lớp nền (đang dùng màu tạm)`);
-  if (missing.missingObstacleSprites) notices.push(`thiếu ${missing.missingObstacleSprites} ảnh chướng ngại vật`);
+  if (missing.missingMaps.length) notices.push(`thiếu nền 8-bit: ${missing.missingMaps.join(', ')} (đang dùng màu tạm)`);
   if (missing.missingItems) notices.push(`thiếu ${missing.missingItems} ảnh vật phẩm`);
   if (!missing.manifestLoaded) notices.push('không tải được manifest sprite 8-bit (nhân vật dùng hộp tạm)');
   if (missing.missingSprites8.length) notices.push(`thiếu sprite 8-bit: ${missing.missingSprites8.join(', ')}`);
   ui.loadingText.textContent = notices.length
     ? `Đang chạy với placeholder tạm: ${notices.join('; ')}.`
     : 'Đã tải đủ lớp nền, chướng ngại vật, vật phẩm và hoạt ảnh nhân vật.';
-  console.info('SUTA backdrop root:', BACKDROP_ROOT);
+  console.info('SUTA map 8-bit root:', MAP_8BIT_ROOT, Object.keys(images.maps.layers));
   console.info('SUTA sprite 8-bit root:', SPRITE_8BIT_ROOT, Object.keys(images.sprites8));
   ui.start.disabled = false;
   draw();
@@ -78,7 +80,7 @@ document.querySelectorAll('[data-answer]').forEach(button => {
 
 // Chế độ xem sprite (?viewer=1): soát bộ sprite 8-bit theo manifest, không
 // chạy màn chơi. Nạp động để trang chơi bình thường không tải viewer.js.
-const viewerMode = new URLSearchParams(window.location.search).get('viewer') === '1';
+const viewerMode = params.get('viewer') === '1';
 
 if (viewerMode) {
   import('./viewer.js').then(module => module.startViewer());
@@ -87,7 +89,7 @@ if (viewerMode) {
   fitCanvas();
   window.addEventListener('resize', fitCanvas);
   window.addEventListener('orientationchange', fitCanvas);
-  setState(createLevelState());
+  setState(createLevelState(levelOptions));
   updateHud();
   initAssets();
   requestAnimationFrame(frame);
