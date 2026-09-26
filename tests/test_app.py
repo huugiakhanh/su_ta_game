@@ -27,6 +27,8 @@ def test_pages_render(client):
     assert client.get("/").status_code == 200
     assert client.get("/history").status_code == 200
     assert client.get("/gameplay/level/Trung_Trac/trung-trac.html").status_code == 200
+    assert client.get("/gameplay/levels/trung-trac/2").status_code == 200
+    assert client.get("/gameplay/levels/trung-trac/3").status_code == 200
 
 
 def test_auth_compatibility_routes(client):

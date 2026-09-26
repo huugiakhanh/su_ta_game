@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SUTA – Trưng Trắc · {{ title }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/levels/trung-trac.css') }}">
+</head>
+<body>
+  <!-- Trang giữ chỗ (TT-NPC-01): màn chưa làm, chỉ tóm tắt tiến trình mang sang. -->
+  <main class="game-shell" data-level="{{ level_id }}">
+    <section class="stage-wrap stage-wrap--placeholder">
+      <div class="panel panel--visible">
+        <h1>{{ title }} — đang phát triển</h1>
+        <p id="progressSummary"></p>
+        <ul id="rewardList" class="reward-list"></ul>
+        <button id="replayButton" type="button">Chơi lại từ màn 1</button>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="{{ url_for('static', filename='js/levels/trung-trac/placeholder.js') }}"></script>
+</body>
+</html>

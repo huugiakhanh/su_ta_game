@@ -1,12 +1,12 @@
 // Toàn bộ vẽ canvas: nền parallax, mặt đất, cổng đích, obstacle, item, enemy, nhân vật, HUD in-canvas.
 
 import { images } from './assets.js';
-import { state } from './state.js';
+import { state, bossAlive } from './state.js';
 import { debug } from './input.js';
 import { getAnimMeta, frameIndex } from './animation.js';
 import {
-  LOGICAL_W, LOGICAL_H, MAX_VIEW_W, VIEW_W, VIEW_H, setViewWidth, CHUNK_W, LEVEL_CHUNKS, GROUND_Y,
-  FINISH_GATE, OBSTACLE_TYPES, BOOK_SPRITE_ID, BOOK_FPS, BOOK_BOB_AMPLITUDE, ZONES, ZONE_BLEND_WIDTH, SKY_PARALLAX, FAR_HILLS, MID_PARALLAX,
+  LOGICAL_W, LOGICAL_H, MAX_VIEW_W, VIEW_W, VIEW_H, setViewWidth, CHUNK_W, LEVEL, GROUND_Y,
+  OBSTACLE_TYPES, BOOK_SPRITE_ID, BOOK_FPS, BOOK_BOB_AMPLITUDE, ZONE_BLEND_WIDTH, SKY_PARALLAX, FAR_HILLS, MID_PARALLAX, NPC_SPRITES,
   SKY_FALLBACK_COLOR, GROUND_FALLBACK_COLOR, GROUND_DECOR_DENSITY,
   HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES,
   PROJECTILE_MAX_RANGE, PROJECTILE_FADE_RANGE,
@@ -94,9 +94,11 @@ function drawTiledLayer(target, image, parallax, y) {
   for (let x = -offset; x < VIEW_W; x += width) target.drawImage(image, x, y);
 }
 
+// Vùng cảnh của màn đang chơi (LEVEL.zones — màn 1: 5 vùng, màn 2: 3 vùng).
 function zoneIndexAt(x) {
-  const index = ZONES.findIndex(zone => x < zone.x1);
-  return index < 0 ? ZONES.length - 1 : Math.max(0, index);
+  const zones = LEVEL.zones;
+  const index = zones.findIndex(zone => x < zone.x1);
+  return index < 0 ? zones.length - 1 : Math.max(0, index);
 }
 
 // Cảnh (trời hoặc lớp giữa, `key` = 'sky' | 'mid') theo tâm khung nhìn: trong
@@ -104,8 +106,8 @@ function zoneIndexAt(x) {
 function sceneryAt(key) {
   const ref = state.cameraX + VIEW_W / 2;
   const index = zoneIndexAt(ref);
-  const current = ZONES[index][key];
-  const next = ZONES[index + 1];
+  const current = LEVEL.zones[index][key];
+  const next = LEVEL.zones[index + 1];
   if (!next || next[key] === current) return { from: current, to: null, t: 0 };
   const t = (ref - (next.x0 - ZONE_BLEND_WIDTH)) / ZONE_BLEND_WIDTH;
   return t > 0 ? { from: current, to: next[key], t: Math.min(1, t) } : { from: current, to: null, t: 0 };
@@ -264,7 +266,7 @@ function drawGround() {
 
   for (let column = first; column <= last; column++) {
     const columnX = column * tileW;
-    const region = regions[ZONES[zoneIndexAt(columnX)].tiles];
+    const region = regions[LEVEL.zones[zoneIndexAt(columnX)].tiles];
     if (!region) continue;
     const { hash, surface, fill } = columnTiles(region, column);
     const surfaceSegments = subtractIntervals(columnX, columnX + tileW, surfaceGaps);
@@ -285,27 +287,29 @@ function drawGround() {
     ];
     edges.forEach(([role, x, sampleX]) => {
       if (x + tileW < camera || x > camera + VIEW_W) return;
-      const rect = pick(regions[ZONES[zoneIndexAt(sampleX)].tiles]?.[role], 0);
+      const rect = pick(regions[LEVEL.zones[zoneIndexAt(sampleX)].tiles]?.[role], 0);
       if (rect) ctx.drawImage(image, rect.x, rect.y, rect.w, rect.h, Math.round(x - camera), GROUND_Y, rect.w, rect.h);
     });
   });
 }
 
-// Điều kiện thắng về NỘI DUNG đã đủ (boss đã hạ + nhặt hết sách) — cổng mở
-// trước khi người chơi chạm finishX; trigger về đích vẫn ở physics.js.
+// Điều kiện thắng về NỘI DUNG đã đủ (mini-boss đã hạ + nhặt hết sách) — cổng
+// mở trước khi người chơi chạm finishX; trigger về đích vẫn ở physics.js.
 function finishGateOpen() {
-  const bossAlive = state.enemies.some(enemy => enemy.boss && enemy.alive);
-  return !bossAlive && state.booksCollected >= state.books.length;
+  return !bossAlive() && state.booksCollected >= state.books.length;
 }
 
 // Cổng thành Luy Lâu: x1, pivot bottom-center (maps_tt.json), đáy ở GROUND_Y.
+// Màn không có cổng (LEVEL.gate = null — màn 2) thì bỏ qua.
 function drawFinishGate() {
-  const prop = images.maps.props[finishGateOpen() ? FINISH_GATE.open : FINISH_GATE.closed]
-    || images.maps.props[FINISH_GATE.closed];
+  const gate = LEVEL.gate;
+  if (!gate) return;
+  const prop = images.maps.props[finishGateOpen() ? gate.open : gate.closed]
+    || images.maps.props[gate.closed];
   const w = prop ? prop.image.width : 131;
   const h = prop ? prop.image.height : 150;
   const pivot = prop?.asset.pivot || { x: w / 2, y: h };
-  const left = Math.round(FINISH_GATE.worldX - pivot.x - state.cameraX);
+  const left = Math.round(gate.worldX - pivot.x - state.cameraX);
   if (left + w < -48 || left > VIEW_W + 48) return;
   const top = GROUND_Y - pivot.y;
   if (prop) ctx.drawImage(prop.image, left, top);
@@ -465,7 +469,7 @@ function drawHazards(time, submerged = false) {
     debugLabels.set(hazard, drawn.label);
     if (hazard.alive && hazard.maxHp > 0 && hazard.hp > 0) {
       const barW = hazard.w + 8;
-      drawHealthBar(pivotX - barW / 2, drawn.top - 5, barW, hazard.hp / hazard.maxHp, '#e2ad45');
+      drawHealthBar(pivotX - barW / 2, drawn.top - 5, barW, hazard.hp / hazard.maxHp, hazard.boss ? '#e34c36' : '#e2ad45');
     }
   });
 }
@@ -511,7 +515,9 @@ function drawEnemies() {
     if (pivotX < -80 || pivotX > VIEW_W + 80) return;
     const footY = Math.round(enemy.y + enemy.h);
     const alpha = enemy.hitTimer > 0 && !art.anims.hurt && enemy.alive ? .45 : 1;
-    const drawn = drawAnimated(art.id, art.anims, null, enemy, pivotX, footY, facingDirection(centerX, 0, true), alpha);
+    // Lính thường có hướng riêng (`facing`, theo hướng đi/về phía người chơi);
+    // boss không có -> luôn quay về phía người chơi.
+    const drawn = drawAnimated(art.id, art.anims, null, enemy, pivotX, footY, facingDirection(centerX, enemy.facing || 0, true), alpha);
     if (!drawn) {
       drawPlaceholder(enemy, alpha);
       return;
@@ -521,6 +527,27 @@ function drawEnemies() {
       const barW = enemy.w + 8;
       drawHealthBar(pivotX - barW / 2, drawn.top - 5, barW, enemy.hp / enemy.maxHp, enemy.boss ? '#e34c36' : '#e2ad45');
     }
+  });
+}
+
+// NPC màn 2: sprite 8-bit x1, pivot bottom-center tại (centerX, GROUND_Y),
+// quay về phía người chơi. `idle`, hoặc `talk` khi đang nói thoại — cả hai
+// lặp theo đồng hồ chung `time` (game tạm dừng lúc hội thoại nên không dùng
+// đồng hồ riêng tick trong physics). Gặp xong thì mờ dần theo npc.fade.
+function drawNpcs(time) {
+  state.npcs.forEach(npc => {
+    if (npc.fade <= 0) return;
+    const sprite = NPC_SPRITES[npc.id];
+    const pivotX = Math.round(npc.centerX - state.cameraX);
+    if (pivotX < -60 || pivotX > VIEW_W + 60) return;
+    const pose = { anim: { name: npc.talking ? 'talk' : 'idle', time } };
+    const drawn = sprite && drawAnimated(sprite.id, sprite.anims, null, pose, pivotX, GROUND_Y, facingDirection(npc.centerX, 0, true), npc.fade);
+    if (!drawn) {
+      drawPlaceholder(npc, npc.fade);
+      debugLabels.set(npc, `${npc.id} (placeholder)`);
+      return;
+    }
+    debugLabels.set(npc, `${npc.id} ${drawn.label}`);
   });
 }
 
@@ -598,13 +625,13 @@ function drawPlayer(time) {
 }
 
 function drawChunkMarker() {
-  const chunk = Math.min(LEVEL_CHUNKS, Math.floor(state.player.x / CHUNK_W) + 1);
+  const chunk = Math.min(LEVEL.chunks, Math.floor(state.player.x / CHUNK_W) + 1);
   ctx.fillStyle = 'rgba(24, 14, 9, .72)';
   ctx.fillRect(VIEW_W - 63, 7, 54, 17);
   ctx.fillStyle = '#ffe7a3';
   ctx.font = 'bold 9px system-ui';
   ctx.textAlign = 'center';
-  ctx.fillText(`${chunk} / ${LEVEL_CHUNKS}`, VIEW_W - 36, 19);
+  ctx.fillText(`${chunk} / ${LEVEL.chunks}`, VIEW_W - 36, 19);
 }
 
 // Lớp debug (F2): hitbox (đỏ; người chơi xanh), pivot bottom-center (vàng),
@@ -618,6 +645,7 @@ function drawDebugOverlay() {
     ...state.obstacles.filter(item => item.active),
     ...state.hazards.filter(item => item.alive && !(item.kind === 'roller' && !item.active)),
     ...state.enemies.filter(item => item.alive),
+    ...state.npcs.filter(item => item.fade > 0),
     ...state.projectiles,
     state.player
   ];
@@ -655,7 +683,7 @@ function drawDebugOverlay() {
   ctx.fillText(`x ${Math.round(state.player.x)}  cam ${Math.round(state.cameraX)}  GROUND_Y ${GROUND_Y}`, 4, 10);
   const mid = sceneryAt('mid');
   const sky = sceneryAt('sky');
-  ctx.fillText(`zone ${ZONES[zoneIndexAt(state.cameraX + VIEW_W / 2)].id}  mid ${mid.to ? `${mid.from}>${mid.to} ${mid.t.toFixed(2)}` : mid.from}  sky ${sky.to ? `>${sky.to} ${sky.t.toFixed(2)}` : sky.from}`, 4, 19);
+  ctx.fillText(`zone ${LEVEL.zones[zoneIndexAt(state.cameraX + VIEW_W / 2)].id}  mid ${mid.to ? `${mid.from}>${mid.to} ${mid.t.toFixed(2)}` : mid.from}  sky ${sky.to ? `>${sky.to} ${sky.t.toFixed(2)}` : sky.from}`, 4, 19);
   ctx.restore();
 }
 
@@ -671,6 +699,7 @@ export function draw(time = 0) {
   drawHoles();
   drawBooks(time);
   drawObstacles();
+  drawNpcs(time);
   drawHazards(time);
   drawEnemies();
   drawProjectiles();

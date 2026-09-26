@@ -4,7 +4,7 @@
 // thấy giá trị mới nhất — đây là hành vi chuẩn của ES module named export.
 
 import { worldX, makeObstacle, makeHazard } from './geometry.js';
-import { GROUND_Y, FINISH_X } from './config.js';
+import { GROUND_Y, MINIBOSS, GUARD, LEVEL, NPC_RULES } from './config.js';
 import { createAnim } from './animation.js';
 
 export let state = null;
@@ -14,24 +14,49 @@ export function setState(nextState) {
   return state;
 }
 
-// Màn có ĐÚNG 12 chướng ngại vật (kể cả boss), ~1 cái/chunk. Mỗi lượt chơi
+// Boss/mini-boss của màn còn sống? (enemy `boss` — Tô Định, dành cho màn 3 —
+// hoặc hazard `boss` — mini-boss kiệu quan màn 1). physics.js (giữ người chơi
+// ở cổng) và render.js (cổng mở) dùng chung.
+export function bossAlive(current = state) {
+  return current.enemies.some(enemy => enemy.boss && enemy.alive)
+    || current.hazards.some(hazard => hazard.boss && hazard.alive);
+}
+
+// Màn có ĐÚNG 12 chướng ngại vật (kể cả mini-boss), ~1 cái/chunk. Mỗi lượt chơi
 // (resetGame -> createLevelState) các nhóm dưới đây được xáo ngẫu nhiên vào
 // chunk 1..10 và lệch thêm ±JITTER px trong chunk:
 //   - chunk 1 chỉ nhận nhóm "easy" (vật tĩnh/bẫy) để người chơi kịp làm quen,
 //     không bị ném đạn/lao vào ngay khi vừa xuất phát.
 //   - tháp canh + lính gác + kỵ binh là 1 nhóm (báo động gọi kỵ binh) nên luôn
 //     đi chung 1 chunk; tháp canh chỉ là cảnh trí nên không tính vào 12.
-//   - boss luôn cố định ở chunk 11 (thêm trong createLevelState).
+//   - mini-boss kiệu quan luôn cố định ở chunk 11 (thêm trong
+//     createLevelState). Kiệu KHÔNG còn nằm trong nhóm xáo (TT-NPC-01, quyết
+//     định team D5) — chỗ của nó là nhóm lính canh thứ 2.
 // Mỗi nhóm là hàm (chunk, dx) -> { obstacles, hazards, enemies }; dx cộng vào
 // MỌI toạ độ localX/triggerX của nhóm để cả nhóm dịch chung, không lệch nhau.
 // width/height của obstacle giữ đúng tỉ lệ khung hình thật của từng ảnh.
 const JITTER = 60;
 
-// Enemy đứng yên trên mặt đất: x = mép trái hitbox, w/h = hitbox (px logic).
+// Enemy trên mặt đất: x = mép trái hitbox, w/h = hitbox (px logic). Lính
+// thường (không boss) đi tuần quanh chỗ đứng và đâm kích khi người chơi tới
+// gần — hành vi ở physics.js (updateGuard), thông số GUARD trong config.js.
+// Boss đứng yên.
 function makeEnemy(x, w, h, hp, boss) {
-  return {
+  const enemy = {
     x, y: GROUND_Y - h, w, h, hp, maxHp: hp, boss,
     alive: true, dying: false, hitTimer: 0, anim: createAnim('idle')
+  };
+  if (boss) return enemy;
+  const center = x + w / 2;
+  return {
+    ...enemy,
+    facing: -1,
+    walking: true,
+    patrolMin: center - GUARD.patrolRange / 2,
+    patrolMax: center + GUARD.patrolRange / 2,
+    // Cú đâm đang diễn { time, hit } hoặc null.
+    action: null,
+    attackCooldown: 0
   };
 }
 
@@ -46,13 +71,15 @@ const OBSTACLE_GROUPS = [
   })] }) },
   // mành lau — bắt buộc lướt (dash)
   { build: (c, dx) => ({ obstacles: [makeObstacle('reedCurtain', c, 300 + dx, 76, 32, { overhead: true })] }) },
-  // kiệu quan — đi ngược chiều, nhảy qua
-  { build: (c, dx) => ({ hazards: [makeHazard('roller', 'officialPalanquin', c, 708 + dx, {
-    speed: -44, triggerX: worldX(c, 90 + dx)
-  })] }) },
-  // lính canh — đánh cận chiến
+  // lính canh — đi tuần, đâm kích khi người chơi tới gần. Có 2 nhóm: nhóm
+  // thứ 2 thay chỗ kiệu quan `roller` cũ (kiệu giờ là mini-boss chunk 11 —
+  // quyết định team D5), đứng LỆCH vị trí trong chunk so với nhóm 1 (đầu
+  // chunk thay vì cuối chunk; tránh các vị trí sách 258–558).
   { build: (c, dx) => ({ enemies: [
     makeEnemy(worldX(c, 624 + dx), 22, 40, 2, false)
+  ] }) },
+  { build: (c, dx) => ({ enemies: [
+    makeEnemy(worldX(c, 200 + dx), 22, 40, 2, false)
   ] }) },
   // lính thu thuế — ném túi tiền
   { build: (c, dx) => ({ hazards: [makeHazard('thrower', 'hanTaxSoldier', c, 312 + dx, {
@@ -125,6 +152,25 @@ function keepValidBridges(obstacles, holes) {
   });
 }
 
+// Mini-boss kiệu quan (TT-NPC-01 §3.1.2): đi tuần quanh tâm trong đoạn
+// patrolRange, vào tầm thì dừng lại ném dao — hành vi ở physics.js
+// (updatePatrol). `boss: true` -> phải hạ mới mở cổng.
+function makeMiniBoss() {
+  const hazard = makeHazard('patrol', 'palanquinBoss', MINIBOSS.chunk, MINIBOSS.localX, {
+    speed: -MINIBOSS.speed, hp: MINIBOSS.hp, projectile: 'throwingKnife',
+    fireInterval: MINIBOSS.fireInterval, fireRange: MINIBOSS.fireRange
+  });
+  const center = worldX(MINIBOSS.chunk, MINIBOSS.localX);
+  return {
+    ...hazard,
+    boss: true,
+    patrolMin: center - MINIBOSS.patrolRange / 2,
+    patrolMax: center + MINIBOSS.patrolRange / 2,
+    // Đang đi (true) hay đứng chờ ném (false) — chọn animation move/idle.
+    walking: true
+  };
+}
+
 function randomizeObstacles() {
   const easy = OBSTACLE_GROUPS.filter(group => group.easy);
   const first = easy[Math.floor(Math.random() * easy.length)];
@@ -140,23 +186,94 @@ function randomizeObstacles() {
   return layout;
 }
 
-// `options.layout === 'p2'` -> layout thử P2; mặc định màn thường (12 chướng
-// ngại vật xáo ngẫu nhiên + boss + 5 sách).
-export function createLevelState(options = {}) {
+// Nội dung màn 1. `options.layout === 'p2'` -> layout thử P2; mặc định màn
+// thường (11 chướng ngại vật xáo ngẫu nhiên + mini-boss kiệu quan + 5 sách).
+function level1Content(options) {
   const testP2 = options.layout === 'p2';
   const layout = testP2 ? p2TestLayout() : { ...randomizeObstacles(), holes: [] };
+  return {
+    // 12 chướng ngại vật (kể cả mini-boss) được XẾP NGẪU NHIÊN mỗi lượt chơi —
+    // xem randomizeObstacles() ở trên.
+    obstacles: keepValidBridges(layout.obstacles, layout.holes),
+    hazards: testP2 ? layout.hazards : [...layout.hazards, makeMiniBoss()],
+    holes: layout.holes,
+    books: testP2 ? [] : [
+      { x: worldX(2, 390), y: GROUND_Y - 56, collected: false },
+      { x: worldX(3, 390), y: GROUND_Y - 52, collected: false },
+      { x: worldX(4, 420), y: GROUND_Y - 87, collected: false },
+      { x: worldX(7, 258), y: GROUND_Y - 60, collected: false },
+      { x: worldX(7, 558), y: GROUND_Y - 72, collected: false }
+    ],
+    // Boss Tô Định (makeEnemy(..., 90, 80, 5, true), BOSS_TO_DINH_CHARIOT)
+    // KHÔNG còn ở màn 1 — để dành cho màn 3 (TT-NPC-01).
+    enemies: testP2 ? [] : layout.enemies,
+    npcs: []
+  };
+}
+
+// NPC màn 2: `centerX` = tâm = pivot bottom-center; x/y/w/h chỉ là hộp F2
+// (NPC không có va chạm). met = đã gặp xong; fade 1 -> 0 sau khi gặp (mờ dần
+// rồi biến mất); talking = đang nói thoại (render phát `talk`).
+function makeNpc(id, chunk, localX) {
+  const centerX = worldX(chunk, localX);
+  return {
+    id, centerX,
+    x: centerX - NPC_RULES.w / 2, y: GROUND_Y - NPC_RULES.h, w: NPC_RULES.w, h: NPC_RULES.h,
+    met: false, talking: false, fade: 1
+  };
+}
+
+// Vật cản không được nằm trong NPC_RULES.clearance quanh tâm NPC (§3.2.2) —
+// sai thì cảnh báo để phát hiện khi chỉnh layout.
+function checkNpcClearance(obstacles, npcs) {
+  obstacles.forEach(obstacle => npcs.forEach(npc => {
+    const gap = Math.max(obstacle.x - npc.centerX, npc.centerX - (obstacle.x + obstacle.w), 0);
+    if (gap < NPC_RULES.clearance) console.warn(`${obstacle.type} ở x=${obstacle.x} cách NPC ${npc.id} ${gap}px < ${NPC_RULES.clearance}px`);
+  }));
+}
+
+// Nội dung màn 2 "Chiêu mộ hiền tài" (TT-NPC-01 §3.2, DESIGN_BASELINE): đặt
+// CỐ ĐỊNH, không xáo. 6 vật cản tĩnh xen giữa các NPC (có 1 `slideBar` bắt
+// buộc dash); không hazard/enemy/đạn/sách/hố. Hitbox các loại P2 giữ đúng số
+// đã chốt ở TT-MAP-01 (layout thử `?layout=p2`); loại P0 giữ số của màn 1.
+// Thứ tự gặp: Thi Sách (giữa chunk 1) -> cốt truyện khi vào chunk 2 -> Lê
+// Chân (giữa chunk 3) -> Trưng Nhị (giữa chunk 4) -> về đích cuối chunk 4.
+function level2Content() {
+  const npcs = [
+    makeNpc('thiSach', 1, 384),
+    makeNpc('leChan', 3, 384),
+    makeNpc('trungNhi', 4, 384)
+  ];
+  const obstacles = [
+    makeObstacle('fenceLow', 1, 180, 40, 18),
+    makeObstacle('bambooSlope', 1, 600, 56, 30),
+    makeObstacle('fallenBranch', 2, 200, 55, 23),
+    makeObstacle('slideBar', 2, 520, 40, 20),
+    makeObstacle('logDrift', 3, 120, 56, 14),
+    makeObstacle('stoneBlock', 3, 600, 51, 23)
+  ];
+  checkNpcClearance(obstacles, npcs);
+  return { obstacles, hazards: [], holes: [], books: [], enemies: [], npcs };
+}
+
+// State của 1 lượt chơi màn đang chọn (LEVEL, config.js). `options.score` =
+// điểm mang sang từ màn trước; máu luôn đầy khi bắt đầu màn (DESIGN_BASELINE).
+export function createLevelState(options = {}) {
+  const content = LEVEL.id === 2 ? level2Content() : level1Content(options);
   return {
     running: false,
     paused: false,
     won: false,
     cameraX: 0,
-    score: 0,
+    score: options.score ?? 0,
     health: 5,
     booksCollected: 0,
+    // Mốc sự kiện 1 lần: màn 1 = câu hỏi / cốt truyện chunk 10; màn 2 =
+    // cốt truyện Thi Sách hy sinh.
     questionShown: false,
     storyShown: false,
     restUsed: false,
-    finishX: FINISH_X,
+    finishX: LEVEL.finishX,
     player: {
       x: 84,
       y: GROUND_Y - 42,
@@ -180,25 +297,7 @@ export function createLevelState(options = {}) {
       // Mốc thời gian (giây, đồng hồ requestAnimationFrame) lúc thua.
       deathTime: null
     },
-    // 12 chướng ngại vật (kể cả boss) được XẾP NGẪU NHIÊN mỗi lượt chơi —
-    // xem randomizeObstacles() bên dưới.
-    obstacles: keepValidBridges(layout.obstacles, layout.holes),
-    hazards: layout.hazards,
     projectiles: [],
-    holes: layout.holes,
-    books: testP2 ? [] : [
-      { x: worldX(2, 390), y: GROUND_Y - 56, collected: false },
-      { x: worldX(3, 390), y: GROUND_Y - 52, collected: false },
-      { x: worldX(4, 420), y: GROUND_Y - 87, collected: false },
-      { x: worldX(7, 258), y: GROUND_Y - 60, collected: false },
-      { x: worldX(7, 558), y: GROUND_Y - 72, collected: false }
-    ],
-    enemies: testP2 ? [] : [
-      ...layout.enemies,
-      makeEnemy(worldX(11, 510), 90, 80, 5, true)
-      // Ảnh enemy lấy theo cờ `boss` (xem ENEMY_SPRITES trong config.js):
-      // lính thường EN_HAN_GUARD, boss BOSS_TO_DINH_CHARIOT (hitbox 90x80 theo
-      // hình mới — quyết định team §9.4).
-    ]
+    ...content
   };
 }

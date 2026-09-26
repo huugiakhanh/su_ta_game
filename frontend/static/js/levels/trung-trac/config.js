@@ -77,10 +77,46 @@ export const GROUND_DECOR_DENSITY = 0.25; // DESIGN_BASELINE
 export const FINISH_X = CHUNK_W * 11 + 618;
 // Cổng thành Luy Lâu (prop, KHÔNG có hitbox — trigger về đích giữ nguyên ở
 // physics.js). Vẽ x1, pivot bottom-center lấy từ maps_tt.json, đáy ở GROUND_Y
-// (không chìm). Đổi sang ảnh mở khi đã đủ điều kiện NỘI DUNG (boss đã hạ + nhặt
-// đủ sách), trước khi người chơi chạm FINISH_X; suy ra mỗi frame nên không
+// (không chìm). Đổi sang ảnh mở khi đã đủ điều kiện NỘI DUNG (mini-boss đã hạ
+// + nhặt đủ sách — `bossAlive()` ở state.js), trước khi người chơi chạm FINISH_X; suy ra mỗi frame nên không
 // đóng lại (G7).
 export const FINISH_GATE = { closed: 'PROP_LUYLAU_GATE', open: 'PROP_LUYLAU_GATE_OPEN', worldX: FINISH_X };
+
+// Màn 2 "Chiêu mộ hiền tài" (TT-NPC-01 §3.2.1, DESIGN_BASELINE): 4 chunk, trời
+// ngày suốt màn. Chunk 1 làng (Z1), chunk 2 đồng lúa (Z2), chunk 3–4 bến sông
+// (Z4) — `id`/`tiles` giữ tên vùng của TT-MAP-01 để dùng đúng tile + lớp giữa.
+// Hoà cảnh giữa vùng theo đúng cách màn 1 (ZONE_BLEND_WIDTH).
+export const LEVEL2_ZONES = [
+  { id: 'Z1', x0: 0, x1: 768, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_VILLAGE', tiles: 'Z1' },
+  { id: 'Z2', x0: 768, x1: 1536, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FIELDS', tiles: 'Z2' },
+  { id: 'Z4', x0: 1536, x1: 3072, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_RIVER', tiles: 'Z4' }
+];
+// Điểm kết thúc màn 2: cuối chunk 4 lùi 96px (D15 — không vẽ cổng).
+export const LEVEL2_FINISH_X = CHUNK_W * 4 - 96;
+
+// Các màn của chương dùng CHUNG một bộ engine (TT-NPC-01, phương án A): main.js
+// đọc `data-level` của trang rồi gọi setLevel(); mọi module đọc thông số màn
+// đang chơi qua `LEVEL` (live-binding như VIEW_W). Dữ liệu nội dung (vật cản,
+// NPC, sách) nằm ở state.js theo LEVEL.id.
+//   chunks / worldWidth  độ dài màn.
+//   zones   vùng cảnh (trời, lớp giữa, tile) theo world X.
+//   finishX điểm về đích; gate = cổng vẽ tại finishX (null = không có cổng).
+//   title   tên màn (panel đầu/cuối màn, tiêu đề trang).
+export const LEVELS = {
+  1: {
+    id: 1, title: 'Màn 1: Vượt ải', chunks: LEVEL_CHUNKS, worldWidth: LEVEL_WORLD_WIDTH,
+    zones: ZONES, finishX: FINISH_X, gate: FINISH_GATE
+  },
+  2: {
+    id: 2, title: 'Màn 2: Chiêu mộ hiền tài', chunks: 4, worldWidth: CHUNK_W * 4,
+    zones: LEVEL2_ZONES, finishX: LEVEL2_FINISH_X, gate: null
+  }
+};
+export let LEVEL = LEVELS[1];
+export function setLevel(id) {
+  LEVEL = LEVELS[id] || LEVELS[1];
+  return LEVEL;
+}
 
 // Dốc/địa hình đặc biệt (nếu cần) khai báo tại đây thay vì gắn cứng theo
 // số chunk như trước. Rỗng = mặt đất phẳng theo GROUND_Y trên toàn bộ level.
@@ -145,6 +181,15 @@ export const MAP_PROPS_IN_GAME = [
 //           (xe cống — quyết định team §9.2).
 export const HAZARD_SPRITES = {
   officialPalanquin: { id: 'EN_HAN_PALANQUIN', w: 76, h: 44, anims: { move: 'walk', idle: 'walk', hurt: 'hurt', death: 'break' } },
+  // Mini-boss kiệu quan màn 1 (TT-NPC-01, hành vi `patrol` — xem MINIBOSS).
+  // Cùng asset/hitbox với kiệu `roller` (hiện không còn trong nhóm xáo). Kiệu
+  // không có `idle`: khi đứng chờ ném thì dừng ở ô 1 của `walk` (`idleHold`,
+  // quyết định team D6). Dao rời tay ở hit_frame 3 của `throw` (fps manifest,
+  // không ép thời lượng). muzzle 24 = DESIGN_BASELINE (D10).
+  palanquinBoss: {
+    id: 'EN_HAN_PALANQUIN', w: 76, h: 44, muzzle: 24, idleHold: true,
+    anims: { move: 'walk', idle: 'walk', throw: 'throw', hurt: 'hurt', death: 'break' }
+  },
   jungleTiger: { id: 'EN_TIGER', w: 48, h: 24, anims: { move: 'run', idle: 'idle', hurt: 'hurt', death: 'death' } },
   tributeCart: { id: 'OB_TRIBUTE_CART', w: 48, h: 38, anims: { move: 'roll', idle: 'roll', death: 'break' }, corpse: true },
   hanCavalry: { id: 'EN_HAN_CAVALRY', w: 56, h: 48, anims: { move: 'gallop', idle: 'gallop', hurt: 'hurt', death: 'death' } },
@@ -170,8 +215,10 @@ export const HAZARD_SPRITES = {
 // Enemy (lính canh / boss) -> asset 8-bit. Hitbox nằm trong state.js (enemy
 // là object phẳng). Boss hiện chỉ đứng + nhận đòn (chưa có cơ chế 3 giai
 // đoạn), nên chỉ dùng idle; hết máu phát shield_break 1 lần rồi xoá.
+// Boss Tô Định TẠM KHÔNG đặt vào màn 1 (TT-NPC-01: thay bằng mini-boss kiệu
+// quan) — giữ khai báo để màn 3 dùng lại.
 export const ENEMY_SPRITES = {
-  normal: { id: 'EN_HAN_GUARD', anims: { idle: 'idle', hurt: 'hurt', death: 'death' } },
+  normal: { id: 'EN_HAN_GUARD', anims: { idle: 'idle', walk: 'walk', attack: 'attack_01', hurt: 'hurt', death: 'death' } },
   boss: { id: 'BOSS_TO_DINH_CHARIOT', anims: { idle: 'idle', death: 'shield_break' } }
 };
 
@@ -181,7 +228,42 @@ export const ENEMY_SPRITES = {
 export const PROJECTILE_SPRITES = {
   coinPouch: { id: 'PJ_COIN_POUCH', anim: 'loop', w: 10, h: 10 },
   throwingDart: { id: 'PJ_SPEAR', anim: 'idle', w: 22, h: 4 },
-  fireArrow: { id: 'PJ_FIRE_ARROW', anim: 'loop', w: 16, h: 5 }
+  fireArrow: { id: 'PJ_FIRE_ARROW', anim: 'loop', w: 16, h: 5 },
+  // Dao ném của mini-boss kiệu quan: hình 16x8, hitbox 12x5 bớt cán (D10,
+  // DESIGN_BASELINE).
+  throwingKnife: { id: 'PJ_THROWING_KNIFE', anim: 'loop', w: 12, h: 5 }
+};
+
+// Lính canh thường (EN_HAN_GUARD, enemy không phải boss) — DESIGN_BASELINE:
+//   patrolRange  đi qua lại trong đoạn này (căn giữa tại chỗ đứng), tốc độ speed.
+//   aggroRange   người chơi trong khoảng này (tâm tới tâm) -> quay về phía
+//                người chơi, tiến lại gần nhưng không ra khỏi đoạn tuần tra.
+//   attackReach  tầm đâm kích tính từ mép hitbox lính; khoảng trống tới người
+//                chơi <= attackReach - 4 thì đâm (attack_01, sát thương ở ô
+//                hit_frame của manifest, chỉ trong ô đó, mỗi cú trúng 1 lần).
+//   attackBoxY / attackBoxH  dải dọc của mũi kích so với đỉnh hitbox lính.
+//   attackCooldown  nghỉ giữa 2 cú đâm (giây), tính từ lúc đâm xong hoặc lúc
+//                bị chém ngắt cú đâm.
+// Vùng đâm đo theo strip attack_01 vẽ lại 2026-09-26. Ở ô hit 3–4, mũi kích
+// tới x=43/42 trong cell 48px: 8px quá mép hitbox (pivot 24, nửa hitbox 11).
+// attackReach thêm 4px dung sai; dải mũi kích y=20–29 trong sprite tương ứng
+// y=13–22 tính từ đỉnh hitbox lính. Body cao trung bình 40.5px, lệch 7.4% so
+// với idle 43.75px và nằm trong ngưỡng đồng bộ sprite.
+export const GUARD = {
+  patrolRange: 96, speed: 24, aggroRange: 110,
+  attackReach: 12, attackBoxY: 13, attackBoxH: 10, attackCooldown: 1.2
+};
+
+// Mini-boss kiệu quan ở chunk 11 màn 1 (TT-NPC-01 §3.1.2, DESIGN_BASELINE).
+//   localX      tâm (pivot) trong chunk 11 — chỗ boss Tô Định cũ.
+//   hp          số đòn chém để hạ.
+//   patrolRange đi qua lại trong đoạn này (căn giữa tại localX), tốc độ speed.
+//   fireRange   người chơi trong tầm -> dừng lại, quay về phía người chơi, ném.
+//   fireInterval chu kỳ ném tính từ lúc ném xong (giây).
+//   hitScore / defeatScore  điểm mỗi đòn / khi hạ (D9 — như boss cũ).
+export const MINIBOSS = {
+  chunk: 11, localX: 510, hp: 6, patrolRange: 160, speed: 30,
+  fireRange: 240, fireInterval: 2.5, hitScore: 100, defeatScore: 700
 };
 
 export const PROJECTILE_SPEED = 198;
@@ -223,8 +305,29 @@ export const SPRITE_8BIT_IN_GAME = [
   'EN_HAN_PALANQUIN', 'EN_TIGER', 'OB_TRIBUTE_CART', 'EN_HAN_CAVALRY',
   'EN_HAN_TAXMAN', 'EN_HAN_WATCHTOWER', 'PROP_WATCHTOWER', 'TR_SPIKE_PIT', 'EN_HAN_BOAT',
   'EN_HAN_GUARD', 'BOSS_TO_DINH_CHARIOT',
-  'PJ_COIN_POUCH', 'PJ_SPEAR', 'PJ_FIRE_ARROW'
+  'PJ_COIN_POUCH', 'PJ_SPEAR', 'PJ_FIRE_ARROW', 'PJ_THROWING_KNIFE',
+  'NPC_THI_SACH', 'NPC_LE_CHAN', 'NPC_TRUNG_NHI'
 ];
+
+// NPC màn 2 (TT-NPC-01 §3.2.3). Khoá = `npc.id` trong state.js và
+// dialogue-data.js. Sprite 48x48 quay PHẢI, pivot bottom-center; render lật để
+// NPC quay về phía người chơi. Không có va chạm (hitbox chỉ để F2 hiển thị).
+//   portrait  chân dung 64x64 cho khung hội thoại (DOM, image-rendering: pixelated).
+export const NPC_SPRITES = {
+  thiSach: { id: 'NPC_THI_SACH', portrait: 'PORTRAIT_THI_SACH', anims: { idle: 'idle', talk: 'talk' } },
+  leChan: { id: 'NPC_LE_CHAN', portrait: 'PORTRAIT_LE_CHAN', anims: { idle: 'idle', talk: 'talk' } },
+  trungNhi: { id: 'NPC_TRUNG_NHI', portrait: 'PORTRAIT_TRUNG_NHI', anims: { idle: 'idle', talk: 'talk' } }
+};
+// DESIGN_BASELINE:
+//   talkDistance  khoảng trống từ mép phải người chơi tới tâm NPC để mở hội thoại.
+//   holdGap       NPC chưa gặp xong thì mép phải người chơi bị giữ cách tâm NPC
+//                 chừng này (như cổng đích giữ người chơi).
+//   fadeTime      gặp xong NPC mờ dần trong chừng này giây rồi biến mất.
+//   w, h          hộp F2 của NPC (không va chạm).
+//   clearance     không đặt vật cản trong vòng này quanh tâm NPC (state.js kiểm tra).
+export const NPC_RULES = { talkDistance: 32, holdGap: 12, fadeTime: 0.8, w: 22, h: 42, clearance: 96 };
+// Điểm câu hỏi màn 2 (D14): đúng ngay lần đầu / đúng sau khi đã chọn sai.
+export const QUESTION_SCORE = { firstTry: 500, retry: 250 }; // DESIGN_BASELINE
 
 // Đòn đánh của người chơi (giây). Animation attack_01 (6 ô) trải trên đúng
 // ATTACK_COOLDOWN; cửa sổ gây sát thương (`attacking`) dài ATTACK_ACTIVE_TIME,

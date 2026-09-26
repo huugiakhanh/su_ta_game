@@ -4,7 +4,7 @@
 import {
   ITEM_ROOT, ITEM_FILES,
   SPRITE_8BIT_ROOT, SPRITE_MANIFEST_FILE, SPRITE_8BIT_IN_GAME,
-  MAP_8BIT_ROOT, MAP_MANIFEST_FILE, TILESET_ID, ZONES, FAR_HILLS, MAP_PROPS_IN_GAME,
+  MAP_8BIT_ROOT, MAP_MANIFEST_FILE, TILESET_ID, LEVEL, FAR_HILLS, MAP_PROPS_IN_GAME,
   GROUND_Y, LEVEL_WORLD_WIDTH, VIEW_H
 } from './config.js';
 import { registerManifest, getAsset } from './animation.js';
@@ -50,9 +50,9 @@ export function loadMapManifest() {
   return fetchJson(MAP_8BIT_ROOT, MAP_MANIFEST_FILE);
 }
 
-// ID lớp nền màn chơi cần (trời + lớp giữa của mọi vùng, đồi xa).
+// ID lớp nền màn đang chơi cần (trời + lớp giữa của mọi vùng, đồi xa).
 function backdropIds() {
-  return [...new Set([...ZONES.flatMap(zone => [zone.sky, zone.mid]), FAR_HILLS.id])];
+  return [...new Set([...LEVEL.zones.flatMap(zone => [zone.sky, zone.mid]), FAR_HILLS.id])];
 }
 
 // Ảnh đã tải phải đúng cỡ khai báo trong maps_tt.json (vẽ x1, lặp theo chiều
@@ -80,7 +80,9 @@ async function loadMapAssets() {
   const layers = {};
   if (!manifest) return { layers, tileset: null, props: {}, missing: [MAP_MANIFEST_FILE] };
   const stage = manifest.stage || {};
-  if (stage.ground_y !== GROUND_Y || stage.stage_length !== LEVEL_WORLD_WIDTH) {
+  // maps_tt.json mô tả màn 1 (12 chunk); màn 2 ngắn hơn nên chỉ so GROUND_Y.
+  const lengthMismatch = LEVEL.id === 1 && stage.stage_length !== LEVEL_WORLD_WIDTH;
+  if (stage.ground_y !== GROUND_Y || lengthMismatch) {
     console.warn('maps_tt: stage khác config.js', stage, { GROUND_Y, LEVEL_WORLD_WIDTH });
   }
   const byId = Object.fromEntries(manifest.assets.map(asset => [asset.id, asset]));

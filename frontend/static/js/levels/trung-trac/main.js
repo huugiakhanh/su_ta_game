@@ -6,23 +6,41 @@ import { ui, showMessage, updateHud } from './ui.js';
 import { clearInput, bindInput } from './input.js';
 import { update, endGame } from './physics.js';
 import { draw, fitCanvas } from './render.js';
-import { MAP_8BIT_ROOT, SPRITE_8BIT_ROOT } from './config.js';
+import { MAP_8BIT_ROOT, SPRITE_8BIT_ROOT, LEVEL, setLevel } from './config.js';
+import { LEVEL_URLS, requireLevel } from './progress.js';
+import { initDialogue, closeDialogue } from './dialogue.js';
 
 let lastTime = 0;
 const params = new URLSearchParams(window.location.search);
-// `?layout=p2`: layout thử 6 vật cản P2 + cầu qua hố (TT-MAP-01), chỉ để test.
-const levelOptions = { layout: params.get('layout') === 'p2' ? 'p2' : null };
+// Màn đang chơi lấy từ `data-level` của trang (route truyền vào) — cùng bộ
+// module cho mọi màn (TT-NPC-01). Chưa hoàn thành màn trước -> requireLevel()
+// chuyển về màn 1 và trả null (`?debug=1` vào thẳng với dữ liệu giả lập).
+setLevel(Number(document.body.dataset.level) || 1);
+const progress = requireLevel(LEVEL.id);
+// `?layout=p2`: layout thử 6 vật cản P2 + cầu qua hố (TT-MAP-01), chỉ màn 1.
+// `score`: điểm mang sang từ màn trước (chơi lại màn thì quay về số này — D12).
+const levelOptions = {
+  layout: LEVEL.id === 1 && params.get('layout') === 'p2' ? 'p2' : null,
+  score: LEVEL.id > 1 && progress ? progress.score : 0
+};
+const INTRO_MESSAGES = {
+  1: 'Thu thập 5 cuốn sách, vượt chướng ngại và hạ kiệu quan.',
+  2: LEVEL.title
+};
 
 function resetGame(startImmediately = true) {
+  closeDialogue();
   setState(createLevelState(levelOptions));
   state.running = startImmediately;
   state.paused = false;
   ui.question.classList.remove('panel--visible');
   ui.end.classList.remove('panel--visible');
+  ui.next.hidden = true;
+  ui.restart.hidden = false;
   ui.loading.classList.toggle('panel--visible', !startImmediately);
   clearInput();
   updateHud();
-  showMessage('Thu thập 5 cuốn sách và vượt qua các chướng ngại vật.', 2600);
+  showMessage(INTRO_MESSAGES[LEVEL.id], 2600);
 }
 
 function frame(timestamp) {
@@ -56,6 +74,10 @@ ui.start.addEventListener('click', () => {
   resetGame(true);
 });
 ui.restart.addEventListener('click', () => resetGame(true));
+// Hoàn thành màn -> sang màn sau (tiến trình đã ghi trong endGame).
+ui.next.addEventListener('click', () => { window.location.href = LEVEL_URLS[LEVEL.id + 1]; });
+// Trả lời sai tới hết máu trong hội thoại màn 2 -> thua theo luật hiện tại.
+initDialogue({ onDefeat: () => endGame(false) });
 
 document.querySelectorAll('[data-answer]').forEach(button => {
   button.addEventListener('click', () => {
@@ -82,7 +104,9 @@ document.querySelectorAll('[data-answer]').forEach(button => {
 // chạy màn chơi. Nạp động để trang chơi bình thường không tải viewer.js.
 const viewerMode = params.get('viewer') === '1';
 
-if (viewerMode) {
+if (!progress) {
+  // Đang chuyển về màn 1 (chưa hoàn thành màn trước) — không khởi động màn.
+} else if (viewerMode) {
   import('./viewer.js').then(module => module.startViewer());
 } else {
   // Letterbox bội số nguyên: tính lại khi đổi cỡ cửa sổ / xoay màn hình.

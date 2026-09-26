@@ -7,6 +7,7 @@ import { state } from './state.js';
 export const ui = {
   health: document.getElementById('healthHearts'),
   books: document.getElementById('bookValue'),
+  bookHud: document.getElementById('bookHud'),
   score: document.getElementById('scoreValue'),
   progress: document.getElementById('progressBar'),
   loading: document.getElementById('loadingPanel'),
@@ -17,6 +18,7 @@ export const ui = {
   endTitle: document.getElementById('endTitle'),
   endText: document.getElementById('endText'),
   restart: document.getElementById('restartButton'),
+  next: document.getElementById('nextLevelButton'),
   message: document.getElementById('messageBox')
 };
 
@@ -49,7 +51,9 @@ export function updateHud() {
       ui.health.appendChild(icon);
     }
   }
-  ui.books.textContent = `${state.booksCollected}/5`;
+  // Màn không có sách (màn 2) thì ẩn ô Sách trên HUD.
+  ui.bookHud.hidden = state.books.length === 0;
+  ui.books.textContent = `${state.booksCollected}/${state.books.length}`;
   ui.score.textContent = state.score;
   const percent = Math.max(0, Math.min(100, state.player.x / state.finishX * 100));
   ui.progress.style.width = `${percent}%`;

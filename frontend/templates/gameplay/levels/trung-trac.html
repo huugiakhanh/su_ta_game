@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>SUTA – Màn thử Trưng Trắc</title>
+  <title>SUTA – Trưng Trắc · {{ title }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/levels/trung-trac.css') }}">
 </head>
-<body>
+<body data-level="{{ level_id }}">
   <main class="game-shell">
     <section class="hud" aria-label="Thông tin màn chơi">
       <div class="hud__brand">SUTA · TRƯNG TRẮC</div>
       <div class="hud__item"><span>Máu</span><div id="healthHearts" class="hud__hearts"></div></div>
-      <div class="hud__item"><span>Sách</span><strong id="bookValue">0/5</strong></div>
+      <div id="bookHud" class="hud__item"><span>Sách</span><strong id="bookValue">0/5</strong></div>
       <div class="hud__item"><span>Điểm</span><strong id="scoreValue">0</strong></div>
       <div class="hud__progress"><i id="progressBar"></i></div>
     </section>
@@ -19,7 +19,7 @@
     <section class="stage-wrap">
       <canvas id="gameCanvas" width="480" height="270" aria-label="Màn chơi Trưng Trắc"></canvas>
       <div id="loadingPanel" class="panel panel--visible">
-        <h1>Màn thử Trưng Trắc</h1>
+        <h1>{{ title }}</h1>
         <p id="loadingText">Đang tải bản đồ...</p>
         <button id="startButton" type="button" disabled>Bắt đầu</button>
       </div>
@@ -36,10 +36,27 @@
         </div>
       </div>
 
+      <!-- Hội thoại NPC / cốt truyện màn 2 (dialogue.js). -->
+      <div id="dialoguePanel" class="panel dialogue" role="dialog" aria-modal="true" aria-labelledby="dialogueName">
+        <div class="dialogue__box">
+          <img id="dialoguePortrait" class="dialogue__portrait" alt="" width="64" height="64">
+          <div class="dialogue__body">
+            <h2 id="dialogueName" class="dialogue__name"></h2>
+            <p id="dialogueTitle" class="dialogue__title"></p>
+            <p id="dialogueLabel" class="dialogue__label" hidden></p>
+            <p id="dialogueText" class="dialogue__text" aria-live="polite"></p>
+            <div id="dialogueAnswers" class="answers dialogue__answers" hidden></div>
+            <p id="dialogueHint" class="dialogue__hint" hidden></p>
+            <button id="dialogueNext" class="dialogue__next" type="button">Tiếp ▸</button>
+          </div>
+        </div>
+      </div>
+
       <div id="endPanel" class="panel">
-        <h2 id="endTitle">Hoàn thành màn thử!</h2>
+        <h2 id="endTitle">Hoàn thành {{ title }}</h2>
         <p id="endText"></p>
         <button id="restartButton" type="button">Chơi lại</button>
+        <button id="nextLevelButton" type="button" hidden>Sang Màn 2</button>
       </div>
     </section>
 
