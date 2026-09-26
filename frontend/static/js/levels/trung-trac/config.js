@@ -94,6 +94,29 @@ export const LEVEL2_ZONES = [
 // Điểm kết thúc màn 2: cuối chunk 4 lùi 96px (D15 — không vẽ cổng).
 export const LEVEL2_FINISH_X = CHUNK_W * 4 - 96;
 
+// Màn 3 "Trận Luy Lâu" (TT-BOSS-01 §3.1, DESIGN_BASELINE): ĐẤU TRƯỜNG cố định
+// 1 chunk trước cổng Luy Lâu, không có đoạn đi cảnh. Tường vô hình ở x = 0 và
+// x = width (physics.js kẹp người chơi; chiến xa/quân cảm tử quay đầu ở tường).
+//   gateX      tâm cổng PROP_LUYLAU_GATE (192px -> trải 576–768), đóng suốt trận.
+//   pillars    tâm 2 cột đá PROP_STONE_PILLAR (hitbox pillarW x pillarH).
+//   playerStartX  mép trái hitbox người chơi lúc vào màn.
+//   spawnX     tâm điểm quân địch xuất hiện (trước cổng).
+export const ARENA = {
+  width: CHUNK_W, gateX: 672, pillars: [250, 450], pillarW: 24, pillarH: 48,
+  playerStartX: 60, spawnX: 700,
+  // Mưa tên trên thành (§3.9) — bật/tắt áp lực nền cả 3 giai đoạn.
+  wallArrows: true
+};
+// Mưa tên trên thành (TT-BOSS-01 §3.9, DESIGN_BASELINE): mỗi `interval` giây
+// `count` mũi PJ_ARROW_RAIN nhắm vị trí ngẫu nhiên trong ±spread px quanh
+// người chơi; vạch báo trên mặt đất `warnTime` giây rồi tên mới rơi (fallSpeed).
+// Trúng người chơi -1 máu, dash né được, không trúng quân ta/quân địch. Ngưng
+// trong cutscene và phasePause giây đầu mỗi giai đoạn.
+export const WALL_ARROWS = { interval: 3.5, count: 2, spread: 120, warnTime: .6, fallSpeed: 420, phasePause: 2 };
+export const LEVEL3_ZONES = [
+  { id: 'Z5', x0: 0, x1: ARENA.width, sky: 'BG_TT_SKY_STORM', mid: 'BG_TT_MID_CITADEL', tiles: 'Z5' }
+];
+
 // Các màn của chương dùng CHUNG một bộ engine (TT-NPC-01, phương án A): main.js
 // đọc `data-level` của trang rồi gọi setLevel(); mọi module đọc thông số màn
 // đang chơi qua `LEVEL` (live-binding như VIEW_W). Dữ liệu nội dung (vật cản,
@@ -102,6 +125,8 @@ export const LEVEL2_FINISH_X = CHUNK_W * 4 - 96;
 //   zones   vùng cảnh (trời, lớp giữa, tile) theo world X.
 //   finishX điểm về đích; gate = cổng vẽ tại finishX (null = không có cổng).
 //   title   tên màn (panel đầu/cuối màn, tiêu đề trang).
+//   arena   true = đấu trường (màn 3): tường 2 đầu, không về đích, camera
+//           neo tâm người chơi, có kỹ năng/buff từ phần thưởng màn 2.
 export const LEVELS = {
   1: {
     id: 1, title: 'Màn 1: Vượt ải', chunks: LEVEL_CHUNKS, worldWidth: LEVEL_WORLD_WIDTH,
@@ -110,6 +135,11 @@ export const LEVELS = {
   2: {
     id: 2, title: 'Màn 2: Chiêu mộ hiền tài', chunks: 4, worldWidth: CHUNK_W * 4,
     zones: LEVEL2_ZONES, finishX: LEVEL2_FINISH_X, gate: null
+  },
+  3: {
+    id: 3, title: 'Màn 3: Trận Luy Lâu', chunks: 1, worldWidth: ARENA.width,
+    zones: LEVEL3_ZONES, finishX: ARENA.width, arena: true,
+    gate: { closed: 'PROP_LUYLAU_GATE', open: 'PROP_LUYLAU_GATE_OPEN', worldX: ARENA.gateX }
   }
 };
 export let LEVEL = LEVELS[1];
@@ -148,7 +178,12 @@ export const OBSTACLE_TYPES = {
   slideBar: { id: 'OBS_SLIDE_BAR', anchor: 'overhead', groundSink: 0 },
   bridge: { id: 'OBS_BRIDGE', anchor: 'top', groundSink: 0, requiresHole: true },
   logDrift: { id: 'OBS_LOG_DRIFT', anchor: 'bottom', groundSink: 0 },
-  spikesTrap: { id: null, anchor: 'bottom', groundSink: 0 }
+  spikesTrap: { id: null, anchor: 'bottom', groundSink: 0 },
+  // Cột đá màn 3 (TT-BOSS-01, quyết định team Q1): `blocking` — va ngang thì
+  // bị chặn lại, KHÔNG mất máu; đứng lên được. Chỉ chiến xa bị cột chặn,
+  // quân địch đi xuyên (Q2). Strip 2 ô 24x48 (`frame_states` intact/cracked
+  // trong maps_tt.json) — render chọn ô theo obstacle.state.
+  stonePillar: { id: 'PROP_STONE_PILLAR', anchor: 'bottom', groundSink: 0, blocking: true }
 };
 // (Các ảnh hazard cũ spike_pit_*.png, tribute_cart_broken.png, watchtower.png
 // và các strip *_strip*.png đã ngừng tham chiếu — hazard/enemy/đạn giờ dùng
@@ -157,8 +192,18 @@ export const OBSTACLE_TYPES = {
 // Ảnh 8-bit của map cần tải ngoài các lớp nền/tileset (vật cản, sách, cổng).
 export const MAP_PROPS_IN_GAME = [
   ...Object.values(OBSTACLE_TYPES).map(type => type.id).filter(Boolean),
-  'ITEM_BINH_THU', FINISH_GATE.closed, FINISH_GATE.open
+  'ITEM_BINH_THU', FINISH_GATE.closed, FINISH_GATE.open, 'PROP_TT_VICTORY_FLAG'
 ];
+// Cờ chiến thắng cắm trên cổng mở (cutscene màn 3): strip lặp, pivot
+// bottom-left đặt tại `flag_attach` của PROP_LUYLAU_GATE_OPEN (maps_tt.json).
+// Thiếu ảnh/điểm gắn thì bỏ qua (TODO_MISSING).
+export const VICTORY_FLAG_ID = 'PROP_TT_VICTORY_FLAG';
+// Điểm gắn cờ GHI ĐÈ `flag_attach` (166,31 — đỉnh cột cờ bên phải) của
+// maps_tt.json: cờ cắm ở GIỮA mái cổng (yêu cầu team 27/09). Toạ độ trong canvas
+// cổng 192x176 (nơi đặt pivot bottom-left của cờ): nóc mái phẳng ở hàng y = 7
+// (x 80–112); cán cờ ở cột 1–3 của ô, chân cán ở hàng 30 -> x = 96 − 2 để cán
+// đứng đúng giữa, y = 10 để chân cán cắm 1px vào nóc mái. null = dùng flag_attach.
+export const VICTORY_FLAG_ATTACH = null;
 
 // Hazard (vật cản/kẻ địch có trạng thái) -> asset 8-bit trong manifest. Khoá
 // (jungleTiger, hanTaxSoldier...) là tên `sprite` state.js dùng.
@@ -219,7 +264,22 @@ export const HAZARD_SPRITES = {
 // quan) — giữ khai báo để màn 3 dùng lại.
 export const ENEMY_SPRITES = {
   normal: { id: 'EN_HAN_GUARD', anims: { idle: 'idle', walk: 'walk', attack: 'attack_01', hurt: 'hurt', death: 'death' } },
-  boss: { id: 'BOSS_TO_DINH_CHARIOT', anims: { idle: 'idle', death: 'shield_break' } }
+  // Chiến xa Tô Định (màn 3 giai đoạn 1, TT-BOSS-01 §3.5): trạng thái máy
+  // trạng thái -> animation. Không có `hurt` -> trúng đòn nháy mờ. Hết khiên
+  // phát shield_break 1 lần rồi NẰM LẠI ở ô cuối (xác xe, không va chạm).
+  boss: {
+    id: 'BOSS_TO_DINH_CHARIOT',
+    anims: { idle: 'idle', idleCracked: 'idle_cracked', throw: 'throw', charge: 'charge', stun: 'stun', death: 'shield_break' }
+  },
+  // Tô Định đi bộ (giai đoạn 2 đứng sau xác xe, chỉ để vẽ).
+  // Giai đoạn 3: trúng đòn phát `hurt` (Codex bổ sung 26/09), hết máu
+  // `disarmed` 1 lần; cutscene: `flee` (đã cải trang).
+  bossFoot: { id: 'BOSS_TO_DINH_FOOT', anims: { idle: 'idle', hurt: 'hurt', disarmed: 'disarmed', flee: 'flee' } },
+  // Quân cảm tử màn 3 (TT-BOSS-01 §3.3): không có idle/hurt — lúc nghỉ giữa 2
+  // cú đâm thì đứng ở ô 1 của `run` (idleHold, như kiệu quan).
+  rusher: { id: 'EN_HAN_RUSHER', idleHold: true, anims: { idle: 'run', walk: 'run', attack: 'attack_01', death: 'death' } },
+  // "Bao cát" của layout thử ?layout=skills: không có asset — vẽ hộp tạm.
+  dummy: { id: null, anims: {} }
 };
 
 // Đạn -> asset 8-bit (khoá là tên `projectile` hazard khai báo). Hitbox (w, h)
@@ -261,6 +321,123 @@ export const GUARD = {
 //   fireRange   người chơi trong tầm -> dừng lại, quay về phía người chơi, ném.
 //   fireInterval chu kỳ ném tính từ lúc ném xong (giây).
 //   hitScore / defeatScore  điểm mỗi đòn / khi hạ (D9 — như boss cũ).
+// Quân cảm tử EN_HAN_RUSHER (TT-BOSS-01 §3.3, DESIGN_BASELINE):
+//   speed         chạy 90px/s; hướng chọn VỀ PHÍA người chơi lúc xuất hiện và
+//                 sau mỗi lần nghỉ, rồi giữ nguyên tới khi chạm tường thì quay đầu.
+//   attackRange   khoảng trống tới người chơi <= số này -> phát attack_01, sát
+//                 thương trong ô hit_frame (2) nếu lưỡi đoản đao (attackReach) trúng.
+//   attackBoxY/H  dải dọc lưỡi đao so với đỉnh hitbox: strip attack_01 ô 2
+//                 có lưỡi đao ở hàng 26–31 (đỉnh hitbox = hàng 6) -> 20–25, nới 2px.
+//   rest          nghỉ sau cú đâm (giây) rồi chạy tiếp.
+export const RUSHER = {
+  hp: 1, w: 22, h: 40, speed: 90, attackRange: 12,
+  attackReach: 12, attackBoxY: 20, attackBoxH: 8, rest: 1.0
+};
+
+// Phần thưởng màn 2 thành cơ chế thật ở màn 3 (TT-BOSS-01 §3.2, DESIGN_BASELINE).
+// Khoá = id phần thưởng trong tiến trình (progress.js REWARD_NAMES).
+//   buff       BUFF_Y_CHI_KIEN_CUONG: máu còn 1 + calmTime giây không trúng đòn
+//              -> hồi 1 máu; hồi chiêu `cooldown` tính từ lần hồi trước.
+//   arrowRain  SK_LE_CHAN_ARROW_RAIN (phím K): `count` mũi PJ_ARROW_RAIN rơi từ
+//              mép trên màn hình, rải đều trong vùng `width` px bắt đầu cách
+//              `offset` px phía trước người chơi, ra lần lượt trong `spread` giây
+//              (xê dịch ±`jitter` px), rơi `fallSpeed` px/s. Mỗi lần dùng: lính
+//              nhận tối đa perEnemy mũi, boss tối đa perBoss.
+//   shadow     SK_TRUNG_NHI_SHADOW (phím L): kéo dài `duration`, hồi chiêu tính
+//              từ lúc HẾT hiệu lực; bóng NPC_TRUNG_NHI alpha `alpha`, ánh `tint`,
+//              đi sau `gap` px, trễ `delay` giây theo vệt di chuyển.
+//   portrait   chân dung ô HUD.
+export const SKILLS = {
+  BUFF_Y_CHI_KIEN_CUONG: { calmTime: 3, cooldown: 20, portrait: 'PORTRAIT_THI_SACH' },
+  SK_LE_CHAN_ARROW_RAIN: {
+    key: 'K', cooldown: 12, width: 160, offset: 24, count: 10, spread: .8,
+    jitter: 5, fallSpeed: 420, perEnemy: 2, perBoss: 1, portrait: 'PORTRAIT_LE_CHAN'
+  },
+  SK_TRUNG_NHI_SHADOW: {
+    key: 'L', duration: 8, cooldown: 20, gap: 20, delay: .15, alpha: .5,
+    tint: 'rgba(58, 64, 190, .55)', sprite: 'NPC_TRUNG_NHI', portrait: 'PORTRAIT_TRUNG_NHI'
+  }
+};
+// Mũi tên mưa (PJ_ARROW_RAIN 8x24, mũi ở đáy ô): hitbox 4x10 ở đầu mũi.
+export const ARROW_RAIN_SPRITE = { id: 'PJ_ARROW_RAIN', anim: 'idle', w: 4, h: 10 };
+
+// Layout thử `?layout=skills` (chỉ màn 3): không boss; sinh lần lượt các nhóm
+// (đợt sau khi đợt trước chết hết + gap giây), lặp lại; bao cát đứng yên
+// dummyHp máu ở dummyX để đo sát thương. `at` = giây tính từ đầu nhóm, `dx` =
+// lệch so với ARENA.spawnX.
+// Boss Tô Định (TT-BOSS-01 §3.5–3.6, DESIGN_BASELINE).
+//   startX          tâm chiến xa lúc vào trận; w/h hitbox 90x80 (không nhảy qua được).
+//   shield          số nấc khiên. Chỉ mất nấc khi xe ĐÂM CỘT hoặc trúng HŨ DẦU bị
+//                   chém phản; đòn chém trực tiếp (người chơi, bóng Trưng Nhị) chỉ
+//                   làm xe nháy mờ + hiện gợi ý (tối đa 1 lần / hintInterval giây).
+//   startDelay      chờ trước cú ném đầu tiên (đọc thông báo đầu màn).
+//   throwCount/throwInterval  ném 2 lần, 2 lần BẮT ĐẦU cách nhau 1,6 s; hũ rời
+//                   tay ở hit_frame 4 của `throw`, từ độ cao `muzzle` so với chân,
+//                   lệch muzzleX về phía trước.
+//   warnTime/shake  đứng báo trước 0,8 s, rung ngang 1 px (vẽ bằng code).
+//   chargeSpeed     lao 220 px/s tới khi chạm cột đá hoặc tường.
+//   stunTime        đâm cột: choáng 2,5 s. wallPause: đâm tường đứng 0,5 s.
+//   pillarFade      cột đang nứt bị đâm lần nữa: mờ dần rồi biến mất.
+//   jar             hũ dầu: bay vòng cung `flightTime` giây tới vị trí ngang của
+//                   người chơi lúc ném (trọng lực `gravity`), hitbox w x h; chém
+//                   trúng thì bị phản, bay thẳng `reflectSpeed` px/s về phía xe.
+//   fire            FX_OIL_FIRE: vùng lửa rộng width, cao h, tồn tại `time` giây
+//                   (animation impact 0,5 s rồi giữ ô cuối — quyết định Q5), mỗi
+//                   đám lửa trúng người chơi tối đa 1 lần; lửa trên thân xe không
+//                   gây sát thương (Q6).
+//   footX           Tô Định đi bộ đứng sau xác xe ở giai đoạn 2 (không hitbox),
+//                   giai đoạn 3 thành mục tiêu đánh được tại đây.
+//   foot            giai đoạn 3 (§3.7): hitbox w x h, hp; trúng đòn bị đẩy lùi
+//                   `knockback` px về phía cổng (tâm không quá maxX, tối đa 1
+//                   lần mỗi khung); cứ rusherInterval giây 1 quân cảm tử ra từ
+//                   cổng, tối đa rusherMax con cùng lúc; cutscene chạy trốn fleeSpeed.
+//   cutscene        §3.8: disarmHold = đứng thêm sau `disarmed`; fadeTime = tối/
+//                   sáng dần; walkSpeed = Trưng Trắc tự đi tới cổng; victoryHold
+//                   = thời gian đứng `victory` trước panel cốt truyện cuối.
+//   shieldScore/breakScore/reflectScore  điểm.
+export const BOSS_TD = {
+  startX: 600, w: 90, h: 80, shield: 3, startDelay: 1.5,
+  throwCount: 2, throwInterval: 1.6, muzzle: 64, muzzleX: 20,
+  warnTime: .8, shake: 1, chargeSpeed: 220, stunTime: 2.5, wallPause: .5, pillarFade: .3,
+  hintInterval: 5,
+  // reflectW/H: vùng nhận đòn chém để PHẢN hũ, rộng hơn hitbox gây lửa (team
+  // 26/09 — hũ bay nhanh, cửa sổ canh nhịp quá hẹp với 10x10).
+  jar: { id: 'PJ_OIL_JAR', anim: 'loop', w: 10, h: 10, reflectW: 20, reflectH: 20, flightTime: .9, gravity: 600, reflectSpeed: 260 },
+  fire: { id: 'FX_OIL_FIRE', anim: 'impact', width: 32, h: 24, time: .6 },
+  footX: 640,
+  foot: { w: 22, h: 40, hp: 5, knockback: 16, maxX: 740, rusherInterval: 4, rusherMax: 2, fleeSpeed: 150 },
+  cutscene: { disarmHold: .4, fadeTime: .4, walkSpeed: 120, victoryHold: 1.4 },
+  shieldScore: 300, breakScore: 1000, reflectScore: 50
+};
+// Giai đoạn 2 — 3 đợt thân binh ra từ cổng (ARENA.spawnX); đợt sau bắt đầu khi
+// đợt trước chết hết + gap giây. Cùng định dạng nhóm với SKILL_TEST.
+export const WAVES = {
+  gap: 1.5,
+  groups: [
+    [{ type: 'guard', at: 0, dx: 0 }, { type: 'guard', at: 0, dx: -40 }],
+    [{ type: 'rusher', at: 0, dx: 0 }, { type: 'rusher', at: .6, dx: 0 }, { type: 'rusher', at: 1.2, dx: 0 }],
+    [
+      { type: 'guard', at: 0, dx: 0 }, { type: 'guard', at: 0, dx: -40 },
+      { type: 'rusher', at: .6, dx: 0 }, { type: 'rusher', at: 1.2, dx: 0 }
+    ]
+  ]
+};
+// Thông báo trong trận (TT-BOSS-01 mục 5.2 — nguyên văn, Source of Truth).
+export const BOSS_TEXT = {
+  shieldHint: 'Khiên quá dày! Hãy dùng cột đá hoặc hũ dầu.',
+  shieldBroken: 'Khiên chiến xa đã vỡ! Thân binh của Thái thú xông ra.',
+  phase3: 'Tô Định không còn chỗ nấp!'
+};
+
+export const SKILL_TEST = {
+  gap: 1.5, dummyX: 380, dummyHp: 99,
+  // Quân cảm tử ra trước lính canh (yêu cầu người chơi thử 26/09).
+  groups: [
+    [{ type: 'rusher', at: 0, dx: 0 }, { type: 'rusher', at: .6, dx: 0 }, { type: 'rusher', at: 1.2, dx: 0 }],
+    [{ type: 'guard', at: 0, dx: 0 }, { type: 'guard', at: 0, dx: -40 }]
+  ]
+};
+
 export const MINIBOSS = {
   chunk: 11, localX: 510, hp: 6, patrolRange: 160, speed: 30,
   fireRange: 240, fireInterval: 2.5, hitScore: 100, defeatScore: 700
@@ -306,7 +483,9 @@ export const SPRITE_8BIT_IN_GAME = [
   'EN_HAN_TAXMAN', 'EN_HAN_WATCHTOWER', 'PROP_WATCHTOWER', 'TR_SPIKE_PIT', 'EN_HAN_BOAT',
   'EN_HAN_GUARD', 'BOSS_TO_DINH_CHARIOT',
   'PJ_COIN_POUCH', 'PJ_SPEAR', 'PJ_FIRE_ARROW', 'PJ_THROWING_KNIFE',
-  'NPC_THI_SACH', 'NPC_LE_CHAN', 'NPC_TRUNG_NHI'
+  'NPC_THI_SACH', 'NPC_LE_CHAN', 'NPC_TRUNG_NHI',
+  'EN_HAN_RUSHER', 'PJ_ARROW_RAIN',
+  'BOSS_TO_DINH_FOOT', 'PJ_OIL_JAR', 'FX_OIL_FIRE'
 ];
 
 // NPC màn 2 (TT-NPC-01 §3.2.3). Khoá = `npc.id` trong state.js và
@@ -352,7 +531,9 @@ export const PLAYER_ANIMATIONS = {
   attack: { anim: 'attack_01', duration: ATTACK_COOLDOWN},
   hurt: { anim: 'hurt' },
   dash: { anim: 'dash' },
-  death: { anim: 'death' }
+  death: { anim: 'death' },
+  // Cutscene kết chương màn 3: phát 1 lần, giữ ô cuối.
+  victory: { anim: 'victory' }
 };
 // Ngưỡng vận tốc dọc (px logic/s) chọn ô `jump`: vy < -N ô 1 (bật lên),
 // |vy| <= N ô 2 (gần đỉnh), vy > N ô 3 (rơi). DESIGN_BASELINE.

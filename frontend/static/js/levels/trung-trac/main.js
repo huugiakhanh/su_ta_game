@@ -7,7 +7,7 @@ import { clearInput, bindInput } from './input.js';
 import { update, endGame } from './physics.js';
 import { draw, fitCanvas } from './render.js';
 import { MAP_8BIT_ROOT, SPRITE_8BIT_ROOT, LEVEL, setLevel } from './config.js';
-import { LEVEL_URLS, requireLevel } from './progress.js';
+import { LEVEL_URLS, requireLevel, clearProgress } from './progress.js';
 import { initDialogue, closeDialogue } from './dialogue.js';
 
 let lastTime = 0;
@@ -19,13 +19,19 @@ setLevel(Number(document.body.dataset.level) || 1);
 const progress = requireLevel(LEVEL.id);
 // `?layout=p2`: layout thử 6 vật cản P2 + cầu qua hố (TT-MAP-01), chỉ màn 1.
 // `score`: điểm mang sang từ màn trước (chơi lại màn thì quay về số này — D12).
+// `?layout=skills`: đấu trường thử kỹ năng (bao cát + lính sinh lần lượt), chỉ màn 3.
+// `rewards`: phần thưởng màn 2 -> kỹ năng/buff màn 3 (`?debug=1` có đủ cả 3).
+const LAYOUTS = { 1: 'p2', 3: 'skills' };
 const levelOptions = {
-  layout: LEVEL.id === 1 && params.get('layout') === 'p2' ? 'p2' : null,
-  score: LEVEL.id > 1 && progress ? progress.score : 0
+  layout: params.get('layout') === LAYOUTS[LEVEL.id] ? LAYOUTS[LEVEL.id] : null,
+  score: LEVEL.id > 1 && progress ? progress.score : 0,
+  rewards: progress?.rewards || []
 };
 const INTRO_MESSAGES = {
   1: 'Thu thập 5 cuốn sách, vượt chướng ngại và hạ kiệu quan.',
-  2: LEVEL.title
+  2: LEVEL.title,
+  // TT-BOSS-01 mục 5.1 (nguyên văn).
+  3: 'Tô Định núp sau chiến xa bọc khiên. Hãy dụ xe đâm vào cột đá, hoặc chém trả hũ dầu!'
 };
 
 function resetGame(startImmediately = true) {
@@ -37,10 +43,12 @@ function resetGame(startImmediately = true) {
   ui.end.classList.remove('panel--visible');
   ui.next.hidden = true;
   ui.restart.hidden = false;
+  ui.replayChapter.hidden = true;
+  ui.home.hidden = true;
   ui.loading.classList.toggle('panel--visible', !startImmediately);
   clearInput();
   updateHud();
-  showMessage(INTRO_MESSAGES[LEVEL.id], 2600);
+  showMessage(INTRO_MESSAGES[LEVEL.id], LEVEL.arena ? 4200 : 2600);
 }
 
 function frame(timestamp) {
@@ -76,6 +84,12 @@ ui.start.addEventListener('click', () => {
 ui.restart.addEventListener('click', () => resetGame(true));
 // Hoàn thành màn -> sang màn sau (tiến trình đã ghi trong endGame).
 ui.next.addEventListener('click', () => { window.location.href = LEVEL_URLS[LEVEL.id + 1]; });
+// Hết chương: chơi lại từ màn 1 (xoá tiến trình) hoặc về trang chủ.
+ui.replayChapter.addEventListener('click', () => {
+  clearProgress();
+  window.location.href = LEVEL_URLS[1];
+});
+ui.home.addEventListener('click', () => { window.location.href = '/'; });
 // Trả lời sai tới hết máu trong hội thoại màn 2 -> thua theo luật hiện tại.
 initDialogue({ onDefeat: () => endGame(false) });
 

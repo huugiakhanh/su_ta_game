@@ -1,7 +1,7 @@
 // Toàn bộ vẽ canvas: nền parallax, mặt đất, cổng đích, obstacle, item, enemy, nhân vật, HUD in-canvas.
 
 import { images } from './assets.js';
-import { state, bossAlive } from './state.js';
+import { state, bossAlive, enemyArtKey } from './state.js';
 import { debug } from './input.js';
 import { getAnimMeta, frameIndex } from './animation.js';
 import {
@@ -10,7 +10,8 @@ import {
   SKY_FALLBACK_COLOR, GROUND_FALLBACK_COLOR, GROUND_DECOR_DENSITY,
   HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES,
   PROJECTILE_MAX_RANGE, PROJECTILE_FADE_RANGE,
-  PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, PLAYER_JUMP_APEX_VY
+  PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, PLAYER_JUMP_APEX_VY,
+  ATTACK_COOLDOWN, SKILLS, ARROW_RAIN_SPRITE, BOSS_TD, VICTORY_FLAG_ID, VICTORY_FLAG_ATTACH, WALL_ARROWS
 } from './config.js';
 
 export const canvas = document.getElementById('gameCanvas');
@@ -296,12 +297,14 @@ function drawGround() {
 // Điều kiện thắng về NỘI DUNG đã đủ (mini-boss đã hạ + nhặt hết sách) — cổng
 // mở trước khi người chơi chạm finishX; trigger về đích vẫn ở physics.js.
 function finishGateOpen() {
+  // Đấu trường (màn 3): cổng đóng suốt trận, chỉ mở trong cutscene kết chương.
+  if (LEVEL.arena) return state.gateOpen;
   return !bossAlive() && state.booksCollected >= state.books.length;
 }
 
 // Cổng thành Luy Lâu: x1, pivot bottom-center (maps_tt.json), đáy ở GROUND_Y.
 // Màn không có cổng (LEVEL.gate = null — màn 2) thì bỏ qua.
-function drawFinishGate() {
+function drawFinishGate(time = 0) {
   const gate = LEVEL.gate;
   if (!gate) return;
   const prop = images.maps.props[finishGateOpen() ? gate.open : gate.closed]
@@ -314,6 +317,19 @@ function drawFinishGate() {
   const top = GROUND_Y - pivot.y;
   if (prop) ctx.drawImage(prop.image, left, top);
   else drawLandmarkFallback(left, top, w, h);
+  if (LEVEL.arena && state.gateOpen) drawVictoryFlag(prop, left, top, time);
+}
+
+// Cờ chiến thắng (cutscene màn 3): pivot bottom-left đặt tại VICTORY_FLAG_ATTACH
+// (giữa mái cổng; null thì dùng flag_attach của cổng mở), strip lặp theo fps
+// maps_tt.json. Thiếu ảnh/điểm gắn -> bỏ (TODO_MISSING).
+function drawVictoryFlag(gateProp, gateLeft, gateTop, time) {
+  const flag = images.maps.props[VICTORY_FLAG_ID];
+  const attach = VICTORY_FLAG_ATTACH || gateProp?.asset.flag_attach;
+  if (!flag || !attach) return;
+  const { frame_w: fw, frame_h: fh, frames = 1, fps = 6, pivot = { x: 0, y: fh } } = flag.asset;
+  const frame = Math.floor(time * fps) % frames;
+  ctx.drawImage(flag.image, frame * fw, 0, fw, fh, gateLeft + attach.x - pivot.x, gateTop + attach.y - pivot.y, fw, fh);
 }
 
 // Cổng gỗ tạm (2 cột + xà ngang + cờ nhỏ) — chỉ dùng khi thiếu ảnh cổng.
@@ -434,7 +450,22 @@ function drawObstacles() {
       drawPlaceholder(obstacle);
       return;
     }
-    const rect = obstacleDrawRect(obstacle, prop.asset);
+    const asset = prop.asset;
+    // Asset nhiều ô trạng thái (cột đá: intact/cracked — `frame_states`): vẽ ô
+    // theo obstacle.state, đáy-giữa ô trùng đáy-giữa hitbox. `alpha` = mờ dần
+    // khi cột vỡ (Phase B).
+    if (asset.frame_w && asset.frames > 1) {
+      const frame = Math.max(0, asset.frame_states?.indexOf(obstacle.state) ?? 0);
+      const left = Math.round(obstacle.x + obstacle.w / 2 - asset.frame_w / 2 - state.cameraX);
+      if (left + asset.frame_w < -48 || left > VIEW_W + 48) return;
+      const top = Math.round(obstacle.y + obstacle.h + obstacle.groundSink - asset.frame_h);
+      ctx.globalAlpha = obstacle.alpha ?? 1;
+      ctx.drawImage(prop.image, frame * asset.frame_w, 0, asset.frame_w, asset.frame_h, left, top, asset.frame_w, asset.frame_h);
+      ctx.globalAlpha = 1;
+      debugLabels.set(obstacle, `${obstacle.type} ${obstacle.state || ''}`);
+      return;
+    }
+    const rect = obstacleDrawRect(obstacle, asset);
     const left = Math.round(rect.x - state.cameraX);
     if (left + prop.image.width < -48 || left > VIEW_W + 48) return;
     ctx.drawImage(prop.image, left, Math.round(rect.y));
@@ -509,21 +540,27 @@ function drawHealthBar(x, y, width, ratio, color) {
 function drawEnemies() {
   state.enemies.forEach(enemy => {
     if (!enemy.alive && !enemy.dying) return;
-    const art = ENEMY_SPRITES[enemy.boss ? 'boss' : 'normal'];
+    const art = ENEMY_SPRITES[enemyArtKey(enemy)];
     const centerX = enemy.x + enemy.w / 2;
     const pivotX = Math.round(centerX - state.cameraX);
     if (pivotX < -80 || pivotX > VIEW_W + 80) return;
     const footY = Math.round(enemy.y + enemy.h);
     const alpha = enemy.hitTimer > 0 && !art.anims.hurt && enemy.alive ? .45 : 1;
+    // Chiến xa đứng báo trước khi lao: rung ngang ±shake px (vẽ bằng code).
+    const shake = enemy.kind === 'chariot' && enemy.alive && enemy.mode === 'warn'
+      ? (Math.floor(enemy.modeTime * 30) % 2 ? BOSS_TD.shake : -BOSS_TD.shake) : 0;
     // Lính thường có hướng riêng (`facing`, theo hướng đi/về phía người chơi);
     // boss không có -> luôn quay về phía người chơi.
-    const drawn = drawAnimated(art.id, art.anims, null, enemy, pivotX, footY, facingDirection(centerX, enemy.facing || 0, true), alpha);
+    const drawn = drawAnimated(art.id, art.anims, null, enemy, pivotX + shake, footY, facingDirection(centerX, enemy.facing || 0, true), alpha);
     if (!drawn) {
+      // Bao cát (layout thử) không có asset: hộp tạm + thanh máu + số máu.
       drawPlaceholder(enemy, alpha);
+      debugLabels.set(enemy, `${enemyArtKey(enemy)} hp ${enemy.hp}`);
+      if (enemy.harmless && enemy.alive) drawHealthBar(pivotX - (enemy.w + 8) / 2, enemy.y - 6, enemy.w + 8, enemy.hp / enemy.maxHp, '#e2ad45');
       return;
     }
-    debugLabels.set(enemy, drawn.label);
-    if (enemy.alive) {
+    debugLabels.set(enemy, enemy.kind === 'chariot' ? `${drawn.label} ${enemy.mode} khiên ${enemy.shield}` : drawn.label);
+    if (enemy.alive && !enemy.noBar) {
       const barW = enemy.w + 8;
       drawHealthBar(pivotX - barW / 2, drawn.top - 5, barW, enemy.hp / enemy.maxHp, enemy.boss ? '#e34c36' : '#e2ad45');
     }
@@ -548,6 +585,126 @@ function drawNpcs(time) {
       return;
     }
     debugLabels.set(npc, `${npc.id} ${drawn.label}`);
+  });
+}
+
+// ---- Màn 3: boss (TT-BOSS-01 §3.5–3.6) ----
+// Tô Định đi bộ đứng sau xác xe (giai đoạn 2) — vẽ TRƯỚC enemy để nằm sau xe.
+function drawBossFoot() {
+  const foot = state.battle?.foot;
+  if (!foot) return;
+  const art = ENEMY_SPRITES.bossFoot;
+  const pivotX = Math.round(foot.x - state.cameraX);
+  const drawn = drawAnimated(art.id, art.anims, null, foot, pivotX, GROUND_Y, facingDirection(foot.x, 0, true));
+  if (!drawn) drawPlaceholder({ x: foot.x - 11, y: GROUND_Y - 40, w: 22, h: 40 });
+}
+
+// Hũ dầu (PJ_OIL_JAR `loop`, lặp theo tuổi hũ), tâm ô trùng tâm hitbox.
+function drawJars() {
+  const jarArt = BOSS_TD.jar;
+  const meta = getAnimMeta(jarArt.id, jarArt.anim);
+  const image = images.sprites8[jarArt.id]?.[jarArt.anim];
+  state.jars.forEach(jar => {
+    const centerX = Math.round(jar.x - state.cameraX);
+    const centerY = Math.round(jar.y);
+    if (!meta || !image) {
+      ctx.fillStyle = '#6b4a2a';
+      ctx.fillRect(centerX - 5, centerY - 5, 10, 10);
+      return;
+    }
+    const footY = centerY - Math.round(meta.frame_h / 2) + meta.frame_h - 1;
+    drawSprite8(image, meta, frameIndex(meta, jar.age), centerX, footY, jar.vx < 0 ? -1 : 1);
+    debugLabels.set(jar, jar.reflected ? 'hũ phản' : 'hũ');
+  });
+}
+
+// Lửa dầu (FX_OIL_FIRE `impact`, không lặp -> giữ ô cuối tới hết fire.time).
+function drawFires() {
+  const fireArt = BOSS_TD.fire;
+  const meta = getAnimMeta(fireArt.id, fireArt.anim);
+  const image = images.sprites8[fireArt.id]?.[fireArt.anim];
+  state.fires.forEach(fire => {
+    const pivotX = Math.round(fire.x - state.cameraX);
+    if (!meta || !image) {
+      ctx.fillStyle = 'rgba(240, 120, 30, .7)';
+      ctx.fillRect(pivotX - fireArt.width / 2, fire.footY - fireArt.h, fireArt.width, fireArt.h);
+      return;
+    }
+    drawSprite8(image, meta, frameIndex(meta, fire.time), pivotX, Math.round(fire.footY), 1);
+  });
+}
+
+// ---- Màn 3: kỹ năng (TT-BOSS-01 §3.2) ----
+const SHADOW = SKILLS.SK_TRUNG_NHI_SHADOW;
+const SHADOW_ANIMS = { idle: 'idle', run: 'run', attack: 'attack_01' };
+let tintCanvas = null;
+
+// Ô sprite phủ một lớp màu (source-atop, chỉ tô lên pixel có hình) rồi vẽ
+// như drawSprite8. Dùng 1 canvas phụ cỡ 1 ô.
+function drawTintedSprite(image, meta, frame, pivotX, footY, facing, alpha, tint) {
+  tintCanvas ||= document.createElement('canvas');
+  tintCanvas.width = meta.frame_w;
+  tintCanvas.height = meta.frame_h;
+  const tctx = tintCanvas.getContext('2d');
+  tctx.imageSmoothingEnabled = false;
+  tctx.drawImage(image, frame * meta.frame_w, 0, meta.frame_w, meta.frame_h, 0, 0, meta.frame_w, meta.frame_h);
+  tctx.globalCompositeOperation = 'source-atop';
+  tctx.fillStyle = tint;
+  tctx.fillRect(0, 0, meta.frame_w, meta.frame_h);
+  drawSprite8(tintCanvas, meta, 0, pivotX, footY, facing, alpha);
+}
+
+// Bóng Trưng Nhị: NPC_TRUNG_NHI alpha .5 ánh chàm, vẽ SAU lưng người chơi
+// (trước drawPlayer). Chém: attack_01 trải trên ATTACK_COOLDOWN như người chơi.
+function drawShadow() {
+  const shadow = state.skills?.shadow;
+  const pose = shadow?.pose;
+  if (!pose || shadow.active <= 0) return;
+  const key = shadow.anim?.name || 'idle';
+  const name = SHADOW_ANIMS[key] || 'idle';
+  const meta = getAnimMeta(SHADOW.sprite, name);
+  const image = images.sprites8[SHADOW.sprite]?.[name];
+  const pivotX = Math.round(pose.x + pose.w / 2 - state.cameraX);
+  const footY = Math.round(pose.y + pose.h);
+  if (!meta || !image) {
+    drawPlaceholder(pose, SHADOW.alpha);
+    return;
+  }
+  const frame = frameIndex(meta, shadow.anim.time, key === 'attack' ? ATTACK_COOLDOWN : null);
+  drawTintedSprite(image, meta, frame, pivotX, footY, pose.facing < 0 ? -1 : 1, SHADOW.alpha, SHADOW.tint);
+  debugLabels.set(pose, `bóng ${name} ${frame + 1}/${meta.frames}`);
+}
+
+// Mưa tên trên thành: vạch báo nhấp nháy trên mặt đất (vẽ bằng code) trong lúc
+// báo trước và lúc tên đang rơi.
+function drawWallArrowMarks(time) {
+  state.wallArrows.forEach(arrow => {
+    const x = Math.round(arrow.x - state.cameraX);
+    if (x < -16 || x > VIEW_W + 16) return;
+    const blink = arrow.warn > 0 && Math.floor(time * 10) % 2 === 0;
+    ctx.fillStyle = blink ? 'rgba(255, 230, 120, .9)' : 'rgba(210, 40, 30, .85)';
+    ctx.fillRect(x - 7, GROUND_Y - 1, 14, 2);
+    ctx.fillRect(x - 1, GROUND_Y - 4, 2, 3);
+  });
+}
+
+// Mưa tên (kỹ năng) + tên trên thành: PJ_ARROW_RAIN (mũi ở đáy ô) vẽ x1 tại (centerX, tipY).
+function drawArrows() {
+  const meta = getAnimMeta(ARROW_RAIN_SPRITE.id, ARROW_RAIN_SPRITE.anim);
+  const image = images.sprites8[ARROW_RAIN_SPRITE.id]?.[ARROW_RAIN_SPRITE.anim];
+  const falling = [
+    ...state.arrows.filter(arrow => arrow.delay <= 0),
+    ...state.wallArrows.filter(arrow => arrow.warn <= 0).map(arrow => ({ centerX: arrow.x, tipY: arrow.tipY }))
+  ];
+  falling.forEach(arrow => {
+    const pivotX = Math.round(arrow.centerX - state.cameraX);
+    if (pivotX < -16 || pivotX > VIEW_W + 16) return;
+    const tipY = Math.round(arrow.tipY);
+    if (meta && image) drawSprite8(image, meta, 0, pivotX, tipY, 1);
+    else {
+      ctx.fillStyle = '#e8d9a8';
+      ctx.fillRect(pivotX - 1, tipY - 18, 2, 18);
+    }
   });
 }
 
@@ -625,6 +782,7 @@ function drawPlayer(time) {
 }
 
 function drawChunkMarker() {
+  if (LEVEL.arena) return;
   const chunk = Math.min(LEVEL.chunks, Math.floor(state.player.x / CHUNK_W) + 1);
   ctx.fillStyle = 'rgba(24, 14, 9, .72)';
   ctx.fillRect(VIEW_W - 63, 7, 54, 17);
@@ -647,6 +805,9 @@ function drawDebugOverlay() {
     ...state.enemies.filter(item => item.alive),
     ...state.npcs.filter(item => item.fade > 0),
     ...state.projectiles,
+    ...state.jars.map(jar => ({ x: jar.x - BOSS_TD.jar.w / 2, y: jar.y - BOSS_TD.jar.h / 2, w: BOSS_TD.jar.w, h: BOSS_TD.jar.h })),
+    ...state.fires.map(fire => ({ x: fire.x - BOSS_TD.fire.width / 2, y: fire.footY - BOSS_TD.fire.h, w: BOSS_TD.fire.width, h: BOSS_TD.fire.h })),
+    ...(state.skills?.shadow.pose && state.skills.shadow.active > 0 ? [state.skills.shadow.pose] : []),
     state.player
   ];
   entities.forEach(entity => {
@@ -694,16 +855,27 @@ export function draw(time = 0) {
   if (!state) return;
   drawBackdrops();
   drawGround();
-  drawFinishGate();
+  drawFinishGate(time);
   drawHazards(time, true);
   drawHoles();
   drawBooks(time);
   drawObstacles();
   drawNpcs(time);
   drawHazards(time);
+  drawBossFoot();
   drawEnemies();
   drawProjectiles();
+  drawJars();
+  drawShadow();
   drawPlayer(time);
+  drawFires();
+  drawWallArrowMarks(time);
+  drawArrows();
+  // Cutscene kết chương: tối dần/sáng lại (fade 0..1).
+  if (state.cutscene?.fade > 0) {
+    ctx.fillStyle = `rgba(0, 0, 0, ${state.cutscene.fade})`;
+    ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+  }
   drawChunkMarker();
   if (debug.enabled) drawDebugOverlay();
 }

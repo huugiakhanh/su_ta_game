@@ -71,6 +71,33 @@ export const NPC_DIALOGUES = {
   }
 };
 
+// ---- Màn 3 "Trận Luy Lâu" (task card TT-BOSS-01 mục 5.3–5.4, nguyên văn) ----
+// Cutscene kết chương: `portrait` = asset chân dung trong manifest, `memorial:
+// false` = chân dung MÀU (khác cốt truyện Thi Sách).
+export const STORY_TO_DINH_FLEES = {
+  portrait: 'PORTRAIT_TO_DINH',
+  memorial: false,
+  lines: [
+    'Bị đánh văng kiếm, Tô Định hoảng sợ bỏ chạy.',
+    'Sử cũ chép rằng hắn cắt tóc, cạo râu, trà trộn vào đám đông trốn về Nam Hải.'
+  ]
+};
+
+export const STORY_LUY_LAU_VICTORY = {
+  portrait: 'PORTRAIT_TRUNG_TRAC',
+  memorial: false,
+  lines: [
+    'Nghĩa quân làm chủ thành Luy Lâu. Theo sử cũ, nghĩa quân đã lấy được 65 thành.',
+    'Trưng Trắc được tôn làm vua, đóng đô ở Mê Linh.'
+  ]
+};
+
+// Panel kết chương (mục 5.4).
+export const CHAPTER_END = {
+  title: 'Hoàn thành chương Trưng Trắc',
+  text: score => `Bạn đã cùng Hai Bà Trưng giành lại non sông và đạt ${score} điểm.`
+};
+
 // 5.4 Cốt truyện — Thi Sách hy sinh (panel dùng PORTRAIT_THI_SACH trắng đen).
 export const STORY_THI_SACH = {
   portraitNpc: 'thiSach',

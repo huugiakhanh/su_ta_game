@@ -308,6 +308,7 @@
       "zone": ["Z5"],
       "anchor": "bottom-center-at-GROUND_Y",
       "pivot": { "x": 96, "y": 176 },
+      "flag_attach": { "x": 94, "y": 10 },
       "hitbox_from_code": null,
       "frames": 1,
       "fps": null,
@@ -338,7 +339,7 @@
       "fps": null,
       "loop": false,
       "priority": "P1",
-      "status": "NORMALIZED",
+      "status": "IN_GAME",
       "prompt": [
         "props/PROP_STONE_PILLAR/prop_stone_pillar_intact.prompt.txt",
         "props/PROP_STONE_PILLAR/prop_stone_pillar_cracked.prompt.txt"
@@ -497,6 +498,27 @@
       "prompt": "obstacles/OBS_LOG_DRIFT/obs_log_drift.prompt.txt",
       "raw": "raw/obs_log_drift_raw.png",
       "qa_notes": "Static low log on dry ground; standable and usable without water or hole mechanics."
+    },
+    {
+      "id": "PROP_TT_VICTORY_FLAG",
+      "category": "prop",
+      "file": "props/PROP_TT_VICTORY_FLAG/prop_tt_victory_flag.png",
+      "w": 96,
+      "h": 32,
+      "frame_w": 24,
+      "frame_h": 32,
+      "transparent": true,
+      "zone": ["Z5"],
+      "anchor": "bottom-left-at-flag_attach",
+      "pivot": { "x": 0, "y": 32 },
+      "frames": 4,
+      "fps": 6,
+      "loop": true,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "prompt": "props/PROP_TT_VICTORY_FLAG/prop_tt_victory_flag.prompt.txt",
+      "raw": "props/PROP_TT_VICTORY_FLAG/prop_tt_victory_flag_raw.png",
+      "qa_notes": "Four-frame rightward flutter loop; red cloth and bronze Dong Son circle motif; no text, star or modern flag symbolism; bottom-left pole base aligns to PROP_LUYLAU_GATE_OPEN.flag_attach; approved by the user on 2026-09-26."
     }
   ],
   "mockups": [
@@ -615,6 +637,22 @@
       "scale": 3,
       "ground_y": 744,
       "purpose": "slideBar 26px gap and bridge top-anchor QA"
+    },
+    {
+      "file": "mockups/mockup_boss_flag.png",
+      "w": 480,
+      "h": 270,
+      "scale": 1,
+      "ground_y": 248,
+      "purpose": "victory flag attachment on open Luy Lau gate with PLAYER_TRUNG_TRAC"
+    },
+    {
+      "file": "mockups/mockup_boss_flag_x3.png",
+      "w": 1440,
+      "h": 810,
+      "scale": 3,
+      "ground_y": 744,
+      "purpose": "nearest-neighbor x3 victory flag attachment QA"
     }
   ],
   "references": [

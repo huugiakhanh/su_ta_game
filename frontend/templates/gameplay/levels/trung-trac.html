@@ -26,6 +26,28 @@
 
       <div id="messageBox" class="message" aria-live="polite"></div>
 
+      <!-- Màn 3 (ui.js): thanh khiên chiến xa (giai đoạn 1) / "Đợt N/3" (giai đoạn 2). -->
+      <div id="bossHud" class="boss-hud" hidden>
+        <span id="bossHudLabel" class="boss-hud__label"></span>
+        <span id="shieldPips" class="boss-hud__pips"><i></i><i></i><i></i></span>
+      </div>
+
+      <!-- Ô kỹ năng/buff màn 3 (ui.js): chỉ hiện phần thưởng đã nhận ở màn 2. -->
+      <div id="skillBar" class="skill-bar" hidden>
+        <div class="skill" data-skill="SK_LE_CHAN_ARROW_RAIN" hidden>
+          <img class="skill__icon" alt="Mưa tên" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">K</kbd>
+        </div>
+        <div class="skill" data-skill="SK_TRUNG_NHI_SHADOW" hidden>
+          <img class="skill__icon" alt="Bóng Trưng Nhị" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">L</kbd>
+        </div>
+        <div class="skill skill--buff" data-skill="BUFF_Y_CHI_KIEN_CUONG" hidden>
+          <img class="skill__icon" alt="Ý chí kiên cường" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span>
+        </div>
+      </div>
+
       <div id="questionPanel" class="panel" role="dialog" aria-modal="true" aria-labelledby="questionTitle">
         <h2 id="questionTitle">Câu hỏi lịch sử</h2>
         <p>Cuộc khởi nghĩa Hai Bà Trưng bùng nổ vào năm nào?</p>
@@ -57,6 +79,8 @@
         <p id="endText"></p>
         <button id="restartButton" type="button">Chơi lại</button>
         <button id="nextLevelButton" type="button" hidden>Sang Màn 2</button>
+        <button id="replayChapterButton" type="button" hidden>Chơi lại chương</button>
+        <button id="homeButton" type="button" hidden>Về trang chủ</button>
       </div>
     </section>
 
@@ -65,6 +89,8 @@
       <span><kbd>W</kbd> hoặc <kbd>Space</kbd> nhảy</span>
       <span><kbd>S</kbd> hoặc <kbd>Shift</kbd> lướt</span>
       <span><kbd>J</kbd> tấn công</span>
+      <span data-skill="SK_LE_CHAN_ARROW_RAIN" hidden><kbd>K</kbd> mưa tên</span>
+      <span data-skill="SK_TRUNG_NHI_SHADOW" hidden><kbd>L</kbd> bóng Trưng Nhị</span>
       <span><kbd>R</kbd> chơi lại</span>
     </section>
 
@@ -76,6 +102,8 @@
       <div class="mobile-controls__group">
         <button class="control control--slide" data-control="dash">LƯỚT</button>
         <button class="control control--attack" data-control="attack">ĐÁNH</button>
+        <button class="control control--skill" data-control="arrowRain" data-skill="SK_LE_CHAN_ARROW_RAIN" hidden>TÊN</button>
+        <button class="control control--skill" data-control="shadow" data-skill="SK_TRUNG_NHI_SHADOW" hidden>BÓNG</button>
         <button class="control control--jump" data-control="jump">NHẢY</button>
       </div>
     </section>

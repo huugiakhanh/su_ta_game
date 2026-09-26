@@ -1,7 +1,9 @@
 // Vật lý, va chạm, và các phản ứng gameplay (mất máu, rơi hố, tấn công, kết
 // thúc màn). Đây là "vòng lặp mô phỏng" chính — mọi thứ khác chỉ đọc/ghi state.
 
-import { state, bossAlive } from './state.js';
+import {
+  state, bossAlive, enemyArtKey, makeArenaGuard, makeRusher, makeSpawner, makeToDinhFoot
+} from './state.js';
 import { keys, pressed, clearInput } from './input.js';
 import { ui, showMessage, tickMessage, updateHud } from './ui.js';
 import { aabb, groundYAt, worldX, makeProjectile } from './geometry.js';
@@ -10,12 +12,13 @@ import {
   MOVE_SPEED, GRAVITY, JUMP_FORCE, DASH_SPEED, DASH_TIME, GROUND_SNAP_DISTANCE,
   HURT_ANIMATION_TIME, PROJECTILE_SPEED, PROJECTILE_MAX_RANGE, HAZARD_DESPAWN_MARGIN,
   ATTACK_COOLDOWN, ATTACK_ACTIVE_TIME, PLAYER_SPRITE_ID, PLAYER_ANIMATIONS,
-  HAZARD_SPRITES, ENEMY_SPRITES, MINIBOSS, GUARD
+  HAZARD_SPRITES, ENEMY_SPRITES, MINIBOSS, GUARD, GROUND_Y,
+  ARENA, RUSHER, SKILLS, ARROW_RAIN_SPRITE, BOSS_TD, WAVES, BOSS_TEXT, WALL_ARROWS
 } from './config.js';
-import { setAnim, tickAnim, getAnimMeta, hitTime, animLength } from './animation.js';
-import { saveProgress } from './progress.js';
+import { setAnim, tickAnim, getAnimMeta, hitTime, animLength, createAnim } from './animation.js';
+import { saveProgress, REWARD_NAMES } from './progress.js';
 import { openNpcDialogue, openStory } from './dialogue.js';
-import { STORY_THI_SACH } from './dialogue-data.js';
+import { STORY_THI_SACH, STORY_TO_DINH_FLEES, STORY_LUY_LAU_VICTORY, CHAPTER_END } from './dialogue-data.js';
 
 export function pointHasGround(worldXPosition) {
   return !state.holes.some(hole => worldXPosition > hole.x && worldXPosition < hole.x + hole.w);
@@ -56,6 +59,8 @@ export function hurtPlayer(reason) {
   p.dashTimer = 0;
   p.vy = -198;
   p.vx = -138 * p.facing;
+  // Buff Ý chí kiên cường đếm thời gian KỂ TỪ lần trúng đòn gần nhất.
+  if (state.skills) state.skills.buff.calm = 0;
   showMessage(reason);
   if (state.health <= 0) endGame(false);
 }
@@ -86,6 +91,9 @@ export function startAttack() {
   // animation tới ô hit_frame (không còn gây sát thương ngay lúc bấm).
   p.attackCooldown = ATTACK_COOLDOWN;
   p.attackHits = new Set();
+  // Bóng Trưng Nhị (màn 3) chém cùng lúc với người chơi.
+  const shadow = state.skills?.shadow;
+  if (shadow && shadow.active > 0) shadow.attack = { time: 0, hits: new Set() };
 }
 
 // Giây kể từ lúc bấm đánh tới ô hit_frame của attack_01 (trải trên
@@ -109,27 +117,12 @@ function updateAttack() {
   p.attacking = elapsed >= start && elapsed < start + ATTACK_ACTIVE_TIME;
   if (!p.attacking) return;
 
-  const attackBox = {
-    x: p.facing > 0 ? p.x + p.w : p.x - 48,
-    y: p.y + 7,
-    w: 48,
-    h: Math.max(25, p.h - 10)
-  };
+  const attackBox = spearBox(p, p.facing);
   const canHit = target => !p.attackHits.has(target) && target.hitTimer <= 0 && aabb(attackBox, target);
   state.enemies.forEach(enemy => {
     if (!enemy.alive || !canHit(enemy)) return;
     p.attackHits.add(enemy);
-    enemy.hp -= 1;
-    enemy.hitTimer = .18;
-    state.score += enemy.boss ? 150 : 100;
-    if (enemy.hp <= 0) {
-      // Tắt va chạm ngay; animation death phát nốt rồi mới xoá (updateEnemies).
-      enemy.alive = false;
-      enemy.dying = true;
-      setAnim(enemy, 'death');
-      state.score += enemy.boss ? 700 : 250;
-      showMessage(enemy.boss ? 'Đã đánh bại toán lính giữ thành!' : 'Đã đánh bại lính canh.');
-    }
+    strikeEnemy(enemy);
   });
 
   // Hazard có `hp` (hổ, kỵ binh, xe cống, lính thu thuế) cũng chém được; loại
@@ -137,10 +130,12 @@ function updateAttack() {
   state.hazards.forEach(hazard => {
     if (!hazard.alive || hazard.hp <= 0 || !canHit(hazard)) return;
     p.attackHits.add(hazard);
-    hazard.hp -= 1;
-    hazard.hitTimer = .18;
-    state.score += hazard.boss ? MINIBOSS.hitScore : 100;
-    if (hazard.hp <= 0) breakHazard(hazard);
+    strikeHazard(hazard);
+  });
+
+  // Hũ dầu đang bay (màn 3): chém trúng thì bị PHẢN về phía chiến xa.
+  state.jars.forEach(jar => {
+    if (jar.alive && !jar.reflected && aabb(attackBox, jarReflectBox(jar))) reflectJar(jar);
   });
 
   // Đạn đang bay bị chém thì tan — thưởng cho người chơi phản ứng đúng lúc.
@@ -150,6 +145,61 @@ function updateAttack() {
       state.score += 30;
     }
   });
+}
+
+// Vùng mũi giáo của một thân người (người chơi, bóng Trưng Nhị): dải 48px
+// ngay trước mặt theo `facing`.
+function spearBox(body, facing) {
+  return {
+    x: facing > 0 ? body.x + body.w : body.x - 48,
+    y: body.y + 7,
+    w: 48,
+    h: Math.max(25, body.h - 10)
+  };
+}
+
+// Một đòn trúng enemy (chém, bóng Trưng Nhị, mưa tên). KHÔNG xét hitTimer —
+// đòn chém thường tự chặn khi hitTimer > 0; đòn phụ của kỹ năng thì không
+// (để bóng/mưa tên cộng thêm đòn trong cùng lúc). Bao cát (`harmless`) không
+// cho điểm.
+function strikeEnemy(enemy) {
+  // Chiến xa còn khiên: đòn chém (người chơi, bóng) chỉ làm xe nháy mờ + gợi ý.
+  if (enemy.shielded) {
+    enemy.hitTimer = .18;
+    shieldHint();
+    return;
+  }
+  enemy.hp -= 1;
+  enemy.hitTimer = .18;
+  if (!enemy.harmless) state.score += enemy.boss ? 150 : 100;
+  // Tô Định đi bộ: đẩy lùi về phía cổng (áp dụng ở updateFoot, 1 lần/khung);
+  // hết máu -> văng kiếm, cutscene.
+  if (enemy.kind === 'foot') {
+    enemy.pendingPush = FOOT.knockback;
+    if (enemy.hp <= 0) {
+      state.score += 700;
+      defeatToDinh(enemy);
+    }
+    return;
+  }
+  if (enemy.hp > 0) return;
+  // Tắt va chạm ngay; animation death phát nốt rồi mới xoá (updateEnemies).
+  enemy.alive = false;
+  enemy.dying = true;
+  enemy.action = null;
+  setAnim(enemy, 'death');
+  if (enemy.harmless) return;
+  state.score += enemy.boss ? 700 : 250;
+  // Quân cảm tử ra thành đợt đông — không hiện thông báo từng con.
+  if (enemy.art === 'rusher') return;
+  showMessage(enemy.boss ? 'Đã đánh bại toán lính giữ thành!' : 'Đã đánh bại lính canh.');
+}
+
+function strikeHazard(hazard) {
+  hazard.hp -= 1;
+  hazard.hitTimer = .18;
+  state.score += hazard.boss ? MINIBOSS.hitScore : 100;
+  if (hazard.hp <= 0) breakHazard(hazard);
 }
 
 // Trạng thái animation của người chơi, theo thứ tự ưu tiên:
@@ -294,38 +344,42 @@ function updatePatrol(hazard, dt, playerCenter) {
   hazard.x += hazard.speed * dt;
 }
 
-// Mũi kích của lính canh: dải rộng attackReach ngay trước mặt lính.
-function guardAttackBox(enemy) {
+// Mũi kích/giáo của lính: dải rộng `reach` ngay trước mặt, cao boxH từ
+// boxY tính từ đỉnh hitbox.
+function meleeBox(enemy, reach, boxY, boxH) {
   return {
-    x: enemy.facing > 0 ? enemy.x + enemy.w : enemy.x - GUARD.attackReach,
-    y: enemy.y + GUARD.attackBoxY,
-    w: GUARD.attackReach,
-    h: GUARD.attackBoxH
+    x: enemy.facing > 0 ? enemy.x + enemy.w : enemy.x - reach,
+    y: enemy.y + boxY,
+    w: reach,
+    h: boxH
   };
 }
 
-// Cú đâm đang diễn: gây sát thương khi animation ở đúng ô hit_frame (chỉ
-// trong ô đó, 1 lần/cú); hết animation thì nghỉ attackCooldown. Bị chém
-// trúng giữa chừng thì cú đâm bị huỷ.
-function advanceGuardAttack(enemy, dt) {
-  const meta = getAnimMeta(ENEMY_SPRITES.normal.id, ENEMY_SPRITES.normal.anims.attack);
+const guardAttackBox = enemy => meleeBox(enemy, GUARD.attackReach, GUARD.attackBoxY, GUARD.attackBoxH);
+const rusherAttackBox = enemy => meleeBox(enemy, RUSHER.attackReach, RUSHER.attackBoxY, RUSHER.attackBoxH);
+
+// Cú đâm đang diễn (lính canh, quân cảm tử): gây sát thương khi animation ở
+// đúng ô hit_frame (chỉ trong ô đó, 1 lần/cú); hết animation thì `onEnd`
+// (bắt đầu nghỉ). Bị chém trúng giữa chừng thì cú đâm bị huỷ.
+function advanceMeleeAttack(enemy, dt, art, box, onEnd, message) {
+  const meta = getAnimMeta(art.id, art.anims.attack);
   const action = enemy.action;
   if (!meta || enemy.hitTimer > 0) {
     enemy.action = null;
-    enemy.attackCooldown = GUARD.attackCooldown;
+    onEnd();
     return;
   }
   action.time += dt;
   const start = hitTime(meta);
   const p = state.player;
   if (!action.hit && action.time >= start && action.time < start + 1 / meta.fps
-    && !playerImmune(p) && aabb(p, guardAttackBox(enemy))) {
+    && !playerImmune(p) && aabb(p, box(enemy))) {
     action.hit = true;
-    hurtPlayer('Bạn bị lính canh đâm trúng!');
+    hurtPlayer(message);
   }
   if (action.time >= animLength(meta)) {
     enemy.action = null;
-    enemy.attackCooldown = GUARD.attackCooldown;
+    onEnd();
   }
 }
 
@@ -336,14 +390,16 @@ function updateGuard(enemy, dt) {
   enemy.attackCooldown = Math.max(0, enemy.attackCooldown - dt);
   if (enemy.action) {
     enemy.walking = false;
-    advanceGuardAttack(enemy, dt);
+    advanceMeleeAttack(enemy, dt, ENEMY_SPRITES.normal, guardAttackBox,
+      () => { enemy.attackCooldown = GUARD.attackCooldown; }, 'Bạn bị lính canh đâm trúng!');
     return;
   }
   const p = state.player;
   const center = enemy.x + enemy.w / 2;
   const toPlayer = p.x + p.w / 2 - center;
   let direction;
-  if (Math.abs(toPlayer) <= GUARD.aggroRange) {
+  // aggroRange riêng (lính đấu trường màn 3 = cả đấu trường), mặc định GUARD.
+  if (Math.abs(toPlayer) <= (enemy.aggroRange ?? GUARD.aggroRange)) {
     enemy.facing = Math.sign(toPlayer) || -1;
     const gap = Math.abs(toPlayer) - (p.w + enemy.w) / 2;
     if (gap <= GUARD.attackReach - 4) {
@@ -366,12 +422,62 @@ function updateGuard(enemy, dt) {
   if (enemy.walking) enemy.x += direction * GUARD.speed * dt;
 }
 
-// Lính canh / boss: hành vi (lính thường) + animation + xoá sau khi phát xong
+// Quân cảm tử (TT-BOSS-01 §3.3): chạy theo `direction` (chọn về phía người
+// chơi lúc xuất hiện và sau mỗi lần nghỉ), chạm tường đấu trường thì quay
+// đầu; người chơi ở phía trước trong attackRange -> đâm (attack_01, sát
+// thương ở ô hit_frame), rồi nghỉ `rest` giây. Không bị đẩy lùi (1 máu).
+function updateRusher(enemy, dt) {
+  const p = state.player;
+  const toPlayer = p.x + p.w / 2 - (enemy.x + enemy.w / 2);
+  if (enemy.action) {
+    enemy.walking = false;
+    advanceMeleeAttack(enemy, dt, ENEMY_SPRITES.rusher, rusherAttackBox,
+      () => { enemy.rest = RUSHER.rest; }, 'Bạn bị quân cảm tử đâm trúng!');
+    return;
+  }
+  if (enemy.rest > 0) {
+    enemy.walking = false;
+    enemy.rest -= dt;
+    if (enemy.rest <= 0) enemy.direction = Math.sign(toPlayer) || enemy.direction;
+    enemy.facing = enemy.direction;
+    return;
+  }
+  const gap = Math.abs(toPlayer) - (p.w + enemy.w) / 2;
+  if (Math.sign(toPlayer) === enemy.direction && gap <= RUSHER.attackRange) {
+    enemy.walking = false;
+    enemy.facing = enemy.direction;
+    enemy.action = { time: 0, hit: false };
+    return;
+  }
+  enemy.walking = true;
+  enemy.x += enemy.direction * RUSHER.speed * dt;
+  if (enemy.x <= 0) {
+    enemy.x = 0;
+    enemy.direction = 1;
+  } else if (enemy.x + enemy.w >= LEVEL.worldWidth) {
+    enemy.x = LEVEL.worldWidth - enemy.w;
+    enemy.direction = -1;
+  }
+  enemy.facing = enemy.direction;
+}
+
+// Lính canh / quân cảm tử / boss: hành vi + animation + xoá sau khi phát xong
 // death. Trạng thái: death > hurt > attack > walk > idle.
 function updateEnemies(dt) {
   state.enemies.forEach(enemy => {
-    const art = ENEMY_SPRITES[enemy.boss ? 'boss' : 'normal'];
-    if (!enemy.boss && enemy.alive) updateGuard(enemy, dt);
+    if (enemy.kind === 'chariot') {
+      updateChariot(enemy, dt);
+      return;
+    }
+    if (enemy.kind === 'foot') {
+      updateFoot(enemy, dt);
+      return;
+    }
+    const art = ENEMY_SPRITES[enemyArtKey(enemy)];
+    if (!enemy.boss && enemy.alive) {
+      if (enemy.art === 'rusher') updateRusher(enemy, dt);
+      else if (!enemy.harmless) updateGuard(enemy, dt);
+    }
     let next = 'idle';
     if (enemy.dying) next = 'death';
     else if (enemy.hitTimer > 0 && art.anims.hurt) next = 'hurt';
@@ -381,6 +487,8 @@ function updateEnemies(dt) {
     tickAnim(enemy, dt);
     // Cú đâm vẽ theo đúng đồng hồ của action để ô hit_frame khớp lúc gây sát thương.
     if (next === 'attack') enemy.anim.time = enemy.action.time;
+    // Không có `idle` riêng (quân cảm tử): đứng ở ô 1 của strip chạy.
+    if (next === 'idle' && art.idleHold) enemy.anim.time = 0;
     if (enemy.dying) {
       const meta = getAnimMeta(art.id, art.anims.death);
       if (!meta || enemy.anim.time >= animLength(meta)) enemy.dying = false;
@@ -497,6 +605,639 @@ function updateProjectiles(dt) {
   state.projectiles = state.projectiles.filter(projectile => projectile.alive);
 }
 
+// ---- Màn 3: phần thưởng màn 2 thành kỹ năng/buff (TT-BOSS-01 §3.2) ----
+const BUFF = SKILLS.BUFF_Y_CHI_KIEN_CUONG;
+const RAIN = SKILLS.SK_LE_CHAN_ARROW_RAIN;
+const SHADOW = SKILLS.SK_TRUNG_NHI_SHADOW;
+
+function owns(id) {
+  return Boolean(state.skills?.owned.has(id));
+}
+
+// Mục tiêu có máu mà kỹ năng đánh được. Chiến xa còn khiên (`shielded`):
+// mưa tên không tác dụng; bóng Trưng Nhị chém trúng thì xe chỉ nháy mờ + gợi ý
+// (includeShielded, xử lý ở strikeEnemy).
+function skillTargets(includeShielded = false) {
+  return [
+    ...state.enemies.filter(enemy => enemy.alive && enemy.hp > 0 && (includeShielded || !enemy.shielded)),
+    ...state.hazards.filter(hazard => hazard.alive && hazard.hp > 0)
+  ];
+}
+
+function strike(target) {
+  if (state.enemies.includes(target)) strikeEnemy(target);
+  else strikeHazard(target);
+}
+
+// Ý chí kiên cường (bị động): máu còn 1 và calmTime giây không trúng đòn ->
+// hồi 1 máu; hồi chiêu tính từ lần hồi trước.
+function updateBuff(dt) {
+  const buff = state.skills.buff;
+  buff.cooldown = Math.max(0, buff.cooldown - dt);
+  buff.calm += dt;
+  if (!owns('BUFF_Y_CHI_KIEN_CUONG')) return;
+  if (state.health === 1 && buff.calm >= BUFF.calmTime && buff.cooldown <= 0) {
+    state.health += 1;
+    buff.cooldown = BUFF.cooldown;
+    buff.calm = 0;
+    showMessage(`${REWARD_NAMES.BUFF_Y_CHI_KIEN_CUONG}: hồi 1 máu.`);
+  }
+}
+
+// Mưa tên (K): `count` mũi rải đều trong vùng phía trước người chơi, ra lần
+// lượt trong `spread` giây, rơi từ mép trên màn hình. Mỗi lần dùng là một
+// `salvo` đếm số mũi đã trúng từng mục tiêu (lính <= perEnemy, boss <= perBoss).
+function castArrowRain() {
+  const p = state.player;
+  state.skills.arrowRain.cooldown = RAIN.cooldown;
+  const left = p.facing > 0 ? p.x + p.w + RAIN.offset : p.x - RAIN.offset - RAIN.width;
+  const step = RAIN.width / RAIN.count;
+  const salvo = new Map();
+  for (let i = 0; i < RAIN.count; i += 1) {
+    const jitter = (Math.random() * 2 - 1) * RAIN.jitter;
+    state.arrows.push({
+      salvo, centerX: left + step * (i + .5) + jitter, tipY: 0,
+      delay: i * RAIN.spread / RAIN.count, alive: true
+    });
+  }
+}
+
+// Mũi tên mưa: chạm mục tiêu có máu (chưa đủ số mũi của lần dùng này) -> 1
+// đòn rồi biến mất; mục tiêu đã đủ thì mũi bay xuyên. Chạm đất -> biến mất.
+// Không chặn đạn địch, không ảnh hưởng người chơi.
+function updateArrows(dt) {
+  const targets = skillTargets();
+  state.arrows.forEach(arrow => {
+    if (arrow.delay > 0) {
+      arrow.delay -= dt;
+      return;
+    }
+    arrow.tipY += RAIN.fallSpeed * dt;
+    if (arrow.tipY >= GROUND_Y) {
+      arrow.alive = false;
+      return;
+    }
+    const box = {
+      x: arrow.centerX - ARROW_RAIN_SPRITE.w / 2, y: arrow.tipY - ARROW_RAIN_SPRITE.h,
+      w: ARROW_RAIN_SPRITE.w, h: ARROW_RAIN_SPRITE.h
+    };
+    const target = targets.find(item => item.alive
+      && (arrow.salvo.get(item) || 0) < (item.boss ? RAIN.perBoss : RAIN.perEnemy)
+      && aabb(box, item));
+    if (!target) return;
+    arrow.salvo.set(target, (arrow.salvo.get(target) || 0) + 1);
+    arrow.alive = false;
+    strike(target);
+  });
+  state.arrows = state.arrows.filter(arrow => arrow.alive);
+}
+
+// Bóng Trưng Nhị (L): đi sau người chơi `gap` px, trễ `delay` giây theo vệt
+// di chuyển; `run` khi di chuyển (cả trên không), `idle` khi đứng yên; chém
+// cùng lúc với người chơi — trong cửa sổ bắt đầu ở hit_frame của bóng, vùng
+// giáo lật theo hướng bóng, mỗi mục tiêu nhận thêm tối đa 1 đòn mỗi cú. Không
+// hurtbox, không va chạm, không phản hũ dầu.
+function updateShadow(dt) {
+  const shadow = state.skills.shadow;
+  if (shadow.active <= 0) {
+    shadow.cooldown = Math.max(0, shadow.cooldown - dt);
+    return;
+  }
+  shadow.active -= dt;
+  if (shadow.active <= 0) {
+    shadow.active = 0;
+    shadow.cooldown = SHADOW.cooldown;
+    shadow.attack = null;
+    shadow.pose = null;
+    return;
+  }
+  const p = state.player;
+  shadow.clock += dt;
+  shadow.trail.push({
+    t: shadow.clock, x: p.x, y: p.y, w: p.w, h: p.h, facing: p.facing,
+    moving: Math.abs(p.vx) > 1 || !p.grounded
+  });
+  const target = shadow.clock - SHADOW.delay;
+  while (shadow.trail.length > 1 && shadow.trail[1].t <= target) shadow.trail.shift();
+  const sample = shadow.trail[0];
+  shadow.pose = {
+    x: sample.x - sample.facing * SHADOW.gap, y: sample.y, w: sample.w, h: sample.h,
+    facing: sample.facing, moving: sample.moving
+  };
+  setAnim(shadow, shadow.attack ? 'attack' : (sample.moving ? 'run' : 'idle'));
+  tickAnim(shadow, dt);
+  if (!shadow.attack) return;
+
+  const attack = shadow.attack;
+  attack.time += dt;
+  shadow.anim.time = attack.time;
+  const meta = getAnimMeta(SHADOW.sprite, 'attack_01');
+  const start = meta ? hitTime(meta, ATTACK_COOLDOWN) : 0;
+  if (attack.time >= start && attack.time < start + ATTACK_ACTIVE_TIME) {
+    const box = spearBox(shadow.pose, shadow.pose.facing);
+    skillTargets(true).forEach(item => {
+      if (!item.alive || attack.hits.has(item) || !aabb(box, item)) return;
+      attack.hits.add(item);
+      strike(item);
+    });
+  }
+  if (attack.time >= ATTACK_COOLDOWN) shadow.attack = null;
+}
+
+function updateSkills(dt) {
+  const skills = state.skills;
+  skills.arrowRain.cooldown = Math.max(0, skills.arrowRain.cooldown - dt);
+  if (pressed.arrowRain && owns('SK_LE_CHAN_ARROW_RAIN') && skills.arrowRain.cooldown <= 0) castArrowRain();
+  if (pressed.shadow && owns('SK_TRUNG_NHI_SHADOW') && skills.shadow.active <= 0 && skills.shadow.cooldown <= 0) {
+    Object.assign(skills.shadow, { active: SHADOW.duration, trail: [], clock: 0, attack: null });
+  }
+  updateShadow(dt);
+  updateArrows(dt);
+  updateBuff(dt);
+}
+
+// Sinh quân theo nhóm (layout thử ?layout=skills; Phase B dùng cho các đợt):
+// nhóm sau bắt đầu khi quân của nhóm trước chết hết + gap giây; trong nhóm,
+// mỗi quân ra ở giây `at` tính từ đầu nhóm, tại ARENA.spawnX + dx.
+function spawnEnemy(entry) {
+  const centerX = ARENA.spawnX + (entry.dx || 0);
+  const p = state.player;
+  const direction = Math.sign(p.x + p.w / 2 - centerX) || -1;
+  state.enemies.push(entry.type === 'rusher' ? makeRusher(centerX, direction) : makeArenaGuard(centerX));
+}
+
+function updateSpawner(dt) {
+  const spawner = state.spawner;
+  if (!spawner) return;
+  if (spawner.pending.length) {
+    spawner.time += dt;
+    while (spawner.pending.length && spawner.pending[0].at <= spawner.time) spawnEnemy(spawner.pending.shift());
+    return;
+  }
+  if (state.enemies.some(enemy => enemy.alive && !enemy.harmless)) {
+    spawner.wait = spawner.gap;
+    return;
+  }
+  if (spawner.index >= spawner.groups.length) {
+    if (!spawner.loop) {
+      spawner.done = true;
+      return;
+    }
+    spawner.index = 0;
+  }
+  spawner.wait -= dt;
+  if (spawner.wait > 0) return;
+  spawner.pending = [...spawner.groups[spawner.index]].sort((a, b) => a.at - b.at);
+  spawner.index += 1;
+  spawner.time = 0;
+  spawner.wait = spawner.gap;
+  while (spawner.pending.length && spawner.pending[0].at <= 0) spawnEnemy(spawner.pending.shift());
+}
+
+// ---- Màn 3: boss Tô Định giai đoạn 1–2 (TT-BOSS-01 §3.5–3.6) ----
+const JAR = BOSS_TD.jar;
+const FIRE = BOSS_TD.fire;
+
+const chariotCenter = chariot => chariot.x + chariot.w / 2;
+const jarBox = jar => ({ x: jar.x - JAR.w / 2, y: jar.y - JAR.h / 2, w: JAR.w, h: JAR.h });
+// Vùng nhận đòn chém để phản hũ (rộng hơn hitbox gây lửa).
+const jarReflectBox = jar => ({ x: jar.x - JAR.reflectW / 2, y: jar.y - JAR.reflectH / 2, w: JAR.reflectW, h: JAR.reflectH });
+const fireBox = fire => ({ x: fire.x - FIRE.width / 2, y: fire.footY - FIRE.h, w: FIRE.width, h: FIRE.h });
+
+function facePlayer(chariot) {
+  const p = state.player;
+  chariot.facing = Math.sign(p.x + p.w / 2 - chariotCenter(chariot)) || chariot.facing;
+}
+
+function setChariotMode(chariot, mode) {
+  chariot.mode = mode;
+  chariot.modeTime = 0;
+}
+
+function startThrowCycle(chariot) {
+  setChariotMode(chariot, 'throw');
+  chariot.throwsLeft = BOSS_TD.throwCount;
+  chariot.throwTimer = 0;
+  chariot.action = null;
+}
+
+// Gợi ý khi chém thẳng vào xe còn khiên — tối đa 1 lần mỗi hintInterval giây.
+function shieldHint() {
+  const battle = state.battle;
+  if (!battle || battle.hintTimer > 0) return;
+  battle.hintTimer = BOSS_TD.hintInterval;
+  showMessage(BOSS_TEXT.shieldHint, 2400);
+}
+
+// Mất 1 nấc khiên (đâm cột / trúng hũ dầu phản). Hết khiên: phát shield_break
+// một lần, xác xe nằm lại (không va chạm), hũ đang bay tan, sang giai đoạn 2
+// (updateBattle).
+function loseShield(chariot) {
+  chariot.shield -= 1;
+  chariot.hp = chariot.shield;
+  state.score += BOSS_TD.shieldScore;
+  if (chariot.shield > 0) return;
+  chariot.shielded = false;
+  chariot.alive = false;
+  chariot.dying = true;
+  chariot.action = null;
+  setAnim(chariot, 'death');
+  state.score += BOSS_TD.breakScore;
+  state.jars = [];
+  showMessage(BOSS_TEXT.shieldBroken, 3200);
+}
+
+// Cột đá bị xe đâm: nguyên -> nứt; đang nứt -> bỏ va chạm ngay, mờ dần
+// pillarFade giây rồi biến mất (updatePillars).
+function hitPillar(pillar) {
+  if (pillar.state === 'intact') {
+    pillar.state = 'cracked';
+    return;
+  }
+  pillar.broken = true;
+  pillar.alpha = 1;
+}
+
+function updatePillars(dt) {
+  state.obstacles.forEach(obstacle => {
+    if (!obstacle.broken || !obstacle.active) return;
+    obstacle.alpha = Math.max(0, obstacle.alpha - dt / BOSS_TD.pillarFade);
+    if (obstacle.alpha <= 0) obstacle.active = false;
+  });
+}
+
+// Hũ dầu: bay vòng cung, rơi đúng vị trí ngang của người chơi lúc ném sau
+// flightTime giây (tính sẵn vx, vy ban đầu theo trọng lực của hũ).
+function throwJar(chariot) {
+  const p = state.player;
+  const x = chariotCenter(chariot) + chariot.facing * BOSS_TD.muzzleX;
+  const y = GROUND_Y - BOSS_TD.muzzle;
+  const targetX = Math.max(8, Math.min(LEVEL.worldWidth - 8, p.x + p.w / 2));
+  const time = JAR.flightTime;
+  state.jars.push({
+    x, y,
+    vx: (targetX - x) / time,
+    vy: (GROUND_Y - y - .5 * JAR.gravity * time * time) / time,
+    age: 0, reflected: false, alive: true
+  });
+}
+
+// Đòn chém của NGƯỜI CHƠI trúng hũ đang bay: hũ bay thẳng về phía xe
+// reflectSpeed px/s (xe đã hỏng thì bay ngược lại hướng cũ, ra khỏi đấu trường).
+function reflectJar(jar) {
+  const chariot = state.battle?.chariot;
+  const direction = chariot?.alive
+    ? Math.sign(chariotCenter(chariot) - jar.x) || 1
+    : -Math.sign(jar.vx) || 1;
+  jar.reflected = true;
+  jar.vx = direction * JAR.reflectSpeed;
+  jar.vy = 0;
+  state.score += BOSS_TD.reflectScore;
+}
+
+function spawnFire(x, footY, harmless) {
+  state.fires.push({ x, footY, time: 0, harmless, hit: false });
+}
+
+// Hũ thường: chạm người chơi (không đang miễn thương) hoặc chạm đất -> lửa tại
+// chỗ. Hũ bị phản: chỉ tính khi trúng hitbox thân xe còn khiên (Q6) -> mất 1
+// nấc, lửa trên thân xe (vô hại), không choáng; trượt thì bay ra khỏi đấu trường.
+function updateJars(dt) {
+  const p = state.player;
+  const chariot = state.battle.chariot;
+  state.jars.forEach(jar => {
+    jar.age += dt;
+    if (jar.reflected) {
+      jar.x += jar.vx * dt;
+      if (chariot.alive && chariot.shielded && aabb(jarBox(jar), chariot)) {
+        jar.alive = false;
+        spawnFire(chariotCenter(chariot), chariot.y + chariot.h - 20, true);
+        loseShield(chariot);
+        return;
+      }
+      if (jar.x < -16 || jar.x > LEVEL.worldWidth + 16) jar.alive = false;
+      return;
+    }
+    jar.vy += JAR.gravity * dt;
+    jar.x += jar.vx * dt;
+    jar.y += jar.vy * dt;
+    const hitPlayer = !playerImmune(p) && aabb(p, jarBox(jar));
+    if (hitPlayer || jar.y + JAR.h / 2 >= GROUND_Y) {
+      jar.alive = false;
+      spawnFire(jar.x, GROUND_Y, false);
+    }
+  });
+  state.jars = state.jars.filter(jar => jar.alive);
+}
+
+// Đám lửa: gây 1 sát thương, mỗi đám trúng người chơi tối đa 1 lần; dash né được.
+function updateFires(dt) {
+  const p = state.player;
+  state.fires.forEach(fire => {
+    fire.time += dt;
+    if (fire.harmless || fire.hit || playerImmune(p) || !aabb(p, fireBox(fire))) return;
+    fire.hit = true;
+    hurtPlayer('Bạn bị lửa dầu thiêu!');
+  });
+  state.fires = state.fires.filter(fire => fire.time < FIRE.time);
+}
+
+// Máy trạng thái chiến xa: throw (ném throwCount hũ, cách nhau throwInterval)
+// -> warn (đứng báo trước, render rung 1 px) -> charge (lao về phía người chơi)
+// -> đâm cột: dừng ở mép cột, mất 1 nấc, cột nứt/vỡ, stun | đâm tường: wall
+// (đứng rồi quay đầu) -> throw...
+function chariotBehavior(chariot, dt) {
+  chariot.modeTime += dt;
+  if (chariot.mode === 'throw') {
+    facePlayer(chariot);
+    if (chariot.action) {
+      const meta = getAnimMeta(ENEMY_SPRITES.boss.id, ENEMY_SPRITES.boss.anims.throw);
+      chariot.action.time += dt;
+      if (!chariot.action.released && chariot.action.time >= (meta ? hitTime(meta) : 0)) {
+        chariot.action.released = true;
+        throwJar(chariot);
+      }
+      if (chariot.action.time >= (meta ? animLength(meta) : 0)) chariot.action = null;
+    }
+    chariot.throwTimer -= dt;
+    if (!chariot.action && chariot.throwTimer <= 0) {
+      if (chariot.throwsLeft > 0) {
+        chariot.throwsLeft -= 1;
+        chariot.throwTimer = BOSS_TD.throwInterval;
+        chariot.action = { time: 0, released: false };
+      } else {
+        setChariotMode(chariot, 'warn');
+      }
+    }
+  } else if (chariot.mode === 'warn') {
+    facePlayer(chariot);
+    if (chariot.modeTime >= BOSS_TD.warnTime) {
+      chariot.direction = chariot.facing;
+      setChariotMode(chariot, 'charge');
+    }
+  } else if (chariot.mode === 'charge') {
+    chariot.facing = chariot.direction;
+    const prevLeft = chariot.x;
+    const prevRight = chariot.x + chariot.w;
+    chariot.x += chariot.direction * BOSS_TD.chargeSpeed * dt;
+    const pillar = state.obstacles.find(obstacle => obstacle.active && obstacle.blocking && !obstacle.broken
+      && (chariot.direction > 0
+        ? prevRight <= obstacle.x && chariot.x + chariot.w > obstacle.x
+        : prevLeft >= obstacle.x + obstacle.w && chariot.x < obstacle.x + obstacle.w));
+    if (pillar) {
+      // Dừng đúng mép cột (không chồng hitbox với người chơi đứng sau cột).
+      chariot.x = chariot.direction > 0 ? pillar.x - chariot.w : pillar.x + pillar.w;
+      hitPillar(pillar);
+      loseShield(chariot);
+      if (chariot.alive) setChariotMode(chariot, 'stun');
+      return;
+    }
+    if (chariot.x <= 0 || chariot.x + chariot.w >= LEVEL.worldWidth) {
+      chariot.x = Math.max(0, Math.min(LEVEL.worldWidth - chariot.w, chariot.x));
+      setChariotMode(chariot, 'wall');
+    }
+  } else if (chariot.mode === 'stun') {
+    if (chariot.modeTime >= BOSS_TD.stunTime) startThrowCycle(chariot);
+  } else if (chariot.mode === 'wall') {
+    if (chariot.modeTime >= BOSS_TD.wallPause) {
+      facePlayer(chariot);
+      startThrowCycle(chariot);
+    }
+  }
+}
+
+// Chiến xa: hành vi + animation (death > throw > charge > stun > idle /
+// idle_cracked khi còn 1 nấc). Xác xe (`corpse`) giữ dying = true, đứng ở ô cuối.
+function updateChariot(chariot, dt) {
+  if (chariot.alive) chariotBehavior(chariot, dt);
+  let next;
+  if (!chariot.alive) next = 'death';
+  else if (chariot.mode === 'throw' && chariot.action) next = 'throw';
+  else if (chariot.mode === 'charge') next = 'charge';
+  else if (chariot.mode === 'stun') next = 'stun';
+  else next = chariot.shield === 1 ? 'idleCracked' : 'idle';
+  setAnim(chariot, next);
+  tickAnim(chariot, dt);
+  if (next === 'throw') chariot.anim.time = chariot.action.time;
+}
+
+// Tiến trình trận: giai đoạn 1 (chiến xa) -> hết khiên -> giai đoạn 2 (Tô Định
+// đứng sau xác xe, 3 đợt thân binh WAVES) -> hết đợt 3 -> giai đoạn 3 (Phase C).
+function updateBattle(dt) {
+  const battle = state.battle;
+  battle.phaseTime += dt;
+  battle.hintTimer = Math.max(0, battle.hintTimer - dt);
+  updateJars(dt);
+  updateFires(dt);
+  updatePillars(dt);
+  if (battle.phase === 1 && !battle.chariot.alive) {
+    battle.phase = 2;
+    battle.phaseTime = 0;
+    battle.foot = { x: BOSS_TD.footX, anim: createAnim('idle') };
+    state.spawner = makeSpawner(WAVES.groups, WAVES.gap, false);
+  } else if (battle.phase === 2 && state.spawner?.done) {
+    startPhase3(battle);
+  }
+  if (battle.phase === 3) updatePhase3Rushers(dt);
+  updateWallArrows(dt);
+  if (battle.foot) tickAnim(battle.foot, dt);
+}
+
+// ---- Màn 3: giai đoạn 3, mưa tên trên thành, cutscene kết chương (§3.7–3.9) ----
+const FOOT = BOSS_TD.foot;
+const CUT = BOSS_TD.cutscene;
+
+// Vào giai đoạn 3: Tô Định (đi bộ) đứng tại footX thành mục tiêu BOSS_TD.foot.hp máu, không
+// tấn công (`passive`); quân cảm tử ra định kỳ từ cổng.
+function startPhase3(battle) {
+  battle.phase = 3;
+  battle.phaseTime = 0;
+  battle.foot = null;
+  state.spawner = null;
+  battle.todinh = makeToDinhFoot(BOSS_TD.footX);
+  battle.rusherTimer = FOOT.rusherInterval;
+  state.enemies.push(battle.todinh);
+  showMessage(BOSS_TEXT.phase3, 2600);
+}
+
+function updatePhase3Rushers(dt) {
+  const battle = state.battle;
+  battle.rusherTimer -= dt;
+  if (battle.rusherTimer > 0) return;
+  battle.rusherTimer = FOOT.rusherInterval;
+  const rushers = state.enemies.filter(enemy => enemy.alive && enemy.art === 'rusher').length;
+  if (rushers < FOOT.rusherMax) spawnEnemy({ type: 'rusher', dx: 0 });
+}
+
+// Tô Định đi bộ: run rẩy tại chỗ (`idle`) quay về phía người chơi; trúng đòn
+// phát `hurt` và bị đẩy lùi về phía cổng (1 lần mỗi khung — đòn người chơi +
+// bóng Trưng Nhị cùng khung chỉ đẩy 1 lần); hết máu `disarmed`; cutscene `flee`.
+function updateFoot(foot, dt) {
+  if (foot.pendingPush) {
+    foot.x = Math.min(FOOT.maxX - foot.w / 2, foot.x + foot.pendingPush);
+    foot.pendingPush = 0;
+  }
+  if (foot.fleeing) {
+    foot.x -= FOOT.fleeSpeed * dt;
+    foot.facing = -1;
+  } else if (!foot.disarmed) {
+    facePlayer(foot);
+  }
+  let next = 'idle';
+  if (foot.fleeing) next = 'flee';
+  else if (foot.disarmed) next = 'disarmed';
+  else if (foot.hitTimer > 0) next = 'hurt';
+  setAnim(foot, next);
+  tickAnim(foot, dt);
+}
+
+// Tô Định hết máu: dừng mọi quân địch (phát death) và đạn, phát `disarmed` 1
+// lần -> cutscene. Người chơi mất quyền điều khiển từ đây.
+function defeatToDinh(foot) {
+  foot.alive = false;
+  foot.dying = true;
+  foot.disarmed = true;
+  foot.hitTimer = 0;
+  state.enemies.forEach(enemy => {
+    if (enemy === foot || !enemy.alive) return;
+    enemy.alive = false;
+    enemy.dying = true;
+    enemy.action = null;
+    setAnim(enemy, 'death');
+  });
+  state.jars = [];
+  state.fires = [];
+  state.projectiles = [];
+  state.arrows = [];
+  state.wallArrows = [];
+  if (state.skills) Object.assign(state.skills.shadow, { active: 0, attack: null, pose: null });
+  const p = state.player;
+  Object.assign(p, { dashing: false, dashTimer: 0, attackCooldown: 0, attacking: false, hurtTimer: 0, invulnerable: 0, vx: 0 });
+  clearInput();
+  state.cutscene = { step: 'disarm', time: 0, fade: 0 };
+}
+
+// Mưa tên trên thành: vạch báo warnTime giây rồi tên rơi; trúng người chơi (không
+// miễn thương) -1 máu. Không trúng quân địch.
+function updateWallArrows(dt) {
+  const battle = state.battle;
+  const p = state.player;
+  if (ARENA.wallArrows && battle.phaseTime >= WALL_ARROWS.phasePause) {
+    battle.wallTimer -= dt;
+    if (battle.wallTimer <= 0) {
+      battle.wallTimer = WALL_ARROWS.interval;
+      const center = p.x + p.w / 2;
+      for (let i = 0; i < WALL_ARROWS.count; i += 1) {
+        const x = center + (Math.random() * 2 - 1) * WALL_ARROWS.spread;
+        state.wallArrows.push({ x: Math.max(8, Math.min(LEVEL.worldWidth - 8, x)), warn: WALL_ARROWS.warnTime, tipY: 0, alive: true });
+      }
+    }
+  }
+  state.wallArrows.forEach(arrow => {
+    if (arrow.warn > 0) {
+      arrow.warn -= dt;
+      return;
+    }
+    arrow.tipY += WALL_ARROWS.fallSpeed * dt;
+    const box = {
+      x: arrow.x - ARROW_RAIN_SPRITE.w / 2, y: arrow.tipY - ARROW_RAIN_SPRITE.h,
+      w: ARROW_RAIN_SPRITE.w, h: ARROW_RAIN_SPRITE.h
+    };
+    if (!playerImmune(p) && aabb(p, box)) {
+      arrow.alive = false;
+      hurtPlayer('Bạn trúng tên trên thành!');
+      return;
+    }
+    if (arrow.tipY >= GROUND_Y) arrow.alive = false;
+  });
+  state.wallArrows = state.wallArrows.filter(arrow => arrow.alive);
+}
+
+function cutsceneStep(step) {
+  state.cutscene.step = step;
+  state.cutscene.time = 0;
+}
+
+// Cutscene kết chương (§3.8), người chơi không điều khiển:
+//   disarm  -> Tô Định phát `disarmed` rồi đứng thêm disarmHold
+//   fadeOut -> tối dần; hết tối: panel cốt truyện câu 1–2 (PORTRAIT_TO_DINH)
+//   fadeIn  -> sáng lại, Tô Định (đã cải trang) `flee` chạy sang trái ra khỏi màn hình
+//   walk    -> Trưng Trắc tự đi tới trước cổng; tới nơi: cổng mở, cờ, `victory`
+//   victory -> đứng victoryHold rồi panel cốt truyện câu 3–4 (PORTRAIT_TRUNG_TRAC)
+//   -> panel kết chương (endGame).
+// Panel cốt truyện đặt state.paused nên update() dừng tới khi đóng panel.
+function updateCutscene(dt) {
+  const cut = state.cutscene;
+  const p = state.player;
+  const foot = state.battle.todinh;
+  cut.time += dt;
+  tickMessage(dt);
+  let playerAnim = 'idle';
+
+  if (cut.step === 'disarm') {
+    const meta = getAnimMeta(ENEMY_SPRITES.bossFoot.id, ENEMY_SPRITES.bossFoot.anims.disarmed);
+    if (cut.time >= (meta ? animLength(meta) : 0) + CUT.disarmHold) cutsceneStep('fadeOut');
+  } else if (cut.step === 'fadeOut') {
+    cut.fade = Math.min(1, cut.time / CUT.fadeTime);
+    if (cut.fade >= 1) {
+      // Đang tối hẳn: đưa người chơi về mặt đất (có thể đang đứng trên cột).
+      p.y = GROUND_Y - p.h;
+      p.vy = 0;
+      p.grounded = true;
+      cutsceneStep('story1');
+      openStory(STORY_TO_DINH_FLEES, () => cutsceneStep('fadeIn'));
+    }
+  } else if (cut.step === 'fadeIn') {
+    cut.fade = Math.max(0, 1 - cut.time / CUT.fadeTime);
+    foot.disarmed = false;
+    foot.fleeing = true;
+    if (cut.fade <= 0 && foot.x + foot.w < state.cameraX - 8) {
+      foot.dying = false;
+      cutsceneStep('walk');
+    }
+  } else if (cut.step === 'walk') {
+    const target = ARENA.gateX - p.w / 2;
+    const direction = Math.sign(target - p.x);
+    p.facing = direction || p.facing;
+    p.x += direction * CUT.walkSpeed * dt;
+    playerAnim = 'run';
+    if (direction === 0 || Math.sign(target - p.x) !== direction) {
+      p.x = target;
+      p.facing = 1;
+      state.gateOpen = true;
+      cutsceneStep('victory');
+    }
+  } else if (cut.step === 'victory') {
+    playerAnim = 'victory';
+    if (cut.time >= CUT.victoryHold) {
+      cutsceneStep('story2');
+      openStory(STORY_LUY_LAU_VICTORY, () => cutsceneStep('end'));
+    }
+  } else if (cut.step === 'story2') {
+    playerAnim = 'victory';
+  } else if (cut.step === 'end') {
+    playerAnim = 'victory';
+    state.cutscene = null;
+    endGame(true);
+    return;
+  }
+
+  setAnim(p, playerAnim);
+  tickAnim(p, dt);
+  updateEnemies(dt);
+  updateCamera(dt);
+  updateHud();
+}
+
+function updateCamera(dt) {
+  const p = state.player;
+  // Đấu trường: neo tâm người chơi (địch đến từ cả 2 phía); màn thường nhìn
+  // xa phía trước. Cùng kẹp [0, worldWidth − VIEW_W].
+  const targetCamera = LEVEL.arena ? p.x + p.w / 2 - VIEW_W / 2 : p.x - VIEW_W * .34;
+  const maxCamera = LEVEL.worldWidth - VIEW_W;
+  state.cameraX += (Math.max(0, Math.min(maxCamera, targetCamera)) - state.cameraX) * Math.min(1, dt * 6);
+}
+
 // Cơ chế lướt lấy theo level-test: một cú lao nhanh, có thời gian cố định,
 // không thu nhỏ nhân vật thành tư thế quỳ và có thể dùng cả khi đang ở trên không.
 export function startDash() {
@@ -509,6 +1250,10 @@ export function startDash() {
 
 export function update(dt) {
   if (!state.running || state.paused || state.won) return;
+  if (state.cutscene) {
+    updateCutscene(dt);
+    return;
+  }
   const p = state.player;
   const previousBottom = p.y + p.h;
 
@@ -545,7 +1290,9 @@ export function update(dt) {
   p.vy += GRAVITY * dt;
   p.x += p.vx * dt;
   p.y += p.vy * dt;
-  p.x = Math.max(12, Math.min(state.finishX + 96, p.x));
+  // Đấu trường (màn 3): tường vô hình ở 0 và worldWidth.
+  if (LEVEL.arena) p.x = Math.max(0, Math.min(LEVEL.worldWidth - p.w, p.x));
+  else p.x = Math.max(12, Math.min(state.finishX + 96, p.x));
 
   p.grounded = false;
   const groundY = playerGroundY(p, move);
@@ -558,14 +1305,21 @@ export function update(dt) {
     p.grounded = true;
   }
 
+  // Vật cản người chơi đang đứng trên (cột đá: xe đâm cột thì không tính va chạm).
+  p.standingOn = null;
   for (const obstacle of state.obstacles) {
-    if (!obstacle.active || !aabb(p, obstacle)) continue;
+    if (!obstacle.active || obstacle.broken || !aabb(p, obstacle)) continue;
     // Chướng ngại vật bắt buộc lướt không gây sát thương trong suốt cú dash.
     if (obstacle.requiresDash && p.dashing) continue;
     if (!obstacle.overhead && !obstacle.harmful && p.vy >= 0 && previousBottom <= obstacle.y + 5) {
       p.y = obstacle.y - p.h;
       p.vy = 0;
       p.grounded = true;
+      p.standingOn = obstacle;
+    } else if (obstacle.blocking) {
+      // Cột đá (Q1): va ngang thì bị đẩy ra mép gần nhất, không mất máu.
+      p.x = p.x + p.w / 2 < obstacle.x + obstacle.w / 2 ? obstacle.x - p.w : obstacle.x + obstacle.w;
+      p.vx = 0;
     } else {
       hurtPlayer(obstacle.harmful ? 'Bạn va vào bẫy!' : 'Hãy nhảy hoặc lướt qua chướng ngại vật.');
     }
@@ -576,15 +1330,29 @@ export function update(dt) {
   const insideDashObstacle = state.obstacles.some(obstacle =>
     obstacle.active && obstacle.requiresDash && aabb(p, obstacle)
   );
-  if (p.dashing && p.dashTimer <= 0 && !insideDashObstacle) {
+  // Dash xuyên chiến xa (màn 3): còn chồng thân xe thì kéo dài cú lướt (tối
+  // đa thêm DASH_TIME — xe sát tường/cột thì không kẹt mãi trong cú lướt).
+  const chariot = state.battle?.chariot;
+  const insideChariot = chariot?.alive && aabb(p, chariot) && p.dashTimer > -DASH_TIME;
+  if (p.dashing && p.dashTimer <= 0 && !insideDashObstacle && !insideChariot) {
     p.dashing = false;
     p.dashTimer = 0;
   }
 
   updateAttack();
+  if (state.skills) updateSkills(dt);
+  pressed.arrowRain = false;
+  pressed.shadow = false;
   updateEnemies(dt);
   updateHazards(dt);
   updateProjectiles(dt);
+  updateSpawner(dt);
+  if (state.battle) updateBattle(dt);
+  if (state.cutscene) {
+    updatePlayerAnimation(dt);
+    updateHud();
+    return;
+  }
 
   state.books.forEach(book => {
     if (book.collected) return;
@@ -598,14 +1366,20 @@ export function update(dt) {
   });
 
   state.enemies.forEach(enemy => {
-    if (!enemy.alive || playerImmune(p)) return;
-    if (aabb(p, enemy)) hurtPlayer(enemy.boss ? 'Lính giữ thành phản công!' : 'Bạn bị lính canh đánh trúng!');
+    if (!enemy.alive || enemy.harmless || enemy.passive || playerImmune(p)) return;
+    if (!aabb(p, enemy)) return;
+    if (enemy.kind === 'chariot') {
+      // Đứng trên cột đá: không tính va chạm với xe đứng sát cột.
+      if (!p.standingOn?.blocking) hurtPlayer('Bạn bị chiến xa húc trúng!');
+    } else if (enemy.boss) hurtPlayer('Lính giữ thành phản công!');
+    else hurtPlayer(enemy.art === 'rusher' ? 'Bạn bị quân cảm tử đâm trúng!' : 'Bạn bị lính canh đánh trúng!');
   });
 
   if (LEVEL.id === 1) updateLevel1Events(p);
   if (LEVEL.id === 2) updateMeetings(p, dt);
 
-  if (p.x >= state.finishX) {
+  // Đấu trường không có điểm về đích (kết thúc bằng boss — Phase B/C).
+  if (!LEVEL.arena && p.x >= state.finishX) {
     if (bossAlive()) {
       p.x = state.finishX - 18;
       p.vx = 0;
@@ -624,9 +1398,7 @@ export function update(dt) {
 
   if (p.y > VIEW_H + 96) respawnAfterFall();
 
-  const targetCamera = p.x - VIEW_W * .34;
-  const maxCamera = LEVEL.worldWidth - VIEW_W;
-  state.cameraX += (Math.max(0, Math.min(maxCamera, targetCamera)) - state.cameraX) * Math.min(1, dt * 6);
+  updateCamera(dt);
   updatePlayerAnimation(dt);
   updateHud();
 }
@@ -697,18 +1469,32 @@ export function endGame(won) {
   if (won && LEVEL.id === 1) {
     saveProgress({
       score: state.score, books: state.booksCollected,
-      level1Complete: true, level2Complete: false, rewards: []
+      level1Complete: true, level2Complete: false, level3Complete: false, rewards: []
     });
   } else if (won && LEVEL.id === 2) {
     saveProgress({ score: state.score, level2Complete: true });
+  } else if (won && LEVEL.id === 3) {
+    saveProgress({ score: state.score, level3Complete: true });
   }
   ui.next.hidden = !toNextLevel;
   ui.next.textContent = `Sang Màn ${LEVEL.id + 1}`;
   ui.restart.hidden = toNextLevel;
+  // Màn 3: thua thì đánh lại trận từ đầu (máu đầy, điểm mang sang từ màn 2).
+  ui.restart.textContent = LEVEL.arena ? 'Đánh lại' : 'Chơi lại';
   ui.endTitle.textContent = won ? `Hoàn thành ${LEVEL.title}` : 'Bạn đã thất bại';
   const summary = LEVEL.id === 2
     ? `Bạn đã gặp đủ ${state.npcs.length} người tài và đạt ${state.score} điểm.`
     : `Bạn thu thập ${state.booksCollected}/5 sách và đạt ${state.score} điểm.`;
   ui.endText.textContent = won ? summary : `Điểm đạt được: ${state.score}. Hãy thử lại nhé.`;
+  // Hết chương (thắng màn 3): panel kết chương mục 5.4 + "Chơi lại chương" /
+  // "Về trang chủ" thay cho nút sang màn sau.
+  const chapterEnd = won && LEVEL.id === 3;
+  ui.replayChapter.hidden = !chapterEnd;
+  ui.home.hidden = !chapterEnd;
+  if (chapterEnd) {
+    ui.next.hidden = true;
+    ui.endTitle.textContent = CHAPTER_END.title;
+    ui.endText.textContent = CHAPTER_END.text(state.score);
+  }
   ui.end.classList.add('panel--visible');
 }

@@ -55,8 +55,9 @@ export function dialogueOpen() {
 }
 
 // URL chân dung 64x64 theo manifest; thiếu -> null (ẩn ảnh, TODO_MISSING).
-function portraitUrl(npcId) {
-  const asset = getAsset(NPC_SPRITES[npcId]?.portrait);
+// `portraitId` = id asset chân dung (cutscene màn 3), không có thì lấy theo NPC.
+function portraitUrl(npcId, portraitId = null) {
+  const asset = getAsset(portraitId || NPC_SPRITES[npcId]?.portrait);
   const file = asset?.animations?.[0]?.file;
   return file ? joinAssetPath(SPRITE_8BIT_ROOT, file) : null;
 }
@@ -76,10 +77,11 @@ function open(next) {
   clearInput();
   // Game dừng thì thông báo đang hiện không tự tắt (tickMessage) — ẩn luôn.
   ui.message.classList.remove('message--visible');
-  const url = portraitUrl(next.portraitNpc);
+  const url = portraitUrl(next.portraitNpc, next.portraitId);
   el.portrait.hidden = !url;
   if (url) el.portrait.src = url;
-  el.portrait.classList.toggle('dialogue__portrait--memorial', next.kind === 'story');
+  // Cốt truyện mặc định chân dung trắng đen (Thi Sách); `memorial: false` = màu.
+  el.portrait.classList.toggle('dialogue__portrait--memorial', next.kind === 'story' && next.data.memorial !== false);
   el.panel.classList.add('panel--visible');
   render();
 }
@@ -101,7 +103,10 @@ export function openNpcDialogue(npc, onDone) {
 
 // Cốt truyện: chỉ có các dòng chữ, chân dung trắng đen.
 export function openStory(story, onDone) {
-  open({ kind: 'story', data: story, onDone, portraitNpc: story.portraitNpc, step: 'line', lineIndex: 0 });
+  open({
+    kind: 'story', data: story, onDone, portraitNpc: story.portraitNpc, portraitId: story.portrait || null,
+    step: 'line', lineIndex: 0
+  });
 }
 
 function setText(label, text) {

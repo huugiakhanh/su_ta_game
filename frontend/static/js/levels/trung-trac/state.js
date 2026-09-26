@@ -4,7 +4,10 @@
 // thấy giá trị mới nhất — đây là hành vi chuẩn của ES module named export.
 
 import { worldX, makeObstacle, makeHazard } from './geometry.js';
-import { GROUND_Y, MINIBOSS, GUARD, LEVEL, NPC_RULES } from './config.js';
+import {
+  GROUND_Y, MINIBOSS, GUARD, LEVEL, NPC_RULES, OBSTACLE_TYPES, ARENA, RUSHER, SKILLS, SKILL_TEST,
+  BOSS_TD, WALL_ARROWS
+} from './config.js';
 import { createAnim } from './animation.js';
 
 export let state = null;
@@ -17,6 +20,11 @@ export function setState(nextState) {
 // Boss/mini-boss của màn còn sống? (enemy `boss` — Tô Định, dành cho màn 3 —
 // hoặc hazard `boss` — mini-boss kiệu quan màn 1). physics.js (giữ người chơi
 // ở cổng) và render.js (cổng mở) dùng chung.
+// Khoá ENEMY_SPRITES của enemy: `art` (màn 3: rusher, dummy...) hoặc boss/normal.
+export function enemyArtKey(enemy) {
+  return enemy.art || (enemy.boss ? 'boss' : 'normal');
+}
+
 export function bossAlive(current = state) {
   return current.enemies.some(enemy => enemy.boss && enemy.alive)
     || current.hazards.some(hazard => hazard.boss && hazard.alive);
@@ -41,7 +49,9 @@ const JITTER = 60;
 // thường (không boss) đi tuần quanh chỗ đứng và đâm kích khi người chơi tới
 // gần — hành vi ở physics.js (updateGuard), thông số GUARD trong config.js.
 // Boss đứng yên.
-function makeEnemy(x, w, h, hp, boss) {
+// `options` (màn 3, TT-BOSS-01): patrolMin/patrolMax/aggroRange ghi đè đoạn tuần
+// tra + tầm phát hiện của GUARD (lính canh đấu trường đuổi khắp đấu trường).
+export function makeEnemy(x, w, h, hp, boss, options = {}) {
   const enemy = {
     x, y: GROUND_Y - h, w, h, hp, maxHp: hp, boss,
     alive: true, dying: false, hitTimer: 0, anim: createAnim('idle')
@@ -52,11 +62,37 @@ function makeEnemy(x, w, h, hp, boss) {
     ...enemy,
     facing: -1,
     walking: true,
-    patrolMin: center - GUARD.patrolRange / 2,
-    patrolMax: center + GUARD.patrolRange / 2,
+    patrolMin: options.patrolMin ?? center - GUARD.patrolRange / 2,
+    patrolMax: options.patrolMax ?? center + GUARD.patrolRange / 2,
+    aggroRange: options.aggroRange ?? GUARD.aggroRange,
     // Cú đâm đang diễn { time, hit } hoặc null.
     action: null,
     attackCooldown: 0
+  };
+}
+
+// Lính canh trong đấu trường màn 3: đoạn tuần tra [40, width − 40], phát hiện
+// người chơi ở mọi chỗ -> truy đuổi khắp đấu trường (updateGuard có tham số).
+export function makeArenaGuard(centerX) {
+  return makeEnemy(centerX - 11, 22, 40, 2, false, {
+    patrolMin: 40, patrolMax: ARENA.width - 40, aggroRange: ARENA.width
+  });
+}
+
+// Quân cảm tử (TT-BOSS-01 §3.3): `direction` = hướng chạy hiện tại; `rest` =
+// thời gian nghỉ còn lại sau cú đâm. Hành vi ở physics.js (updateRusher).
+export function makeRusher(centerX, direction) {
+  return {
+    ...makeEnemy(centerX - RUSHER.w / 2, RUSHER.w, RUSHER.h, RUSHER.hp, false),
+    art: 'rusher', facing: direction, direction, rest: 0, walking: true
+  };
+}
+
+// Bao cát (layout thử): đứng yên, không gây sát thương, không cho điểm.
+function makeDummy(centerX) {
+  return {
+    ...makeEnemy(centerX - 11, 22, 40, SKILL_TEST.dummyHp, false),
+    art: 'dummy', harmless: true, walking: false
   };
 }
 
@@ -256,10 +292,97 @@ function level2Content() {
   return { obstacles, hazards: [], holes: [], books: [], enemies: [], npcs };
 }
 
+// Cột đá đấu trường: vật cản tĩnh + cờ `blocking` (Q1) + trạng thái ô vẽ
+// (`intact` -> `cracked` khi chiến xa đâm — Phase B).
+function makePillar(centerX) {
+  const obstacle = makeObstacle('stonePillar', 1, centerX - ARENA.pillarW / 2, ARENA.pillarW, ARENA.pillarH);
+  return { ...obstacle, blocking: Boolean(OBSTACLE_TYPES.stonePillar.blocking), state: 'intact' };
+}
+
+// Hàng đợi sinh quân: groups (mỗi nhóm = [{type, at, dx}]) chạy lần lượt,
+// nhóm sau bắt đầu khi nhóm trước chết hết + gap giây (kể cả nhóm đầu). loop =
+// lặp lại; không lặp thì `done` = true khi nhóm cuối đã chết hết.
+export function makeSpawner(groups, gap, loop) {
+  return { groups, gap, loop, index: 0, pending: [], time: 0, wait: gap, done: false };
+}
+
+// Chiến xa Tô Định (giai đoạn 1, TT-BOSS-01 §3.5): enemy boss 90x80, KHÔNG có
+// máu thường — `shield` nấc khiên (hp giữ bằng shield để thanh máu/ô F2 đọc).
+// Máy trạng thái ở physics.js (updateChariot): mode throw -> warn -> charge ->
+// stun | wall -> throw... `corpse`: hết khiên thì xác xe nằm lại.
+function makeChariot() {
+  const enemy = makeEnemy(BOSS_TD.startX - BOSS_TD.w / 2, BOSS_TD.w, BOSS_TD.h, BOSS_TD.shield, true);
+  return {
+    ...enemy,
+    art: 'boss', kind: 'chariot', corpse: true, noBar: true,
+    shield: BOSS_TD.shield, shielded: true,
+    facing: -1, direction: -1,
+    mode: 'throw', modeTime: 0,
+    throwsLeft: BOSS_TD.throwCount, throwTimer: BOSS_TD.startDelay,
+    // Cú ném đang diễn { time, released } hoặc null.
+    action: null
+  };
+}
+
+// Tô Định đi bộ ở giai đoạn 3 (TT-BOSS-01 §3.7): boss 22x40, BOSS_TD.foot.hp máu (5 — team 27/09), không tấn
+// công (`passive` — chạm vào không mất máu). Hành vi ở physics.js (updateFoot).
+export function makeToDinhFoot(centerX) {
+  const { w, h, hp } = BOSS_TD.foot;
+  return {
+    ...makeEnemy(centerX - w / 2, w, h, hp, true),
+    art: 'bossFoot', kind: 'foot', passive: true, facing: -1,
+    disarmed: false, fleeing: false, pendingPush: 0
+  };
+}
+
+// Nội dung màn 3 "Trận Luy Lâu" (TT-BOSS-01 §3.1): đấu trường 1 chunk, cổng
+// đóng, 2 cột đá. Không sách/hố/hazard/NPC. `options.layout === 'skills'` ->
+// layout thử kỹ năng: bao cát + các nhóm lính sinh lần lượt (SKILL_TEST), không
+// boss. Màn thường: chiến xa Tô Định (giai đoạn 1) -> 3 đợt thân binh (giai
+// đoạn 2) -> giai đoạn 3 (Phase C). `battle` = tiến trình trận boss.
+function level3Content(options) {
+  const testSkills = options.layout === 'skills';
+  const chariot = testSkills ? null : makeChariot();
+  return {
+    obstacles: ARENA.pillars.map(makePillar),
+    hazards: [], holes: [], books: [], npcs: [],
+    enemies: testSkills ? [makeDummy(SKILL_TEST.dummyX)] : [chariot],
+    spawner: testSkills ? makeSpawner(SKILL_TEST.groups, SKILL_TEST.gap, true) : null,
+    battle: testSkills ? null : {
+      phase: 1, phaseTime: 0, chariot,
+      // Tô Định đi bộ đứng sau xác xe (giai đoạn 2) — chỉ để vẽ.
+      foot: null,
+      // Đếm ngược tới lần được hiện lại gợi ý "Khiên quá dày!".
+      hintTimer: 0,
+      // Giai đoạn 3: Tô Định đánh được + hẹn giờ quân cảm tử.
+      todinh: null,
+      rusherTimer: 0,
+      // Mưa tên trên thành: đếm ngược tới loạt kế tiếp.
+      wallTimer: WALL_ARROWS.interval
+    }
+  };
+}
+
+// Trạng thái kỹ năng/buff của lượt chơi (chỉ màn đấu trường). `owned` = phần
+// thưởng đã nhận ở màn 2 (tiến trình); không có thì kỹ năng đó không hoạt động.
+function createSkillState(rewards) {
+  const owned = new Set(rewards.filter(id => SKILLS[id]));
+  return {
+    owned,
+    // Buff Ý chí kiên cường: calm = giây kể từ lần trúng đòn gần nhất.
+    buff: { calm: 0, cooldown: 0 },
+    arrowRain: { cooldown: 0 },
+    // Bóng Trưng Nhị: active = giây hiệu lực còn lại; trail = vệt di chuyển
+    // của người chơi (để bóng đi trễ); attack = cú chém đang diễn.
+    shadow: { active: 0, cooldown: 0, trail: [], clock: 0, pose: null, attack: null, anim: createAnim('idle') }
+  };
+}
+
 // State của 1 lượt chơi màn đang chọn (LEVEL, config.js). `options.score` =
 // điểm mang sang từ màn trước; máu luôn đầy khi bắt đầu màn (DESIGN_BASELINE).
 export function createLevelState(options = {}) {
-  const content = LEVEL.id === 2 ? level2Content() : level1Content(options);
+  const content = LEVEL.id === 3 ? level3Content(options)
+    : LEVEL.id === 2 ? level2Content() : level1Content(options);
   return {
     running: false,
     paused: false,
@@ -274,8 +397,20 @@ export function createLevelState(options = {}) {
     storyShown: false,
     restUsed: false,
     finishX: LEVEL.finishX,
+    // Màn đấu trường: kỹ năng/buff + mũi tên mưa đang rơi; cổng mở (cutscene).
+    skills: LEVEL.arena ? createSkillState(options.rewards || []) : null,
+    arrows: [],
+    // Hũ dầu đang bay / đám lửa FX_OIL_FIRE (màn 3).
+    jars: [],
+    fires: [],
+    // Mưa tên trên thành (đang báo/đang rơi) + cutscene kết chương (màn 3).
+    wallArrows: [],
+    cutscene: null,
+    gateOpen: false,
+    spawner: null,
+    battle: null,
     player: {
-      x: 84,
+      x: LEVEL.arena ? ARENA.playerStartX : 84,
       y: GROUND_Y - 42,
       w: 25,
       h: 42,

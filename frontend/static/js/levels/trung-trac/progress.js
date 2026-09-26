@@ -21,7 +21,7 @@ export const REWARD_NAMES = {
 };
 
 function emptyProgress() {
-  return { score: 0, books: 0, level1Complete: false, level2Complete: false, rewards: [] };
+  return { score: 0, books: 0, level1Complete: false, level2Complete: false, level3Complete: false, rewards: [] };
 }
 
 export function readProgress() {

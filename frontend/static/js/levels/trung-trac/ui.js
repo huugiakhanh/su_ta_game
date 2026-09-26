@@ -1,8 +1,9 @@
 // DOM refs (HUD, panel) + cập nhật hiển thị. Không chứa logic gameplay.
 
 import { joinAssetPath } from './assets.js';
-import { ITEM_ROOT, ITEM_FILES } from './config.js';
+import { ITEM_ROOT, ITEM_FILES, LEVEL, SKILLS, SPRITE_8BIT_ROOT } from './config.js';
 import { state } from './state.js';
+import { getAsset } from './animation.js';
 
 export const ui = {
   health: document.getElementById('healthHearts'),
@@ -19,7 +20,19 @@ export const ui = {
   endText: document.getElementById('endText'),
   restart: document.getElementById('restartButton'),
   next: document.getElementById('nextLevelButton'),
-  message: document.getElementById('messageBox')
+  // Panel kết chương (màn 3).
+  replayChapter: document.getElementById('replayChapterButton'),
+  home: document.getElementById('homeButton'),
+  message: document.getElementById('messageBox'),
+  // Màn 3: ô kỹ năng/buff + mọi phần tử gắn `data-skill` (ô HUD, dòng trợ
+  // giúp, nút cảm ứng) — chỉ hiện với phần thưởng đã nhận.
+  skillBar: document.getElementById('skillBar'),
+  skillNodes: [...document.querySelectorAll('[data-skill]')],
+  skillSlots: [...document.querySelectorAll('.skill[data-skill]')],
+  // Màn 3: thanh khiên chiến xa (giai đoạn 1) / "Đợt N/3" (giai đoạn 2).
+  bossHud: document.getElementById('bossHud'),
+  bossLabel: document.getElementById('bossHudLabel'),
+  shieldPips: [...document.querySelectorAll('#shieldPips i')]
 };
 
 let messageTimer = 0;
@@ -57,4 +70,63 @@ export function updateHud() {
   ui.score.textContent = state.score;
   const percent = Math.max(0, Math.min(100, state.player.x / state.finishX * 100));
   ui.progress.style.width = `${percent}%`;
+  // Đấu trường không có quãng đường -> ẩn thanh tiến độ.
+  ui.progress.parentElement.hidden = Boolean(LEVEL.arena);
+  updateSkillHud();
+  updateBossHud();
+}
+
+function updateBossHud() {
+  const battle = state.battle;
+  const phase = battle?.phase;
+  ui.bossHud.hidden = !(phase === 1 || phase === 2);
+  if (ui.bossHud.hidden) return;
+  const shieldPhase = phase === 1;
+  ui.shieldPips[0].parentElement.hidden = !shieldPhase;
+  if (shieldPhase) {
+    ui.bossLabel.textContent = 'Khiên';
+    ui.shieldPips.forEach((pip, index) => pip.classList.toggle('is-lost', index >= battle.chariot.shield));
+    return;
+  }
+  const spawner = state.spawner;
+  const total = spawner?.groups.length || 3;
+  ui.bossLabel.textContent = `Đợt ${Math.min(total, Math.max(1, spawner?.index || 1))}/${total}`;
+}
+
+// Giây hồi chiêu còn lại / tổng của một ô. Bóng Trưng Nhị đang hiệu lực thì
+// hiện thời gian hiệu lực còn lại (ô sáng xanh).
+function skillTimer(id, skills) {
+  const spec = SKILLS[id];
+  if (id === 'SK_LE_CHAN_ARROW_RAIN') return { left: skills.arrowRain.cooldown, total: spec.cooldown, active: false };
+  if (id === 'SK_TRUNG_NHI_SHADOW') {
+    const shadow = skills.shadow;
+    return shadow.active > 0
+      ? { left: shadow.active, total: spec.duration, active: true }
+      : { left: shadow.cooldown, total: spec.cooldown, active: false };
+  }
+  return { left: skills.buff.cooldown, total: spec.cooldown, active: false };
+}
+
+function updateSkillHud() {
+  const skills = state.skills;
+  ui.skillBar.hidden = !skills || skills.owned.size === 0;
+  ui.skillNodes.forEach(node => { node.hidden = !skills?.owned.has(node.dataset.skill); });
+  if (!skills) return;
+  ui.skillSlots.forEach(slot => {
+    const id = slot.dataset.skill;
+    if (!skills.owned.has(id)) return;
+    const icon = slot.querySelector('.skill__icon');
+    if (!icon.dataset.ready) {
+      // Chân dung lấy theo manifest (tải xong manifest mới có) — gán 1 lần.
+      const file = getAsset(SKILLS[id].portrait)?.animations?.[0]?.file;
+      if (file) {
+        icon.src = joinAssetPath(SPRITE_8BIT_ROOT, file);
+        icon.dataset.ready = '1';
+      }
+    }
+    const { left, total, active } = skillTimer(id, skills);
+    slot.classList.toggle('skill--active', active);
+    slot.querySelector('.skill__cd').style.height = `${left > 0 ? left / total * 100 : 0}%`;
+    slot.querySelector('.skill__time').textContent = left > 0 ? Math.ceil(left) : '';
+  });
 }

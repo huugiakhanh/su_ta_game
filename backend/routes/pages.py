@@ -18,8 +18,9 @@ def history():
 def library_trung_trac():
     return render_template('gameplay/library/trung-trac.html')
 
-# Chương Trưng Trắc gồm 3 màn (TT-NPC-01). Màn 1 và 2 dùng chung template +
-# bộ module JS, chọn màn qua `level_id`; màn 3 tạm là trang giữ chỗ. Chặn truy
+# Chương Trưng Trắc gồm 3 màn (TT-NPC-01). Cả 3 màn dùng chung template +
+# bộ module JS, chọn màn qua `level_id` (màn 3 = đấu trường boss, TT-BOSS-01;
+# template giữ chỗ `trung-trac-placeholder.html` giữ lại nhưng ngừng dùng). Chặn truy
 # cập khi chưa hoàn thành màn trước nằm ở phía client (progress.js) vì tiến
 # trình đang lưu ở sessionStorage.
 @pages_bp.get("/gameplay/level/Trung_Trac/trung-trac.html")
@@ -42,7 +43,7 @@ def trung_trac_level_2():
 @pages_bp.get("/gameplay/levels/trung-trac/3")
 def trung_trac_level_3():
     return render_template(
-        "gameplay/levels/trung-trac-placeholder.html",
+        "gameplay/levels/trung-trac.html",
         level_id=3,
         title="Màn 3: Trận Luy Lâu",
     )

@@ -213,6 +213,6 @@ Hai lỗi phát hiện và sửa trong lúc test: (1) nền panel mờ + hộp n
 
 ### Câu hỏi cho team
 
-1. Ở điện thoại ngang, hộp câu hỏi phải cuộn một đoạn ngắn (canvas chỉ cao ~227 px). Chấp nhận, hay muốn thu gọn (ví dụ ẩn danh hiệu NPC ở bước câu hỏi)?
-2. Màn 2 dùng `slideBar` làm vật cản bắt buộc dash (task cho chọn `reedCurtain` hoặc `slideBar`). Có muốn đổi/thêm `reedCurtain` không?
-3. Phần thưởng hiện chỉ được ghi nhận; câu mô tả phần thưởng nhắc phím K/L — cơ chế làm ở task màn 3.
+1. Ở điện thoại ngang, hộp câu hỏi phải cuộn một đoạn ngắn (canvas chỉ cao ~227 px). → **Team 26/09: chấp nhận**; giao diện điện thoại làm ở task khác.
+2. Màn 2 dùng `slideBar` làm vật cản bắt buộc dash. → **Team 26/09: giữ nguyên**, không thêm `reedCurtain`.
+3. Phần thưởng hiện chỉ được ghi nhận; câu mô tả phần thưởng nhắc phím K/L — cơ chế làm ở task màn 3. → **Team 26/09: OK.**
