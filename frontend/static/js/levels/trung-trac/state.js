@@ -58,9 +58,12 @@ const OBSTACLE_GROUPS = [
   { build: (c, dx) => ({ hazards: [makeHazard('thrower', 'hanTaxSoldier', c, 312 + dx, {
     projectile: 'coinPouch', fireInterval: 3.2, hp: 2
   })] }) },
-  // hổ rừng — lao tới
+  // hổ rừng — lao tới. triggerX 260 (cũ 420): kích hoạt khi hổ (mép trái
+  // local 708) còn cách người chơi ~448px > tầm nhìn phía trước ở khung rộng
+  // nhất (0.66 x MAX_VIEW_W 640 ≈ 422) -> hổ lao vào từ ngoài màn hình thay vì
+  // hiện ra giữa màn (team duyệt 26/09). DESIGN_BASELINE.
   { build: (c, dx) => ({ hazards: [makeHazard('roller', 'jungleTiger', c, 732 + dx, {
-    speed: -139, triggerX: worldX(c, 420 + dx), hp: 2
+    speed: -139, triggerX: worldX(c, 260 + dx), hp: 2
   })] }) },
   // xe cống phẩm — lăn tới; chém vỡ thì phát `break` rồi nằm lại map ở ô cuối
   // (vô hại) — xem `corpse` trong HAZARD_SPRITES.

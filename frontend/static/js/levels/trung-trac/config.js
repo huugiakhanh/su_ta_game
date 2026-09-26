@@ -1,15 +1,24 @@
 // Hằng số thuần cho màn Trưng Trắc — không chứa logic, chỉ export để các
 // module khác import dùng chung.
 
-// Độ phân giải LOGIC của màn (TT-INT-01): mọi thứ vẽ lên canvas 480x270 rồi
-// phóng to bội số nguyên ra màn hình (xem fitCanvas() trong render.js). Mọi
-// toạ độ/kích thước/tốc độ dưới đây là pixel logic — đã quy đổi từ hệ cũ
-// 896x360 theo hệ số k = 0.6 (khớp tỉ lệ bộ sprite 8-bit mới, xem
-// docs/INTEGRATION_PLAN_TT.md). Hằng số tính theo giây KHÔNG nhân k.
+// Độ phân giải LOGIC của màn (TT-INT-01): mọi thứ vẽ lên canvas cao 270 rồi
+// phóng ra màn hình (xem fitCanvas() trong render.js). Mọi toạ độ/kích
+// thước/tốc độ dưới đây là pixel logic — đã quy đổi từ hệ cũ 896x360 theo hệ
+// số k = 0.6 (khớp tỉ lệ bộ sprite 8-bit mới, xem docs/INTEGRATION_PLAN_TT.md).
+// Hằng số tính theo giây KHÔNG nhân k.
+// Chiều CAO logic cố định; chiều RỘNG khung nhìn (VIEW_W) giãn theo tỉ lệ cửa
+// sổ để màn chơi phủ kín chiều ngang (yêu cầu team 26/09): tối thiểu LOGICAL_W
+// (16:9 — cửa sổ hẹp/dọc giữ như cũ), tối đa MAX_VIEW_W. fitCanvas() đặt lại
+// VIEW_W qua setViewWidth(); `export let` là live-binding nên các module khác
+// import VIEW_W luôn đọc giá trị mới.
 export const LOGICAL_W = 480;
 export const LOGICAL_H = 270;
-export const VIEW_W = LOGICAL_W;
+export const MAX_VIEW_W = 640; // DESIGN_BASELINE (~2.37:1, màn siêu rộng thì có viền 2 bên)
+export let VIEW_W = LOGICAL_W;
 export const VIEW_H = LOGICAL_H;
+export function setViewWidth(width) {
+  VIEW_W = width;
+}
 export const CHUNK_W = 768;
 export const LEVEL_CHUNKS = 12;
 export const LEVEL_WORLD_WIDTH = CHUNK_W * LEVEL_CHUNKS;
@@ -57,15 +66,8 @@ export const ZONES = [
 // Lớp giữa + trời hoà dần trong ZONE_BLEND_WIDTH px TRƯỚC mỗi ranh giới, tính
 // theo tâm khung nhìn (cameraX + VIEW_W/2) — hoà xong đúng lúc tâm khung nhìn
 // chạm ranh giới, nên trời đã đổi sang giông trước khi người chơi vào chunk 11
-// (quyết định team G3).
+// (quyết định team G3). Mặt đất KHÔNG hoà: đổi tile dứt khoát tại ranh giới.
 export const ZONE_BLEND_WIDTH = 192; // DESIGN_BASELINE
-// Mặt đất chuyển vùng bằng dải dither pixel art rộng GROUND_BLEND_WIDTH, căn
-// giữa ranh giới (thay cho cắt dứt khoát của task card §3.2 — yêu cầu của team
-// sau khi chơi thử Phase B): mỗi ô GROUND_DITHER_CELL px lấy tile vùng trước
-// hoặc vùng sau theo nhiễu tất định, tỉ lệ vùng sau tăng dần 0 -> 1 qua dải.
-// Phải là bội số của 32 (nửa dải là bội số cỡ tile 16) để dải khớp lưới cột.
-export const GROUND_BLEND_WIDTH = 192; // DESIGN_BASELINE
-export const GROUND_DITHER_CELL = 2; // DESIGN_BASELINE
 // Tỉ lệ cột tile mặt đất có decor (cỏ, lau...) — chọn tất định theo cột.
 export const GROUND_DECOR_DENSITY = 0.25; // DESIGN_BASELINE
 

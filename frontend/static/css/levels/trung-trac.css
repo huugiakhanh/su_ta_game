@@ -26,8 +26,8 @@ body {
 button { font: inherit; }
 
 /* Toàn khung (HUD + màn chơi + nút cảm ứng) rộng đúng bằng canvas hiển thị —
-   --stage-w/--stage-h do fitCanvas() (render.js) đặt theo bội số nguyên của
-   480x270; phần thừa của cửa sổ là viền letterbox (nền body). */
+   --stage-w/--stage-h do fitCanvas() (render.js) đặt: cao 270 logic x scale,
+   rộng VIEW_W (480–640 logic) để phủ kín chiều ngang; phần thừa là viền (nền body). */
 .game-shell {
   width: calc(var(--stage-w, 960px) + 4px);
   max-width: 100%;
@@ -93,7 +93,7 @@ button { font: inherit; }
 
 canvas {
   display: block;
-  /* Canvas logic 480x270 phóng theo --stage-w/--stage-h (fitCanvas). */
+  /* Canvas logic VIEW_W x 270 phóng theo --stage-w/--stage-h (fitCanvas). */
   width: var(--stage-w, 960px);
   height: var(--stage-h, 540px);
   image-rendering: pixelated;

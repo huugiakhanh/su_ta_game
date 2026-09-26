@@ -5,10 +5,9 @@ import { state } from './state.js';
 import { debug } from './input.js';
 import { getAnimMeta, frameIndex } from './animation.js';
 import {
-  LOGICAL_W, LOGICAL_H, VIEW_W, VIEW_H, CHUNK_W, LEVEL_CHUNKS, GROUND_Y,
+  LOGICAL_W, LOGICAL_H, MAX_VIEW_W, VIEW_W, VIEW_H, setViewWidth, CHUNK_W, LEVEL_CHUNKS, GROUND_Y,
   FINISH_GATE, OBSTACLE_TYPES, BOOK_SPRITE_ID, BOOK_FPS, BOOK_BOB_AMPLITUDE, ZONES, ZONE_BLEND_WIDTH, SKY_PARALLAX, FAR_HILLS, MID_PARALLAX,
   SKY_FALLBACK_COLOR, GROUND_FALLBACK_COLOR, GROUND_DECOR_DENSITY,
-  GROUND_BLEND_WIDTH, GROUND_DITHER_CELL,
   HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES,
   PROJECTILE_MAX_RANGE, PROJECTILE_FADE_RANGE,
   PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, PLAYER_JUMP_APEX_VY
@@ -17,9 +16,10 @@ import {
 export const canvas = document.getElementById('gameCanvas');
 export const ctx = canvas.getContext('2d');
 
-// Canvas luôn ở độ phân giải LOGIC; fitCanvas() chỉ đổi cỡ HIỂN THỊ (CSS).
-canvas.width = LOGICAL_W;
-canvas.height = LOGICAL_H;
+// Canvas luôn ở độ phân giải LOGIC (VIEW_W x VIEW_H); fitCanvas() chọn VIEW_W
+// theo tỉ lệ cửa sổ và cỡ HIỂN THỊ (CSS).
+canvas.width = VIEW_W;
+canvas.height = VIEW_H;
 ctx.imageSmoothingEnabled = false;
 
 // Tên animation + ô đang vẽ của từng entity trong frame hiện tại — chỉ để lớp
@@ -30,8 +30,12 @@ const debugLabels = new Map();
 // lệnh vẽ vẫn dùng toạ độ LOGIC nhờ setTransform.
 let backingScale = 0;
 
-// Phóng canvas logic 480x270 PHỦ KÍN vùng trống (giữ tỉ lệ 16:9, scale lẻ được
-// phép — quyết định của team 25/09 thay cho letterbox bội số nguyên).
+// Phóng canvas logic PHỦ KÍN vùng trống (scale lẻ được phép — quyết định của
+// team 25/09 thay cho letterbox bội số nguyên). Chiều cao logic cố định 270:
+// scale lấy theo chiều cao còn trống, rồi chiều RỘNG logic (VIEW_W) giãn cho
+// canvas phủ hết chiều ngang (team 26/09), kẹp trong [LOGICAL_W, MAX_VIEW_W].
+// Cửa sổ hẹp hơn 16:9 -> VIEW_W = 480 và scale theo chiều ngang như cũ; rộng
+// hơn MAX_VIEW_W -> có viền hai bên.
 // Để pixel vẫn đều khi scale lẻ: vẽ vào bộ đệm ở bội số NGUYÊN N = ceil(scale
 // x DPR) bằng nearest-neighbor (mỗi pixel logic = N x N pixel thật), rồi để
 // trình duyệt thu nhẹ bộ đệm về cỡ hiển thị bằng nội suy mượt. Khi cỡ hiển thị
@@ -51,21 +55,27 @@ export function fitCanvas() {
   const availW = Math.max(1, document.documentElement.clientWidth - padX - border);
   const availH = Math.max(1, window.innerHeight - padY - border
     - blockH('.hud') - blockH('.mobile-controls') - blockH('.help'));
-  const scale = Math.min(availW / LOGICAL_W, availH / LOGICAL_H);
+  const fitHeight = availH / LOGICAL_H;
+  // ceil: canvas rộng ĐÚNG availW (scale giảm < 1 pixel logic so với fitHeight).
+  const viewW = Math.min(MAX_VIEW_W, Math.max(LOGICAL_W, Math.ceil(availW / fitHeight - 1e-6)));
+  const scale = Math.min(availW / viewW, fitHeight);
   const dpr = window.devicePixelRatio || 1;
   const deviceScale = scale * dpr;
   const nextBacking = Math.max(1, Math.ceil(deviceScale - 1e-3));
-  if (nextBacking !== backingScale) {
+  if (nextBacking !== backingScale || viewW !== VIEW_W) {
     backingScale = nextBacking;
+    setViewWidth(viewW);
     // Đổi width/height xoá luôn trạng thái context -> đặt lại transform + smoothing.
-    canvas.width = LOGICAL_W * backingScale;
-    canvas.height = LOGICAL_H * backingScale;
+    canvas.width = VIEW_W * backingScale;
+    canvas.height = VIEW_H * backingScale;
     ctx.setTransform(backingScale, 0, 0, backingScale, 0, 0);
     ctx.imageSmoothingEnabled = false;
   }
   canvas.style.imageRendering = Math.abs(deviceScale - backingScale) < 1e-3 ? 'pixelated' : 'auto';
-  shell.style.setProperty('--stage-w', `${LOGICAL_W * scale}px`);
-  shell.style.setProperty('--stage-h', `${LOGICAL_H * scale}px`);
+  // Làm tròn XUỐNG: lố dù nửa pixel là trang cao hơn cửa sổ -> hiện thanh
+  // cuộn dọc -> mất ~15px chiều ngang và canvas tràn khung.
+  shell.style.setProperty('--stage-w', `${Math.floor(VIEW_W * scale)}px`);
+  shell.style.setProperty('--stage-h', `${Math.floor(VIEW_H * scale)}px`);
   return scale;
 }
 
@@ -228,82 +238,11 @@ function columnTiles(region, column) {
   return { hash, surface: pick(region?.surface, hash), fill: pick(region?.fill, hash >>> 8) };
 }
 
-// Nhiễu trắng tất định cho 1 ô lưới (toạ độ ô) -> [0, 1).
-function cellNoise(cellX, cellY, salt) {
-  return tileHash(Math.imul(cellX, 73856093) ^ Math.imul(cellY + 1, 19349663) ^ salt) / 4294967296;
-}
-
-// Nhiễu nhiều tầng tại pixel world (x, y): cụm lớn 4 ô + cụm vừa 2 ô + hạt 1
-// ô (ô = GROUND_DITHER_CELL px) — các mảng đất quyện thành cụm tự nhiên thay
-// vì lấm tấm đều. Tổng có trọng số vẫn trong [0, 1).
-function ditherNoise(x, y) {
-  const cell = GROUND_DITHER_CELL;
-  return cellNoise(Math.floor(x / (cell * 4)), Math.floor(y / (cell * 4)), 0x51) * .5
-    + cellNoise(Math.floor(x / (cell * 2)), Math.floor(y / (cell * 2)), 0x2f) * .3
-    + cellNoise(Math.floor(x / cell), Math.floor(y / cell), 0x7b) * .2;
-}
-
-// Dải chuyển tiếp mặt đất quanh ranh giới vùng `index` -> `index + 1`, rộng
-// GROUND_BLEND_WIDTH, căn giữa ranh giới. Mỗi ô GROUND_DITHER_CELL px lấy pixel
-// của vùng sau nếu nhiễu < t (t tăng tuyến tính 0 -> 1 qua dải), còn lại lấy
-// vùng trước — trộn kiểu dither pixel art, không alpha, không mờ. Dải là
-// tĩnh (tile chọn theo cột) nên dựng 1 lần thành canvas rộng W x 2 tile
-// (hàng surface + hàng fill) rồi cache; drawGround cắt từ canvas này theo cột.
-const groundBands = new Map();
-function groundBand(index, tileset) {
-  if (groundBands.has(index)) return groundBands.get(index);
-  const { image, tileW, tileH, regions } = tileset;
-  const boundary = ZONES[index + 1].x0;
-  const x0 = boundary - GROUND_BLEND_WIDTH / 2;
-  const width = GROUND_BLEND_WIDTH;
-  const height = tileH * 2;
-  const layer = regionKey => {
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const layerCtx = canvas.getContext('2d');
-    layerCtx.imageSmoothingEnabled = false;
-    for (let x = 0; x < width; x += tileW) {
-      const { surface, fill } = columnTiles(regions[regionKey], (x0 + x) / tileW);
-      if (surface) layerCtx.drawImage(image, surface.x, surface.y, tileW, tileH, x, 0, tileW, tileH);
-      if (fill) layerCtx.drawImage(image, fill.x, fill.y, tileW, tileH, x, tileH, tileW, tileH);
-    }
-    return { canvas, data: layerCtx.getImageData(0, 0, width, height) };
-  };
-  const from = layer(ZONES[index].tiles);
-  const to = layer(ZONES[index + 1].tiles);
-  const out = from.data;
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const t = (x + .5) / width;
-      if (ditherNoise(x0 + x, y) >= t) continue;
-      const i = (y * width + x) * 4;
-      out.data[i] = to.data.data[i];
-      out.data[i + 1] = to.data.data[i + 1];
-      out.data[i + 2] = to.data.data[i + 2];
-      out.data[i + 3] = to.data.data[i + 3];
-    }
-  }
-  from.canvas.getContext('2d').putImageData(out, 0, 0);
-  const band = { x0, x1: x0 + width, canvas: from.canvas };
-  groundBands.set(index, band);
-  return band;
-}
-
-// Dải chuyển tiếp chứa cột world `columnX` (hoặc null).
-function bandAt(columnX, tileset) {
-  for (let index = 0; index < ZONES.length - 1; index++) {
-    const boundary = ZONES[index + 1].x0;
-    if (ZONES[index].tiles === ZONES[index + 1].tiles) continue;
-    if (Math.abs(columnX + tileset.tileW / 2 - boundary) < GROUND_BLEND_WIDTH / 2) return groundBand(index, tileset);
-  }
-  return null;
-}
-
 // Mặt đất lát tileset theo vùng: hàng `surface` top = GROUND_Y, hàng `fill`
 // ngay dưới (bị cắt ở đáy khung), decor 16x8 thưa trên mép cỏ. Cột tile căn
-// theo lưới world 16px, vùng lấy theo world X của cột; quanh mỗi ranh giới
-// vùng là dải chuyển tiếp dither (groundBand). Chỉ vẽ các cột trong viewport.
+// theo lưới world 16px, vùng lấy theo world X của cột — đổi tile DỨT KHOÁT tại
+// ranh giới vùng (task card §3.2; team chốt lại sau khi thử dải dither). Chỉ
+// vẽ các cột trong viewport.
 // Hố: không vẽ tile trong hố; tile `left-edge`/`right-edge` (nửa đặc, nửa
 // trong suốt) đặt sao cho phần đất kết thúc ĐÚNG mép hố (khớp pointHasGround)
 // — quyết định team G6.
@@ -325,27 +264,12 @@ function drawGround() {
 
   for (let column = first; column <= last; column++) {
     const columnX = column * tileW;
-    const zoneIndex = zoneIndexAt(columnX);
-    let region = regions[ZONES[zoneIndex].tiles];
+    const region = regions[ZONES[zoneIndexAt(columnX)].tiles];
     if (!region) continue;
     const { hash, surface, fill } = columnTiles(region, column);
     const surfaceSegments = subtractIntervals(columnX, columnX + tileW, surfaceGaps);
-    const fillSegments = subtractIntervals(columnX, columnX + tileW, fillGaps);
-    const band = bandAt(columnX, tileset);
-    if (band) {
-      // Trong dải chuyển tiếp: cắt đúng cột này từ canvas dải đã dither sẵn.
-      const sx = columnX - band.x0;
-      drawTileSegments(band.canvas, { x: sx, y: 0, h: tileH }, columnX, GROUND_Y, surfaceSegments, camera);
-      drawTileSegments(band.canvas, { x: sx, y: tileH, h: tileH }, columnX, GROUND_Y + tileH, fillSegments, camera);
-      // Decor trong dải cũng chọn vùng theo xác suất t (tất định theo cột).
-      const t = (columnX + tileW / 2 - band.x0) / GROUND_BLEND_WIDTH;
-      const boundaryZone = zoneIndexAt(band.x1 - 1);
-      const pickNext = ((hash >>> 4) & 0xff) / 256 < t;
-      region = regions[ZONES[pickNext ? boundaryZone : boundaryZone - 1].tiles] || region;
-    } else {
-      if (surface) drawTileSegments(image, surface, columnX, GROUND_Y, surfaceSegments, camera);
-      if (fill) drawTileSegments(image, fill, columnX, GROUND_Y + tileH, fillSegments, camera);
-    }
+    if (surface) drawTileSegments(image, surface, columnX, GROUND_Y, surfaceSegments, camera);
+    if (fill) drawTileSegments(image, fill, columnX, GROUND_Y + tileH, subtractIntervals(columnX, columnX + tileW, fillGaps), camera);
     // Decor chỉ trên cột đất nguyên vẹn, đáy decor = GROUND_Y, không va chạm.
     const intact = surfaceSegments.length === 1 && surfaceSegments[0][1] - surfaceSegments[0][0] === tileW;
     if (intact && ((hash >>> 16) & 0xff) < 256 * GROUND_DECOR_DENSITY) {

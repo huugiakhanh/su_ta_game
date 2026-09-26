@@ -225,3 +225,60 @@ Không phát sinh thêm ở Phase C. Các vấn đề tile Z2/Z4/decor Z3 từ P
 1. Chơi thử xác nhận Phase C, đặc biệt: cảm giác bình thư nhỏ 16×16, nhịp 6 fps, và thời điểm cổng mở.
 2. Tile Z2 (và Z4 nếu không chủ ý) có giao Codex `NORMALIZE` không? (từ Phase B)
 3. Với TT-MAP-01 đã xong 3 phase: có cần commit/PR không, và commit vào nhánh `update-map-frame` hiện tại?
+
+---
+
+## Điều chỉnh sau Phase C — 26/09/2026 (yêu cầu team)
+
+### 1. Mặt đất về lại cắt dứt khoát tại ranh giới vùng
+
+Bỏ dải chuyển tiếp dither của Phase B.1, trở lại đúng task card §3.2.
+
+| File | Mục đích |
+|---|---|
+| `render.js` | Xoá `cellNoise`/`ditherNoise`/`groundBand`/`bandAt` và nhánh dải trong `drawGround`. Tile chọn theo vùng của cột (`zoneIndexAt(columnX)`). |
+| `config.js` | Xoá `GROUND_BLEND_WIDTH`, `GROUND_DITHER_CELL`. |
+
+Test: chụp ranh giới Z2→Z3 ở 1280×720 thấy đất đổi thẳng tại x = 3840. Trời và lớp giữa vẫn hoà như cũ.
+
+### 2. Màn chơi phủ kín chiều ngang — mở rộng tầm nhìn
+
+Team chọn phương án **mở rộng tầm nhìn** (các phương án khác: cắt trời, hoặc HUD phủ lên canvas).
+
+| File | Mục đích |
+|---|---|
+| `config.js` | `VIEW_W` thành `export let` + `setViewWidth()`. Thêm `MAX_VIEW_W = 640` (**DESIGN_BASELINE**). `LOGICAL_W = 480` giờ là chiều rộng tối thiểu. |
+| `render.js` | `fitCanvas()`: scale theo chiều cao còn trống; `VIEW_W = ceil(availW / scale)`, kẹp trong [480, 640]. Bộ đệm canvas dựng lại khi `VIEW_W` đổi. `--stage-w/h` làm tròn **xuống** (lố nửa pixel làm trang cao hơn cửa sổ, sinh thanh cuộn dọc và mất 15 px ngang; đã tái hiện ở 1280×720 rồi mới sửa). |
+
+Mọi chỗ khác (camera `p.x − 0.34·VIEW_W`, `maxCamera`, cull, lớp nền, tile, canvas phụ hoà lớp giữa, đạn ra ngoài tầm) đã dùng `VIEW_W` nên tự theo khung mới. `physics.js` không sửa.
+
+| Cửa sổ | `VIEW_W` | Canvas hiển thị | Phủ ngang? |
+|---|---|---|---|
+| 1280×720 | 564 | 1276×610 (+ viền 4 = 1280) | **Có**, không thanh cuộn |
+| 1920×1080 | 534 | 1916×968 | **Có** |
+| 2560×900 (siêu rộng) | 640 (trần) | 1872×790 | Không, viền 2 bên (theo thiết kế) |
+| Điện thoại ngang 812×375 | 640 (trần) | 528×223 | Không: nút cảm ứng chiếm chiều cao nên canvas thấp; bỏ trần sẽ lộ ~960 px world |
+| Điện thoại dọc 375×812 | 480 | 359×201 | Như cũ (vừa chiều ngang) |
+
+| Test | Kết quả | Ghi chú |
+|---|---|---|
+| Chơi hết màn 3 lượt ở khung rộng | **PASS** | 3/3 thắng, 5/5 sách, không lỗi console. |
+| Kẻ địch lao ra (roller) không hiện đột ngột trong tầm nhìn | **Ghi chú (lỗi có sẵn, rõ hơn)** | Kiệu, xe cống, kỵ binh kích hoạt ngoài màn hình. **Hổ (`jungleTiger`)** kích hoạt khi mép trái ở x ≈ 527 trên khung 638, tức hiện ra giữa màn. Với khung 480 cũ hổ cũng đã hiện sẵn khoảng 29 px trong màn (spawn cách `triggerX` 288–312 px, trong khi màn thấy trước 317 px). Chưa sửa vì là thay đổi gameplay. |
+
+### Câu hỏi cho team
+
+1. Hổ hiện ra đột ngột: có muốn sửa không? Phương án: dời điểm kích hoạt hổ sớm hơn (`triggerX` 420 → khoảng 300, hổ lao tới xa hơn) hoặc cho roller sinh ở ngay ngoài mép phải khung nhìn. Cả hai đều là đổi gameplay nên cần duyệt.
+2. Điện thoại ngang: có muốn nâng/bỏ trần `MAX_VIEW_W` (thấy xa hơn nhiều), hoặc thu gọn nút cảm ứng để canvas cao hơn không?
+
+### 3. Hổ kích hoạt sớm hơn (team chọn, 26/09/2026)
+
+| File | Mục đích |
+|---|---|
+| `state.js` | Nhóm `jungleTiger`: `triggerX` từ `worldX(c, 420 + dx)` → `worldX(c, 260 + dx)` (**DESIGN_BASELINE**). Hổ (mép trái ở local 708) kích hoạt khi còn cách người chơi ~448 px, lớn hơn tầm nhìn phía trước ở khung rộng nhất (0.66 × 640 ≈ 422). Không đổi tốc độ, máu, vị trí hổ. Đề xuất ban đầu là 300, nhưng tính lại thì ở khung 640 vẫn lộ nên chọn 260. |
+
+| Test | Kết quả | Ghi chú |
+|---|---|---|
+| Hổ kích hoạt ngoài màn hình | **PASS** | Mép trái hổ lúc kích hoạt, tính theo toạ độ màn hình: khung 480 → x ≈ 633; khung 564 → x ≈ 662; khung 640 → x ≈ 687. Luôn > `VIEW_W`, nên hổ lao vào từ mép phải. |
+| Hồi quy: chơi hết màn 9 lượt (3 lượt mỗi độ rộng khung) | **PASS** | 9/9 thắng, 5/5 sách, không lỗi console. |
+
+Cảm giác khác: hổ lao tới từ xa hơn (thêm ~160 px đường chạy), người chơi thấy hổ lâu hơn trước khi chạm trán. Cần chơi thử xác nhận độ khó.
