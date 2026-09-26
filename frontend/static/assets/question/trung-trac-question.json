@@ -1,0 +1,602 @@
+[
+  {
+    "id": 1,
+    "question": "Hai Bà Trưng có tên thật là gì?",
+    "options": [
+      "Trưng Trắc, Trưng Nhị",
+      "Lê Chân, Bát Nàn",
+      "Thiều Hoa, Xuân Nương",
+      "Triệu Ẩu, Triệu Trinh"
+    ],
+    "correct": 0,
+    "explanation": "Đáp án đúng là A."
+  },
+  {
+    "id": 2,
+    "question": "Quê quán của Hai Bà Trưng ở đâu?",
+    "options": [
+      "Chu Diên",
+      "Luy Lâu",
+      "Mê Linh",
+      "Hoa Lư"
+    ],
+    "correct": 2,
+    "explanation": "Đáp án đúng là C."
+  },
+  {
+    "id": 3,
+    "question": "Cha của Hai Bà Trưng giữ chức vụ gì?",
+    "options": [
+      "Huyện lệnh",
+      "Lạc tướng",
+      "Thái thú",
+      "Thứ sử"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 4,
+    "question": "Chồng của bà Trưng Trắc tên là gì?",
+    "options": [
+      "Thi Sách",
+      "Triệu Quang Phục",
+      "Lý Nam Đế",
+      "Khúc Hạo"
+    ],
+    "correct": 0,
+    "explanation": "Đáp án đúng là A."
+  },
+  {
+    "id": 5,
+    "question": "Quê hương của Thi Sách nằm ở vùng nào?",
+    "options": [
+      "Mê Linh",
+      "Luy Lâu",
+      "Giao Chỉ",
+      "Chu Diên"
+    ],
+    "correct": 3,
+    "explanation": "Đáp án đúng là D."
+  },
+  {
+    "id": 6,
+    "question": "Cuộc khởi nghĩa Hai Bà Trưng bùng nổ vào năm nào?",
+    "options": [
+      "Năm 40 SCN",
+      "Năm 248 SCN",
+      "Năm 544 SCN",
+      "Năm 938 SCN"
+    ],
+    "correct": 0,
+    "explanation": "Đáp án đúng là A."
+  },
+  {
+    "id": 7,
+    "question": "Kẻ thù chính mà cuộc khởi nghĩa Hai Bà Trưng hướng tới là tên Thái thú nào?",
+    "options": [
+      "Tích Quang",
+      "Nhâm Diên",
+      "Tô Định",
+      "Mã Viện"
+    ],
+    "correct": 2,
+    "explanation": "Đáp án đúng là C."
+  },
+  {
+    "id": 8,
+    "question": "Lời thề nổi tiếng của bà Trưng Trắc trước khi xuất quân diễn ra tại đâu?",
+    "options": [
+      "Cửa sông Bạch Đằng",
+      "Cửa sông Hát (Hát Môn)",
+      "Đầm Dạ Trạch",
+      "Núi Tản Viên"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 9,
+    "question": "Câu thơ: \"Một xin rửa sạch nước thù/ Hai xin đem lại nghiệp xưa họ Hùng\" nói về ai?",
+    "options": [
+      "Bà Triệu",
+      "Lê Chân",
+      "Trưng Trắc",
+      "Ỷ Lan"
+    ],
+    "correct": 2,
+    "explanation": "Đáp án đúng là C."
+  },
+  {
+    "id": 10,
+    "question": "Trụ sở chính của chính quyền đô hộ nhà Hán thời điểm đó đặt tại đâu?",
+    "options": [
+      "Cổ Loa",
+      "Luy Lâu",
+      "Long Biên",
+      "Tống Bình"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 11,
+    "question": "Khi quân Hai Bà Trưng tiến đánh, Thái thú Tô Định đã có hành động gì?",
+    "options": [
+      "Tử chiến đến cùng",
+      "Đầu hàng và tự sát",
+      "Cắt tóc, cạo râu trốn về nước",
+      "Xin viện binh"
+    ],
+    "correct": 2,
+    "explanation": "Đáp án đúng là C."
+  },
+  {
+    "id": 12,
+    "question": "Khởi nghĩa thắng lợi, nghĩa quân đã chiếm được bao nhiêu thành trì?",
+    "options": [
+      "30 thành",
+      "65 thành",
+      "50 thành",
+      "100 thành"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 13,
+    "question": "Sau khi giành lại độc lập, Trưng Trắc đã làm gì?",
+    "options": [
+      "Xưng Vương (Trưng Nữ Vương)",
+      "Lên ngôi Hoàng Đế",
+      "Nhường ngôi cho Trưng Nhị",
+      "Giao lại cho Lạc tướng Chu Diên"
+    ],
+    "correct": 0,
+    "explanation": "Đáp án đúng là A."
+  },
+  {
+    "id": 14,
+    "question": "Nữ tướng nào là người lập ra trang An Biên (Hải Phòng ngày nay)?",
+    "options": [
+      "Thánh Thiên",
+      "Bát Nàn",
+      "Lê Chân",
+      "Xuân Nương"
+    ],
+    "correct": 2,
+    "explanation": "Đáp án đúng là C."
+  },
+  {
+    "id": 15,
+    "question": "Nhà Hán đã cử viên tướng lão luyện nào sang đàn áp Hai Bà Trưng?",
+    "options": [
+      "Trần Bá Tiên",
+      "Mã Viện",
+      "Tôn Kiên",
+      "Hoàng Thao"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 16,
+    "question": "Mã Viện tiến vào nước ta bằng con đường nào?",
+    "options": [
+      "Chỉ đường bộ",
+      "Chỉ đường thủy",
+      "Cả thủy lục tịnh tiến",
+      "Đường không"
+    ],
+    "correct": 2,
+    "explanation": "Đáp án đúng là C."
+  },
+  {
+    "id": 17,
+    "question": "Trận đánh khốc liệt nhất giữa quân ta và quân Mã Viện diễn ra ở đâu?",
+    "options": [
+      "Sông Bạch Đằng",
+      "Lãng Bạc",
+      "Đầm Dạ Trạch",
+      "Ải Chi Lăng"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 18,
+    "question": "Đặc điểm quân đội của Hai Bà Trưng phần lớn là gì?",
+    "options": [
+      "Kỵ binh thiết giáp",
+      "Lính đánh thuê",
+      "Nghĩa binh tự nguyện, nhiều nữ giới",
+      "Quân chính quy được huấn luyện lâu năm"
+    ],
+    "correct": 2,
+    "explanation": "Đáp án đúng là C."
+  },
+  {
+    "id": 19,
+    "question": "Vì sao quân Hai Bà Trưng thất bại trước quân Mã Viện?",
+    "options": [
+      "Thiếu lương thực",
+      "Nội bộ phản bội",
+      "Chênh lệch vũ khí và kinh nghiệm chiến đấu",
+      "Bị bệnh dịch"
+    ],
+    "correct": 2,
+    "explanation": "Đáp án đúng là C."
+  },
+  {
+    "id": 20,
+    "question": "Sau trận Lãng Bạc, Hai Bà Trưng phải rút quân về đâu?",
+    "options": [
+      "Hát Môn",
+      "Cấm Khê",
+      "Cổ Loa",
+      "Dạ Trạch"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 21,
+    "question": "Hai Bà Trưng hy sinh vào thời gian nào?",
+    "options": [
+      "Năm 40 SCN",
+      "Năm 43 SCN",
+      "Năm 41 SCN",
+      "Năm 44 SCN"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 22,
+    "question": "Hành động tự trầm mình của Hai Bà Trưng thể hiện tinh thần gì?",
+    "options": [
+      "Tuyệt vọng",
+      "Bảo toàn khí tiết, thà chết không chịu nhục",
+      "Sợ hãi địch",
+      "Làm theo nghi lễ tôn giáo"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 23,
+    "question": "Khởi nghĩa Hai Bà Trưng là cuộc khởi nghĩa lớn thứ mấy thời kỳ Bắc thuộc?",
+    "options": [
+      "Lần thứ 1",
+      "Lần thứ 2",
+      "Lần thứ 3",
+      "Lần thứ 4"
+    ],
+    "correct": 0,
+    "explanation": "Đáp án đúng là A."
+  },
+  {
+    "id": 24,
+    "question": "Một đạo lý truyền thống nổi bật được thể hiện qua Khởi nghĩa Hai Bà Trưng là gì?",
+    "options": [
+      "Trọng nam khinh nữ",
+      "Nước chảy đá mòn",
+      "Giặc đến nhà, đàn bà cũng đánh",
+      "Đất lành chim đậu"
+    ],
+    "correct": 2,
+    "explanation": "Đáp án đúng là C."
+  },
+  {
+    "id": 25,
+    "question": "Mã Viện sau khi đàn áp thành công đã dựng cột đồng ở biên giới với mục đích gì?",
+    "options": [
+      "Đánh dấu ranh giới",
+      "Cầu nguyện hòa bình",
+      "Ghi công trạng",
+      "Răn đe người Việt"
+    ],
+    "correct": 3,
+    "explanation": "Đáp án đúng là D."
+  },
+  {
+    "id": 26,
+    "question": "Tướng Bát Nàn (Vũ Thị Thục) quê ở đâu?",
+    "options": [
+      "Tiên La (Thái Bình)",
+      "Mê Linh (Hà Nội)",
+      "An Biên (Hải Phòng)",
+      "Chu Diên (Hưng Yên)"
+    ],
+    "correct": 0,
+    "explanation": "Đáp án đúng là A."
+  },
+  {
+    "id": 27,
+    "question": "Trước khi lấy Thi Sách, Trưng Trắc có mối quan hệ thế nào với ông?",
+    "options": [
+      "Không quen biết",
+      "Bạn thanh mai trúc mã",
+      "Mối lái do quan nhà Hán ép",
+      "Kẻ thù"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 28,
+    "question": "Đền thờ chính của Hai Bà Trưng hiện nay nằm ở huyện nào của Hà Nội?",
+    "options": [
+      "Huyện Đông Anh",
+      "Huyện Sóc Sơn",
+      "Huyện Mê Linh",
+      "Huyện Gia Lâm"
+    ],
+    "correct": 2,
+    "explanation": "Đáp án đúng là C."
+  },
+  {
+    "id": 29,
+    "question": "Nữ tướng Thánh Thiên được giao trọng trách gì trong quân đội Hai Bà Trưng?",
+    "options": [
+      "Trấn giữ vùng Hợp Phố (Quảng Ninh)",
+      "Chỉ huy thủy quân",
+      "Hậu cần",
+      "Trấn giữ thành Luy Lâu"
+    ],
+    "correct": 0,
+    "explanation": "Đáp án đúng là A."
+  },
+  {
+    "id": 30,
+    "question": "Nước ta dưới thời Hai Bà Trưng không có quốc hiệu chính thức, nhưng lãnh thổ được gọi chung là gì?",
+    "options": [
+      "Giao Chỉ (Lĩnh Nam)",
+      "Vạn Xuân",
+      "Đại Ngu",
+      "Đại Cồ Việt"
+    ],
+    "correct": 0,
+    "explanation": "Đáp án đúng là A."
+  },
+  {
+    "id": 31,
+    "question": "Cuộc khởi nghĩa của Hai Bà Trưng lật đổ ách thống trị của triều đại phong kiến nào ở Trung Quốc?",
+    "options": [
+      "Nhà Tần",
+      "Nhà Tây Hán",
+      "Nhà Đông Hán",
+      "Nhà Đường"
+    ],
+    "correct": 2,
+    "explanation": "Đáp án đúng là C."
+  },
+  {
+    "id": 32,
+    "question": "Thái thú Tô Định được sử sách ghi chép là người như thế nào?",
+    "options": [
+      "Liêm khiết, thương dân",
+      "Tàn bạo, tham lam tiền tài",
+      "Giỏi võ nghệ, anh dũng",
+      "Có tài văn chương"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 33,
+    "question": "Sau khi Hai Bà Trưng mất, nhân dân ta đã làm gì?",
+    "options": [
+      "Đầu hàng hoàn toàn",
+      "Lập đền thờ ở nhiều nơi",
+      "Di cư sang nước khác",
+      "Xóa bỏ lịch sử"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 34,
+    "question": "Tại sao Mã Viện được gọi là \"Phục Ba tướng quân\"?",
+    "options": [
+      "Tên thật là Phục Ba",
+      "Chinh phục được sóng gió (chỉ thủy quân)",
+      "Chức danh vua Hán phong",
+      "Đánh bại 3 thế lực"
+    ],
+    "correct": 2,
+    "explanation": "Đáp án đúng là C."
+  },
+  {
+    "id": 35,
+    "question": "Theo truyền thuyết, Trưng Trắc đã dùng vật gì để đánh trống xuất quân?",
+    "options": [
+      "Dùi sừng trâu",
+      "Tay không",
+      "Cây gỗ lim",
+      "Kiếm báu"
+    ],
+    "correct": 0,
+    "explanation": "Đáp án đúng là A."
+  },
+  {
+    "id": 36,
+    "question": "Nữ tướng Lê Thị Hoa trấn giữ vùng nào trong khởi nghĩa Hai Bà Trưng?",
+    "options": [
+      "Lãng Bạc",
+      "Nga Sơn (Thanh Hóa)",
+      "Chu Diên",
+      "Đồ Sơn"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 37,
+    "question": "Một trong những nguyên nhân khiến quân ta gặp khó khăn ở Lãng Bạc là gì?",
+    "options": [
+      "Khí hậu quá lạnh",
+      "Đầm lầy, khí hậu ẩm thấp sinh bệnh dịch",
+      "Không có nước ngọt",
+      "Động đất"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 38,
+    "question": "Đạo quân của Mã Viện sang nước ta có quy mô khoảng bao nhiêu người?",
+    "options": [
+      "1 vạn",
+      "2 vạn (hơn 20.000)",
+      "5 vạn",
+      "10 vạn"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 39,
+    "question": "Ai là người đã chém đầu Thi Sách?",
+    "options": [
+      "Mã Viện",
+      "Tô Định",
+      "Tích Quang",
+      "Nhâm Diên"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 40,
+    "question": "Cuộc khởi nghĩa Hai Bà Trưng kéo dài độc lập trong bao lâu?",
+    "options": [
+      "1 năm",
+      "Khoảng 3 năm",
+      "5 năm",
+      "10 năm"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 41,
+    "question": "Ngày lễ kỷ niệm Khởi nghĩa Hai Bà Trưng (Quốc tế Phụ nữ) được tổ chức vào ngày nào Dương lịch?",
+    "options": [
+      "8/3",
+      "20/10",
+      "1/5",
+      "2/9"
+    ],
+    "correct": 0,
+    "explanation": "Đáp án đúng là A."
+  },
+  {
+    "id": 42,
+    "question": "Đền Đồng Nhân thờ Hai Bà Trưng hiện nay nằm ở quận nào của Hà Nội?",
+    "options": [
+      "Hoàn Kiếm",
+      "Hai Bà Trưng",
+      "Đống Đa",
+      "Tây Hồ"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 43,
+    "question": "Ý nghĩa lịch sử quan trọng nhất của khởi nghĩa Hai Bà Trưng là gì?",
+    "options": [
+      "Mở ra kỷ nguyên phong kiến",
+      "Phá vỡ ách thống trị, thức tỉnh tinh thần dân tộc",
+      "Buộc nhà Hán bồi thường",
+      "Chiếm được Trung Quốc"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 44,
+    "question": "Trang phục đặc trưng của Hai Bà Trưng trong các tranh vẽ dân gian thường mặc áo màu gì?",
+    "options": [
+      "Đen",
+      "Trắng",
+      "Vàng",
+      "Vàng hoặc Đỏ"
+    ],
+    "correct": 3,
+    "explanation": "Đáp án đúng là D."
+  },
+  {
+    "id": 45,
+    "question": "Nữ tướng Thiều Hoa có nguồn gốc xuất thân từ đâu?",
+    "options": [
+      "Quan lại",
+      "Nông dân/Người hầu",
+      "Hoàng tộc",
+      "Thương nhân"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 46,
+    "question": "Con voi mà Hai Bà Trưng cưỡi lúc ra trận được dân gian mô tả là voi có mấy ngà?",
+    "options": [
+      "1 ngà",
+      "2 ngà",
+      "4 ngà",
+      "9 ngà"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 47,
+    "question": "Sau khi chiếm Lĩnh Nam, Trưng Nữ Vương đã thi hành chính sách gì để khoan thư sức dân?",
+    "options": [
+      "Miễn thuế 2 năm liền",
+      "Tịch thu đất đai",
+      "Bắt lính",
+      "Đóng cửa biên giới"
+    ],
+    "correct": 0,
+    "explanation": "Đáp án đúng là A."
+  },
+  {
+    "id": 48,
+    "question": "\"Ba năm độc lập, một thời vàng son\" là câu nói chỉ triều đại nào?",
+    "options": [
+      "Triều Ngô",
+      "Triều Trưng Nữ Vương",
+      "Triều Tiền Lê",
+      "Triều Đinh"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 49,
+    "question": "Tướng Mã Viện phải thốt lên điều gì khi đụng độ quân Hai Bà Trưng ở Lãng Bạc?",
+    "options": [
+      "Dễ như chẻ tre",
+      "Chưa từng thấy đội quân nào dũng mãnh như vậy",
+      "Quân giặc yếu đuối",
+      "Không cần đánh cũng thắng"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  },
+  {
+    "id": 50,
+    "question": "Chiến thắng của Hai Bà Trưng để lại bài học lớn nhất về gì cho các đời sau?",
+    "options": [
+      "Nghệ thuật đàm phán",
+      "Khối đại đoàn kết toàn dân tộc",
+      "Kỹ thuật đóng tàu",
+      "Giao thương quốc tế"
+    ],
+    "correct": 1,
+    "explanation": "Đáp án đúng là B."
+  }
+]

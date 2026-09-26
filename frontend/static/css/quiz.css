@@ -1,0 +1,247 @@
+/* Reset & Base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    /* Nền trắng ngà/kem gợi cảm giác giấy dó, lụa tơ tằm */
+    background: linear-gradient(135deg, #fdfbf7 0%, #f4e8d3 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #3e2723; /* Chữ màu nâu gỗ sẫm thay vì đen */
+}
+
+/* Khung chính */
+.quiz-container {
+    width: 90%;
+    max-width: 720px;
+    background: #ffffff;
+    /* Viền đỏ chu sa (đỏ sơn mài) kết hợp vàng đồng */
+    border: 3px solid #c62828; 
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 10px 25px rgba(198, 40, 40, 0.15), inset 0 0 0 2px #ffb300;
+}
+
+/* Phần Tiêu đề (Câu số / Điểm) */
+.quiz-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    color: #b71c1c; /* Đỏ sẫm */
+    margin-bottom: 20px;
+    font-size: 16px;
+    border-bottom: 2px dashed #e0e0e0;
+    padding-bottom: 10px;
+}
+
+/* Khung nội dung câu hỏi */
+.question-box {
+    min-height: 100px;
+    background: #fff8e1; /* Nền vàng nhạt (màu hoa mai) */
+    border: 2px solid #ffca28;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 24px;
+    color: #3e2723;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+    font-family: 'Times New Roman', Times, serif; /* Phông có chân tạo nét lịch sử/truyền thống */
+}
+
+/* Lưới 4 đáp án */
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* Nút đáp án chung */
+.option-btn {
+    border: 2px solid #fff;
+    border-radius: 8px;
+    padding: 20px 14px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s, opacity 0.2s;
+}
+
+/* 
+  Bảng màu dân gian Việt Nam cho 4 nút:
+  1. Đỏ chu sa (Sơn mài)
+  2. Xanh gốm sứ (Gốm Bát Tràng)
+  3. Vàng hoàng bào / Hoa mai 
+  4. Xanh lá dong / Cốm 
+*/
+.option-btn:nth-child(1) { 
+    background-color: #d32f2f; 
+    color: #fff; 
+    box-shadow: 0 5px 0 #9a0007; 
+} 
+.option-btn:nth-child(2) { 
+    background-color: #1976d2; 
+    color: #fff; 
+    box-shadow: 0 5px 0 #004ba0; 
+} 
+.option-btn:nth-child(3) { 
+    background-color: #ffca28; 
+    color: #3e2723; /* Chữ nâu sẫm để dễ đọc trên nền vàng */
+    box-shadow: 0 5px 0 #c79a00; 
+} 
+.option-btn:nth-child(4) { 
+    background-color: #388e3c; 
+    color: #fff; 
+    box-shadow: 0 5px 0 #00600f; 
+} 
+
+/* Hiệu ứng khi lướt và bấm */
+.option-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+}
+.option-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.3) !important;
+}
+
+/* Trạng thái đáp án đúng / sai */
+.correct-choice {
+    background-color: #2ecc71 !important;
+    color: #fff !important;
+    border: 2px solid #fff;
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.6), 0 5px 0 #27ae60 !important;
+}
+
+.wrong-choice {
+    background-color: #d7ccc8 !important; /* Xám nâu nhạt */
+    color: #8d6e63 !important;
+    box-shadow: 0 2px 0 #bcaaa4 !important;
+    opacity: 0.7;
+}
+
+/* Hộp giải thích lịch sử */
+.explanation-box {
+    margin-top: 20px;
+    padding: 14px;
+    background: #fbe9e7; /* Nền hồng/đỏ rất nhạt */
+    color: #4e342e; /* Chữ nâu trầm */
+    border-left: 5px solid #d32f2f; /* Viền trái màu đỏ */
+    border-radius: 4px;
+    font-size: 15px;
+    line-height: 1.5;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Màn hình kết quả */
+.text-center {
+    text-align: center;
+}
+
+#result-screen h2 {
+    color: #c62828; /* Đỏ chu sa */
+    margin-bottom: 15px;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 28px;
+}
+
+/* Nút hành động ở màn kết quả */
+.btn-action {
+    background: #ffb300; /* Vàng kim */
+    color: #3e2723;
+    border: none;
+    padding: 12px 28px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    margin: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #c79a00;
+    transition: transform 0.1s;
+}
+.btn-action:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 transparent;
+}
+
+.btn-home {
+    background: #e53935; /* Đỏ son */
+    color: #fff;
+    box-shadow: 0 4px 0 #b71c1c;
+}
+
+/* --- STYLE CHO MÀN HÌNH SETUP (MỚI) --- */
+.preset-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.btn-preset {
+    background: #fff8e1;
+    border: 2px solid #ffca28;
+    color: #3e2723;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 3px 0 #ffca28;
+}
+
+.btn-preset:hover {
+    background: #ffca28;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 #c79a00;
+}
+
+.btn-preset:active {
+    transform: translateY(3px);
+    box-shadow: 0 0 0 transparent;
+}
+
+.slider-container {
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(255, 202, 40, 0.1);
+    border-radius: 8px;
+    border: 1px dashed #ffca28;
+}
+
+/* Tùy chỉnh thanh kéo (slider) */
+input[type=range] {
+    width: 80%;
+    max-width: 400px;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    outline: none;
+    accent-color: #d32f2f; /* Đỏ chu sa */
+    cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #d32f2f;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}

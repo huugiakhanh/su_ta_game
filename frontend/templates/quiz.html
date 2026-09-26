@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sử Ta - Thử Thách Trắc Nghiệm</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}">
+</head>
+<body>
+    <div class="quiz-container">
+        
+        <!-- MÀN HÌNH THIẾT LẬP (MỚI) -->
+        <div id="setup-screen" class="text-center">
+            <h2 style="color: #c62828; margin-bottom: 20px; font-family: 'Times New Roman', serif; font-size: 28px;">THIẾT LẬP BÀI THI</h2>
+            <p style="margin-bottom: 20px; font-size: 18px; color: #4e342e;">Chọn số lượng câu hỏi bạn muốn thử sức:</p>
+            
+            <div class="preset-buttons">
+                <button class="btn-preset" onclick="setQuestionCount(5)">5 Câu</button>
+                <button class="btn-preset" onclick="setQuestionCount(10)">10 Câu</button>
+                <button class="btn-preset" onclick="setQuestionCount(20)">20 Câu</button>
+            </div>
+
+            <div class="slider-container">
+                <input type="range" id="question-slider" min="1" max="50" value="10" oninput="updateSliderValue(this.value)">
+                <div style="font-size: 26px; font-weight: bold; color: #d32f2f; margin-top: 15px;">
+                    <span id="slider-value">10</span> CÂU
+                </div>
+            </div>
+
+            <button class="btn-action" style="margin-top: 25px; padding: 14px 40px; font-size: 18px;" onclick="startQuiz()">BẮT ĐẦU CHƠI</button>
+        </div>
+
+        <!-- MÀN HÌNH LÀM BÀI (Thêm class hidden) -->
+        <div id="quiz-screen" class="hidden">
+            <div class="quiz-header">
+                <span id="question-progress">Đang tải...</span>
+                <span id="score-display">Điểm: 0</span>
+            </div>
+
+            <div class="question-box">
+                <h3 id="question-text">Đang tải câu hỏi...</h3>
+            </div>
+
+            <div class="options-grid" id="options-container">
+                <!-- Các nút đáp án render bằng JS -->
+            </div>
+
+            <div id="explanation-box" class="explanation-box hidden"></div>
+        </div>
+
+        <!-- MÀN HÌNH KẾT QUẢ -->
+        <div id="result-screen" class="hidden text-center">
+            <h2 style="color: #c62828; margin-bottom: 10px; font-family: 'Times New Roman', serif; font-size: 28px;">HOÀN THÀNH BÀI THI!</h2>
+            <p id="final-score" style="font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #3e2723;"></p>
+            <button class="btn-action" onclick="showSetupScreen()">Chơi lại</button>
+            <button class="btn-home" onclick="window.location.href='/'">Về trang chủ</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+</body>
+</html>

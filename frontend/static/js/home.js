@@ -11,13 +11,13 @@
     }
   }
 
-  function updateStartButton(chapterNumber) {
-    const startButton = document.querySelector('.center-menu .btn-main');
-    if (!startButton) return;
-    startButton.innerHTML = chapterNumber
-      ? `⚔️ BẮT ĐẦU CHƠI<br><span>(CHƯƠNG ${chapterNumber})</span>`
-      : '⚔️ BẮT ĐẦU CHƠI';
-  }
+  // function updateStartButton(chapterNumber) {
+  //   const startButton = document.querySelector('.center-menu .btn-main');
+  //   if (!startButton) return;
+  //   startButton.innerHTML = chapterNumber
+  //     ? `⚔️ BẮT ĐẦU CHƠI<br><span>(CHƯƠNG ${chapterNumber})</span>`
+  //     : '⚔️ BẮT ĐẦU CHƠI';
+  // }
   // cập nhật sau xóa cái này đi 
   function showUpdateNotice(btn) {
     const originalText = btn.innerHTML;

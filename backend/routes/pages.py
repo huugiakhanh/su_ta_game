@@ -29,3 +29,7 @@ def trung_trac():
 @pages_bp.get("/gameplay/levels/level-test")
 def level_test():
     return render_template("gameplay/levels/level-test.html")
+
+@pages_bp.get("/quiz")
+def quiz_view():
+    return render_template("/quiz.html")
