@@ -5,9 +5,10 @@
 
 import { worldX, makeObstacle, makeHazard } from './geometry.js';
 import {
-  GROUND_Y, MINIBOSS, GUARD, LEVEL, NPC_RULES, OBSTACLE_TYPES, ARENA, RUSHER, SKILLS, SKILL_TEST,
-  BOSS_TD, WALL_ARROWS
+  GROUND_Y, MINIBOSS, GUARD, LEVEL, NPC_RULES, NPC_RESCUE, OBSTACLE_TYPES, ARENA, RUSHER, SKILLS, SKILL_TEST,
+  BOSS_TD, WALL_ARROWS, QUIZ
 } from './config.js';
+import { LEVEL1_QUESTION_POOL, NPC_QUESTION_POOLS } from './questions-data.js';
 import { createAnim } from './animation.js';
 
 export let state = null;
@@ -222,8 +223,27 @@ function randomizeObstacles() {
   return layout;
 }
 
+// Mốc câu hỏi chặn đường (TT-QUIZ-01): chạm `x` thì physics.js mở câu hỏi
+// `stt` (QUESTIONS trong questions-data.js) 1 lần. `npc` = id NPC sắp gặp (màn
+// 2 — tiêu đề khung "Câu hỏi về …") hoặc null (màn 1).
+function makeQuiz(chunk, localX, stt, npc = null) {
+  return { x: worldX(chunk, localX), stt, npc, done: false };
+}
+
+function pick(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+// Màn 1: mỗi lượt rút QUIZ.level1Count câu KHÔNG trùng trong bộ màn 1, đặt lần
+// lượt vào QUIZ.level1Spots.
+function level1Quizzes() {
+  const chosen = shuffle(LEVEL1_QUESTION_POOL).slice(0, QUIZ.level1Count);
+  return chosen.map((stt, index) => makeQuiz(...QUIZ.level1Spots[index], stt));
+}
+
 // Nội dung màn 1. `options.layout === 'p2'` -> layout thử P2; mặc định màn
-// thường (11 chướng ngại vật xáo ngẫu nhiên + mini-boss kiệu quan + 5 sách).
+// thường (11 chướng ngại vật xáo ngẫu nhiên + mini-boss kiệu quan + 5 sách +
+// 4 câu hỏi chặn đường).
 function level1Content(options) {
   const testP2 = options.layout === 'p2';
   const layout = testP2 ? p2TestLayout() : { ...randomizeObstacles(), holes: [] };
@@ -243,7 +263,8 @@ function level1Content(options) {
     // Boss Tô Định (makeEnemy(..., 90, 80, 5, true), BOSS_TO_DINH_CHARIOT)
     // KHÔNG còn ở màn 1 — để dành cho màn 3 (TT-NPC-01).
     enemies: testP2 ? [] : layout.enemies,
-    npcs: []
+    npcs: [],
+    quizzes: testP2 ? [] : level1Quizzes()
   };
 }
 
@@ -259,37 +280,106 @@ function makeNpc(id, chunk, localX) {
   };
 }
 
-// Vật cản không được nằm trong NPC_RULES.clearance quanh tâm NPC (§3.2.2) —
-// sai thì cảnh báo để phát hiện khi chỉnh layout.
-function checkNpcClearance(obstacles, npcs) {
-  obstacles.forEach(obstacle => npcs.forEach(npc => {
-    const gap = Math.max(obstacle.x - npc.centerX, npc.centerX - (obstacle.x + obstacle.w), 0);
-    if (gap < NPC_RULES.clearance) console.warn(`${obstacle.type} ở x=${obstacle.x} cách NPC ${npc.id} ${gap}px < ${NPC_RULES.clearance}px`);
+// Vật cản / hazard / hố không được nằm trong NPC_RULES.clearance quanh tâm NPC
+// (§3.2.2) — sai thì cảnh báo để phát hiện khi chỉnh layout. Lính vây NPC
+// (enemy `captorOf`) cố ý đứng sát NPC nên không kiểm tra.
+function checkNpcClearance(content) {
+  const things = [
+    ...content.obstacles.map(item => ({ name: item.type, x: item.x, w: item.w })),
+    ...content.hazards.map(item => ({ name: item.sprite, x: item.x, w: item.w })),
+    ...content.holes.map(item => ({ name: 'hố', x: item.x, w: item.w }))
+  ];
+  things.forEach(thing => content.npcs.forEach(npc => {
+    const gap = Math.max(thing.x - npc.centerX, npc.centerX - (thing.x + thing.w), 0);
+    if (gap < NPC_RULES.clearance) console.warn(`${thing.name} ở x=${thing.x} cách NPC ${npc.id} ${gap}px < ${NPC_RULES.clearance}px`);
   }));
 }
 
-// Nội dung màn 2 "Chiêu mộ hiền tài" (TT-NPC-01 §3.2, DESIGN_BASELINE): đặt
-// CỐ ĐỊNH, không xáo. 6 vật cản tĩnh xen giữa các NPC (có 1 `slideBar` bắt
-// buộc dash); không hazard/enemy/đạn/sách/hố. Hitbox các loại P2 giữ đúng số
-// đã chốt ở TT-MAP-01 (layout thử `?layout=p2`); loại P0 giữ số của màn 1.
-// Thứ tự gặp: Thi Sách (giữa chunk 1) -> cốt truyện khi vào chunk 2 -> Lê
-// Chân (giữa chunk 3) -> Trưng Nhị (giữa chunk 4) -> về đích cuối chunk 4.
+// 2 lính canh vây NPC (giải cứu — NPC_RESCUE): 1 bên trái, 1 bên phải, đoạn
+// tuần tra phủ tới chỗ người chơi bị giữ trước NPC. `captorOf` = id NPC —
+// physics.js (updateMeetings) chỉ mở hội thoại khi lính vây đã chết hết.
+function makeCaptors(npc) {
+  return [NPC_RESCUE.left, NPC_RESCUE.right].map(side => ({
+    ...makeEnemy(npc.centerX + side.dx - 11, 22, 40, 2, false, {
+      patrolMin: npc.centerX + side.patrol[0], patrolMax: npc.centerX + side.patrol[1]
+    }),
+    captorOf: npc.id
+  }));
+}
+
+// Nội dung màn 2 "Chiêu mộ hiền tài" (TT-NPC-01 §3.2; tăng độ khó TT-L2-HARD
+// 29/09 — quân Hán chặn đường + giải cứu NPC + địa hình khó, khó hơn màn 1;
+// kéo dài 9 chunk + câu hỏi chặn đường trước mỗi NPC TT-QUIZ-01 29/09). Vị trí
+// CỐ ĐỊNH, không xáo; DESIGN_BASELINE. Chỉ dùng quân/bẫy/vật cản đã có ở màn 1
+// và layout thử P2 (không asset mới).
+// Thứ tự: câu hỏi về Thi Sách (chunk 2) -> Thi Sách (chunk 3) -> cốt truyện khi
+// vào chunk 4 -> câu hỏi về Lê Chân (chunk 5) -> Lê Chân (chunk 6) -> câu hỏi
+// về Trưng Nhị (chunk 8) -> Trưng Nhị (chunk 9) -> về đích cuối chunk 9. Mỗi
+// NPC bị 2 lính canh vây (makeCaptors). Hố căn lưới tile 16px; không đặt hố
+// trong ~130px đầu chunk (chỗ hồi sinh sau khi rơi = đầu chunk + 72).
 function level2Content() {
   const npcs = [
-    makeNpc('thiSach', 1, 384),
-    makeNpc('leChan', 3, 384),
-    makeNpc('trungNhi', 4, 384)
+    makeNpc('thiSach', 3, 560),
+    makeNpc('leChan', 6, 560),
+    makeNpc('trungNhi', 9, 560)
+  ];
+  const holes = [
+    // chunk 4: hố hở — phải nhảy qua, ngay sau đó là thanh trượt bắt buộc lướt.
+    { x: worldX(4, 400), w: 64 },
+    // chunk 7: hố có cầu bắc qua.
+    { x: worldX(7, 160), w: 96 }
   ];
   const obstacles = [
-    makeObstacle('fenceLow', 1, 180, 40, 18),
-    makeObstacle('bambooSlope', 1, 600, 56, 30),
-    makeObstacle('fallenBranch', 2, 200, 55, 23),
-    makeObstacle('slideBar', 2, 520, 40, 20),
-    makeObstacle('logDrift', 3, 120, 56, 14),
-    makeObstacle('stoneBlock', 3, 600, 51, 23)
+    // chunk 1–2 — làng
+    makeObstacle('fenceLow', 1, 150, 40, 18),
+    // chunk 3 — đồng lúa
+    makeObstacle('reedCurtain', 3, 200, 76, 32, { overhead: true }),
+    // chunk 4 — rừng: rào cao, hố hở, thanh trượt (lướt hồi chiêu 2 s -> canh nhịp)
+    makeObstacle('fenceHigh', 4, 200, 16, 48),
+    makeObstacle('slideBar', 4, 560, 40, 20),
+    // chunk 5 — rừng
+    makeObstacle('bambooSlope', 5, 450, 56, 30),
+    // chunk 6 — bến sông
+    makeObstacle('logDrift', 6, 120, 56, 14),
+    makeObstacle('stoneBlock', 6, 380, 51, 23),
+    // chunk 7 — cầu qua hố, cành cây đổ
+    makeObstacle('bridge', 7, 160, 96, 8),
+    makeObstacle('fallenBranch', 7, 330, 55, 23),
+    // chunk 9
+    makeObstacle('fallenBranch', 9, 200, 55, 23)
   ];
-  checkNpcClearance(obstacles, npcs);
-  return { obstacles, hazards: [], holes: [], books: [], enemies: [], npcs };
+  const hazards = [
+    // chunk 1: hố chông ẩn
+    makeHazard('trap', 'spikePit', 1, 300, { harmful: false, triggerDistance: 58 }),
+    // chunk 2: lính thu thuế ném túi tiền + xe cống lăn tới
+    makeHazard('thrower', 'hanTaxSoldier', 2, 300, { projectile: 'coinPouch', fireInterval: 3.2, hp: 2 }),
+    makeHazard('roller', 'tributeCart', 2, 738, { speed: -101, triggerX: worldX(2, 150), hp: 2 }),
+    // chunk 4: hổ lao ra từ ngoài màn hình (như màn 1)
+    makeHazard('roller', 'jungleTiger', 4, 732, { speed: -139, triggerX: worldX(4, 260), hp: 2 }),
+    // chunk 5: hố chông ẩn
+    makeHazard('trap', 'spikePit', 5, 150, { harmful: false, triggerDistance: 58 }),
+    // chunk 7: tháp canh + lính gác ném phi tiêu + kỵ binh xông ra khi báo động
+    makeHazard('prop', 'watchtower', 7, 520, { harmful: false }),
+    makeHazard('thrower', 'watchtowerGuard', 7, 574, {
+      projectile: 'throwingDart', fireInterval: 3.4, fireRange: 240, hp: 2, alarmFor: 'cavalry-charge'
+    }),
+    makeHazard('roller', 'hanCavalry', 7, 780, { id: 'cavalry-charge', speed: -190, hp: 3 }),
+    // chunk 8: lính thu thuế
+    makeHazard('thrower', 'hanTaxSoldier', 8, 180, { projectile: 'coinPouch', fireInterval: 3.2, hp: 2 })
+  ];
+  const enemies = [
+    // lính canh đi tuần giữa đường
+    makeEnemy(worldX(1, 560), 22, 40, 2, false),
+    makeEnemy(worldX(5, 300), 22, 40, 2, false),
+    makeEnemy(worldX(8, 330), 22, 40, 2, false),
+    // lính vây NPC
+    ...npcs.flatMap(makeCaptors)
+  ];
+  // Câu hỏi chặn đường trước mỗi NPC: 1 câu rút ngẫu nhiên trong bộ của NPC.
+  const quizzes = npcs.map(npc => makeQuiz(...QUIZ.level2Spots[npc.id], pick(NPC_QUESTION_POOLS[npc.id]), npc.id));
+  const content = { obstacles: keepValidBridges(obstacles, holes), hazards, holes, books: [], enemies, npcs, quizzes };
+  checkNpcClearance(content);
+  return content;
 }
 
 // Cột đá đấu trường: vật cản tĩnh + cờ `blocking` (Q1) + trạng thái ô vẽ
@@ -391,10 +481,11 @@ export function createLevelState(options = {}) {
     score: options.score ?? 0,
     health: 5,
     booksCollected: 0,
-    // Mốc sự kiện 1 lần: màn 1 = câu hỏi / cốt truyện chunk 10; màn 2 =
+    // Mốc sự kiện 1 lần: màn 1 = nghỉ chân / cốt truyện chunk 10; màn 2 =
     // cốt truyện Thi Sách hy sinh.
-    questionShown: false,
     storyShown: false,
+    // Câu hỏi chặn đường (màn 1–2, TT-QUIZ-01) — content ghi đè.
+    quizzes: [],
     restUsed: false,
     finishX: LEVEL.finishX,
     // Màn đấu trường: kỹ năng/buff + mũi tên mưa đang rơi; cổng mở (cutscene).
@@ -421,6 +512,7 @@ export function createLevelState(options = {}) {
       grounded: true,
       dashing: false,
       dashTimer: 0,
+      dashCooldown: 0,
       attacking: false,
       attackCooldown: 0,
       // Mục tiêu đã trúng trong cú vung hiện tại (mỗi mục tiêu 1 lần/cú).

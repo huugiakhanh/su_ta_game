@@ -1,7 +1,7 @@
 // DOM refs (HUD, panel) + cập nhật hiển thị. Không chứa logic gameplay.
 
 import { joinAssetPath } from './assets.js';
-import { ITEM_ROOT, ITEM_FILES, LEVEL, SKILLS, SPRITE_8BIT_ROOT } from './config.js';
+import { DASH_COOLDOWN, DASH_ICON, ITEM_ROOT, ITEM_FILES, LEVEL, SKILLS, SPRITE_8BIT_ROOT } from './config.js';
 import { state } from './state.js';
 import { getAsset } from './animation.js';
 
@@ -14,7 +14,6 @@ export const ui = {
   loading: document.getElementById('loadingPanel'),
   loadingText: document.getElementById('loadingText'),
   start: document.getElementById('startButton'),
-  question: document.getElementById('questionPanel'),
   end: document.getElementById('endPanel'),
   endTitle: document.getElementById('endTitle'),
   endText: document.getElementById('endText'),
@@ -27,6 +26,7 @@ export const ui = {
   // Màn 3: ô kỹ năng/buff + mọi phần tử gắn `data-skill` (ô HUD, dòng trợ
   // giúp, nút cảm ứng) — chỉ hiện với phần thưởng đã nhận.
   skillBar: document.getElementById('skillBar'),
+  dashSlot: document.getElementById('dashSlot'),
   skillNodes: [...document.querySelectorAll('[data-skill]')],
   skillSlots: [...document.querySelectorAll('.skill[data-skill]')],
   // Màn 3: thanh khiên chiến xa (giai đoạn 1) / "Đợt N/3" (giai đoạn 2).
@@ -72,6 +72,7 @@ export function updateHud() {
   ui.progress.style.width = `${percent}%`;
   // Đấu trường không có quãng đường -> ẩn thanh tiến độ.
   ui.progress.parentElement.hidden = Boolean(LEVEL.arena);
+  updateDashHud();
   updateSkillHud();
   updateBossHud();
 }
@@ -107,9 +108,27 @@ function skillTimer(id, skills) {
   return { left: skills.buff.cooldown, total: spec.cooldown, active: false };
 }
 
+// Ô Lướt (mọi màn): lớp phủ + số giây hồi chiêu còn lại của dash.
+function updateDashHud() {
+  const slot = ui.dashSlot;
+  const icon = slot.querySelector('.skill__icon');
+  if (!icon.dataset.ready) {
+    // Icon lấy theo manifest; chưa có asset (TODO_MISSING) thì giữ chữ tạm.
+    const file = getAsset(DASH_ICON)?.animations?.[0]?.file;
+    if (file) {
+      icon.src = joinAssetPath(SPRITE_8BIT_ROOT, file);
+      icon.onload = () => { icon.hidden = false; };
+      icon.dataset.ready = '1';
+    }
+  }
+  const left = state.player.dashCooldown || 0;
+  slot.classList.toggle('skill--active', state.player.dashing);
+  slot.querySelector('.skill__cd').style.height = `${left > 0 ? left / DASH_COOLDOWN * 100 : 0}%`;
+  slot.querySelector('.skill__time').textContent = left > 0 ? Math.ceil(left) : '';
+}
+
 function updateSkillHud() {
   const skills = state.skills;
-  ui.skillBar.hidden = !skills || skills.owned.size === 0;
   ui.skillNodes.forEach(node => { node.hidden = !skills?.owned.has(node.dataset.skill); });
   if (!skills) return;
   ui.skillSlots.forEach(slot => {

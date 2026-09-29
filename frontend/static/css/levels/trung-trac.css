@@ -338,6 +338,18 @@ kbd {
 }
 .skill--buff { width: 26px; height: 26px; border-radius: 50%; }
 .skill__icon { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+.skill__icon[hidden] { display: none; }
+/* Ô Lướt: chữ tạm khi chưa có icon ICON_SK_DASH (TODO_MISSING — chờ Codex). */
+.skill__glyph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #6fc3e8;
+  font-size: 20px;
+  line-height: 1;
+}
+.skill__icon:not([hidden]) + .skill__glyph { display: none; }
 .skill__cd {
   position: absolute;
   inset: auto 0 0 0;

@@ -11,7 +11,8 @@ import {
   HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES,
   PROJECTILE_MAX_RANGE, PROJECTILE_FADE_RANGE,
   PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, PLAYER_JUMP_APEX_VY,
-  ATTACK_COOLDOWN, SKILLS, ARROW_RAIN_SPRITE, BOSS_TD, VICTORY_FLAG_ID, VICTORY_FLAG_ATTACH, WALL_ARROWS
+  ATTACK_COOLDOWN, SKILLS, ARROW_RAIN_SPRITE, BOSS_TD, VICTORY_FLAG_ID, VICTORY_FLAG_ATTACH, WALL_ARROWS,
+  QUIZ_STELE_ID
 } from './config.js';
 
 export const canvas = document.getElementById('gameCanvas');
@@ -332,6 +333,24 @@ function drawVictoryFlag(gateProp, gateLeft, gateTop, time) {
   ctx.drawImage(flag.image, frame * fw, 0, fw, fh, gateLeft + attach.x - pivot.x, gateTop + attach.y - pivot.y, fw, fh);
 }
 
+// Bia đá đánh dấu mốc câu hỏi (TT-QUIZ-01): x1, pivot bottom-center tại
+// `quiz.x`, đáy ở GROUND_Y. Chưa hỏi -> strip `active` lặp theo fps
+// maps_tt.json; đã hỏi (`quiz.done`) -> ảnh `done`. Thiếu ảnh thì bỏ.
+function drawQuizSteles(time) {
+  const stele = images.maps.props[QUIZ_STELE_ID];
+  if (!stele) return;
+  const { frame_w: fw, frame_h: fh, frames = 1, fps = 6, pivot = { x: fw / 2, y: fh } } = stele.asset;
+  state.quizzes.forEach(quiz => {
+    const left = Math.round(quiz.x - pivot.x - state.cameraX);
+    if (left + fw < 0 || left > VIEW_W) return;
+    const top = GROUND_Y - pivot.y;
+    const done = quiz.done && stele.states.done;
+    const image = done ? stele.states.done : (stele.states.active || stele.image);
+    const frame = done ? 0 : Math.floor(time * fps) % frames;
+    ctx.drawImage(image, frame * fw, 0, fw, fh, left, top, fw, fh);
+  });
+}
+
 // Cổng gỗ tạm (2 cột + xà ngang + cờ nhỏ) — chỉ dùng khi thiếu ảnh cổng.
 function drawLandmarkFallback(left, top, w, h) {
   const x = Math.round(left);
@@ -351,24 +370,60 @@ function drawLandmarkFallback(left, top, w, h) {
   ctx.fill();
 }
 
-// Hố rơi (state.holes) trước đây không có hình gì đại diện — nhân vật rơi
-// xuống "hố vô hình" trông như bug. Vẽ 1 hố tối đơn giản đè lên dải đất để
-// người chơi thấy rõ chỗ cần nhảy/lướt qua.
+// Lòng hố (state.holes). Tileset có vai trò `pit-top` (hàng 248–264) +
+// `pit-deep` (hàng dưới, còn thấy 6px) của vùng thì vẽ tile đó (Codex 29/09,
+// cả 5 vùng — docs/CODEX_PROMPT_TILESET_PIT.md). Vùng thiếu tile thì dự phòng
+// bằng tile `fill` (đất) của vùng phủ các dải tối dần theo bậc (không gradient
+// mịn), vách trái trong bóng + bóng dưới mép cỏ. Vẽ sau drawGround, trước vật cản
+// (cầu đè lên hố).
+const PIT_SHADE_BANDS = [[0, 4, .35], [4, 10, .55], [10, 16, .72], [16, 22, .88]];
+const PIT_WALL = 3;
+
 function drawHoles() {
+  const tileset = images.maps.tileset;
+  const camera = Math.round(state.cameraX);
   state.holes.forEach(hole => {
-    const x = hole.x - state.cameraX;
-    if (x + hole.w < -24 || x > VIEW_W + 24) return;
-    const left = Math.round(x);
+    const left = Math.round(hole.x) - camera;
     const width = Math.round(hole.w);
-    const gradient = ctx.createLinearGradient(0, GROUND_Y, 0, VIEW_H);
-    gradient.addColorStop(0, '#120a06');
-    gradient.addColorStop(1, '#000000');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(left, GROUND_Y, width, VIEW_H - GROUND_Y);
-    // Viền mép hố để rõ ranh giới với cỏ xung quanh.
-    ctx.fillStyle = 'rgba(0, 0, 0, .55)';
-    ctx.fillRect(left, GROUND_Y, 2, VIEW_H - GROUND_Y);
-    ctx.fillRect(left + width - 2, GROUND_Y, 2, VIEW_H - GROUND_Y);
+    if (left + width < -24 || left > VIEW_W + 24) return;
+    const depth = VIEW_H - GROUND_Y;
+    if (!tileset) {
+      ctx.fillStyle = '#120a06';
+      ctx.fillRect(left, GROUND_Y, width, depth);
+      return;
+    }
+    const { image, tileW, tileH, regions } = tileset;
+    let pitTiles = false;
+    for (let columnX = Math.floor(hole.x / tileW) * tileW; columnX < hole.x + hole.w; columnX += tileW) {
+      const region = regions[LEVEL.zones[zoneIndexAt(columnX)].tiles];
+      if (!region) continue;
+      const column = columnX / tileW;
+      const hash = tileHash(column);
+      const segments = [[Math.max(columnX, hole.x), Math.min(columnX + tileW, hole.x + hole.w)]];
+      const top = pick(region['pit-top'], hash);
+      const deep = pick(region['pit-deep'], hash >>> 8);
+      if (top && deep) {
+        pitTiles = true;
+        drawTileSegments(image, top, columnX, GROUND_Y, segments, camera);
+        drawTileSegments(image, deep, columnX, GROUND_Y + tileH, segments, camera);
+      } else {
+        const fill = columnTiles(region, column).fill;
+        if (fill) {
+          drawTileSegments(image, fill, columnX, GROUND_Y, segments, camera);
+          drawTileSegments(image, fill, columnX, GROUND_Y + tileH, segments, camera);
+        }
+      }
+    }
+    if (pitTiles) return;
+    // Tạm: tối dần theo bậc, vách trái trong bóng (sáng từ trên-trái), bóng
+    // 2px dưới mép cỏ.
+    PIT_SHADE_BANDS.forEach(([y0, y1, alpha]) => {
+      ctx.fillStyle = `rgba(10, 6, 4, ${alpha})`;
+      ctx.fillRect(left, GROUND_Y + y0, width, Math.min(y1, depth) - y0);
+    });
+    ctx.fillStyle = 'rgba(10, 6, 4, .45)';
+    ctx.fillRect(left, GROUND_Y, PIT_WALL, depth);
+    ctx.fillRect(left, GROUND_Y, width, 2);
   });
 }
 
@@ -856,6 +911,7 @@ export function draw(time = 0) {
   drawBackdrops();
   drawGround();
   drawFinishGate(time);
+  drawQuizSteles(time);
   drawHazards(time, true);
   drawHoles();
   drawBooks(time);

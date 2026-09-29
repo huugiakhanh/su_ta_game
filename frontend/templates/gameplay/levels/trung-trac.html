@@ -32,8 +32,14 @@
         <span id="shieldPips" class="boss-hud__pips"><i></i><i></i><i></i></span>
       </div>
 
-      <!-- Ô kỹ năng/buff màn 3 (ui.js): chỉ hiện phần thưởng đã nhận ở màn 2. -->
-      <div id="skillBar" class="skill-bar" hidden>
+      <!-- Ô kỹ năng (ui.js): ô Lướt hiện ở mọi màn; ô kỹ năng/buff màn 3 chỉ
+           hiện phần thưởng đã nhận ở màn 2. -->
+      <div id="skillBar" class="skill-bar">
+        <div id="dashSlot" class="skill skill--dash">
+          <img class="skill__icon" alt="Lướt" width="32" height="32" hidden>
+          <b class="skill__glyph" aria-hidden="true">»</b>
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">S</kbd>
+        </div>
         <div class="skill" data-skill="SK_LE_CHAN_ARROW_RAIN" hidden>
           <img class="skill__icon" alt="Mưa tên" width="64" height="64">
           <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">K</kbd>
@@ -48,17 +54,7 @@
         </div>
       </div>
 
-      <div id="questionPanel" class="panel" role="dialog" aria-modal="true" aria-labelledby="questionTitle">
-        <h2 id="questionTitle">Câu hỏi lịch sử</h2>
-        <p>Cuộc khởi nghĩa Hai Bà Trưng bùng nổ vào năm nào?</p>
-        <div class="answers">
-          <button type="button" data-answer="wrong">Năm 40 TCN</button>
-          <button type="button" data-answer="correct">Năm 40 SCN</button>
-          <button type="button" data-answer="wrong">Năm 248 SCN</button>
-        </div>
-      </div>
-
-      <!-- Hội thoại NPC / cốt truyện màn 2 (dialogue.js). -->
+      <!-- Hội thoại NPC / cốt truyện / câu hỏi lịch sử màn 1 (dialogue.js). -->
       <div id="dialoguePanel" class="panel dialogue" role="dialog" aria-modal="true" aria-labelledby="dialogueName">
         <div class="dialogue__box">
           <img id="dialoguePortrait" class="dialogue__portrait" alt="" width="64" height="64">

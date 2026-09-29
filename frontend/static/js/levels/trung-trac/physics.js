@@ -8,8 +8,8 @@ import { keys, pressed, clearInput } from './input.js';
 import { ui, showMessage, tickMessage, updateHud } from './ui.js';
 import { aabb, groundYAt, worldX, makeProjectile } from './geometry.js';
 import {
-  CHUNK_W, VIEW_W, VIEW_H, LEVEL, NPC_RULES, FOOT_MARGIN,
-  MOVE_SPEED, GRAVITY, JUMP_FORCE, DASH_SPEED, DASH_TIME, GROUND_SNAP_DISTANCE,
+  CHUNK_W, VIEW_W, VIEW_H, LEVEL, NPC_RULES, NPC_RESCUE, FOOT_MARGIN,
+  MOVE_SPEED, GRAVITY, JUMP_FORCE, DASH_SPEED, DASH_TIME, DASH_COOLDOWN, GROUND_SNAP_DISTANCE,
   HURT_ANIMATION_TIME, PROJECTILE_SPEED, PROJECTILE_MAX_RANGE, HAZARD_DESPAWN_MARGIN,
   ATTACK_COOLDOWN, ATTACK_ACTIVE_TIME, PLAYER_SPRITE_ID, PLAYER_ANIMATIONS,
   HAZARD_SPRITES, ENEMY_SPRITES, MINIBOSS, GUARD, GROUND_Y,
@@ -17,8 +17,11 @@ import {
 } from './config.js';
 import { setAnim, tickAnim, getAnimMeta, hitTime, animLength, createAnim } from './animation.js';
 import { saveProgress, REWARD_NAMES } from './progress.js';
-import { openNpcDialogue, openStory } from './dialogue.js';
-import { STORY_THI_SACH, STORY_TO_DINH_FLEES, STORY_LUY_LAU_VICTORY, CHAPTER_END } from './dialogue-data.js';
+import { openNpcDialogue, openStory, openQuiz } from './dialogue.js';
+import {
+  STORY_THI_SACH, STORY_TO_DINH_FLEES, STORY_LUY_LAU_VICTORY, CHAPTER_END, NPC_DIALOGUES
+} from './dialogue-data.js';
+import { QUESTIONS } from './questions-data.js';
 
 export function pointHasGround(worldXPosition) {
   return !state.holes.some(hole => worldXPosition > hole.x && worldXPosition < hole.x + hole.w);
@@ -1242,9 +1245,10 @@ function updateCamera(dt) {
 // không thu nhỏ nhân vật thành tư thế quỳ và có thể dùng cả khi đang ở trên không.
 export function startDash() {
   const p = state.player;
-  if (p.dashing) return;
+  if (p.dashing || p.dashCooldown > 0) return;
   p.dashing = true;
   p.dashTimer = DASH_TIME;
+  p.dashCooldown = DASH_COOLDOWN;
   p.vx = p.facing * DASH_SPEED;
 }
 
@@ -1262,6 +1266,7 @@ export function update(dt) {
   p.invulnerable = Math.max(0, p.invulnerable - dt);
   p.hurtTimer = Math.max(0, p.hurtTimer - dt);
   p.attackCooldown = Math.max(0, p.attackCooldown - dt);
+  p.dashCooldown = Math.max(0, (p.dashCooldown || 0) - dt);
   state.enemies.forEach(enemy => { enemy.hitTimer = Math.max(0, enemy.hitTimer - dt); });
 
   const move = Number(keys.right) - Number(keys.left);
@@ -1293,12 +1298,21 @@ export function update(dt) {
   // Đấu trường (màn 3): tường vô hình ở 0 và worldWidth.
   if (LEVEL.arena) p.x = Math.max(0, Math.min(LEVEL.worldWidth - p.w, p.x));
   else p.x = Math.max(12, Math.min(state.finishX + 96, p.x));
+  // Đã rơi xuống dưới mặt đất trong hố: kẹp giữa 2 vách hố (không đi xuyên
+  // vào lòng đất) tới khi rơi hết và respawnAfterFall().
+  if (previousBottom > GROUND_Y + GROUND_SNAP_DISTANCE) {
+    const hole = state.holes.find(item => p.x + p.w / 2 > item.x && p.x + p.w / 2 < item.x + item.w);
+    if (hole) p.x = Math.max(hole.x, Math.min(hole.x + hole.w - p.w, p.x));
+  }
 
   p.grounded = false;
   const groundY = playerGroundY(p, move);
   const feetY = p.y + p.h;
   const mayFollowSlope = wasGrounded && groundY !== null && Math.abs(feetY - groundY) <= GROUND_SNAP_DISTANCE;
-  const landedOnGround = groundY !== null && feetY >= groundY && p.vy >= 0;
+  // Chỉ tiếp đất khi frame trước chân chưa xuống sâu dưới mặt đất — nếu không,
+  // người chơi đang rơi trong hố sẽ bị kéo ngược lên khi chân chạm mép hố.
+  const landedOnGround = groundY !== null && feetY >= groundY && p.vy >= 0
+    && previousBottom <= groundY + GROUND_SNAP_DISTANCE;
   if (mayFollowSlope || landedOnGround) {
     p.y = groundY - p.h;
     p.vy = 0;
@@ -1375,8 +1389,11 @@ export function update(dt) {
     else hurtPlayer(enemy.art === 'rusher' ? 'Bạn bị quân cảm tử đâm trúng!' : 'Bạn bị lính canh đánh trúng!');
   });
 
-  if (LEVEL.id === 1) updateLevel1Events(p);
-  if (LEVEL.id === 2) updateMeetings(p, dt);
+  // Câu hỏi chặn đường (màn 1–2) mở thì dừng game — sự kiện màn chờ frame sau.
+  if (!updateQuizzes(p)) {
+    if (LEVEL.id === 1) updateLevel1Events(p);
+    if (LEVEL.id === 2) updateMeetings(p, dt);
+  }
 
   // Đấu trường không có điểm về đích (kết thúc bằng boss — Phase B/C).
   if (!LEVEL.arena && p.x >= state.finishX) {
@@ -1403,16 +1420,21 @@ export function update(dt) {
   updateHud();
 }
 
-// Mốc sự kiện 1 lần của màn 1 (giữ nguyên theo D1–D2): câu hỏi chunk 8,
-// nghỉ chân chunk 9, dòng cốt truyện chunk 10.
-function updateLevel1Events(p) {
-  if (!state.questionShown && p.x > worldX(8, 312)) {
-    state.questionShown = true;
-    state.paused = true;
-    clearInput();
-    ui.question.classList.add('panel--visible');
-  }
+// Câu hỏi chặn đường (TT-QUIZ-01): chạm mốc `quiz.x` thì mở câu hỏi 1 lần
+// (khung hội thoại tự dừng game; trả lời 1 lần — dialogue.js). Màn 2: tiêu đề
+// "Câu hỏi về <NPC>". Trả về true nếu vừa mở câu hỏi.
+function updateQuizzes(p) {
+  const quiz = state.quizzes.find(item => !item.done && p.x > item.x);
+  if (!quiz) return false;
+  quiz.done = true;
+  const title = quiz.npc ? `Câu hỏi về ${NPC_DIALOGUES[quiz.npc].name}` : 'Câu hỏi lịch sử';
+  openQuiz(QUESTIONS[quiz.stt], { title });
+  return true;
+}
 
+// Mốc sự kiện 1 lần của màn 1 (giữ nguyên theo D1–D2): nghỉ chân chunk 9,
+// dòng cốt truyện chunk 10. (Câu hỏi chunk 8 cũ -> updateQuizzes.)
+function updateLevel1Events(p) {
   if (!state.restUsed && p.x > worldX(9, 282)) {
     state.restUsed = true;
     state.health = Math.min(5, state.health + 1);
@@ -1428,12 +1450,15 @@ function updateLevel1Events(p) {
 // Màn 2 (TT-NPC-01 §3.2.3–3.2.4). NPC xếp theo thứ tự gặp; chỉ NPC chưa gặp
 // ĐẦU TIÊN có tác dụng: giữ người chơi lại trước NPC (như cổng đích), tới đủ
 // gần (talkDistance) thì tạm dừng game và mở hội thoại. Gặp xong NPC mờ dần
-// rồi biến mất. Cốt truyện Thi Sách hy sinh hiện 1 lần khi vào chunk 2 sau
-// khi đã gặp Thi Sách.
+// rồi biến mất. Cốt truyện Thi Sách hy sinh hiện 1 lần khi vào chunk kế tiếp sau
+// khi đã gặp Thi Sách. Giải cứu (TT-L2-HARD): còn lính vây NPC (enemy
+// `captorOf`) sống thì vẫn giữ người chơi nhưng KHÔNG mở hội thoại, và nhắc
+// hạ lính vây (tối đa 1 lần mỗi NPC_RESCUE.hintInterval giây).
 function updateMeetings(p, dt) {
   state.npcs.forEach(npc => {
     if (npc.met && npc.fade > 0) npc.fade = Math.max(0, npc.fade - dt / NPC_RULES.fadeTime);
   });
+  state.rescueHintTimer = Math.max(0, (state.rescueHintTimer || 0) - dt);
 
   const npc = state.npcs.find(item => !item.met);
   if (npc) {
@@ -1442,14 +1467,22 @@ function updateMeetings(p, dt) {
       p.x = npc.centerX - NPC_RULES.holdGap - p.w;
       p.vx = 0;
     }
-    if (npc.centerX - (p.x + p.w) <= NPC_RULES.talkDistance) {
+    const distance = npc.centerX - (p.x + p.w);
+    const captive = state.enemies.some(enemy => enemy.captorOf === npc.id && enemy.alive);
+    if (captive && distance <= NPC_RESCUE.hintRange && state.rescueHintTimer <= 0) {
+      state.rescueHintTimer = NPC_RESCUE.hintInterval;
+      showMessage(`Hãy hạ lính canh đang vây ${NPC_DIALOGUES[npc.id].name}!`, 2400);
+    }
+    if (!captive && distance <= NPC_RULES.talkDistance) {
       openNpcDialogue(npc, () => { npc.met = true; });
       return;
     }
   }
 
   const thiSach = state.npcs.find(item => item.id === 'thiSach');
-  if (!state.storyShown && thiSach?.met && p.x >= CHUNK_W) {
+  // Cốt truyện hiện khi vào chunk ngay sau chunk của Thi Sách.
+  const storyX = (Math.floor(thiSach?.centerX / CHUNK_W) + 1) * CHUNK_W;
+  if (!state.storyShown && thiSach?.met && p.x >= storyX) {
     state.storyShown = true;
     openStory(STORY_THI_SACH);
   }

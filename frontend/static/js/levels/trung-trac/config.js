@@ -32,6 +32,11 @@ export const GRAVITY = 1320;
 export const JUMP_FORCE = 468;
 export const DASH_SPEED = 432;
 export const DASH_TIME = 0.30;
+// Hồi chiêu lướt, tính từ lúc bắt đầu cú lướt (DESIGN_BASELINE — team 27/09).
+export const DASH_COOLDOWN = 2;
+// Icon ô Lướt trên HUD (manifest_tt.json, Codex 27/09 — team duyệt, IN_GAME).
+// Thiếu asset thì ui.js hiện chữ tạm "»".
+export const DASH_ICON = 'ICON_SK_DASH';
 export const GROUND_SNAP_DISTANCE = 11;
 
 // Bộ môi trường 8-bit (Codex, bản chép từ assets/maps/trung-trac/, giữ cấu trúc
@@ -82,17 +87,20 @@ export const FINISH_X = CHUNK_W * 11 + 618;
 // đóng lại (G7).
 export const FINISH_GATE = { closed: 'PROP_LUYLAU_GATE', open: 'PROP_LUYLAU_GATE_OPEN', worldX: FINISH_X };
 
-// Màn 2 "Chiêu mộ hiền tài" (TT-NPC-01 §3.2.1, DESIGN_BASELINE): 4 chunk, trời
-// ngày suốt màn. Chunk 1 làng (Z1), chunk 2 đồng lúa (Z2), chunk 3–4 bến sông
-// (Z4) — `id`/`tiles` giữ tên vùng của TT-MAP-01 để dùng đúng tile + lớp giữa.
-// Hoà cảnh giữa vùng theo đúng cách màn 1 (ZONE_BLEND_WIDTH).
+// Màn 2 "Chiêu mộ hiền tài" (TT-NPC-01 §3.2.1; tăng độ khó TT-L2-HARD 29/09;
+// kéo dài 9 chunk TT-QUIZ-01 29/09 — DESIGN_BASELINE): trời ngày suốt màn.
+// Chunk 1–2 làng (Z1), chunk 3 đồng lúa (Z2), chunk 4–5 rừng (Z3), chunk 6–9
+// bến sông (Z4) — `id`/`tiles` giữ tên vùng của TT-MAP-01 để dùng đúng tile +
+// lớp giữa. Hoà cảnh giữa vùng theo đúng cách màn 1 (ZONE_BLEND_WIDTH).
+export const LEVEL2_CHUNKS = 9;
 export const LEVEL2_ZONES = [
-  { id: 'Z1', x0: 0, x1: 768, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_VILLAGE', tiles: 'Z1' },
-  { id: 'Z2', x0: 768, x1: 1536, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FIELDS', tiles: 'Z2' },
-  { id: 'Z4', x0: 1536, x1: 3072, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_RIVER', tiles: 'Z4' }
+  { id: 'Z1', x0: 0, x1: CHUNK_W * 2, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_VILLAGE', tiles: 'Z1' },
+  { id: 'Z2', x0: CHUNK_W * 2, x1: CHUNK_W * 3, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FIELDS', tiles: 'Z2' },
+  { id: 'Z3', x0: CHUNK_W * 3, x1: CHUNK_W * 5, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FOREST', tiles: 'Z3' },
+  { id: 'Z4', x0: CHUNK_W * 5, x1: CHUNK_W * LEVEL2_CHUNKS, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_RIVER', tiles: 'Z4' }
 ];
-// Điểm kết thúc màn 2: cuối chunk 4 lùi 96px (D15 — không vẽ cổng).
-export const LEVEL2_FINISH_X = CHUNK_W * 4 - 96;
+// Điểm kết thúc màn 2: cuối chunk cuối lùi 96px (D15 — không vẽ cổng).
+export const LEVEL2_FINISH_X = CHUNK_W * LEVEL2_CHUNKS - 96;
 
 // Màn 3 "Trận Luy Lâu" (TT-BOSS-01 §3.1, DESIGN_BASELINE): ĐẤU TRƯỜNG cố định
 // 1 chunk trước cổng Luy Lâu, không có đoạn đi cảnh. Tường vô hình ở x = 0 và
@@ -133,7 +141,7 @@ export const LEVELS = {
     zones: ZONES, finishX: FINISH_X, gate: FINISH_GATE
   },
   2: {
-    id: 2, title: 'Màn 2: Chiêu mộ hiền tài', chunks: 4, worldWidth: CHUNK_W * 4,
+    id: 2, title: 'Màn 2: Chiêu mộ hiền tài', chunks: LEVEL2_CHUNKS, worldWidth: CHUNK_W * LEVEL2_CHUNKS,
     zones: LEVEL2_ZONES, finishX: LEVEL2_FINISH_X, gate: null
   },
   3: {
@@ -192,8 +200,13 @@ export const OBSTACLE_TYPES = {
 // Ảnh 8-bit của map cần tải ngoài các lớp nền/tileset (vật cản, sách, cổng).
 export const MAP_PROPS_IN_GAME = [
   ...Object.values(OBSTACLE_TYPES).map(type => type.id).filter(Boolean),
-  'ITEM_BINH_THU', FINISH_GATE.closed, FINISH_GATE.open, 'PROP_TT_VICTORY_FLAG'
+  'ITEM_BINH_THU', FINISH_GATE.closed, FINISH_GATE.open, 'PROP_TT_VICTORY_FLAG', 'PROP_TT_QUIZ_STELE'
 ];
+// Bia đá đánh dấu mốc câu hỏi chặn đường (TT-QUIZ-01, Codex 29/09): pivot
+// bottom-center tại `quiz.x`, đáy ở GROUND_Y, KHÔNG hitbox. Trạng thái
+// `active` (strip lặp, chưa hỏi) / `done` (1 ô, đã hỏi) — `state_files` trong
+// maps_tt.json. Thiếu ảnh thì không vẽ.
+export const QUIZ_STELE_ID = 'PROP_TT_QUIZ_STELE';
 // Cờ chiến thắng cắm trên cổng mở (cutscene màn 3): strip lặp, pivot
 // bottom-left đặt tại `flag_attach` của PROP_LUYLAU_GATE_OPEN (maps_tt.json).
 // Thiếu ảnh/điểm gắn thì bỏ qua (TODO_MISSING).
@@ -505,8 +518,30 @@ export const NPC_SPRITES = {
 //   w, h          hộp F2 của NPC (không va chạm).
 //   clearance     không đặt vật cản trong vòng này quanh tâm NPC (state.js kiểm tra).
 export const NPC_RULES = { talkDistance: 32, holdGap: 12, fadeTime: 0.8, w: 22, h: 42, clearance: 96 };
+// Giải cứu NPC màn 2 (TT-L2-HARD, DESIGN_BASELINE): mỗi NPC bị lính canh vây —
+// còn lính vây sống thì vẫn bị giữ trước NPC nhưng KHÔNG mở hội thoại.
+//   left/right   tâm 2 lính vây so với tâm NPC; patrol = đoạn tuần tra
+//                [min, max] (so với tâm NPC) — đủ với tới chỗ người chơi bị giữ.
+//   hintRange    người chơi cách NPC ≤ khoảng này thì nhắc hạ lính vây;
+//   hintInterval nhắc lại tối đa 1 lần mỗi khoảng này (giây).
+export const NPC_RESCUE = {
+  left: { dx: -100, patrol: [-170, -30] },
+  right: { dx: 48, patrol: [-60, 80] },
+  hintRange: 200, hintInterval: 4
+};
 // Điểm câu hỏi màn 2 (D14): đúng ngay lần đầu / đúng sau khi đã chọn sai.
 export const QUESTION_SCORE = { firstTry: 500, retry: 250 }; // DESIGN_BASELINE
+// Câu hỏi lịch sử chặn đường (TT-QUIZ-01, DESIGN_BASELINE): trả lời 1 lần —
+// đúng +score, sai −1 máu; cả 2 trường hợp hiện đáp án đúng + giải thích.
+//   level1Count  số câu mỗi lượt màn 1 (rút ngẫu nhiên, không trùng).
+//   level1Spots  [chunk, localX] — chạm x này thì hỏi (theo thứ tự).
+//   level2Spots  câu hỏi trước NPC màn 2: npc id -> [chunk, localX].
+export const QUIZ = {
+  score: 500,
+  level1Count: 4,
+  level1Spots: [[3, 312], [5, 312], [8, 312], [10, 560]],
+  level2Spots: { thiSach: [2, 600], leChan: [5, 600], trungNhi: [8, 600] }
+};
 
 // Đòn đánh của người chơi (giây). Animation attack_01 (6 ô) trải trên đúng
 // ATTACK_COOLDOWN; cửa sổ gây sát thương (`attacking`) dài ATTACK_ACTIVE_TIME,

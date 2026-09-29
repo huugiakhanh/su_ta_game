@@ -118,6 +118,8 @@ async function loadMapAssets() {
   if (!tileset) missing.push(TILESET_ID);
 
   // Vật cản, bình thư, cổng: giữ kèm mục manifest để render đọc cỡ/bbox/pivot.
+  // Asset có `state_files` (bia đá câu hỏi: active/done) thì nạp thêm ảnh từng
+  // trạng thái vào `states[tên]` (thiếu ảnh trạng thái nào thì bỏ trạng thái đó).
   const props = {};
   await Promise.all(MAP_PROPS_IN_GAME.map(async id => {
     const asset = byId[id];
@@ -127,7 +129,12 @@ async function loadMapAssets() {
       return;
     }
     checkSize(asset, image);
-    props[id] = { image, asset };
+    const states = {};
+    await Promise.all(Object.entries(asset.state_files || {}).map(async ([name, file]) => {
+      const stateImage = await loadImage(joinAssetPath(MAP_8BIT_ROOT, file), true);
+      if (stateImage) states[name] = stateImage;
+    }));
+    props[id] = { image, asset, states };
   }));
   return { layers, tileset, props, missing };
 }

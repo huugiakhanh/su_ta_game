@@ -39,7 +39,6 @@ function resetGame(startImmediately = true) {
   setState(createLevelState(levelOptions));
   state.running = startImmediately;
   state.paused = false;
-  ui.question.classList.remove('panel--visible');
   ui.end.classList.remove('panel--visible');
   ui.next.hidden = true;
   ui.restart.hidden = false;
@@ -90,29 +89,8 @@ ui.replayChapter.addEventListener('click', () => {
   window.location.href = LEVEL_URLS[1];
 });
 ui.home.addEventListener('click', () => { window.location.href = '/'; });
-// Trả lời sai tới hết máu trong hội thoại màn 2 -> thua theo luật hiện tại.
+// Trả lời sai tới hết máu trong hội thoại (câu hỏi màn 1, NPC màn 2) -> thua theo luật hiện tại.
 initDialogue({ onDefeat: () => endGame(false) });
-
-document.querySelectorAll('[data-answer]').forEach(button => {
-  button.addEventListener('click', () => {
-    const correct = button.dataset.answer === 'correct';
-    if (correct) {
-      state.score += 500;
-      showMessage('Chính xác! Khởi nghĩa Hai Bà Trưng bùng nổ năm 40 SCN.', 3000);
-    } else {
-      state.health -= 1;
-      showMessage('Chưa đúng. Đáp án là năm 40 SCN; bạn mất 1 máu.', 3000);
-      if (state.health <= 0) {
-        ui.question.classList.remove('panel--visible');
-        endGame(false);
-        return;
-      }
-    }
-    ui.question.classList.remove('panel--visible');
-    state.paused = false;
-    updateHud();
-  });
-});
 
 // Chế độ xem sprite (?viewer=1): soát bộ sprite 8-bit theo manifest, không
 // chạy màn chơi. Nạp động để trang chơi bình thường không tải viewer.js.

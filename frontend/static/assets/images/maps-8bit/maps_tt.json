@@ -519,6 +519,46 @@
       "prompt": "props/PROP_TT_VICTORY_FLAG/prop_tt_victory_flag.prompt.txt",
       "raw": "props/PROP_TT_VICTORY_FLAG/prop_tt_victory_flag_raw.png",
       "qa_notes": "Four-frame rightward flutter loop; red cloth and bronze Dong Son circle motif; no text, star or modern flag symbolism; bottom-left pole base aligns to PROP_LUYLAU_GATE_OPEN.flag_attach; approved by the user on 2026-09-26."
+    },
+    {
+      "id": "PROP_TT_QUIZ_STELE",
+      "category": "prop",
+      "file": "props/PROP_TT_QUIZ_STELE/prop_tt_quiz_stele_active.png",
+      "state_files": {
+        "active": "props/PROP_TT_QUIZ_STELE/prop_tt_quiz_stele_active.png",
+        "done": "props/PROP_TT_QUIZ_STELE/prop_tt_quiz_stele_done.png"
+      },
+      "w": 128,
+      "h": 48,
+      "frame_w": 32,
+      "frame_h": 48,
+      "transparent": true,
+      "zone": [
+        "Z1",
+        "Z2",
+        "Z3",
+        "Z4"
+      ],
+      "anchor": "bottom-center",
+      "pivot": {
+        "x": 16,
+        "y": 48
+      },
+      "frames": 4,
+      "frame_states": [
+        "active",
+        "done"
+      ],
+      "fps": 6,
+      "loop": true,
+      "priority": "P1",
+      "status": "IN_GAME",
+      "prompt": "props/PROP_TT_QUIZ_STELE/prop_tt_quiz_stele.prompt.txt",
+      "raw": [
+        "raw/prop_tt_quiz_stele_active_raw.png",
+        "raw/prop_tt_quiz_stele_done_raw.png"
+      ],
+      "qa_notes": "32x48 cells; 4 active frames in a 128x48 strip at 6 FPS, one 32x48 done frame. Same stone and binary alpha in every frame; only the engraved ornament changes color. No hitbox."
     }
   ],
   "mockups": [

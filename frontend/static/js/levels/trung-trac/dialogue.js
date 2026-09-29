@@ -1,7 +1,7 @@
-// Khung hội thoại màn 2 (TT-NPC-01 §3.2.3–3.2.4): gặp NPC (thoại -> câu hỏi
-// -> vì sao đúng -> phần thưởng) và cốt truyện Thi Sách hy sinh. Là DOM phủ
-// lên canvas, cùng phong cách questionPanel. Mở panel thì tạm dừng game
-// (state.paused), đóng thì chạy tiếp.
+// Khung hội thoại: gặp NPC màn 2 (TT-NPC-01 §3.2.3–3.2.4: thoại -> câu hỏi
+// -> vì sao đúng -> phần thưởng), cốt truyện, và câu hỏi lịch sử chặn đường
+// màn 1–2 (`openQuiz`, TT-QUIZ-01: câu hỏi -> kết quả + giải thích). Là DOM phủ lên canvas. Mở panel thì tạm
+// dừng game (state.paused), đóng thì chạy tiếp.
 // Không import physics.js (physics mở panel qua các hàm dưới đây); khi trả lời
 // sai tới hết máu thì gọi `onDefeat` do main.js truyền vào (initDialogue).
 
@@ -11,7 +11,7 @@ import { clearInput } from './input.js';
 import { addReward } from './progress.js';
 import { joinAssetPath } from './assets.js';
 import { getAsset } from './animation.js';
-import { SPRITE_8BIT_ROOT, NPC_SPRITES, QUESTION_SCORE } from './config.js';
+import { SPRITE_8BIT_ROOT, NPC_SPRITES, QUESTION_SCORE, QUIZ } from './config.js';
 import { NPC_DIALOGUES } from './dialogue-data.js';
 
 const el = {
@@ -32,12 +32,13 @@ let onDefeat = () => {};
 export function initDialogue(options) {
   onDefeat = options.onDefeat;
   el.next.addEventListener('click', advance);
-  // Bàn phím: 1–3 chọn đáp án, Enter/Space sang bước tiếp. Chặn mặc định để
-  // Enter không "bấm" thêm lần nữa vào nút đang focus; input.js vẫn ghi phím
-  // Space vào `pressed.jump` nên đóng panel phải clearInput().
+  // Bàn phím: 1–4 chọn đáp án (số ngoài số đáp án thì bỏ qua), Enter/Space
+  // sang bước tiếp. Chặn mặc định để Enter không "bấm" thêm lần nữa vào nút
+  // đang focus; input.js vẫn ghi phím Space vào `pressed.jump` nên đóng panel
+  // phải clearInput().
   window.addEventListener('keydown', event => {
     if (!current) return;
-    const digit = /^(Digit|Numpad)([1-3])$/.exec(event.code);
+    const digit = /^(Digit|Numpad)([1-4])$/.exec(event.code);
     if (digit) {
       event.preventDefault();
       if (current.step === 'question') choose(Number(digit[2]) - 1);
@@ -109,6 +110,20 @@ export function openStory(story, onDone) {
   });
 }
 
+// Câu hỏi lịch sử chặn đường (TT-QUIZ-01): `question` là 1 mục của QUESTIONS
+// (questions-data.js). Không chân dung, trả lời 1 lần, đáp án xáo mỗi lần hiện.
+// `title` = tiêu đề khung; `onDone` chạy khi đóng panel.
+export function openQuiz(question, { title = 'Câu hỏi lịch sử', onDone } = {}) {
+  const answer = question.answers[question.correct];
+  open({
+    kind: 'quiz', onDone, portraitNpc: null,
+    data: { title, question: question.question, explain: question.explain, answer, score: QUIZ.score },
+    step: 'question',
+    options: shuffle(question.answers.map((text, index) => ({ text, correct: index === question.correct }))),
+    wrong: new Set(), correct: false
+  });
+}
+
 function setText(label, text) {
   el.label.hidden = !label;
   el.label.textContent = label || '';
@@ -118,13 +133,16 @@ function setText(label, text) {
 function render() {
   const { kind, data, step, npc } = current;
   const isNpc = kind === 'npc';
-  el.name.hidden = !isNpc;
+  const isQuiz = kind === 'quiz';
+  el.name.hidden = !isNpc && !isQuiz;
   el.title.hidden = !isNpc;
   if (isNpc) {
     el.name.textContent = data.name;
     el.title.textContent = data.title;
     // NPC trên canvas phát `talk` khi đang nói thoại.
     npc.talking = step === 'line';
+  } else if (isQuiz) {
+    el.name.textContent = data.title;
   }
   el.answers.hidden = step !== 'question';
   el.hint.hidden = true;
@@ -136,9 +154,9 @@ function render() {
     const last = current.lineIndex === data.lines.length - 1;
     if (!isNpc && last) el.next.textContent = 'Đóng';
   } else if (step === 'question') {
-    setText('Câu hỏi', data.question);
+    setText(isQuiz ? null : 'Câu hỏi', data.question);
     renderAnswers();
-    if (current.wrong.size) {
+    if (!isQuiz && current.wrong.size) {
       el.hint.hidden = false;
       el.hint.textContent = `Gợi ý: ${data.hint}`;
     }
@@ -146,6 +164,12 @@ function render() {
     setText('Vì sao đúng', data.why);
   } else if (step === 'reward') {
     setText(`Phần thưởng · +${current.gained} điểm`, data.reward.text);
+    el.next.textContent = 'Đóng';
+  } else if (step === 'result') {
+    setText(
+      current.correct ? `Chính xác! · +${data.score} điểm` : `Chưa đúng · −1 máu · Đáp án: ${data.answer}`,
+      data.explain
+    );
     el.next.textContent = 'Đóng';
   }
   if (!el.next.hidden) el.next.focus({ preventScroll: true });
@@ -171,6 +195,7 @@ function renderAnswers() {
 function choose(index) {
   const option = current.options[index];
   if (!option || current.wrong.has(index)) return;
+  if (current.kind === 'quiz') return chooseQuiz(option);
   if (!option.correct) {
     current.wrong.add(index);
     state.health -= 1;
@@ -191,9 +216,30 @@ function choose(index) {
   render();
 }
 
+// Câu hỏi chặn đường: trả lời 1 lần. Đúng +score; sai −1 máu, hết máu thì
+// thua ngay. Còn chơi tiếp thì hiện kết quả + giải thích, Enter để đóng.
+function chooseQuiz(option) {
+  current.correct = option.correct;
+  if (option.correct) {
+    state.score += current.data.score;
+  } else {
+    state.health -= 1;
+    if (state.health <= 0) {
+      updateHud();
+      closeDialogue();
+      onDefeat();
+      return;
+    }
+  }
+  updateHud();
+  current.step = 'result';
+  render();
+}
+
 function advance() {
   if (!current) return;
   const { kind, data, step } = current;
+  if (step === 'result') return finish();
   if (step === 'line') {
     if (current.lineIndex < data.lines.length - 1) current.lineIndex += 1;
     else if (kind === 'npc') current.step = 'question';
