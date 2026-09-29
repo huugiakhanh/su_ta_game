@@ -11,6 +11,10 @@ import { LEVEL_URLS, requireLevel, clearProgress } from './progress.js';
 import { initDialogue, closeDialogue } from './dialogue.js';
 
 let lastTime = 0;
+// Máy cảm ứng cầm dọc (TT-MOBILE-01): CSS hiện #rotateOverlay, frame() ngừng
+// update() tới khi xoay ngang. Cờ riêng, không dùng state.paused (của hội thoại).
+const portraitQuery = window.matchMedia('(pointer: coarse) and (orientation: portrait)');
+portraitQuery.addEventListener?.('change', () => clearInput());
 const params = new URLSearchParams(window.location.search);
 // Màn đang chơi lấy từ `data-level` của trang (route truyền vào) — cùng bộ
 // module cho mọi màn (TT-NPC-01). Chưa hoàn thành màn trước -> requireLevel()
@@ -53,7 +57,7 @@ function resetGame(startImmediately = true) {
 function frame(timestamp) {
   const dt = Math.min(.032, Math.max(0, (timestamp - lastTime) / 1000 || 0));
   lastTime = timestamp;
-  if (state) update(dt);
+  if (state && !portraitQuery.matches) update(dt);
   if (state) draw(timestamp / 1000);
   requestAnimationFrame(frame);
 }

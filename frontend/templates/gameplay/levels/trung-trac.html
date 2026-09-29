@@ -54,6 +54,23 @@
         </div>
       </div>
 
+      <!-- Nút cảm ứng (TT-MOBILE-01): phủ lên canvas, chỉ hiện trên máy cảm ứng.
+           Trái: ◀ ▶ + ▲ nhảy; phải: ĐÁNH ở góc, LƯỚT/TÊN/BÓNG xếp vòng cung.
+           Ảnh nút chiêu do ui.js gán (cùng ảnh ô kỹ năng HUD); chưa tải thì hiện chữ. -->
+      <div class="mobile-controls" aria-label="Điều khiển cảm ứng">
+        <div class="mobile-controls__move">
+          <button class="control control--jump" data-control="jump" aria-label="Nhảy">▲</button>
+          <button class="control control--left" data-control="left" aria-label="Đi sang trái">◀</button>
+          <button class="control control--right" data-control="right" aria-label="Đi sang phải">▶</button>
+        </div>
+        <div class="mobile-controls__action">
+          <button class="control control--attack" data-control="attack" aria-label="Đánh"><img class="control__icon" alt="" hidden><span class="control__label">ĐÁNH</span></button>
+          <button class="control control--slide" data-control="dash" aria-label="Lướt"><img class="control__icon" alt="" hidden><span class="control__label">LƯỚT</span></button>
+          <button class="control control--skill control--arrow-rain" data-control="arrowRain" data-skill="SK_LE_CHAN_ARROW_RAIN" aria-label="Mưa tên" hidden><img class="control__icon" alt="" hidden><span class="control__label">TÊN</span></button>
+          <button class="control control--skill control--shadow" data-control="shadow" data-skill="SK_TRUNG_NHI_SHADOW" aria-label="Bóng Trưng Nhị" hidden><img class="control__icon" alt="" hidden><span class="control__label">BÓNG</span></button>
+        </div>
+      </div>
+
       <!-- Hội thoại NPC / cốt truyện / câu hỏi lịch sử màn 1 (dialogue.js). -->
       <div id="dialoguePanel" class="panel dialogue" role="dialog" aria-modal="true" aria-labelledby="dialogueName">
         <div class="dialogue__box">
@@ -89,21 +106,14 @@
       <span data-skill="SK_TRUNG_NHI_SHADOW" hidden><kbd>L</kbd> bóng Trưng Nhị</span>
       <span><kbd>R</kbd> chơi lại</span>
     </section>
-
-    <section class="mobile-controls" aria-label="Điều khiển cảm ứng">
-      <div class="mobile-controls__group">
-        <button class="control" data-control="left" aria-label="Đi sang trái">◀</button>
-        <button class="control" data-control="right" aria-label="Đi sang phải">▶</button>
-      </div>
-      <div class="mobile-controls__group">
-        <button class="control control--slide" data-control="dash">LƯỚT</button>
-        <button class="control control--attack" data-control="attack">ĐÁNH</button>
-        <button class="control control--skill" data-control="arrowRain" data-skill="SK_LE_CHAN_ARROW_RAIN" hidden>TÊN</button>
-        <button class="control control--skill" data-control="shadow" data-skill="SK_TRUNG_NHI_SHADOW" hidden>BÓNG</button>
-        <button class="control control--jump" data-control="jump">NHẢY</button>
-      </div>
-    </section>
   </main>
+
+  <!-- Máy cảm ứng cầm dọc (TT-MOBILE-01): che màn + nhắc xoay ngang; main.js
+       không chạy update() khi lớp này hiện. -->
+  <div id="rotateOverlay" class="rotate-overlay" role="alert">
+    <div class="rotate-overlay__phone" aria-hidden="true"></div>
+    <p>Hãy xoay ngang điện thoại để chơi</p>
+  </div>
 
   <script type="module" src="{{ url_for('static', filename='js/levels/trung-trac/main.js') }}"></script>
 </body>

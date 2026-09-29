@@ -1,7 +1,7 @@
 // DOM refs (HUD, panel) + cập nhật hiển thị. Không chứa logic gameplay.
 
 import { joinAssetPath } from './assets.js';
-import { DASH_COOLDOWN, DASH_ICON, ITEM_ROOT, ITEM_FILES, LEVEL, SKILLS, SPRITE_8BIT_ROOT } from './config.js';
+import { ATTACK_ICON, DASH_COOLDOWN, DASH_ICON, ITEM_ROOT, ITEM_FILES, LEVEL, SKILLS, SPRITE_8BIT_ROOT } from './config.js';
 import { state } from './state.js';
 import { getAsset } from './animation.js';
 
@@ -108,6 +108,16 @@ function skillTimer(id, skills) {
   return { left: skills.buff.cooldown, total: spec.cooldown, active: false };
 }
 
+// Nút cảm ứng của chiêu (TT-MOBILE-01) dùng cùng ảnh với ô HUD; ảnh tải
+// xong mới hiện (CSS ẩn chữ tạm), lỗi thì giữ chữ.
+function setControlIcon(control, src) {
+  const icon = document.querySelector(`[data-control="${control}"] .control__icon`);
+  if (!icon) return;
+  icon.onload = () => { icon.hidden = false; };
+  icon.src = src;
+}
+const SKILL_CONTROLS = { SK_LE_CHAN_ARROW_RAIN: 'arrowRain', SK_TRUNG_NHI_SHADOW: 'shadow' };
+
 // Ô Lướt (mọi màn): lớp phủ + số giây hồi chiêu còn lại của dash.
 function updateDashHud() {
   const slot = ui.dashSlot;
@@ -119,6 +129,15 @@ function updateDashHud() {
       icon.src = joinAssetPath(SPRITE_8BIT_ROOT, file);
       icon.onload = () => { icon.hidden = false; };
       icon.dataset.ready = '1';
+      setControlIcon('dash', icon.src);
+    }
+  }
+  const attackIcon = document.querySelector('[data-control="attack"] .control__icon');
+  if (attackIcon && !attackIcon.dataset.ready) {
+    const file = getAsset(ATTACK_ICON)?.animations?.[0]?.file;
+    if (file) {
+      setControlIcon('attack', joinAssetPath(SPRITE_8BIT_ROOT, file));
+      attackIcon.dataset.ready = '1';
     }
   }
   const left = state.player.dashCooldown || 0;
@@ -141,6 +160,7 @@ function updateSkillHud() {
       if (file) {
         icon.src = joinAssetPath(SPRITE_8BIT_ROOT, file);
         icon.dataset.ready = '1';
+        if (SKILL_CONTROLS[id]) setControlIcon(SKILL_CONTROLS[id], icon.src);
       }
     }
     const { left, total, active } = skillTimer(id, skills);

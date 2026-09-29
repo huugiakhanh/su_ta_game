@@ -5,7 +5,7 @@ import { state, bossAlive, enemyArtKey } from './state.js';
 import { debug } from './input.js';
 import { getAnimMeta, frameIndex } from './animation.js';
 import {
-  LOGICAL_W, LOGICAL_H, MAX_VIEW_W, VIEW_W, VIEW_H, setViewWidth, CHUNK_W, LEVEL, GROUND_Y,
+  LOGICAL_W, LOGICAL_H, MAX_VIEW_W, VIEW_W, VIEW_H, setViewWidth, LEVEL, GROUND_Y,
   OBSTACLE_TYPES, BOOK_SPRITE_ID, BOOK_FPS, BOOK_BOB_AMPLITUDE, ZONE_BLEND_WIDTH, SKY_PARALLAX, FAR_HILLS, MID_PARALLAX, NPC_SPRITES,
   SKY_FALLBACK_COLOR, GROUND_FALLBACK_COLOR, GROUND_DECOR_DENSITY,
   HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES,
@@ -56,7 +56,7 @@ export function fitCanvas() {
   const border = 4; // viền 2px hai bên của .stage-wrap
   const availW = Math.max(1, document.documentElement.clientWidth - padX - border);
   const availH = Math.max(1, window.innerHeight - padY - border
-    - blockH('.hud') - blockH('.mobile-controls') - blockH('.help'));
+    - blockH('.hud') - blockH('.help'));
   const fitHeight = availH / LOGICAL_H;
   // ceil: canvas rộng ĐÚNG availW (scale giảm < 1 pixel logic so với fitHeight).
   const viewW = Math.min(MAX_VIEW_W, Math.max(LOGICAL_W, Math.ceil(availW / fitHeight - 1e-6)));
@@ -836,17 +836,6 @@ function drawPlayer(time) {
   }
 }
 
-function drawChunkMarker() {
-  if (LEVEL.arena) return;
-  const chunk = Math.min(LEVEL.chunks, Math.floor(state.player.x / CHUNK_W) + 1);
-  ctx.fillStyle = 'rgba(24, 14, 9, .72)';
-  ctx.fillRect(VIEW_W - 63, 7, 54, 17);
-  ctx.fillStyle = '#ffe7a3';
-  ctx.font = 'bold 9px system-ui';
-  ctx.textAlign = 'center';
-  ctx.fillText(`${chunk} / ${LEVEL.chunks}`, VIEW_W - 36, 19);
-}
-
 // Lớp debug (F2): hitbox (đỏ; người chơi xanh), pivot bottom-center (vàng),
 // nhãn animation + ô đang vẽ phía trên entity, vạch GROUND_Y. Không đụng state.
 function drawDebugOverlay() {
@@ -932,6 +921,5 @@ export function draw(time = 0) {
     ctx.fillStyle = `rgba(0, 0, 0, ${state.cutscene.fade})`;
     ctx.fillRect(0, 0, VIEW_W, VIEW_H);
   }
-  drawChunkMarker();
   if (debug.enabled) drawDebugOverlay();
 }

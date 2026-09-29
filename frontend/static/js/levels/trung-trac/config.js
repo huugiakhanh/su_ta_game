@@ -37,6 +37,8 @@ export const DASH_COOLDOWN = 2;
 // Icon ô Lướt trên HUD (manifest_tt.json, Codex 27/09 — team duyệt, IN_GAME).
 // Thiếu asset thì ui.js hiện chữ tạm "»".
 export const DASH_ICON = 'ICON_SK_DASH';
+// Icon nút cảm ứng ĐÁNH (TT-MOBILE-01, Codex 29/09, IN_GAME) — chỉ dùng cho nút, thiếu thì chữ tạm.
+export const ATTACK_ICON = 'ICON_SK_ATTACK';
 export const GROUND_SNAP_DISTANCE = 11;
 
 // Bộ môi trường 8-bit (Codex, bản chép từ assets/maps/trung-trac/, giữ cấu trúc
@@ -111,7 +113,8 @@ export const LEVEL2_FINISH_X = CHUNK_W * LEVEL2_CHUNKS - 96;
 //   spawnX     tâm điểm quân địch xuất hiện (trước cổng).
 export const ARENA = {
   width: CHUNK_W, gateX: 672, pillars: [250, 450], pillarW: 24, pillarH: 48,
-  playerStartX: 60, spawnX: 700,
+  // playerStartX 170 (TT-MOBILE-01, cũ 60): ra khỏi cụm nút cảm ứng trái, vẫn trước cột đá 250.
+  playerStartX: 170, spawnX: 700,
   // Mưa tên trên thành (§3.9) — bật/tắt áp lực nền cả 3 giai đoạn.
   wallArrows: true
 };
