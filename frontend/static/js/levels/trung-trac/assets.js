@@ -4,7 +4,7 @@
 import {
   ITEM_ROOT, ITEM_FILES,
   SPRITE_8BIT_ROOT, SPRITE_MANIFEST_FILE, SPRITE_8BIT_IN_GAME,
-  MAP_8BIT_ROOT, MAP_MANIFEST_FILE, TILESET_ID, LEVEL, FAR_HILLS, MAP_PROPS_IN_GAME,
+  MAP_8BIT_ROOT, MAP_MANIFEST_FILE, TILESET_ID, TERRAIN_TILESET_ID, TERRAIN_TILE_ROLES, LEVEL, FAR_HILLS, MAP_PROPS_IN_GAME,
   GROUND_Y, LEVEL_WORLD_WIDTH, VIEW_H
 } from './config.js';
 import { registerManifest, getAsset } from './animation.js';
@@ -14,9 +14,11 @@ import { registerManifest, getAsset } from './animation.js';
 export const images = {
   // Bộ môi trường 8-bit: maps.layers[assetId] = Image (trời, đồi, lớp giữa);
   // maps.tileset = { image, tileW, tileH, regions: { Z1: { surface: [rect]... } } };
+  // maps.terrain = { image, tileW, tileH, roles: { surface: rect... } } | null
+  // (bộ tile ghép địa hình TILESET_TT_TERRAIN);
   // maps.props[assetId] = { image, asset } (vật cản, bình thư, cổng — `asset`
   // là mục trong maps_tt.json: w/h, frame_w/h, frames, visible_bbox, pivot).
-  maps: { layers: {}, tileset: null, props: {} },
+  maps: { layers: {}, tileset: null, terrain: null, props: {} },
   items: {},
   // Strip bộ sprite 8-bit: sprites8[assetId][animationName] = Image.
   sprites8: {}
@@ -116,6 +118,7 @@ async function loadMapAssets() {
     }
   }
   if (!tileset) missing.push(TILESET_ID);
+  const terrain = await loadTerrainTiles(byId[TERRAIN_TILESET_ID]);
 
   // Vật cản, bình thư, cổng: giữ kèm mục manifest để render đọc cỡ/bbox/pivot.
   // Asset có `state_files` (bia đá câu hỏi: active/done) thì nạp thêm ảnh từng
@@ -136,7 +139,29 @@ async function loadMapAssets() {
     }));
     props[id] = { image, asset, states };
   }));
-  return { layers, tileset, props, missing };
+  return { layers, tileset, terrain, props, missing };
+}
+
+// Bộ tile ghép địa hình TILESET_TT_TERRAIN (TT-TERRAIN-01): { image, tileW,
+// tileH, roles: { role: rect } } — 1 tile/vai trò (tile đầu tiên). Không có
+// trong maps_tt.json thì trả null, KHÔNG tính là thiếu — render dự phòng bằng
+// tile Z1 của TILESET_TT_GROUND. Thiếu vai trò nào thì cảnh báo.
+async function loadTerrainTiles(asset) {
+  if (!asset) return null;
+  const [meta, image] = await Promise.all([
+    fetchJson(MAP_8BIT_ROOT, asset.metadata),
+    loadImage(joinAssetPath(MAP_8BIT_ROOT, asset.file), true)
+  ]);
+  if (!meta || !image) {
+    console.warn(`maps_tt: không nạp được ${asset.id}`);
+    return null;
+  }
+  checkSize(asset, image);
+  const roles = {};
+  meta.tiles.forEach(tile => { roles[tile.role] ||= tile.rect; });
+  const absent = TERRAIN_TILE_ROLES.filter(role => !roles[role]);
+  if (absent.length) console.warn(`${asset.id} thiếu vai trò:`, absent);
+  return { image, tileW: meta.tile_size.w, tileH: meta.tile_size.h, roles };
 }
 
 async function loadItemSprites() {
@@ -180,7 +205,7 @@ export async function loadAssets() {
     loadItemSprites(),
     loadSprites8bit()
   ]);
-  images.maps = { layers: mapSet.layers, tileset: mapSet.tileset, props: mapSet.props };
+  images.maps = { layers: mapSet.layers, tileset: mapSet.tileset, terrain: mapSet.terrain, props: mapSet.props };
   images.items = itemSprites;
   images.sprites8 = sprite8Set.sprites;
 

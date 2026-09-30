@@ -6,9 +6,9 @@ import {
 } from './state.js';
 import { keys, pressed, clearInput } from './input.js';
 import { ui, showMessage, tickMessage, updateHud } from './ui.js';
-import { aabb, groundYAt, worldX, makeProjectile } from './geometry.js';
+import { aabb, groundYAt, terrainLevelAt, worldX, makeProjectile } from './geometry.js';
 import {
-  CHUNK_W, VIEW_W, VIEW_H, LEVEL, NPC_RULES, NPC_RESCUE, FOOT_MARGIN,
+  CHUNK_W, VIEW_W, VIEW_H, LEVEL, NPC_RULES, NPC_RESCUE, FOOT_MARGIN, TERRAIN_CELL,
   MOVE_SPEED, GRAVITY, JUMP_FORCE, DASH_SPEED, DASH_TIME, DASH_COOLDOWN, GROUND_SNAP_DISTANCE,
   HURT_ANIMATION_TIME, PROJECTILE_SPEED, PROJECTILE_MAX_RANGE, HAZARD_DESPAWN_MARGIN,
   ATTACK_COOLDOWN, ATTACK_ACTIVE_TIME, PLAYER_SPRITE_ID, PLAYER_ANIMATIONS,
@@ -27,21 +27,36 @@ export function pointHasGround(worldXPosition) {
   return !state.holes.some(hole => worldXPosition > hole.x && worldXPosition < hole.x + hole.w);
 }
 
-export function playerGroundY(player, moveDirection = 0) {
+// Mặt đất dưới chân: bậc CAO nhất mà 1 trong 2 chân còn chạm (đứng mép bậc
+// đất vẫn đứng được, chỉ rơi khi cả 2 chân ra khỏi bậc — TT-TERRAIN-01).
+export function playerGroundY(player) {
   const leftFoot = player.x + FOOT_MARGIN;
   const rightFoot = player.x + player.w - FOOT_MARGIN;
   const samples = [];
 
-  if (pointHasGround(leftFoot)) samples.push({ side: -1, y: groundYAt(leftFoot) });
-  if (pointHasGround(rightFoot)) samples.push({ side: 1, y: groundYAt(rightFoot) });
+  if (pointHasGround(leftFoot)) samples.push(groundYAt(leftFoot));
+  if (pointHasGround(rightFoot)) samples.push(groundYAt(rightFoot));
   if (!samples.length) return null;
+  return Math.min(...samples);
+}
 
-  // Dùng chân phía trước để nhân vật lên và xuống dốc theo đúng hướng đang chạy.
-  if (moveDirection !== 0) {
-    const leadingFoot = samples.find(sample => sample.side === Math.sign(moveDirection));
-    if (leadingFoot) return leadingFoot.y;
+// Sườn bậc đất (TT-TERRAIN-01): cột đất mà đỉnh cao hơn chân ở frame trước
+// quá GROUND_SNAP_DISTANCE là tường — đẩy người chơi ra mép cột, không mất
+// máu (như cột đá). Cột vừa tới đỉnh (đang tiếp đất từ trên xuống) không tính.
+// Chỉ xét cột nhô cao (level ≥ 1); vách hố vẫn do phần kẹp hố xử lý.
+function resolveTerrainWalls(p, previousBottom) {
+  const feet = [p.x + FOOT_MARGIN, p.x + p.w - FOOT_MARGIN];
+  for (const foot of feet) {
+    if (terrainLevelAt(foot) < 1) continue;
+    const top = groundYAt(foot);
+    if (previousBottom <= top + GROUND_SNAP_DISTANCE) continue;
+    const left = Math.floor(foot / TERRAIN_CELL) * TERRAIN_CELL;
+    // Chân phải dừng NGAY TRƯỚC cột (−0.01: floor(x/ô) phải rơi vào cột thấp).
+    if (left + TERRAIN_CELL / 2 > p.x + p.w / 2) p.x = left - p.w + FOOT_MARGIN - .01;
+    else p.x = left + TERRAIN_CELL - FOOT_MARGIN;
+    p.vx = 0;
+    return;
   }
-  return Math.min(...samples.map(sample => sample.y));
 }
 
 // Miễn sát thương từ lính, hazard và đạn: đang nhấp nháy sau khi trúng đòn,
@@ -527,6 +542,8 @@ function updateHazards(dt) {
         else return;
       }
       hazard.x += hazard.speed * dt;
+      // Lăn/chạy theo bậc đất (TT-TERRAIN-01): đứng trên mặt đất tại tâm.
+      if (hazard.grounded) hazard.baseY = groundYAt(hazard.x + hazard.w / 2);
       hazard.y = hazard.baseY - hazard.h;
       if (hazard.x + hazard.w < playerCenter - HAZARD_DESPAWN_MARGIN) {
         hazard.alive = false;
@@ -596,6 +613,11 @@ function updateProjectiles(dt) {
     projectile.age += dt;
     if (projectile.traveled >= PROJECTILE_MAX_RANGE
       || Math.abs(projectile.x - state.cameraX) > VIEW_W + HAZARD_DESPAWN_MARGIN) {
+      projectile.alive = false;
+      return;
+    }
+    // Đập vào sườn bậc đất (TT-TERRAIN-01) thì tan.
+    if (projectile.y + projectile.h / 2 > groundYAt(projectile.x + projectile.w / 2)) {
       projectile.alive = false;
       return;
     }
@@ -1304,9 +1326,10 @@ export function update(dt) {
     const hole = state.holes.find(item => p.x + p.w / 2 > item.x && p.x + p.w / 2 < item.x + item.w);
     if (hole) p.x = Math.max(hole.x, Math.min(hole.x + hole.w - p.w, p.x));
   }
+  resolveTerrainWalls(p, previousBottom);
 
   p.grounded = false;
-  const groundY = playerGroundY(p, move);
+  const groundY = playerGroundY(p);
   const feetY = p.y + p.h;
   const mayFollowSlope = wasGrounded && groundY !== null && Math.abs(feetY - groundY) <= GROUND_SNAP_DISTANCE;
   // Chỉ tiếp đất khi frame trước chân chưa xuống sâu dưới mặt đất — nếu không,

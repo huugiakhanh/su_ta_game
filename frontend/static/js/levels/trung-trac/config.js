@@ -61,19 +61,33 @@ export const SKY_FALLBACK_COLOR = '#43b8e3';
 export const GROUND_FALLBACK_COLOR = '#795238';
 
 // Vùng cảnh theo world X (chunk đếm từ 1: Z1 = chunk 1–3 = 0–2304...). Vùng
-// chỉ đổi CẢNH, vật cản vẫn xáo ngẫu nhiên (state.js). `tiles` = region
-// trong tileset_tt_ground.json.
+// chỉ đổi CẢNH (trời + lớp giữa), vật cản vẫn xáo ngẫu nhiên (state.js).
 export const ZONES = [
-  { id: 'Z1', x0: 0, x1: 2304, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_VILLAGE', tiles: 'Z1' },
-  { id: 'Z2', x0: 2304, x1: 3840, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FIELDS', tiles: 'Z2' },
-  { id: 'Z3', x0: 3840, x1: 6144, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FOREST', tiles: 'Z3' },
-  { id: 'Z4', x0: 6144, x1: 7680, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_RIVER', tiles: 'Z4' },
-  { id: 'Z5', x0: 7680, x1: 9216, sky: 'BG_TT_SKY_STORM', mid: 'BG_TT_MID_CITADEL', tiles: 'Z5' }
+  { id: 'Z1', x0: 0, x1: 2304, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_VILLAGE' },
+  { id: 'Z2', x0: 2304, x1: 3840, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FIELDS' },
+  { id: 'Z3', x0: 3840, x1: 6144, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FOREST' },
+  { id: 'Z4', x0: 6144, x1: 7680, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_RIVER' },
+  { id: 'Z5', x0: 7680, x1: 9216, sky: 'BG_TT_SKY_STORM', mid: 'BG_TT_MID_CITADEL' }
+];
+// Mặt đất dùng CHUNG 1 bộ tile (region trong tileset_tt_ground.json) cho mọi
+// vùng và mọi màn, chỉ tile đầu tiên của mỗi vai trò — không đổi theo vùng,
+// không biến thể theo cột (team 30/09, cho đồng bộ). Decor vẫn rải theo cột.
+export const GROUND_TILE_REGION = 'Z1';
+// Bộ tile ghép địa hình (TT-TERRAIN-01, Codex 30/09, team duyệt -> IN_GAME —
+// docs/CODEX_PROMPT_TILESET_TT_TERRAIN.md): sheet 64x48 riêng, 12 vai trò dưới
+// đây, 1 tile/vai trò. Mặt đất + bậc + mép hố + lòng hố ghép tự động theo độ
+// cao cột (terrainTileRole ở render.js); thiếu sheet thì dự phòng bằng tile Z1
+// của TILESET_TT_GROUND.
+export const TERRAIN_TILESET_ID = 'TILESET_TT_TERRAIN';
+export const TERRAIN_TILE_ROLES = [
+  'corner-left', 'surface', 'corner-right', 'corner-single',
+  'wall-left', 'fill', 'wall-right', 'wall-single',
+  'inner-left', 'inner-right', 'pit-top', 'pit-deep'
 ];
 // Lớp giữa + trời hoà dần trong ZONE_BLEND_WIDTH px TRƯỚC mỗi ranh giới, tính
 // theo tâm khung nhìn (cameraX + VIEW_W/2) — hoà xong đúng lúc tâm khung nhìn
 // chạm ranh giới, nên trời đã đổi sang giông trước khi người chơi vào chunk 11
-// (quyết định team G3). Mặt đất KHÔNG hoà: đổi tile dứt khoát tại ranh giới.
+// (quyết định team G3). Mặt đất dùng 1 bộ tile chung (GROUND_TILE_REGION).
 export const ZONE_BLEND_WIDTH = 192; // DESIGN_BASELINE
 // Tỉ lệ cột tile mặt đất có decor (cỏ, lau...) — chọn tất định theo cột.
 export const GROUND_DECOR_DENSITY = 0.25; // DESIGN_BASELINE
@@ -92,14 +106,14 @@ export const FINISH_GATE = { closed: 'PROP_LUYLAU_GATE', open: 'PROP_LUYLAU_GATE
 // Màn 2 "Chiêu mộ hiền tài" (TT-NPC-01 §3.2.1; tăng độ khó TT-L2-HARD 29/09;
 // kéo dài 9 chunk TT-QUIZ-01 29/09 — DESIGN_BASELINE): trời ngày suốt màn.
 // Chunk 1–2 làng (Z1), chunk 3 đồng lúa (Z2), chunk 4–5 rừng (Z3), chunk 6–9
-// bến sông (Z4) — `id`/`tiles` giữ tên vùng của TT-MAP-01 để dùng đúng tile +
-// lớp giữa. Hoà cảnh giữa vùng theo đúng cách màn 1 (ZONE_BLEND_WIDTH).
+// bến sông (Z4) — `id` giữ tên vùng của TT-MAP-01 để dùng đúng lớp giữa. Hoà
+// cảnh giữa vùng theo đúng cách màn 1 (ZONE_BLEND_WIDTH).
 export const LEVEL2_CHUNKS = 9;
 export const LEVEL2_ZONES = [
-  { id: 'Z1', x0: 0, x1: CHUNK_W * 2, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_VILLAGE', tiles: 'Z1' },
-  { id: 'Z2', x0: CHUNK_W * 2, x1: CHUNK_W * 3, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FIELDS', tiles: 'Z2' },
-  { id: 'Z3', x0: CHUNK_W * 3, x1: CHUNK_W * 5, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FOREST', tiles: 'Z3' },
-  { id: 'Z4', x0: CHUNK_W * 5, x1: CHUNK_W * LEVEL2_CHUNKS, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_RIVER', tiles: 'Z4' }
+  { id: 'Z1', x0: 0, x1: CHUNK_W * 2, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_VILLAGE' },
+  { id: 'Z2', x0: CHUNK_W * 2, x1: CHUNK_W * 3, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FIELDS' },
+  { id: 'Z3', x0: CHUNK_W * 3, x1: CHUNK_W * 5, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FOREST' },
+  { id: 'Z4', x0: CHUNK_W * 5, x1: CHUNK_W * LEVEL2_CHUNKS, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_RIVER' }
 ];
 // Điểm kết thúc màn 2: cuối chunk cuối lùi 96px (D15 — không vẽ cổng).
 export const LEVEL2_FINISH_X = CHUNK_W * LEVEL2_CHUNKS - 96;
@@ -125,7 +139,7 @@ export const ARENA = {
 // trong cutscene và phasePause giây đầu mỗi giai đoạn.
 export const WALL_ARROWS = { interval: 3.5, count: 2, spread: 120, warnTime: .6, fallSpeed: 420, phasePause: 2 };
 export const LEVEL3_ZONES = [
-  { id: 'Z5', x0: 0, x1: ARENA.width, sky: 'BG_TT_SKY_STORM', mid: 'BG_TT_MID_CITADEL', tiles: 'Z5' }
+  { id: 'Z5', x0: 0, x1: ARENA.width, sky: 'BG_TT_SKY_STORM', mid: 'BG_TT_MID_CITADEL' }
 ];
 
 // Các màn của chương dùng CHUNG một bộ engine (TT-NPC-01, phương án A): main.js
@@ -159,9 +173,15 @@ export function setLevel(id) {
   return LEVEL;
 }
 
-// Dốc/địa hình đặc biệt (nếu cần) khai báo tại đây thay vì gắn cứng theo
-// số chunk như trước. Rỗng = mặt đất phẳng theo GROUND_Y trên toàn bộ level.
-export const TERRAIN_RAMPS = [];
+// Địa hình ô vuông (TT-TERRAIN-01): mỗi chunk vẽ bằng lưới chữ ('#' đất, '.'
+// trống), mỗi ô TERRAIN_CELL px = đúng 1 tile mặt đất; hàng dưới cùng là mặt
+// đất GROUND_Y, mỗi hàng trên cao thêm 1 ô; '.' ở hàng dưới cùng = hố. Chỉ có
+// bậc cao/thấp (đất liền từ đáy lên, không bục lơ lửng). Dữ liệu ở state.js,
+// đọc qua geometry.js (groundYAt / terrainLevelAt). Nhảy cao tối đa
+// JUMP_FORCE² / (2·GRAVITY) ≈ 83px ≈ 5 ô -> bậc chênh quá TERRAIN_MAX_STEP ô
+// thì cảnh báo (DESIGN_BASELINE).
+export const TERRAIN_CELL = 16;
+export const TERRAIN_MAX_STEP = 3; // DESIGN_BASELINE
 
 // Vật cản tĩnh (`obstacles`) -> asset 8-bit trong maps_tt.json + cách neo/cờ.
 // Hitbox (w, h) do state.js truyền vào makeObstacle — KHÔNG lấy từ cỡ ảnh. Vẽ
