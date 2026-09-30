@@ -104,6 +104,27 @@
       "qa_notes": "Z1-Z5 each contain three 16x16 surface variants, two fills, two edges and three 16x8 decorations; 50 entries total; zero gutters."
     },
     {
+      "id": "TILESET_TT_TERRAIN",
+      "category": "tileset",
+      "file": "tiles/TILESET_TT_TERRAIN/tileset_tt_terrain.png",
+      "metadata": "tiles/TILESET_TT_TERRAIN/tileset_tt_terrain.json",
+      "w": 64,
+      "h": 48,
+      "transparent": false,
+      "tileable_x": false,
+      "zone": ["Z1", "Z2", "Z3", "Z4", "Z5"],
+      "anchor": "surface-top-at-GROUND_Y",
+      "parallax_hint": null,
+      "frames": 1,
+      "fps": null,
+      "replaces": "terrain drawing from TILESET_TT_GROUND",
+      "priority": "P0",
+      "status": "IN_GAME",
+      "prompt": "tiles/TILESET_TT_TERRAIN/tileset_tt_terrain.prompt.txt",
+      "raw": "raw/tileset_tt_terrain_variants_raw.png",
+      "qa_notes": "12 opaque 16x16 autoterrain tiles; source palette Z1; horizontal/vertical join QA and 480x270 preview."
+    },
+    {
       "id": "BG_TT_SKY_STORM",
       "category": "parallax",
       "file": "bg/BG_TT_SKY_STORM/bg_tt_sky_storm.png",

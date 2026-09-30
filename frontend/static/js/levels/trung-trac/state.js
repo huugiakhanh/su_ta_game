@@ -3,9 +3,11 @@
 // live-binding (`let` + setter) để các module khác import { state } luôn
 // thấy giá trị mới nhất — đây là hành vi chuẩn của ES module named export.
 
-import { worldX, makeObstacle, makeHazard } from './geometry.js';
 import {
-  GROUND_Y, MINIBOSS, GUARD, LEVEL, NPC_RULES, NPC_RESCUE, OBSTACLE_TYPES, ARENA, RUSHER, SKILLS, SKILL_TEST,
+  worldX, makeObstacle, makeHazard, setTerrain, buildTerrain, terrainHoles, terrainLevelAt, flatSpan, groundYAt
+} from './geometry.js';
+import {
+  GROUND_Y, TERRAIN_CELL, MINIBOSS, GUARD, LEVEL, NPC_RULES, NPC_RESCUE, OBSTACLE_TYPES, ARENA, RUSHER, SKILLS, SKILL_TEST,
   BOSS_TD, WALL_ARROWS, QUIZ
 } from './config.js';
 import { LEVEL1_QUESTION_POOL, NPC_QUESTION_POOLS } from './questions-data.js';
@@ -44,7 +46,13 @@ export function bossAlive(current = state) {
 // Mỗi nhóm là hàm (chunk, dx) -> { obstacles, hazards, enemies }; dx cộng vào
 // MỌI toạ độ localX/triggerX của nhóm để cả nhóm dịch chung, không lệch nhau.
 // width/height của obstacle giữ đúng tỉ lệ khung hình thật của từng ảnh.
+// `terrain` (TT-TERRAIN-01, DESIGN_BASELINE): lưới chữ 48 ô của chunk nhóm
+// đó ('#' đất, hàng cuối = GROUND_Y) — địa hình đi theo nhóm; nhóm có địa
+// hình chỉ lệch TERRAIN_JITTER (bội số 1 ô) để bậc đất không đè lên bia câu
+// hỏi (chunk 3/5/8 x 312, chunk 10 x 560) hay vật trong nhóm. Nhóm không khai
+// báo = chunk phẳng. Không đặt bậc trong ~130px đầu chunk (chỗ hồi sinh).
 const JITTER = 60;
+const TERRAIN_JITTER = TERRAIN_CELL;
 
 // Enemy trên mặt đất: x = mép trái hitbox, w/h = hitbox (px logic). Lính
 // thường (không boss) đi tuần quanh chỗ đứng và đâm kích khi người chơi tới
@@ -52,19 +60,22 @@ const JITTER = 60;
 // Boss đứng yên.
 // `options` (màn 3, TT-BOSS-01): patrolMin/patrolMax/aggroRange ghi đè đoạn tuần
 // tra + tầm phát hiện của GUARD (lính canh đấu trường đuổi khắp đấu trường).
+// Địa hình (TT-TERRAIN-01): đứng trên mặt đất tại tâm; đoạn tuần tra bị kẹp
+// trong đoạn đất phẳng chứa tâm (flatSpan) -> lính không đi xuyên bậc đất.
 export function makeEnemy(x, w, h, hp, boss, options = {}) {
+  const center = x + w / 2;
   const enemy = {
-    x, y: GROUND_Y - h, w, h, hp, maxHp: hp, boss,
+    x, y: groundYAt(center) - h, w, h, hp, maxHp: hp, boss,
     alive: true, dying: false, hitTimer: 0, anim: createAnim('idle')
   };
   if (boss) return enemy;
-  const center = x + w / 2;
+  const [flatMin, flatMax] = flatSpan(center);
   return {
     ...enemy,
     facing: -1,
     walking: true,
-    patrolMin: options.patrolMin ?? center - GUARD.patrolRange / 2,
-    patrolMax: options.patrolMax ?? center + GUARD.patrolRange / 2,
+    patrolMin: Math.max(flatMin + w / 2, options.patrolMin ?? center - GUARD.patrolRange / 2),
+    patrolMax: Math.min(flatMax - w / 2, options.patrolMax ?? center + GUARD.patrolRange / 2),
     aggroRange: options.aggroRange ?? GUARD.aggroRange,
     // Cú đâm đang diễn { time, hit } hoặc null.
     action: null,
@@ -98,12 +109,22 @@ function makeDummy(centerX) {
 }
 
 const OBSTACLE_GROUPS = [
-  // cành cây đổ — nhảy qua
-  { easy: true, build: (c, dx) => ({ obstacles: [makeObstacle('fallenBranch', c, 420 + dx, 55, 23)] }) },
-  // khối đá — nhảy qua / đứng lên được
-  { easy: true, build: (c, dx) => ({ obstacles: [makeObstacle('stoneBlock', c, 360 + dx, 51, 23)] }) },
-  // bẫy hố chông — tới gần mới bật lên
-  { easy: true, build: (c, dx) => ({ hazards: [makeHazard('trap', 'spikePit', c, 492 + dx, {
+  // cành cây đổ — nhảy qua, rồi nhảy lên gò đất 1 ô
+  { easy: true, terrain: [
+    '................................######..........',
+    '################################################'
+  ], build: (c, dx) => ({ obstacles: [makeObstacle('fallenBranch', c, 420 + dx, 55, 23)] }) },
+  // khối đá — nhảy qua / đứng lên được, sau đó là bậc thang 2 ô
+  { easy: true, terrain: [
+    '..............................###...............',
+    '............................##########..........',
+    '################################################'
+  ], build: (c, dx) => ({ obstacles: [makeObstacle('stoneBlock', c, 360 + dx, 51, 23)] }) },
+  // bẫy hố chông — tới gần mới bật lên; gò đất 1 ô phía trước
+  { easy: true, terrain: [
+    '.........########...............................',
+    '################################################'
+  ], build: (c, dx) => ({ hazards: [makeHazard('trap', 'spikePit', c, 492 + dx, {
     harmful: false, triggerDistance: 58
   })] }) },
   // mành lau — bắt buộc lướt (dash)
@@ -111,11 +132,18 @@ const OBSTACLE_GROUPS = [
   // lính canh — đi tuần, đâm kích khi người chơi tới gần. Có 2 nhóm: nhóm
   // thứ 2 thay chỗ kiệu quan `roller` cũ (kiệu giờ là mini-boss chunk 11 —
   // quyết định team D5), đứng LỆCH vị trí trong chunk so với nhóm 1 (đầu
-  // chunk thay vì cuối chunk; tránh các vị trí sách 258–558).
-  { build: (c, dx) => ({ enemies: [
+  // chunk thay vì cuối chunk; tránh các vị trí sách 258–558). Lính đứng gác
+  // trên gò đất 1 ô (đoạn tuần tra kẹp trong gò — makeEnemy).
+  { terrain: [
+    '.....................................##########.',
+    '################################################'
+  ], build: (c, dx) => ({ enemies: [
     makeEnemy(worldX(c, 624 + dx), 22, 40, 2, false)
   ] }) },
-  { build: (c, dx) => ({ enemies: [
+  { terrain: [
+    '.........########...............................',
+    '################################################'
+  ], build: (c, dx) => ({ enemies: [
     makeEnemy(worldX(c, 200 + dx), 22, 40, 2, false)
   ] }) },
   // lính thu thuế — ném túi tiền
@@ -212,10 +240,20 @@ function randomizeObstacles() {
   const easy = OBSTACLE_GROUPS.filter(group => group.easy);
   const first = easy[Math.floor(Math.random() * easy.length)];
   const order = [first, ...shuffle(OBSTACLE_GROUPS.filter(group => group !== first))];
+  const plan = order.map((group, index) => {
+    const range = group.terrain ? TERRAIN_JITTER : JITTER;
+    let dx = Math.round((Math.random() * 2 - 1) * range);
+    // Nhóm có địa hình lệch đúng bội số 1 ô để vật trong nhóm khớp bậc đất.
+    if (group.terrain) dx = Math.round(dx / TERRAIN_CELL) * TERRAIN_CELL;
+    return { group, chunk: index + 1, dx };
+  });
+  // Địa hình phải có TRƯỚC khi dựng nội dung: vật/lính đứng theo groundYAt().
+  setTerrain(buildTerrain(plan.filter(item => item.group.terrain).map(item => ({
+    chunk: item.chunk, rows: item.group.terrain, shift: item.dx / TERRAIN_CELL
+  })), LEVEL.chunks));
   const layout = { obstacles: [], hazards: [], enemies: [] };
-  order.forEach((group, index) => {
-    const dx = Math.round((Math.random() * 2 - 1) * JITTER);
-    const built = group.build(index + 1, dx);
+  plan.forEach(({ group, chunk, dx }) => {
+    const built = group.build(chunk, dx);
     layout.obstacles.push(...(built.obstacles || []));
     layout.hazards.push(...(built.hazards || []));
     layout.enemies.push(...(built.enemies || []));
@@ -226,8 +264,16 @@ function randomizeObstacles() {
 // Mốc câu hỏi chặn đường (TT-QUIZ-01): chạm `x` thì physics.js mở câu hỏi
 // `stt` (QUESTIONS trong questions-data.js) 1 lần. `npc` = id NPC sắp gặp (màn
 // 2 — tiêu đề khung "Câu hỏi về …") hoặc null (màn 1).
+// `footY` = mặt đất dưới bia đá (địa hình TT-TERRAIN-01).
 function makeQuiz(chunk, localX, stt, npc = null) {
-  return { x: worldX(chunk, localX), stt, npc, done: false };
+  const x = worldX(chunk, localX);
+  return { x, footY: groundYAt(x), stt, npc, done: false };
+}
+
+// Bình thư lơ lửng `lift` px trên mặt đất tại chỗ đặt.
+function makeBook(chunk, localX, lift) {
+  const x = worldX(chunk, localX);
+  return { x, y: groundYAt(x) - lift, collected: false };
 }
 
 function pick(list) {
@@ -246,19 +292,19 @@ function level1Quizzes() {
 // 4 câu hỏi chặn đường).
 function level1Content(options) {
   const testP2 = options.layout === 'p2';
-  const layout = testP2 ? p2TestLayout() : { ...randomizeObstacles(), holes: [] };
-  return {
+  const layout = testP2 ? p2TestLayout() : { ...randomizeObstacles(), holes: terrainHoles() };
+  const content = {
     // 12 chướng ngại vật (kể cả mini-boss) được XẾP NGẪU NHIÊN mỗi lượt chơi —
     // xem randomizeObstacles() ở trên.
     obstacles: keepValidBridges(layout.obstacles, layout.holes),
     hazards: testP2 ? layout.hazards : [...layout.hazards, makeMiniBoss()],
     holes: layout.holes,
     books: testP2 ? [] : [
-      { x: worldX(2, 390), y: GROUND_Y - 56, collected: false },
-      { x: worldX(3, 390), y: GROUND_Y - 52, collected: false },
-      { x: worldX(4, 420), y: GROUND_Y - 87, collected: false },
-      { x: worldX(7, 258), y: GROUND_Y - 60, collected: false },
-      { x: worldX(7, 558), y: GROUND_Y - 72, collected: false }
+      makeBook(2, 390, 56),
+      makeBook(3, 390, 52),
+      makeBook(4, 420, 87),
+      makeBook(7, 258, 60),
+      makeBook(7, 558, 72)
     ],
     // Boss Tô Định (makeEnemy(..., 90, 80, 5, true), BOSS_TO_DINH_CHARIOT)
     // KHÔNG còn ở màn 1 — để dành cho màn 3 (TT-NPC-01).
@@ -266,6 +312,29 @@ function level1Content(options) {
     npcs: [],
     quizzes: testP2 ? [] : level1Quizzes()
   };
+  checkTerrainFootprints(content);
+  return content;
+}
+
+// Vật tĩnh / hazard / NPC / bia câu hỏi không được đứng vắt qua bậc đất (chân
+// phải nằm trọn trên 1 độ cao) — sai thì cảnh báo để phát hiện khi chỉnh
+// layout (TT-TERRAIN-01). Cầu (requiresHole) nằm trên hố nên bỏ qua.
+function checkTerrainFootprints(content) {
+  const things = [
+    ...content.obstacles.filter(item => !item.requiresHole).map(item => ({ name: item.type, x: item.x, w: item.w })),
+    ...content.hazards.map(item => ({ name: item.sprite, x: item.x, w: item.w })),
+    ...content.npcs.map(item => ({ name: item.id, x: item.x, w: item.w })),
+    ...content.quizzes.map(item => ({ name: `bia câu ${item.stt}`, x: item.x - 16, w: 32 }))
+  ];
+  things.forEach(({ name, x, w }) => {
+    const level = terrainLevelAt(x);
+    for (let px = x; px < x + w; px += TERRAIN_CELL / 2) {
+      if (terrainLevelAt(px) !== level || terrainLevelAt(x + w - 1) !== level) {
+        console.warn(`${name} ở x=${Math.round(x)} vắt qua bậc đất`);
+        return;
+      }
+    }
+  });
 }
 
 // NPC màn 2: `centerX` = tâm = pivot bottom-center; x/y/w/h chỉ là hộp F2
@@ -275,7 +344,7 @@ function makeNpc(id, chunk, localX) {
   const centerX = worldX(chunk, localX);
   return {
     id, centerX,
-    x: centerX - NPC_RULES.w / 2, y: GROUND_Y - NPC_RULES.h, w: NPC_RULES.w, h: NPC_RULES.h,
+    x: centerX - NPC_RULES.w / 2, y: groundYAt(centerX) - NPC_RULES.h, w: NPC_RULES.w, h: NPC_RULES.h,
     met: false, talking: false, fade: 1
   };
 }
@@ -317,18 +386,56 @@ function makeCaptors(npc) {
 // về Trưng Nhị (chunk 8) -> Trưng Nhị (chunk 9) -> về đích cuối chunk 9. Mỗi
 // NPC bị 2 lính canh vây (makeCaptors). Hố căn lưới tile 16px; không đặt hố
 // trong ~130px đầu chunk (chỗ hồi sinh sau khi rơi = đầu chunk + 72).
+// Địa hình (TT-TERRAIN-01, DESIGN_BASELINE): lưới chữ 48 ô/chunk, '#' đất,
+// hàng cuối = GROUND_Y; '.' ở hàng cuối = HỐ (state.holes sinh từ lưới).
+// Chunk không khai báo = phẳng. Quanh NPC (chunk 3/6/9 x 560) giữ phẳng.
+const LEVEL2_TERRAIN = {
+  // chunk 1: gò đất 1 ô giữa hố chông và lính canh
+  1: [
+    '........................######..................',
+    '################################################'
+  ],
+  // chunk 2: đồi 2 bậc — đứng trên đồi thì túi tiền của lính thu thuế đập vào sườn đồi
+  2: [
+    '.........#####..................................',
+    '.......#########................................',
+    '################################################'
+  ],
+  // chunk 4: hố hở 64px (x 400) — nhảy qua, ngay sau là thanh trượt bắt buộc lướt
+  4: [
+    '#########################....###################'
+  ],
+  // chunk 5: lính canh gác trên gò đất 1 ô
+  5: [
+    '...............########.........................',
+    '################################################'
+  ],
+  // chunk 6: đồi 2 bậc trước khối đá
+  6: [
+    '...............####.............................',
+    '.............########...........................',
+    '################################################'
+  ],
+  // chunk 7: hố 96px (x 160) có cầu bắc qua
+  7: [
+    '##########......################################'
+  ],
+  // chunk 8: đồi 2 bậc trước bia câu hỏi về Trưng Nhị
+  8: [
+    '............................####................',
+    '..........................########..............',
+    '################################################'
+  ]
+};
+
 function level2Content() {
+  setTerrain(buildTerrain(Object.entries(LEVEL2_TERRAIN).map(([chunk, rows]) => ({ chunk: Number(chunk), rows })), LEVEL.chunks));
   const npcs = [
     makeNpc('thiSach', 3, 560),
     makeNpc('leChan', 6, 560),
     makeNpc('trungNhi', 9, 560)
   ];
-  const holes = [
-    // chunk 4: hố hở — phải nhảy qua, ngay sau đó là thanh trượt bắt buộc lướt.
-    { x: worldX(4, 400), w: 64 },
-    // chunk 7: hố có cầu bắc qua.
-    { x: worldX(7, 160), w: 96 }
-  ];
+  const holes = terrainHoles();
   const obstacles = [
     // chunk 1–2 — làng
     makeObstacle('fenceLow', 1, 150, 40, 18),
@@ -379,6 +486,7 @@ function level2Content() {
   const quizzes = npcs.map(npc => makeQuiz(...QUIZ.level2Spots[npc.id], pick(NPC_QUESTION_POOLS[npc.id]), npc.id));
   const content = { obstacles: keepValidBridges(obstacles, holes), hazards, holes, books: [], enemies, npcs, quizzes };
   checkNpcClearance(content);
+  checkTerrainFootprints(content);
   return content;
 }
 
@@ -471,6 +579,8 @@ function createSkillState(rewards) {
 // State của 1 lượt chơi màn đang chọn (LEVEL, config.js). `options.score` =
 // điểm mang sang từ màn trước; máu luôn đầy khi bắt đầu màn (DESIGN_BASELINE).
 export function createLevelState(options = {}) {
+  // Mặc định phẳng; level1Content/level2Content đặt địa hình của màn.
+  setTerrain(null);
   const content = LEVEL.id === 3 ? level3Content(options)
     : LEVEL.id === 2 ? level2Content() : level1Content(options);
   return {

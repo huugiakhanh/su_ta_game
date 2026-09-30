@@ -4,10 +4,11 @@ import { images } from './assets.js';
 import { state, bossAlive, enemyArtKey } from './state.js';
 import { debug } from './input.js';
 import { getAnimMeta, frameIndex } from './animation.js';
+import { groundYAt, terrainLevelAt } from './geometry.js';
 import {
-  LOGICAL_W, LOGICAL_H, MAX_VIEW_W, VIEW_W, VIEW_H, setViewWidth, LEVEL, GROUND_Y,
+  LOGICAL_W, LOGICAL_H, MAX_VIEW_W, VIEW_W, VIEW_H, setViewWidth, LEVEL, GROUND_Y, TERRAIN_CELL,
   OBSTACLE_TYPES, BOOK_SPRITE_ID, BOOK_FPS, BOOK_BOB_AMPLITUDE, ZONE_BLEND_WIDTH, SKY_PARALLAX, FAR_HILLS, MID_PARALLAX, NPC_SPRITES,
-  SKY_FALLBACK_COLOR, GROUND_FALLBACK_COLOR, GROUND_DECOR_DENSITY,
+  SKY_FALLBACK_COLOR, GROUND_FALLBACK_COLOR, GROUND_DECOR_DENSITY, GROUND_TILE_REGION,
   HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES,
   PROJECTILE_MAX_RANGE, PROJECTILE_FADE_RANGE,
   PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, PLAYER_JUMP_APEX_VY,
@@ -236,60 +237,213 @@ function drawTileSegments(image, rect, columnX, screenY, segments, camera) {
   });
 }
 
-// Tile surface + fill của 1 cột theo vùng (biến thể tất định theo cột).
-function columnTiles(region, column) {
-  const hash = tileHash(column);
-  return { hash, surface: pick(region?.surface, hash), fill: pick(region?.fill, hash >>> 8) };
+// Mặt đất dùng CHUNG 1 bộ tile cho mọi vùng/màn (GROUND_TILE_REGION) và chỉ
+// tile ĐẦU TIÊN của mỗi vai trò — không đổi biến thể theo cột, không đổi theo
+// vùng (team 30/09). Decor vẫn rải tất định theo cột (tileHash).
+function groundRegion(tileset) {
+  return tileset.regions[GROUND_TILE_REGION] || null;
 }
 
-// Mặt đất lát tileset theo vùng: hàng `surface` top = GROUND_Y, hàng `fill`
-// ngay dưới (bị cắt ở đáy khung), decor 16x8 thưa trên mép cỏ. Cột tile căn
-// theo lưới world 16px, vùng lấy theo world X của cột — đổi tile DỨT KHOÁT tại
-// ranh giới vùng (task card §3.2; team chốt lại sau khi thử dải dither). Chỉ
-// vẽ các cột trong viewport.
+function groundTile(region, role) {
+  return region?.[role]?.[0] || null;
+}
+
+// Tile surface + fill của 1 cột (hash chỉ còn dùng cho decor).
+function columnTiles(region, column) {
+  return { hash: tileHash(column), surface: groundTile(region, 'surface'), fill: groundTile(region, 'fill') };
+}
+
+// Decor 16x8 thưa (GROUND_DECOR_DENSITY) trên mép cỏ, đáy = `topY`, không va chạm.
+function drawGroundDecor(image, region, hash, columnX, topY, camera) {
+  if (((hash >>> 16) & 0xff) >= 256 * GROUND_DECOR_DENSITY) return;
+  const decor = pick(region.decoration, hash >>> 24);
+  if (decor) ctx.drawImage(image, decor.x, decor.y, decor.w, decor.h, columnX - camera, topY - decor.h, decor.w, decor.h);
+}
+
+// ---- Ghép tile địa hình tự động (bộ TILESET_TT_TERRAIN, TT-TERRAIN-01) ----
+// Đỉnh cột đất (y) theo địa hình; cột hố = Infinity (như vực sâu vô tận —
+// cột đất cạnh hố lộ sườn tới đáy khung). Hố đọc từ state.holes nên hố khai
+// báo tay (layout thử `?layout=p2`) cũng ghép đúng.
+function columnTop(column) {
+  const center = column * TERRAIN_CELL + TERRAIN_CELL / 2;
+  if ((state.holes || []).some(hole => center > hole.x && center < hole.x + hole.w)) return Infinity;
+  return groundYAt(column * TERRAIN_CELL);
+}
+
+// Vai trò tile của ô (cột `column`, hàng có mép trên `y`) — chỉ theo đỉnh cột
+// này và 2 cột bên cạnh:
+//   hàng đỉnh: surface | corner-left/right (bên đó thấp hơn) | corner-single (cả 2 bên thấp hơn)
+//   thân, cao hơn cột bên cạnh: wall-left/right | wall-single
+//   thân, ngang đỉnh cột bên cạnh thấp hơn: inner-left/right (cỏ bên đó vắt vào góc)
+//   còn lại: fill
+// Trả null nếu ô không có đất. Thân vừa lộ sườn 1 bên vừa ngang đỉnh bên kia
+// thì ưu tiên sườn (không có tile ghép 2 kiểu).
+export function terrainTileRole(column, y) {
+  const top = columnTop(column);
+  if (top === Infinity || y < top) return null;
+  const leftTop = columnTop(column - 1);
+  const rightTop = columnTop(column + 1);
+  const openLeft = y < leftTop;
+  const openRight = y < rightTop;
+  if (y === top) {
+    if (openLeft && openRight) return 'corner-single';
+    if (openLeft) return 'corner-left';
+    return openRight ? 'corner-right' : 'surface';
+  }
+  if (openLeft && openRight) return 'wall-single';
+  if (openLeft) return 'wall-left';
+  if (openRight) return 'wall-right';
+  const innerLeft = y === leftTop && leftTop > top;
+  const innerRight = y === rightTop && rightTop > top;
+  if (innerLeft !== innerRight) return innerLeft ? 'inner-left' : 'inner-right';
+  return 'fill';
+}
+
+// Sheet thiếu vai trò nào thì lùi về vai trò gần nhất.
+const TERRAIN_ROLE_FALLBACK = {
+  'corner-single': 'corner-left', 'corner-left': 'surface', 'corner-right': 'surface',
+  'wall-single': 'wall-left', 'wall-left': 'fill', 'wall-right': 'fill',
+  'inner-left': 'fill', 'inner-right': 'fill'
+};
+
+function terrainRect(sheet, role) {
+  let current = role;
+  while (current && !sheet.roles[current]) current = TERRAIN_ROLE_FALLBACK[current];
+  return current ? sheet.roles[current] : null;
+}
+
+// Vẽ mặt đất bằng bộ tile ghép địa hình: mỗi cột từ đỉnh xuống đáy khung,
+// vai trò từng ô theo terrainTileRole. Decor (cỏ, lau) lấy từ tileset cũ, chỉ
+// rải trên ô `surface`.
+function drawGroundAutotile(sheet, first, last, camera) {
+  const decorRegion = images.maps.tileset ? groundRegion(images.maps.tileset) : null;
+  for (let column = first; column <= last; column++) {
+    const top = columnTop(column);
+    if (top === Infinity) continue;
+    const x = column * TERRAIN_CELL - camera;
+    for (let y = top; y < VIEW_H; y += TERRAIN_CELL) {
+      const rect = terrainRect(sheet, terrainTileRole(column, y));
+      if (rect) ctx.drawImage(sheet.image, rect.x, rect.y, rect.w, rect.h, x, y, rect.w, rect.h);
+    }
+    if (decorRegion && terrainTileRole(column, top) === 'surface') {
+      drawGroundDecor(images.maps.tileset.image, decorRegion, tileHash(column), column * TERRAIN_CELL, top, camera);
+    }
+  }
+}
+
+// F2: tên tắt vai trò tile từng ô (soát ghép địa hình — chạy cả khi chưa có
+// bộ tile mới).
+const TERRAIN_ROLE_LABELS = {
+  surface: 'S', fill: '', 'corner-left': 'CL', 'corner-right': 'CR', 'corner-single': 'C1',
+  'wall-left': 'WL', 'wall-right': 'WR', 'wall-single': 'W1', 'inner-left': 'IL', 'inner-right': 'IR'
+};
+
+function drawTerrainDebug() {
+  const camera = Math.round(state.cameraX);
+  ctx.save();
+  ctx.font = '5px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ffffff';
+  const first = Math.floor(camera / TERRAIN_CELL);
+  const last = Math.floor((camera + VIEW_W - 1) / TERRAIN_CELL);
+  for (let column = first; column <= last; column++) {
+    const top = columnTop(column);
+    for (let y = Math.min(top, GROUND_Y); y < VIEW_H; y += TERRAIN_CELL) {
+      const label = TERRAIN_ROLE_LABELS[terrainTileRole(column, y)];
+      if (label) ctx.fillText(label, column * TERRAIN_CELL - camera + TERRAIN_CELL / 2, y + 9);
+    }
+  }
+  ctx.restore();
+}
+
+// 1 cột bậc đất cao `level` ô bằng tile Z1 cũ (xem drawGround): đỉnh
+// `surface`, thân `fill`, sườn lộ ra phủ dải bóng tạm.
+function drawRaisedColumn(image, region, column, level, camera) {
+  const columnX = column * TERRAIN_CELL;
+  const top = GROUND_Y - level * TERRAIN_CELL;
+  const { hash, surface, fill } = columnTiles(region, column);
+  // Đỉnh cột bên cạnh: sườn chỉ lộ ra ở phần cao hơn cột đó.
+  const neighborTop = { left: groundYAt(columnX - 1), right: groundYAt(columnX + TERRAIN_CELL) };
+  const openLeft = neighborTop.left > top;
+  const openRight = neighborTop.right > top;
+  const x = columnX - camera;
+  if (surface) ctx.drawImage(image, surface.x, surface.y, surface.w, surface.h, x, top, surface.w, surface.h);
+  for (let y = top + TERRAIN_CELL; y < VIEW_H; y += TERRAIN_CELL) {
+    if (fill) ctx.drawImage(image, fill.x, fill.y, fill.w, fill.h, x, y, fill.w, fill.h);
+  }
+  // Dải bóng dọc phần sườn lộ ra (sáng từ trên-trái như lòng hố).
+  [['left', openLeft], ['right', openRight]].forEach(([name, open]) => {
+    if (!open) return;
+    const [width, alpha] = TERRAIN_SIDE_SHADE[name];
+    ctx.fillStyle = `rgba(10, 6, 4, ${alpha})`;
+    ctx.fillRect(name === 'left' ? x : x + TERRAIN_CELL - width, top + 3, width, neighborTop[name] - top - 3);
+  });
+  if (!openLeft && !openRight) drawGroundDecor(image, region, hash, columnX, top, camera);
+}
+
+// Mặt đất lát tileset (1 bộ tile chung — groundRegion): hàng `surface` top =
+// GROUND_Y, hàng `fill` ngay dưới (bị cắt ở đáy khung), decor 16x8 thưa trên
+// mép cỏ. Cột tile căn theo lưới world 16px. Chỉ vẽ các cột trong viewport.
 // Hố: không vẽ tile trong hố; tile `left-edge`/`right-edge` (nửa đặc, nửa
 // trong suốt) đặt sao cho phần đất kết thúc ĐÚNG mép hố (khớp pointHasGround)
 // — quyết định team G6.
+// Bậc đất (TT-TERRAIN-01): bộ tile ghép địa hình TILESET_TT_TERRAIN (IN_GAME)
+// -> ghép tự động (drawGroundAutotile). Phần tile Z1 bên dưới chỉ là dự phòng
+// khi không nạp được bộ đó: cột bậc vẽ bằng surface/fill + dải bóng
+// (drawRaisedColumn), hố dùng tile mép nửa ô như trên.
+const TERRAIN_SIDE_SHADE = { left: [2, .18], right: [3, .32] };
+
 function drawGround() {
   const tileset = images.maps.tileset;
   const camera = Math.round(state.cameraX);
   const holes = state.holes || [];
+  const first = Math.floor(camera / TERRAIN_CELL);
+  const last = Math.floor((camera + VIEW_W - 1) / TERRAIN_CELL);
   if (!tileset) {
     ctx.fillStyle = GROUND_FALLBACK_COLOR;
-    ctx.fillRect(0, GROUND_Y, VIEW_W, VIEW_H - GROUND_Y);
+    for (let column = first; column <= last; column++) {
+      const top = groundYAt(column * TERRAIN_CELL);
+      ctx.fillRect(column * TERRAIN_CELL - camera, top, TERRAIN_CELL, VIEW_H - top);
+    }
     return;
   }
-  const { image, tileW, tileH, regions } = tileset;
+  // Có bộ tile ghép địa hình (TILESET_TT_TERRAIN) -> ghép tự động; phần dưới
+  // là cách vẽ bằng tile Z1 cũ, chỉ dùng khi chưa có bộ mới.
+  if (images.maps.terrain) {
+    drawGroundAutotile(images.maps.terrain, first, last, camera);
+    return;
+  }
+  const { image, tileW, tileH } = tileset;
+  const region = groundRegion(tileset);
+  if (!region) return;
   const half = tileW / 2;
   const surfaceGaps = holes.map(hole => [hole.x - half, hole.x + hole.w + half]);
   const fillGaps = holes.map(hole => [hole.x, hole.x + hole.w]);
-  const first = Math.floor(camera / tileW);
-  const last = Math.floor((camera + VIEW_W - 1) / tileW);
 
   for (let column = first; column <= last; column++) {
     const columnX = column * tileW;
-    const region = regions[LEVEL.zones[zoneIndexAt(columnX)].tiles];
-    if (!region) continue;
+    const level = terrainLevelAt(columnX);
+    if (level >= 1) {
+      drawRaisedColumn(image, region, column, level, camera);
+      continue;
+    }
     const { hash, surface, fill } = columnTiles(region, column);
     const surfaceSegments = subtractIntervals(columnX, columnX + tileW, surfaceGaps);
     if (surface) drawTileSegments(image, surface, columnX, GROUND_Y, surfaceSegments, camera);
     if (fill) drawTileSegments(image, fill, columnX, GROUND_Y + tileH, subtractIntervals(columnX, columnX + tileW, fillGaps), camera);
     // Decor chỉ trên cột đất nguyên vẹn, đáy decor = GROUND_Y, không va chạm.
     const intact = surfaceSegments.length === 1 && surfaceSegments[0][1] - surfaceSegments[0][0] === tileW;
-    if (intact && ((hash >>> 16) & 0xff) < 256 * GROUND_DECOR_DENSITY) {
-      const decor = pick(region.decoration, hash >>> 24);
-      if (decor) ctx.drawImage(image, decor.x, decor.y, decor.w, decor.h, columnX - camera, GROUND_Y - decor.h, decor.w, decor.h);
-    }
+    if (intact) drawGroundDecor(image, region, hash, columnX, GROUND_Y, camera);
   }
 
   holes.forEach(hole => {
     const edges = [
-      ['left-edge', hole.x - half, hole.x - 1],
-      ['right-edge', hole.x + hole.w - half, hole.x + hole.w]
+      ['left-edge', hole.x - half],
+      ['right-edge', hole.x + hole.w - half]
     ];
-    edges.forEach(([role, x, sampleX]) => {
+    edges.forEach(([role, x]) => {
       if (x + tileW < camera || x > camera + VIEW_W) return;
-      const rect = pick(regions[LEVEL.zones[zoneIndexAt(sampleX)].tiles]?.[role], 0);
+      const rect = groundTile(region, role);
       if (rect) ctx.drawImage(image, rect.x, rect.y, rect.w, rect.h, Math.round(x - camera), GROUND_Y, rect.w, rect.h);
     });
   });
@@ -343,7 +497,7 @@ function drawQuizSteles(time) {
   state.quizzes.forEach(quiz => {
     const left = Math.round(quiz.x - pivot.x - state.cameraX);
     if (left + fw < 0 || left > VIEW_W) return;
-    const top = GROUND_Y - pivot.y;
+    const top = (quiz.footY ?? GROUND_Y) - pivot.y;
     const done = quiz.done && stele.states.done;
     const image = done ? stele.states.done : (stele.states.active || stele.image);
     const frame = done ? 0 : Math.floor(time * fps) % frames;
@@ -370,14 +524,17 @@ function drawLandmarkFallback(left, top, w, h) {
   ctx.fill();
 }
 
-// Lòng hố (state.holes). Tileset có vai trò `pit-top` (hàng 248–264) +
-// `pit-deep` (hàng dưới, còn thấy 6px) của vùng thì vẽ tile đó (Codex 29/09,
-// cả 5 vùng — docs/CODEX_PROMPT_TILESET_PIT.md). Vùng thiếu tile thì dự phòng
-// bằng tile `fill` (đất) của vùng phủ các dải tối dần theo bậc (không gradient
+// Lòng hố (state.holes). Bộ tile chung có vai trò `pit-top` (hàng 248–264) +
+// `pit-deep` (hàng dưới, còn thấy 6px) thì vẽ tile đó (Codex 29/09 —
+// docs/CODEX_PROMPT_TILESET_PIT.md). Thiếu tile thì dự phòng
+// bằng tile `fill` (đất) phủ các dải tối dần theo bậc (không gradient
 // mịn), vách trái trong bóng + bóng dưới mép cỏ. Vẽ sau drawGround, trước vật cản
 // (cầu đè lên hố).
 const PIT_SHADE_BANDS = [[0, 4, .35], [4, 10, .55], [10, 16, .72], [16, 22, .88]];
 const PIT_WALL = 3;
+// Hố trống (bộ tile ghép địa hình): [y0, y1, alpha] tính từ GROUND_Y — trên
+// còn thấy nền, xuống đáy tối dần (DESIGN_BASELINE).
+const HOLE_DEPTH_BANDS = [[0, 6, .15], [6, 12, .35], [12, 17, .55], [17, 22, .75]];
 
 function drawHoles() {
   const tileset = images.maps.tileset;
@@ -392,22 +549,29 @@ function drawHoles() {
       ctx.fillRect(left, GROUND_Y, width, depth);
       return;
     }
-    const { image, tileW, tileH, regions } = tileset;
+    // Có bộ tile ghép địa hình: hố để TRỐNG (thấy nền phía sau) — 2 mép hố đã
+    // là vách đất (corner/wall), không lát tile lòng hố (người dùng 30/09:
+    // tile lòng hố khác màu nhìn không ra hố). pit-top/pit-deep không dùng.
+    // Chỉ phủ lớp tối mờ tăng dần xuống đáy (theo bậc, không gradient mịn)
+    // cho có chiều sâu.
+    const sheet = images.maps.terrain;
+    if (sheet) return;
+    const { tileW, tileH } = tileset;
+    const image = sheet ? sheet.image : tileset.image;
+    const region = sheet ? sheet.roles : groundRegion(tileset);
+    if (!region) return;
+    const tile = role => (sheet ? sheet.roles[role] || null : groundTile(region, role));
+    const top = tile('pit-top');
+    const deep = tile('pit-deep');
+    const fill = tile('fill');
     let pitTiles = false;
     for (let columnX = Math.floor(hole.x / tileW) * tileW; columnX < hole.x + hole.w; columnX += tileW) {
-      const region = regions[LEVEL.zones[zoneIndexAt(columnX)].tiles];
-      if (!region) continue;
-      const column = columnX / tileW;
-      const hash = tileHash(column);
       const segments = [[Math.max(columnX, hole.x), Math.min(columnX + tileW, hole.x + hole.w)]];
-      const top = pick(region['pit-top'], hash);
-      const deep = pick(region['pit-deep'], hash >>> 8);
       if (top && deep) {
         pitTiles = true;
         drawTileSegments(image, top, columnX, GROUND_Y, segments, camera);
         drawTileSegments(image, deep, columnX, GROUND_Y + tileH, segments, camera);
       } else {
-        const fill = columnTiles(region, column).fill;
         if (fill) {
           drawTileSegments(image, fill, columnX, GROUND_Y, segments, camera);
           drawTileSegments(image, fill, columnX, GROUND_Y + tileH, segments, camera);
@@ -622,7 +786,7 @@ function drawEnemies() {
   });
 }
 
-// NPC màn 2: sprite 8-bit x1, pivot bottom-center tại (centerX, GROUND_Y),
+// NPC màn 2: sprite 8-bit x1, pivot bottom-center tại (centerX, mặt đất = npc.y + npc.h),
 // quay về phía người chơi. `idle`, hoặc `talk` khi đang nói thoại — cả hai
 // lặp theo đồng hồ chung `time` (game tạm dừng lúc hội thoại nên không dùng
 // đồng hồ riêng tick trong physics). Gặp xong thì mờ dần theo npc.fade.
@@ -633,7 +797,7 @@ function drawNpcs(time) {
     const pivotX = Math.round(npc.centerX - state.cameraX);
     if (pivotX < -60 || pivotX > VIEW_W + 60) return;
     const pose = { anim: { name: npc.talking ? 'talk' : 'idle', time } };
-    const drawn = sprite && drawAnimated(sprite.id, sprite.anims, null, pose, pivotX, GROUND_Y, facingDirection(npc.centerX, 0, true), npc.fade);
+    const drawn = sprite && drawAnimated(sprite.id, sprite.anims, null, pose, pivotX, npc.y + npc.h, facingDirection(npc.centerX, 0, true), npc.fade);
     if (!drawn) {
       drawPlaceholder(npc, npc.fade);
       debugLabels.set(npc, `${npc.id} (placeholder)`);
@@ -921,5 +1085,8 @@ export function draw(time = 0) {
     ctx.fillStyle = `rgba(0, 0, 0, ${state.cutscene.fade})`;
     ctx.fillRect(0, 0, VIEW_W, VIEW_H);
   }
-  if (debug.enabled) drawDebugOverlay();
+  if (debug.enabled) {
+    drawTerrainDebug();
+    drawDebugOverlay();
+  }
 }
