@@ -36,7 +36,6 @@ su_ta_game/
 │       ├── css/levels/*.css
 │       ├── js/{home,history}.js
 │       ├── js/levels/trung-trac/     # ES modules: config/state/physics/render/main...
-│       ├── js/levels/level-test.js   # level khác — vẫn 1 file
 │       └── assets/images/...
 ├── docs/
 ├── tests/

@@ -22,7 +22,6 @@ Project chỉ hỗ trợ PostgreSQL.
 - `/` — trang chủ.
 - `/history` — thư viện lịch sử.
 - `/gameplay/levels/trung-trac` — màn thử Trưng Trắc.
-- `/gameplay/levels/level-test` — prototype điều khiển cơ bản.
 - Các URL gameplay cũ vẫn được giữ để không làm hỏng liên kết hiện có.
 - `/login`, `/register` — API xác thực hiện tại; bản mới `/api/auth/login`, `/api/auth/register` cũng được hỗ trợ.
 

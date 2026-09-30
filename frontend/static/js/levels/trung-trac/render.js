@@ -1,23 +1,28 @@
-// Toàn bộ vẽ canvas: nền parallax, landmark, obstacle, item, enemy, nhân vật, HUD in-canvas.
+// Toàn bộ vẽ canvas: nền parallax, mặt đất, cổng đích, obstacle, item, enemy, nhân vật, HUD in-canvas.
 
 import { images } from './assets.js';
-import { state } from './state.js';
+import { state, bossAlive, enemyArtKey } from './state.js';
 import { debug } from './input.js';
 import { getAnimMeta, frameIndex } from './animation.js';
+import { groundYAt, terrainLevelAt } from './geometry.js';
 import {
-  LOGICAL_W, LOGICAL_H, VIEW_W, VIEW_H, CHUNK_W, LEVEL_CHUNKS, OBSTACLE_GROUND_SINK, GROUND_Y,
-  BACKDROP_LAYERS, LANDMARKS,
+  LOGICAL_W, LOGICAL_H, MAX_VIEW_W, VIEW_W, VIEW_H, setViewWidth, LEVEL, GROUND_Y, TERRAIN_CELL,
+  OBSTACLE_TYPES, BOOK_SPRITE_ID, BOOK_FPS, BOOK_BOB_AMPLITUDE, ZONE_BLEND_WIDTH, SKY_PARALLAX, FAR_HILLS, MID_PARALLAX, NPC_SPRITES,
+  SKY_FALLBACK_COLOR, GROUND_FALLBACK_COLOR, GROUND_DECOR_DENSITY, GROUND_TILE_REGION,
   HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES,
   PROJECTILE_MAX_RANGE, PROJECTILE_FADE_RANGE,
-  PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, PLAYER_JUMP_APEX_VY
+  PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, PLAYER_JUMP_APEX_VY,
+  ATTACK_COOLDOWN, SKILLS, ARROW_RAIN_SPRITE, BOSS_TD, VICTORY_FLAG_ID, VICTORY_FLAG_ATTACH, WALL_ARROWS,
+  QUIZ_STELE_ID
 } from './config.js';
 
 export const canvas = document.getElementById('gameCanvas');
 export const ctx = canvas.getContext('2d');
 
-// Canvas luôn ở độ phân giải LOGIC; fitCanvas() chỉ đổi cỡ HIỂN THỊ (CSS).
-canvas.width = LOGICAL_W;
-canvas.height = LOGICAL_H;
+// Canvas luôn ở độ phân giải LOGIC (VIEW_W x VIEW_H); fitCanvas() chọn VIEW_W
+// theo tỉ lệ cửa sổ và cỡ HIỂN THỊ (CSS).
+canvas.width = VIEW_W;
+canvas.height = VIEW_H;
 ctx.imageSmoothingEnabled = false;
 
 // Tên animation + ô đang vẽ của từng entity trong frame hiện tại — chỉ để lớp
@@ -28,8 +33,12 @@ const debugLabels = new Map();
 // lệnh vẽ vẫn dùng toạ độ LOGIC nhờ setTransform.
 let backingScale = 0;
 
-// Phóng canvas logic 480x270 PHỦ KÍN vùng trống (giữ tỉ lệ 16:9, scale lẻ được
-// phép — quyết định của team 25/09 thay cho letterbox bội số nguyên).
+// Phóng canvas logic PHỦ KÍN vùng trống (scale lẻ được phép — quyết định của
+// team 25/09 thay cho letterbox bội số nguyên). Chiều cao logic cố định 270:
+// scale lấy theo chiều cao còn trống, rồi chiều RỘNG logic (VIEW_W) giãn cho
+// canvas phủ hết chiều ngang (team 26/09), kẹp trong [LOGICAL_W, MAX_VIEW_W].
+// Cửa sổ hẹp hơn 16:9 -> VIEW_W = 480 và scale theo chiều ngang như cũ; rộng
+// hơn MAX_VIEW_W -> có viền hai bên.
 // Để pixel vẫn đều khi scale lẻ: vẽ vào bộ đệm ở bội số NGUYÊN N = ceil(scale
 // x DPR) bằng nearest-neighbor (mỗi pixel logic = N x N pixel thật), rồi để
 // trình duyệt thu nhẹ bộ đệm về cỡ hiển thị bằng nội suy mượt. Khi cỡ hiển thị
@@ -48,76 +57,455 @@ export function fitCanvas() {
   const border = 4; // viền 2px hai bên của .stage-wrap
   const availW = Math.max(1, document.documentElement.clientWidth - padX - border);
   const availH = Math.max(1, window.innerHeight - padY - border
-    - blockH('.hud') - blockH('.mobile-controls') - blockH('.help'));
-  const scale = Math.min(availW / LOGICAL_W, availH / LOGICAL_H);
+    - blockH('.hud') - blockH('.help'));
+  const fitHeight = availH / LOGICAL_H;
+  // ceil: canvas rộng ĐÚNG availW (scale giảm < 1 pixel logic so với fitHeight).
+  const viewW = Math.min(MAX_VIEW_W, Math.max(LOGICAL_W, Math.ceil(availW / fitHeight - 1e-6)));
+  const scale = Math.min(availW / viewW, fitHeight);
   const dpr = window.devicePixelRatio || 1;
   const deviceScale = scale * dpr;
   const nextBacking = Math.max(1, Math.ceil(deviceScale - 1e-3));
-  if (nextBacking !== backingScale) {
+  if (nextBacking !== backingScale || viewW !== VIEW_W) {
     backingScale = nextBacking;
+    setViewWidth(viewW);
     // Đổi width/height xoá luôn trạng thái context -> đặt lại transform + smoothing.
-    canvas.width = LOGICAL_W * backingScale;
-    canvas.height = LOGICAL_H * backingScale;
+    canvas.width = VIEW_W * backingScale;
+    canvas.height = VIEW_H * backingScale;
     ctx.setTransform(backingScale, 0, 0, backingScale, 0, 0);
     ctx.imageSmoothingEnabled = false;
   }
   canvas.style.imageRendering = Math.abs(deviceScale - backingScale) < 1e-3 ? 'pixelated' : 'auto';
-  shell.style.setProperty('--stage-w', `${LOGICAL_W * scale}px`);
-  shell.style.setProperty('--stage-h', `${LOGICAL_H * scale}px`);
+  // Làm tròn XUỐNG: lố dù nửa pixel là trang cao hơn cửa sổ -> hiện thanh
+  // cuộn dọc -> mất ~15px chiều ngang và canvas tràn khung.
+  shell.style.setProperty('--stage-w', `${Math.floor(VIEW_W * scale)}px`);
+  shell.style.setProperty('--stage-h', `${Math.floor(VIEW_H * scale)}px`);
   return scale;
 }
 
-function drawBackdropLayer(layer, image) {
-  const y = Math.round(layer.y);
-  const height = Math.round(layer.height);
-  if (!image) {
-    // fallbackBandHeight cho phép chỉ tô 1 dải ở đáy layer (vd. đất) thay vì
-    // tô kín cả layer — cần thiết cho layer `foreground` vốn nền trong suốt,
-    // để layer `sky` phía dưới vẫn hiện ra khi chưa có ảnh foreground thật.
-    const bandHeight = Math.round(layer.fallbackBandHeight ?? height);
-    ctx.fillStyle = layer.fallbackColor;
-    ctx.fillRect(0, y + height - bandHeight, VIEW_W, bandHeight);
+// ---- Nền 8-bit (TT-MAP-01): trời -> đồi xa -> lớp giữa -> tile mặt đất ----
+// Mọi lớp vẽ x1 ở cỡ gốc, không smoothing, toạ độ nguyên.
+
+function mod(value, size) {
+  return ((value % size) + size) % size;
+}
+
+// Lặp ngang 1 ảnh theo chiều rộng GỐC. Offset làm tròn về pixel nguyên TRƯỚC
+// khi lấy modulo để lớp nền không rung dưới pixel khi camera lerp chậm.
+function drawTiledLayer(target, image, parallax, y) {
+  const width = image.width;
+  const offset = mod(Math.round(state.cameraX * parallax), width);
+  for (let x = -offset; x < VIEW_W; x += width) target.drawImage(image, x, y);
+}
+
+// Vùng cảnh của màn đang chơi (LEVEL.zones — màn 1: 5 vùng, màn 2: 3 vùng).
+function zoneIndexAt(x) {
+  const zones = LEVEL.zones;
+  const index = zones.findIndex(zone => x < zone.x1);
+  return index < 0 ? zones.length - 1 : Math.max(0, index);
+}
+
+// Cảnh (trời hoặc lớp giữa, `key` = 'sky' | 'mid') theo tâm khung nhìn: trong
+// ZONE_BLEND_WIDTH px ngay TRƯỚC ranh giới vùng kế tiếp thì hoà A -> B theo t.
+function sceneryAt(key) {
+  const ref = state.cameraX + VIEW_W / 2;
+  const index = zoneIndexAt(ref);
+  const current = LEVEL.zones[index][key];
+  const next = LEVEL.zones[index + 1];
+  if (!next || next[key] === current) return { from: current, to: null, t: 0 };
+  const t = (ref - (next.x0 - ZONE_BLEND_WIDTH)) / ZONE_BLEND_WIDTH;
+  return t > 0 ? { from: current, to: next[key], t: Math.min(1, t) } : { from: current, to: null, t: 0 };
+}
+
+function drawSky() {
+  const { from, to, t } = sceneryAt('sky');
+  const base = images.maps.layers[from];
+  if (base) {
+    drawTiledLayer(ctx, base, SKY_PARALLAX, 0);
+  } else {
+    ctx.fillStyle = SKY_FALLBACK_COLOR;
+    ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+  }
+  // Trời là ảnh ĐỤC nên vẽ đè ảnh mới với alpha t là đủ để hoà.
+  const next = to && images.maps.layers[to];
+  if (next) {
+    ctx.globalAlpha = t;
+    drawTiledLayer(ctx, next, SKY_PARALLAX, 0);
+    ctx.globalAlpha = 1;
+  }
+}
+
+// Đồi xa tắt dần dưới các ảnh trời trong FAR_HILLS.hiddenUnderSky (trời giông),
+// theo đúng hệ số hoà của trời nên cả hai đổi cùng nhịp.
+function drawFarHills() {
+  const image = images.maps.layers[FAR_HILLS.id];
+  if (!image) return;
+  const { from, to, t } = sceneryAt('sky');
+  const hidden = id => FAR_HILLS.hiddenUnderSky.includes(id);
+  const alpha = to ? (hidden(from) ? 0 : 1) * (1 - t) + (hidden(to) ? 0 : 1) * t : (hidden(from) ? 0 : 1);
+  if (alpha <= 0) return;
+  ctx.globalAlpha = alpha;
+  drawTiledLayer(ctx, image, FAR_HILLS.parallax, FAR_HILLS.bottomY - image.height);
+  ctx.globalAlpha = 1;
+}
+
+// Canvas phụ để hoà 2 lớp giữa: cả hai PNG đều có alpha nên vẽ chồng bằng
+// globalAlpha sẽ làm chỗ hai ảnh cùng đục bị mờ (t = .5 chỉ phủ 75%). Cộng
+// 'lighter' A x (1 - t) + B x t trên nền trong suốt cho nội suy tuyến tính
+// đúng cả màu lẫn độ phủ, rồi vẽ kết quả x1 lên canvas chính.
+let blendCanvas = null;
+function blendContext(width, height) {
+  if (!blendCanvas) blendCanvas = document.createElement('canvas');
+  if (blendCanvas.width !== width || blendCanvas.height !== height) {
+    blendCanvas.width = width;
+    blendCanvas.height = height;
+  }
+  const blend = blendCanvas.getContext('2d');
+  blend.imageSmoothingEnabled = false;
+  return blend;
+}
+
+function drawMidground() {
+  const { from, to, t } = sceneryAt('mid');
+  const a = images.maps.layers[from];
+  const b = to ? images.maps.layers[to] : null;
+  if (!a && !b) return;
+  const height = (a || b).height;
+  const top = GROUND_Y - height;
+  if (!b || !a) {
+    // Không hoà (hoặc thiếu 1 ảnh): vẽ thẳng ảnh đang có.
+    if (!b) drawTiledLayer(ctx, a, MID_PARALLAX, top);
+    else drawTiledLayer(ctx, b, MID_PARALLAX, top);
     return;
   }
-  // Scale ảnh theo chiều cao layer rồi lặp ngang vô hạn theo cameraX * speed —
-  // đây là 1 ảnh tile duy nhất, không phải nhiều ảnh ghép cạnh nhau nên không có "mép nối".
-  const scale = height / image.height;
-  const drawWidth = Math.max(1, Math.round(image.width * scale));
-  const offset = ((state.cameraX * layer.speed) % drawWidth + drawWidth) % drawWidth;
-  for (let x = -Math.round(offset); x < VIEW_W; x += drawWidth) {
-    ctx.drawImage(image, x, y, drawWidth, height);
-  }
+  const blend = blendContext(VIEW_W, height);
+  blend.globalCompositeOperation = 'source-over';
+  blend.clearRect(0, 0, VIEW_W, height);
+  blend.globalCompositeOperation = 'lighter';
+  blend.globalAlpha = 1 - t;
+  drawTiledLayer(blend, a, MID_PARALLAX, 0);
+  blend.globalAlpha = t;
+  drawTiledLayer(blend, b, MID_PARALLAX, 0);
+  blend.globalAlpha = 1;
+  blend.globalCompositeOperation = 'source-over';
+  ctx.drawImage(blendCanvas, 0, top);
 }
 
-// Nền cũ (ảnh lớn) vẽ THU NHỎ theo k nên bật smoothing cho đỡ răng cưa; draw()
-// tắt lại trước khi vẽ sprite. TODO_MAP: nền pixel đúng tỉ lệ sẽ được vẽ lại.
 function drawBackdrops() {
-  ctx.imageSmoothingEnabled = true;
-  BACKDROP_LAYERS.forEach(layer => drawBackdropLayer(layer, images.backdrops[layer.key]));
+  drawSky();
+  drawFarHills();
+  drawMidground();
 }
 
-function drawLandmarks() {
-  LANDMARKS.forEach(landmark => {
-    const image = images.landmarkCache[landmark.file];
-    // Rộng suy từ tỉ lệ ảnh thật để thay ảnh khác kích thước vẫn không méo;
-    // chưa có ảnh thì dùng tỉ lệ 1:1 cho hình vẽ tạm.
-    const aspect = image && image.naturalHeight
-      ? image.naturalWidth / image.naturalHeight
-      : 1;
-    const h = landmark.height;
-    const w = h * aspect;
-    const left = landmark.worldX - w / 2 - state.cameraX;
-    if (left + w < -48 || left > VIEW_W + 48) return;
-    const top = GROUND_Y + (landmark.sink || 0) - h;
-    if (image) {
-      ctx.drawImage(image, Math.round(left), Math.round(top), Math.round(w), h);
-    } else {
-      drawLandmarkFallback(left, top, w, h);
-    }
+// Hash số nguyên tất định theo chỉ số cột tile (không random, không đổi khi
+// chơi lại) — chọn biến thể surface/fill và vị trí decor.
+function tileHash(column) {
+  let h = Math.imul(column ^ 0x27d4eb2d, 0x9e3779b1);
+  h ^= h >>> 15;
+  h = Math.imul(h, 0x85ebca6b);
+  h ^= h >>> 13;
+  h = Math.imul(h, 0xc2b2ae35);
+  h ^= h >>> 16;
+  return h >>> 0;
+}
+
+function pick(list, value) {
+  return list && list.length ? list[value % list.length] : null;
+}
+
+// Trừ các khoảng [a, b) bị loại khỏi đoạn [x0, x1) — trả về các đoạn còn lại.
+function subtractIntervals(x0, x1, excluded) {
+  let segments = [[x0, x1]];
+  excluded.forEach(([a, b]) => {
+    segments = segments.flatMap(([s, e]) => {
+      if (b <= s || a >= e) return [[s, e]];
+      const parts = [];
+      if (a > s) parts.push([s, a]);
+      if (b < e) parts.push([b, e]);
+      return parts;
+    });
+  });
+  return segments;
+}
+
+// Vẽ 1 tile (rect trong sheet) ở cột world `columnX`, chỉ phần nằm trong các
+// đoạn `segments` (world X) — dùng để cắt tile tại mép hố.
+function drawTileSegments(image, rect, columnX, screenY, segments, camera) {
+  segments.forEach(([s, e]) => {
+    const sx = s - columnX;
+    const w = e - s;
+    ctx.drawImage(image, rect.x + sx, rect.y, w, rect.h, s - camera, screenY, w, rect.h);
   });
 }
 
-// Cổng gỗ tạm (2 cột + xà ngang + cờ nhỏ) — dùng tới khi có ảnh landmark thật.
+// Mặt đất dùng CHUNG 1 bộ tile cho mọi vùng/màn (GROUND_TILE_REGION) và chỉ
+// tile ĐẦU TIÊN của mỗi vai trò — không đổi biến thể theo cột, không đổi theo
+// vùng (team 30/09). Decor vẫn rải tất định theo cột (tileHash).
+function groundRegion(tileset) {
+  return tileset.regions[GROUND_TILE_REGION] || null;
+}
+
+function groundTile(region, role) {
+  return region?.[role]?.[0] || null;
+}
+
+// Tile surface + fill của 1 cột (hash chỉ còn dùng cho decor).
+function columnTiles(region, column) {
+  return { hash: tileHash(column), surface: groundTile(region, 'surface'), fill: groundTile(region, 'fill') };
+}
+
+// Decor 16x8 thưa (GROUND_DECOR_DENSITY) trên mép cỏ, đáy = `topY`, không va chạm.
+function drawGroundDecor(image, region, hash, columnX, topY, camera) {
+  if (((hash >>> 16) & 0xff) >= 256 * GROUND_DECOR_DENSITY) return;
+  const decor = pick(region.decoration, hash >>> 24);
+  if (decor) ctx.drawImage(image, decor.x, decor.y, decor.w, decor.h, columnX - camera, topY - decor.h, decor.w, decor.h);
+}
+
+// ---- Ghép tile địa hình tự động (bộ TILESET_TT_TERRAIN, TT-TERRAIN-01) ----
+// Đỉnh cột đất (y) theo địa hình; cột hố = Infinity (như vực sâu vô tận —
+// cột đất cạnh hố lộ sườn tới đáy khung). Hố đọc từ state.holes nên hố khai
+// báo tay (layout thử `?layout=p2`) cũng ghép đúng.
+function columnTop(column) {
+  const center = column * TERRAIN_CELL + TERRAIN_CELL / 2;
+  if ((state.holes || []).some(hole => center > hole.x && center < hole.x + hole.w)) return Infinity;
+  return groundYAt(column * TERRAIN_CELL);
+}
+
+// Vai trò tile của ô (cột `column`, hàng có mép trên `y`) — chỉ theo đỉnh cột
+// này và 2 cột bên cạnh:
+//   hàng đỉnh: surface | corner-left/right (bên đó thấp hơn) | corner-single (cả 2 bên thấp hơn)
+//   thân, cao hơn cột bên cạnh: wall-left/right | wall-single
+//   thân, ngang đỉnh cột bên cạnh thấp hơn: inner-left/right (cỏ bên đó vắt vào góc)
+//   còn lại: fill
+// Trả null nếu ô không có đất. Thân vừa lộ sườn 1 bên vừa ngang đỉnh bên kia
+// thì ưu tiên sườn (không có tile ghép 2 kiểu).
+export function terrainTileRole(column, y) {
+  const top = columnTop(column);
+  if (top === Infinity || y < top) return null;
+  const leftTop = columnTop(column - 1);
+  const rightTop = columnTop(column + 1);
+  const openLeft = y < leftTop;
+  const openRight = y < rightTop;
+  if (y === top) {
+    if (openLeft && openRight) return 'corner-single';
+    if (openLeft) return 'corner-left';
+    return openRight ? 'corner-right' : 'surface';
+  }
+  if (openLeft && openRight) return 'wall-single';
+  if (openLeft) return 'wall-left';
+  if (openRight) return 'wall-right';
+  const innerLeft = y === leftTop && leftTop > top;
+  const innerRight = y === rightTop && rightTop > top;
+  if (innerLeft !== innerRight) return innerLeft ? 'inner-left' : 'inner-right';
+  return 'fill';
+}
+
+// Sheet thiếu vai trò nào thì lùi về vai trò gần nhất.
+const TERRAIN_ROLE_FALLBACK = {
+  'corner-single': 'corner-left', 'corner-left': 'surface', 'corner-right': 'surface',
+  'wall-single': 'wall-left', 'wall-left': 'fill', 'wall-right': 'fill',
+  'inner-left': 'fill', 'inner-right': 'fill'
+};
+
+function terrainRect(sheet, role) {
+  let current = role;
+  while (current && !sheet.roles[current]) current = TERRAIN_ROLE_FALLBACK[current];
+  return current ? sheet.roles[current] : null;
+}
+
+// Vẽ mặt đất bằng bộ tile ghép địa hình: mỗi cột từ đỉnh xuống đáy khung,
+// vai trò từng ô theo terrainTileRole. Decor (cỏ, lau) lấy từ tileset cũ, chỉ
+// rải trên ô `surface`.
+function drawGroundAutotile(sheet, first, last, camera) {
+  const decorRegion = images.maps.tileset ? groundRegion(images.maps.tileset) : null;
+  for (let column = first; column <= last; column++) {
+    const top = columnTop(column);
+    if (top === Infinity) continue;
+    const x = column * TERRAIN_CELL - camera;
+    for (let y = top; y < VIEW_H; y += TERRAIN_CELL) {
+      const rect = terrainRect(sheet, terrainTileRole(column, y));
+      if (rect) ctx.drawImage(sheet.image, rect.x, rect.y, rect.w, rect.h, x, y, rect.w, rect.h);
+    }
+    if (decorRegion && terrainTileRole(column, top) === 'surface') {
+      drawGroundDecor(images.maps.tileset.image, decorRegion, tileHash(column), column * TERRAIN_CELL, top, camera);
+    }
+  }
+}
+
+// F2: tên tắt vai trò tile từng ô (soát ghép địa hình — chạy cả khi chưa có
+// bộ tile mới).
+const TERRAIN_ROLE_LABELS = {
+  surface: 'S', fill: '', 'corner-left': 'CL', 'corner-right': 'CR', 'corner-single': 'C1',
+  'wall-left': 'WL', 'wall-right': 'WR', 'wall-single': 'W1', 'inner-left': 'IL', 'inner-right': 'IR'
+};
+
+function drawTerrainDebug() {
+  const camera = Math.round(state.cameraX);
+  ctx.save();
+  ctx.font = '5px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ffffff';
+  const first = Math.floor(camera / TERRAIN_CELL);
+  const last = Math.floor((camera + VIEW_W - 1) / TERRAIN_CELL);
+  for (let column = first; column <= last; column++) {
+    const top = columnTop(column);
+    for (let y = Math.min(top, GROUND_Y); y < VIEW_H; y += TERRAIN_CELL) {
+      const label = TERRAIN_ROLE_LABELS[terrainTileRole(column, y)];
+      if (label) ctx.fillText(label, column * TERRAIN_CELL - camera + TERRAIN_CELL / 2, y + 9);
+    }
+  }
+  ctx.restore();
+}
+
+// 1 cột bậc đất cao `level` ô bằng tile Z1 cũ (xem drawGround): đỉnh
+// `surface`, thân `fill`, sườn lộ ra phủ dải bóng tạm.
+function drawRaisedColumn(image, region, column, level, camera) {
+  const columnX = column * TERRAIN_CELL;
+  const top = GROUND_Y - level * TERRAIN_CELL;
+  const { hash, surface, fill } = columnTiles(region, column);
+  // Đỉnh cột bên cạnh: sườn chỉ lộ ra ở phần cao hơn cột đó.
+  const neighborTop = { left: groundYAt(columnX - 1), right: groundYAt(columnX + TERRAIN_CELL) };
+  const openLeft = neighborTop.left > top;
+  const openRight = neighborTop.right > top;
+  const x = columnX - camera;
+  if (surface) ctx.drawImage(image, surface.x, surface.y, surface.w, surface.h, x, top, surface.w, surface.h);
+  for (let y = top + TERRAIN_CELL; y < VIEW_H; y += TERRAIN_CELL) {
+    if (fill) ctx.drawImage(image, fill.x, fill.y, fill.w, fill.h, x, y, fill.w, fill.h);
+  }
+  // Dải bóng dọc phần sườn lộ ra (sáng từ trên-trái như lòng hố).
+  [['left', openLeft], ['right', openRight]].forEach(([name, open]) => {
+    if (!open) return;
+    const [width, alpha] = TERRAIN_SIDE_SHADE[name];
+    ctx.fillStyle = `rgba(10, 6, 4, ${alpha})`;
+    ctx.fillRect(name === 'left' ? x : x + TERRAIN_CELL - width, top + 3, width, neighborTop[name] - top - 3);
+  });
+  if (!openLeft && !openRight) drawGroundDecor(image, region, hash, columnX, top, camera);
+}
+
+// Mặt đất lát tileset (1 bộ tile chung — groundRegion): hàng `surface` top =
+// GROUND_Y, hàng `fill` ngay dưới (bị cắt ở đáy khung), decor 16x8 thưa trên
+// mép cỏ. Cột tile căn theo lưới world 16px. Chỉ vẽ các cột trong viewport.
+// Hố: không vẽ tile trong hố; tile `left-edge`/`right-edge` (nửa đặc, nửa
+// trong suốt) đặt sao cho phần đất kết thúc ĐÚNG mép hố (khớp pointHasGround)
+// — quyết định team G6.
+// Bậc đất (TT-TERRAIN-01): bộ tile ghép địa hình TILESET_TT_TERRAIN (IN_GAME)
+// -> ghép tự động (drawGroundAutotile). Phần tile Z1 bên dưới chỉ là dự phòng
+// khi không nạp được bộ đó: cột bậc vẽ bằng surface/fill + dải bóng
+// (drawRaisedColumn), hố dùng tile mép nửa ô như trên.
+const TERRAIN_SIDE_SHADE = { left: [2, .18], right: [3, .32] };
+
+function drawGround() {
+  const tileset = images.maps.tileset;
+  const camera = Math.round(state.cameraX);
+  const holes = state.holes || [];
+  const first = Math.floor(camera / TERRAIN_CELL);
+  const last = Math.floor((camera + VIEW_W - 1) / TERRAIN_CELL);
+  if (!tileset) {
+    ctx.fillStyle = GROUND_FALLBACK_COLOR;
+    for (let column = first; column <= last; column++) {
+      const top = groundYAt(column * TERRAIN_CELL);
+      ctx.fillRect(column * TERRAIN_CELL - camera, top, TERRAIN_CELL, VIEW_H - top);
+    }
+    return;
+  }
+  // Có bộ tile ghép địa hình (TILESET_TT_TERRAIN) -> ghép tự động; phần dưới
+  // là cách vẽ bằng tile Z1 cũ, chỉ dùng khi chưa có bộ mới.
+  if (images.maps.terrain) {
+    drawGroundAutotile(images.maps.terrain, first, last, camera);
+    return;
+  }
+  const { image, tileW, tileH } = tileset;
+  const region = groundRegion(tileset);
+  if (!region) return;
+  const half = tileW / 2;
+  const surfaceGaps = holes.map(hole => [hole.x - half, hole.x + hole.w + half]);
+  const fillGaps = holes.map(hole => [hole.x, hole.x + hole.w]);
+
+  for (let column = first; column <= last; column++) {
+    const columnX = column * tileW;
+    const level = terrainLevelAt(columnX);
+    if (level >= 1) {
+      drawRaisedColumn(image, region, column, level, camera);
+      continue;
+    }
+    const { hash, surface, fill } = columnTiles(region, column);
+    const surfaceSegments = subtractIntervals(columnX, columnX + tileW, surfaceGaps);
+    if (surface) drawTileSegments(image, surface, columnX, GROUND_Y, surfaceSegments, camera);
+    if (fill) drawTileSegments(image, fill, columnX, GROUND_Y + tileH, subtractIntervals(columnX, columnX + tileW, fillGaps), camera);
+    // Decor chỉ trên cột đất nguyên vẹn, đáy decor = GROUND_Y, không va chạm.
+    const intact = surfaceSegments.length === 1 && surfaceSegments[0][1] - surfaceSegments[0][0] === tileW;
+    if (intact) drawGroundDecor(image, region, hash, columnX, GROUND_Y, camera);
+  }
+
+  holes.forEach(hole => {
+    const edges = [
+      ['left-edge', hole.x - half],
+      ['right-edge', hole.x + hole.w - half]
+    ];
+    edges.forEach(([role, x]) => {
+      if (x + tileW < camera || x > camera + VIEW_W) return;
+      const rect = groundTile(region, role);
+      if (rect) ctx.drawImage(image, rect.x, rect.y, rect.w, rect.h, Math.round(x - camera), GROUND_Y, rect.w, rect.h);
+    });
+  });
+}
+
+// Điều kiện thắng về NỘI DUNG đã đủ (mini-boss đã hạ + nhặt hết sách) — cổng
+// mở trước khi người chơi chạm finishX; trigger về đích vẫn ở physics.js.
+function finishGateOpen() {
+  // Đấu trường (màn 3): cổng đóng suốt trận, chỉ mở trong cutscene kết chương.
+  if (LEVEL.arena) return state.gateOpen;
+  return !bossAlive() && state.booksCollected >= state.books.length;
+}
+
+// Cổng thành Luy Lâu: x1, pivot bottom-center (maps_tt.json), đáy ở GROUND_Y.
+// Màn không có cổng (LEVEL.gate = null — màn 2) thì bỏ qua.
+function drawFinishGate(time = 0) {
+  const gate = LEVEL.gate;
+  if (!gate) return;
+  const prop = images.maps.props[finishGateOpen() ? gate.open : gate.closed]
+    || images.maps.props[gate.closed];
+  const w = prop ? prop.image.width : 131;
+  const h = prop ? prop.image.height : 150;
+  const pivot = prop?.asset.pivot || { x: w / 2, y: h };
+  const left = Math.round(gate.worldX - pivot.x - state.cameraX);
+  if (left + w < -48 || left > VIEW_W + 48) return;
+  const top = GROUND_Y - pivot.y;
+  if (prop) ctx.drawImage(prop.image, left, top);
+  else drawLandmarkFallback(left, top, w, h);
+  if (LEVEL.arena && state.gateOpen) drawVictoryFlag(prop, left, top, time);
+}
+
+// Cờ chiến thắng (cutscene màn 3): pivot bottom-left đặt tại VICTORY_FLAG_ATTACH
+// (giữa mái cổng; null thì dùng flag_attach của cổng mở), strip lặp theo fps
+// maps_tt.json. Thiếu ảnh/điểm gắn -> bỏ (TODO_MISSING).
+function drawVictoryFlag(gateProp, gateLeft, gateTop, time) {
+  const flag = images.maps.props[VICTORY_FLAG_ID];
+  const attach = VICTORY_FLAG_ATTACH || gateProp?.asset.flag_attach;
+  if (!flag || !attach) return;
+  const { frame_w: fw, frame_h: fh, frames = 1, fps = 6, pivot = { x: 0, y: fh } } = flag.asset;
+  const frame = Math.floor(time * fps) % frames;
+  ctx.drawImage(flag.image, frame * fw, 0, fw, fh, gateLeft + attach.x - pivot.x, gateTop + attach.y - pivot.y, fw, fh);
+}
+
+// Bia đá đánh dấu mốc câu hỏi (TT-QUIZ-01): x1, pivot bottom-center tại
+// `quiz.x`, đáy ở GROUND_Y. Chưa hỏi -> strip `active` lặp theo fps
+// maps_tt.json; đã hỏi (`quiz.done`) -> ảnh `done`. Thiếu ảnh thì bỏ.
+function drawQuizSteles(time) {
+  const stele = images.maps.props[QUIZ_STELE_ID];
+  if (!stele) return;
+  const { frame_w: fw, frame_h: fh, frames = 1, fps = 6, pivot = { x: fw / 2, y: fh } } = stele.asset;
+  state.quizzes.forEach(quiz => {
+    const left = Math.round(quiz.x - pivot.x - state.cameraX);
+    if (left + fw < 0 || left > VIEW_W) return;
+    const top = (quiz.footY ?? GROUND_Y) - pivot.y;
+    const done = quiz.done && stele.states.done;
+    const image = done ? stele.states.done : (stele.states.active || stele.image);
+    const frame = done ? 0 : Math.floor(time * fps) % frames;
+    ctx.drawImage(image, frame * fw, 0, fw, fh, left, top, fw, fh);
+  });
+}
+
+// Cổng gỗ tạm (2 cột + xà ngang + cờ nhỏ) — chỉ dùng khi thiếu ảnh cổng.
 function drawLandmarkFallback(left, top, w, h) {
   const x = Math.round(left);
   const y = Math.round(top);
@@ -136,24 +524,70 @@ function drawLandmarkFallback(left, top, w, h) {
   ctx.fill();
 }
 
-// Hố rơi (state.holes) trước đây không có hình gì đại diện — nhân vật rơi
-// xuống "hố vô hình" trông như bug. Vẽ 1 hố tối đơn giản đè lên dải đất để
-// người chơi thấy rõ chỗ cần nhảy/lướt qua.
+// Lòng hố (state.holes). Bộ tile chung có vai trò `pit-top` (hàng 248–264) +
+// `pit-deep` (hàng dưới, còn thấy 6px) thì vẽ tile đó (Codex 29/09 —
+// docs/CODEX_PROMPT_TILESET_PIT.md). Thiếu tile thì dự phòng
+// bằng tile `fill` (đất) phủ các dải tối dần theo bậc (không gradient
+// mịn), vách trái trong bóng + bóng dưới mép cỏ. Vẽ sau drawGround, trước vật cản
+// (cầu đè lên hố).
+const PIT_SHADE_BANDS = [[0, 4, .35], [4, 10, .55], [10, 16, .72], [16, 22, .88]];
+const PIT_WALL = 3;
+// Hố trống (bộ tile ghép địa hình): [y0, y1, alpha] tính từ GROUND_Y — trên
+// còn thấy nền, xuống đáy tối dần (DESIGN_BASELINE).
+const HOLE_DEPTH_BANDS = [[0, 6, .15], [6, 12, .35], [12, 17, .55], [17, 22, .75]];
+
 function drawHoles() {
+  const tileset = images.maps.tileset;
+  const camera = Math.round(state.cameraX);
   state.holes.forEach(hole => {
-    const x = hole.x - state.cameraX;
-    if (x + hole.w < -24 || x > VIEW_W + 24) return;
-    const left = Math.round(x);
+    const left = Math.round(hole.x) - camera;
     const width = Math.round(hole.w);
-    const gradient = ctx.createLinearGradient(0, GROUND_Y, 0, VIEW_H);
-    gradient.addColorStop(0, '#120a06');
-    gradient.addColorStop(1, '#000000');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(left, GROUND_Y, width, VIEW_H - GROUND_Y);
-    // Viền mép hố để rõ ranh giới với cỏ xung quanh.
-    ctx.fillStyle = 'rgba(0, 0, 0, .55)';
-    ctx.fillRect(left, GROUND_Y, 2, VIEW_H - GROUND_Y);
-    ctx.fillRect(left + width - 2, GROUND_Y, 2, VIEW_H - GROUND_Y);
+    if (left + width < -24 || left > VIEW_W + 24) return;
+    const depth = VIEW_H - GROUND_Y;
+    if (!tileset) {
+      ctx.fillStyle = '#120a06';
+      ctx.fillRect(left, GROUND_Y, width, depth);
+      return;
+    }
+    // Có bộ tile ghép địa hình: hố để TRỐNG (thấy nền phía sau) — 2 mép hố đã
+    // là vách đất (corner/wall), không lát tile lòng hố (người dùng 30/09:
+    // tile lòng hố khác màu nhìn không ra hố). pit-top/pit-deep không dùng.
+    // Chỉ phủ lớp tối mờ tăng dần xuống đáy (theo bậc, không gradient mịn)
+    // cho có chiều sâu.
+    const sheet = images.maps.terrain;
+    if (sheet) return;
+    const { tileW, tileH } = tileset;
+    const image = sheet ? sheet.image : tileset.image;
+    const region = sheet ? sheet.roles : groundRegion(tileset);
+    if (!region) return;
+    const tile = role => (sheet ? sheet.roles[role] || null : groundTile(region, role));
+    const top = tile('pit-top');
+    const deep = tile('pit-deep');
+    const fill = tile('fill');
+    let pitTiles = false;
+    for (let columnX = Math.floor(hole.x / tileW) * tileW; columnX < hole.x + hole.w; columnX += tileW) {
+      const segments = [[Math.max(columnX, hole.x), Math.min(columnX + tileW, hole.x + hole.w)]];
+      if (top && deep) {
+        pitTiles = true;
+        drawTileSegments(image, top, columnX, GROUND_Y, segments, camera);
+        drawTileSegments(image, deep, columnX, GROUND_Y + tileH, segments, camera);
+      } else {
+        if (fill) {
+          drawTileSegments(image, fill, columnX, GROUND_Y, segments, camera);
+          drawTileSegments(image, fill, columnX, GROUND_Y + tileH, segments, camera);
+        }
+      }
+    }
+    if (pitTiles) return;
+    // Tạm: tối dần theo bậc, vách trái trong bóng (sáng từ trên-trái), bóng
+    // 2px dưới mép cỏ.
+    PIT_SHADE_BANDS.forEach(([y0, y1, alpha]) => {
+      ctx.fillStyle = `rgba(10, 6, 4, ${alpha})`;
+      ctx.fillRect(left, GROUND_Y + y0, width, Math.min(y1, depth) - y0);
+    });
+    ctx.fillStyle = 'rgba(10, 6, 4, .45)';
+    ctx.fillRect(left, GROUND_Y, PIT_WALL, depth);
+    ctx.fillRect(left, GROUND_Y, width, 2);
   });
 }
 
@@ -191,85 +625,69 @@ function drawPlaceholder(entity, alpha = 1) {
   ctx.globalAlpha = 1;
 }
 
+// Bình thư: strip ITEM_BINH_THU x1, tâm tại (book.x, book.y + bob), lặp
+// BOOK_FPS; bob làm tròn về pixel nguyên. Không còn quầng sáng (G5).
 function drawBooks(time) {
-  const bookImage = images.items.book;
+  const prop = images.maps.props[BOOK_SPRITE_ID];
   state.books.forEach((book, index) => {
     if (book.collected) return;
-    const x = book.x - state.cameraX;
+    const x = Math.round(book.x - state.cameraX);
     if (x < -36 || x > VIEW_W + 36) return;
-    const y = book.y + Math.sin(time * 4 + index) * 3;
-    ctx.fillStyle = 'rgba(255, 210, 80, .3)';
-    ctx.beginPath();
-    ctx.ellipse(Math.round(x), Math.round(y + 2), 16, 16, 0, 0, Math.PI * 2);
-    ctx.fill();
-    if (bookImage) {
-      const w = 24;
-      const h = Math.round(w * (bookImage.height / bookImage.width));
-      ctx.drawImage(bookImage, Math.round(x - w / 2), Math.round(y - h / 2), w, h);
-    } else {
+    const y = Math.round(book.y) + Math.round(Math.sin(time * 4 + index) * BOOK_BOB_AMPLITUDE);
+    if (!prop) {
       ctx.fillStyle = '#f4d05c';
-      ctx.fillRect(Math.round(x - 9), Math.round(y - 11), 18, 23);
+      ctx.fillRect(x - 8, y - 8, 16, 16);
+      return;
     }
+    const { frame_w: fw = prop.image.width, frame_h: fh = prop.image.height, frames = 1 } = prop.asset;
+    const frame = Math.floor(time * BOOK_FPS + index) % frames;
+    ctx.drawImage(prop.image, frame * fw, 0, fw, fh, x - fw / 2, y - fh / 2, fw, fh);
   });
 }
 
-function drawObstacleSprite(type, x, y, width, height) {
-  const image = images.obstacleSprites[type];
-  if (!image) {
-    ctx.fillStyle = '#4a3020';
-    ctx.fillRect(Math.round(x), Math.round(y), width, height);
-    return;
-  }
-  // Ảnh nguồn đã được crop sát nội dung (không còn viền trong suốt thừa),
-  // vẽ nguyên cả ảnh scale theo drawW/drawH là đủ.
-  ctx.drawImage(image, Math.round(x), Math.round(y), width, height);
+// Toạ độ world (trái, trên) để vẽ ảnh vật cản x1 sao cho PHẦN NHÌN THẤY trùng
+// hitbox: có `visible_bbox` -> góc bbox trùng góc hitbox; không có -> đáy-giữa
+// canvas trùng đáy-giữa hitbox, chìm thêm groundSink px.
+export function obstacleDrawRect(obstacle, asset) {
+  const bbox = asset.visible_bbox;
+  if (bbox) return { x: obstacle.x - bbox.x, y: obstacle.y - bbox.y };
+  return {
+    x: Math.round(obstacle.x + obstacle.w / 2 - asset.w / 2),
+    y: obstacle.y + obstacle.h + obstacle.groundSink - asset.h
+  };
 }
 
-// Quầng mờ phía sau obstacle để tách khỏi nền cây cối bận rộn — harmful thì
-// dùng quầng đỏ cảnh báo, loại thường dùng quầng tối trung tính.
-function drawObstacleContrastHalo(obstacle, x, y) {
-  const cx = x + obstacle.drawW / 2;
-  const cy = y + obstacle.drawH / 2;
-  if (obstacle.harmful) {
-    // Bẫy gây sát thương cần nổi bật rõ — quầng đỏ đậm hơn + viền sáng mỏng
-    // quanh đáy để không bị chìm vào màu nâu/xanh của nền cây cối.
-    const radius = Math.max(obstacle.drawW, obstacle.drawH) * 0.85;
-    const gradient = ctx.createRadialGradient(cx, cy, radius * 0.2, cx, cy, radius);
-    gradient.addColorStop(0, 'rgba(255, 60, 30, .75)');
-    gradient.addColorStop(0.6, 'rgba(224, 32, 20, .4)');
-    gradient.addColorStop(1, 'rgba(224, 32, 20, 0)');
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255, 210, 90, .8)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.ellipse(cx, y + obstacle.drawH - 2, obstacle.drawW * 0.48, 3, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    return;
-  }
-  const radius = Math.max(obstacle.drawW, obstacle.drawH) * 0.62;
-  const gradient = ctx.createRadialGradient(cx, cy, radius * 0.25, cx, cy, radius);
-  gradient.addColorStop(0, 'rgba(8, 6, 3, .4)');
-  gradient.addColorStop(1, 'rgba(8, 6, 3, 0)');
-  ctx.fillStyle = gradient;
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-  ctx.fill();
-}
-
+// Vật cản tĩnh: ảnh 8-bit x1 (không co giãn, không quầng — G5). Thiếu ảnh thì
+// vẽ hộp tạm đúng hitbox.
 function drawObstacles() {
   state.obstacles.forEach(obstacle => {
     if (!obstacle.active) return;
-    const x = obstacle.x - state.cameraX - (obstacle.drawW - obstacle.w) / 2;
-    if (x + obstacle.drawW < -48 || x > VIEW_W + 48) return;
-    // Neo theo mặt đất thật tại vị trí vật cản và chìm nhẹ 4 px để phần trong
-    // suốt ở đáy ô sprite không khiến chướng ngại vật trông như đang bay.
-    const drawY = obstacle.groundY - obstacle.drawH + OBSTACLE_GROUND_SINK;
-    drawObstacleContrastHalo(obstacle, x, drawY);
-    drawObstacleSprite(obstacle.type, x, drawY, obstacle.drawW, obstacle.drawH);
+    const prop = images.maps.props[OBSTACLE_TYPES[obstacle.type]?.id];
     debugLabels.set(obstacle, obstacle.type);
+    if (!prop) {
+      if (obstacle.x - state.cameraX + obstacle.w < -48 || obstacle.x - state.cameraX > VIEW_W + 48) return;
+      drawPlaceholder(obstacle);
+      return;
+    }
+    const asset = prop.asset;
+    // Asset nhiều ô trạng thái (cột đá: intact/cracked — `frame_states`): vẽ ô
+    // theo obstacle.state, đáy-giữa ô trùng đáy-giữa hitbox. `alpha` = mờ dần
+    // khi cột vỡ (Phase B).
+    if (asset.frame_w && asset.frames > 1) {
+      const frame = Math.max(0, asset.frame_states?.indexOf(obstacle.state) ?? 0);
+      const left = Math.round(obstacle.x + obstacle.w / 2 - asset.frame_w / 2 - state.cameraX);
+      if (left + asset.frame_w < -48 || left > VIEW_W + 48) return;
+      const top = Math.round(obstacle.y + obstacle.h + obstacle.groundSink - asset.frame_h);
+      ctx.globalAlpha = obstacle.alpha ?? 1;
+      ctx.drawImage(prop.image, frame * asset.frame_w, 0, asset.frame_w, asset.frame_h, left, top, asset.frame_w, asset.frame_h);
+      ctx.globalAlpha = 1;
+      debugLabels.set(obstacle, `${obstacle.type} ${obstacle.state || ''}`);
+      return;
+    }
+    const rect = obstacleDrawRect(obstacle, asset);
+    const left = Math.round(rect.x - state.cameraX);
+    if (left + prop.image.width < -48 || left > VIEW_W + 48) return;
+    ctx.drawImage(prop.image, left, Math.round(rect.y));
   });
 }
 
@@ -301,7 +719,7 @@ function drawHazards(time, submerged = false) {
     debugLabels.set(hazard, drawn.label);
     if (hazard.alive && hazard.maxHp > 0 && hazard.hp > 0) {
       const barW = hazard.w + 8;
-      drawHealthBar(pivotX - barW / 2, drawn.top - 5, barW, hazard.hp / hazard.maxHp, '#e2ad45');
+      drawHealthBar(pivotX - barW / 2, drawn.top - 5, barW, hazard.hp / hazard.maxHp, hazard.boss ? '#e34c36' : '#e2ad45');
     }
   });
 }
@@ -341,21 +759,170 @@ function drawHealthBar(x, y, width, ratio, color) {
 function drawEnemies() {
   state.enemies.forEach(enemy => {
     if (!enemy.alive && !enemy.dying) return;
-    const art = ENEMY_SPRITES[enemy.boss ? 'boss' : 'normal'];
+    const art = ENEMY_SPRITES[enemyArtKey(enemy)];
     const centerX = enemy.x + enemy.w / 2;
     const pivotX = Math.round(centerX - state.cameraX);
     if (pivotX < -80 || pivotX > VIEW_W + 80) return;
     const footY = Math.round(enemy.y + enemy.h);
     const alpha = enemy.hitTimer > 0 && !art.anims.hurt && enemy.alive ? .45 : 1;
-    const drawn = drawAnimated(art.id, art.anims, null, enemy, pivotX, footY, facingDirection(centerX, 0, true), alpha);
+    // Chiến xa đứng báo trước khi lao: rung ngang ±shake px (vẽ bằng code).
+    const shake = enemy.kind === 'chariot' && enemy.alive && enemy.mode === 'warn'
+      ? (Math.floor(enemy.modeTime * 30) % 2 ? BOSS_TD.shake : -BOSS_TD.shake) : 0;
+    // Lính thường có hướng riêng (`facing`, theo hướng đi/về phía người chơi);
+    // boss không có -> luôn quay về phía người chơi.
+    const drawn = drawAnimated(art.id, art.anims, null, enemy, pivotX + shake, footY, facingDirection(centerX, enemy.facing || 0, true), alpha);
     if (!drawn) {
+      // Bao cát (layout thử) không có asset: hộp tạm + thanh máu + số máu.
       drawPlaceholder(enemy, alpha);
+      debugLabels.set(enemy, `${enemyArtKey(enemy)} hp ${enemy.hp}`);
+      if (enemy.harmless && enemy.alive) drawHealthBar(pivotX - (enemy.w + 8) / 2, enemy.y - 6, enemy.w + 8, enemy.hp / enemy.maxHp, '#e2ad45');
       return;
     }
-    debugLabels.set(enemy, drawn.label);
-    if (enemy.alive) {
+    debugLabels.set(enemy, enemy.kind === 'chariot' ? `${drawn.label} ${enemy.mode} khiên ${enemy.shield}` : drawn.label);
+    if (enemy.alive && !enemy.noBar) {
       const barW = enemy.w + 8;
       drawHealthBar(pivotX - barW / 2, drawn.top - 5, barW, enemy.hp / enemy.maxHp, enemy.boss ? '#e34c36' : '#e2ad45');
+    }
+  });
+}
+
+// NPC màn 2: sprite 8-bit x1, pivot bottom-center tại (centerX, mặt đất = npc.y + npc.h),
+// quay về phía người chơi. `idle`, hoặc `talk` khi đang nói thoại — cả hai
+// lặp theo đồng hồ chung `time` (game tạm dừng lúc hội thoại nên không dùng
+// đồng hồ riêng tick trong physics). Gặp xong thì mờ dần theo npc.fade.
+function drawNpcs(time) {
+  state.npcs.forEach(npc => {
+    if (npc.fade <= 0) return;
+    const sprite = NPC_SPRITES[npc.id];
+    const pivotX = Math.round(npc.centerX - state.cameraX);
+    if (pivotX < -60 || pivotX > VIEW_W + 60) return;
+    const pose = { anim: { name: npc.talking ? 'talk' : 'idle', time } };
+    const drawn = sprite && drawAnimated(sprite.id, sprite.anims, null, pose, pivotX, npc.y + npc.h, facingDirection(npc.centerX, 0, true), npc.fade);
+    if (!drawn) {
+      drawPlaceholder(npc, npc.fade);
+      debugLabels.set(npc, `${npc.id} (placeholder)`);
+      return;
+    }
+    debugLabels.set(npc, `${npc.id} ${drawn.label}`);
+  });
+}
+
+// ---- Màn 3: boss (TT-BOSS-01 §3.5–3.6) ----
+// Tô Định đi bộ đứng sau xác xe (giai đoạn 2) — vẽ TRƯỚC enemy để nằm sau xe.
+function drawBossFoot() {
+  const foot = state.battle?.foot;
+  if (!foot) return;
+  const art = ENEMY_SPRITES.bossFoot;
+  const pivotX = Math.round(foot.x - state.cameraX);
+  const drawn = drawAnimated(art.id, art.anims, null, foot, pivotX, GROUND_Y, facingDirection(foot.x, 0, true));
+  if (!drawn) drawPlaceholder({ x: foot.x - 11, y: GROUND_Y - 40, w: 22, h: 40 });
+}
+
+// Hũ dầu (PJ_OIL_JAR `loop`, lặp theo tuổi hũ), tâm ô trùng tâm hitbox.
+function drawJars() {
+  const jarArt = BOSS_TD.jar;
+  const meta = getAnimMeta(jarArt.id, jarArt.anim);
+  const image = images.sprites8[jarArt.id]?.[jarArt.anim];
+  state.jars.forEach(jar => {
+    const centerX = Math.round(jar.x - state.cameraX);
+    const centerY = Math.round(jar.y);
+    if (!meta || !image) {
+      ctx.fillStyle = '#6b4a2a';
+      ctx.fillRect(centerX - 5, centerY - 5, 10, 10);
+      return;
+    }
+    const footY = centerY - Math.round(meta.frame_h / 2) + meta.frame_h - 1;
+    drawSprite8(image, meta, frameIndex(meta, jar.age), centerX, footY, jar.vx < 0 ? -1 : 1);
+    debugLabels.set(jar, jar.reflected ? 'hũ phản' : 'hũ');
+  });
+}
+
+// Lửa dầu (FX_OIL_FIRE `impact`, không lặp -> giữ ô cuối tới hết fire.time).
+function drawFires() {
+  const fireArt = BOSS_TD.fire;
+  const meta = getAnimMeta(fireArt.id, fireArt.anim);
+  const image = images.sprites8[fireArt.id]?.[fireArt.anim];
+  state.fires.forEach(fire => {
+    const pivotX = Math.round(fire.x - state.cameraX);
+    if (!meta || !image) {
+      ctx.fillStyle = 'rgba(240, 120, 30, .7)';
+      ctx.fillRect(pivotX - fireArt.width / 2, fire.footY - fireArt.h, fireArt.width, fireArt.h);
+      return;
+    }
+    drawSprite8(image, meta, frameIndex(meta, fire.time), pivotX, Math.round(fire.footY), 1);
+  });
+}
+
+// ---- Màn 3: kỹ năng (TT-BOSS-01 §3.2) ----
+const SHADOW = SKILLS.SK_TRUNG_NHI_SHADOW;
+const SHADOW_ANIMS = { idle: 'idle', run: 'run', attack: 'attack_01' };
+let tintCanvas = null;
+
+// Ô sprite phủ một lớp màu (source-atop, chỉ tô lên pixel có hình) rồi vẽ
+// như drawSprite8. Dùng 1 canvas phụ cỡ 1 ô.
+function drawTintedSprite(image, meta, frame, pivotX, footY, facing, alpha, tint) {
+  tintCanvas ||= document.createElement('canvas');
+  tintCanvas.width = meta.frame_w;
+  tintCanvas.height = meta.frame_h;
+  const tctx = tintCanvas.getContext('2d');
+  tctx.imageSmoothingEnabled = false;
+  tctx.drawImage(image, frame * meta.frame_w, 0, meta.frame_w, meta.frame_h, 0, 0, meta.frame_w, meta.frame_h);
+  tctx.globalCompositeOperation = 'source-atop';
+  tctx.fillStyle = tint;
+  tctx.fillRect(0, 0, meta.frame_w, meta.frame_h);
+  drawSprite8(tintCanvas, meta, 0, pivotX, footY, facing, alpha);
+}
+
+// Bóng Trưng Nhị: NPC_TRUNG_NHI alpha .5 ánh chàm, vẽ SAU lưng người chơi
+// (trước drawPlayer). Chém: attack_01 trải trên ATTACK_COOLDOWN như người chơi.
+function drawShadow() {
+  const shadow = state.skills?.shadow;
+  const pose = shadow?.pose;
+  if (!pose || shadow.active <= 0) return;
+  const key = shadow.anim?.name || 'idle';
+  const name = SHADOW_ANIMS[key] || 'idle';
+  const meta = getAnimMeta(SHADOW.sprite, name);
+  const image = images.sprites8[SHADOW.sprite]?.[name];
+  const pivotX = Math.round(pose.x + pose.w / 2 - state.cameraX);
+  const footY = Math.round(pose.y + pose.h);
+  if (!meta || !image) {
+    drawPlaceholder(pose, SHADOW.alpha);
+    return;
+  }
+  const frame = frameIndex(meta, shadow.anim.time, key === 'attack' ? ATTACK_COOLDOWN : null);
+  drawTintedSprite(image, meta, frame, pivotX, footY, pose.facing < 0 ? -1 : 1, SHADOW.alpha, SHADOW.tint);
+  debugLabels.set(pose, `bóng ${name} ${frame + 1}/${meta.frames}`);
+}
+
+// Mưa tên trên thành: vạch báo nhấp nháy trên mặt đất (vẽ bằng code) trong lúc
+// báo trước và lúc tên đang rơi.
+function drawWallArrowMarks(time) {
+  state.wallArrows.forEach(arrow => {
+    const x = Math.round(arrow.x - state.cameraX);
+    if (x < -16 || x > VIEW_W + 16) return;
+    const blink = arrow.warn > 0 && Math.floor(time * 10) % 2 === 0;
+    ctx.fillStyle = blink ? 'rgba(255, 230, 120, .9)' : 'rgba(210, 40, 30, .85)';
+    ctx.fillRect(x - 7, GROUND_Y - 1, 14, 2);
+    ctx.fillRect(x - 1, GROUND_Y - 4, 2, 3);
+  });
+}
+
+// Mưa tên (kỹ năng) + tên trên thành: PJ_ARROW_RAIN (mũi ở đáy ô) vẽ x1 tại (centerX, tipY).
+function drawArrows() {
+  const meta = getAnimMeta(ARROW_RAIN_SPRITE.id, ARROW_RAIN_SPRITE.anim);
+  const image = images.sprites8[ARROW_RAIN_SPRITE.id]?.[ARROW_RAIN_SPRITE.anim];
+  const falling = [
+    ...state.arrows.filter(arrow => arrow.delay <= 0),
+    ...state.wallArrows.filter(arrow => arrow.warn <= 0).map(arrow => ({ centerX: arrow.x, tipY: arrow.tipY }))
+  ];
+  falling.forEach(arrow => {
+    const pivotX = Math.round(arrow.centerX - state.cameraX);
+    if (pivotX < -16 || pivotX > VIEW_W + 16) return;
+    const tipY = Math.round(arrow.tipY);
+    if (meta && image) drawSprite8(image, meta, 0, pivotX, tipY, 1);
+    else {
+      ctx.fillStyle = '#e8d9a8';
+      ctx.fillRect(pivotX - 1, tipY - 18, 2, 18);
     }
   });
 }
@@ -373,12 +940,12 @@ function playerFrame(config, meta, p, animTime) {
 
 // Vẽ 1 ô strip 8-bit, pivot bottom-center: chân (hàng frame_h - 2) nằm ngay
 // trên `footY`, lật ngang quanh pivot khi quay trái (ảnh gốc quay phải).
-// `scale` = 1 cho mọi strip đúng tỉ lệ; khác 1 chỉ dùng bù tạm (drawScale).
-function drawSprite8(image, meta, frame, pivotX, footY, facing, alpha = 1, scale = 1) {
-  const w = meta.frame_w * scale;
-  const h = meta.frame_h * scale;
+// Luôn vẽ x1.
+function drawSprite8(image, meta, frame, pivotX, footY, facing, alpha = 1) {
+  const w = meta.frame_w;
+  const h = meta.frame_h;
   const left = pivotX - w / 2;
-  const top = footY - (meta.frame_h - 1) * scale;
+  const top = footY - (meta.frame_h - 1);
   ctx.save();
   ctx.globalAlpha = alpha;
   if (facing < 0) {
@@ -412,7 +979,7 @@ function drawPlayer(time) {
     const pivotX = Math.round(p.x + p.w / 2 - state.cameraX);
     const footY = Math.round(p.y + p.h);
     const facing = p.facing < 0 ? -1 : 1;
-    drawSprite8(image, meta, frame, pivotX, footY, facing, 1, config.drawScale || 1);
+    drawSprite8(image, meta, frame, pivotX, footY, facing);
     return;
   }
 
@@ -433,16 +1000,6 @@ function drawPlayer(time) {
   }
 }
 
-function drawChunkMarker() {
-  const chunk = Math.min(LEVEL_CHUNKS, Math.floor(state.player.x / CHUNK_W) + 1);
-  ctx.fillStyle = 'rgba(24, 14, 9, .72)';
-  ctx.fillRect(VIEW_W - 63, 7, 54, 17);
-  ctx.fillStyle = '#ffe7a3';
-  ctx.font = 'bold 9px system-ui';
-  ctx.textAlign = 'center';
-  ctx.fillText(`${chunk} / ${LEVEL_CHUNKS}`, VIEW_W - 36, 19);
-}
-
 // Lớp debug (F2): hitbox (đỏ; người chơi xanh), pivot bottom-center (vàng),
 // nhãn animation + ô đang vẽ phía trên entity, vạch GROUND_Y. Không đụng state.
 function drawDebugOverlay() {
@@ -454,7 +1011,11 @@ function drawDebugOverlay() {
     ...state.obstacles.filter(item => item.active),
     ...state.hazards.filter(item => item.alive && !(item.kind === 'roller' && !item.active)),
     ...state.enemies.filter(item => item.alive),
+    ...state.npcs.filter(item => item.fade > 0),
     ...state.projectiles,
+    ...state.jars.map(jar => ({ x: jar.x - BOSS_TD.jar.w / 2, y: jar.y - BOSS_TD.jar.h / 2, w: BOSS_TD.jar.w, h: BOSS_TD.jar.h })),
+    ...state.fires.map(fire => ({ x: fire.x - BOSS_TD.fire.width / 2, y: fire.footY - BOSS_TD.fire.h, w: BOSS_TD.fire.width, h: BOSS_TD.fire.h })),
+    ...(state.skills?.shadow.pose && state.skills.shadow.active > 0 ? [state.skills.shadow.pose] : []),
     state.player
   ];
   entities.forEach(entity => {
@@ -489,28 +1050,43 @@ function drawDebugOverlay() {
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'left';
   ctx.fillText(`x ${Math.round(state.player.x)}  cam ${Math.round(state.cameraX)}  GROUND_Y ${GROUND_Y}`, 4, 10);
+  const mid = sceneryAt('mid');
+  const sky = sceneryAt('sky');
+  ctx.fillText(`zone ${LEVEL.zones[zoneIndexAt(state.cameraX + VIEW_W / 2)].id}  mid ${mid.to ? `${mid.from}>${mid.to} ${mid.t.toFixed(2)}` : mid.from}  sky ${sky.to ? `>${sky.to} ${sky.t.toFixed(2)}` : sky.from}`, 4, 19);
   ctx.restore();
 }
 
 export function draw(time = 0) {
+  ctx.imageSmoothingEnabled = false;
   ctx.clearRect(0, 0, VIEW_W, VIEW_H);
   debugLabels.clear();
+  if (!state) return;
   drawBackdrops();
-  if (!state) {
-    ctx.imageSmoothingEnabled = false;
-    return;
-  }
-  drawLandmarks();
-  // Hết lớp nền: tắt smoothing trước khi vẽ sprite.
-  ctx.imageSmoothingEnabled = false;
+  drawGround();
+  drawFinishGate(time);
+  drawQuizSteles(time);
   drawHazards(time, true);
   drawHoles();
   drawBooks(time);
   drawObstacles();
+  drawNpcs(time);
   drawHazards(time);
+  drawBossFoot();
   drawEnemies();
   drawProjectiles();
+  drawJars();
+  drawShadow();
   drawPlayer(time);
-  drawChunkMarker();
-  if (debug.enabled) drawDebugOverlay();
+  drawFires();
+  drawWallArrowMarks(time);
+  drawArrows();
+  // Cutscene kết chương: tối dần/sáng lại (fade 0..1).
+  if (state.cutscene?.fade > 0) {
+    ctx.fillStyle = `rgba(0, 0, 0, ${state.cutscene.fade})`;
+    ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+  }
+  if (debug.enabled) {
+    drawTerrainDebug();
+    drawDebugOverlay();
+  }
 }

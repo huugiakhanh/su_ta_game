@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>SUTA – Màn thử Trưng Trắc</title>
+  <title>SUTA – Trưng Trắc · {{ title }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/levels/trung-trac.css') }}">
 </head>
-<body>
+<body data-level="{{ level_id }}">
   <main class="game-shell">
     <section class="hud" aria-label="Thông tin màn chơi">
       <div class="hud__brand">SUTA · TRƯNG TRẮC</div>
       <div class="hud__item"><span>Máu</span><div id="healthHearts" class="hud__hearts"></div></div>
-      <div class="hud__item"><span>Sách</span><strong id="bookValue">0/5</strong></div>
+      <div id="bookHud" class="hud__item"><span>Sách</span><strong id="bookValue">0/5</strong></div>
       <div class="hud__item"><span>Điểm</span><strong id="scoreValue">0</strong></div>
       <div class="hud__progress"><i id="progressBar"></i></div>
     </section>
@@ -19,27 +19,81 @@
     <section class="stage-wrap">
       <canvas id="gameCanvas" width="480" height="270" aria-label="Màn chơi Trưng Trắc"></canvas>
       <div id="loadingPanel" class="panel panel--visible">
-        <h1>Màn thử Trưng Trắc</h1>
+        <h1>{{ title }}</h1>
         <p id="loadingText">Đang tải bản đồ...</p>
         <button id="startButton" type="button" disabled>Bắt đầu</button>
       </div>
 
       <div id="messageBox" class="message" aria-live="polite"></div>
 
-      <div id="questionPanel" class="panel" role="dialog" aria-modal="true" aria-labelledby="questionTitle">
-        <h2 id="questionTitle">Câu hỏi lịch sử</h2>
-        <p>Cuộc khởi nghĩa Hai Bà Trưng bùng nổ vào năm nào?</p>
-        <div class="answers">
-          <button type="button" data-answer="wrong">Năm 40 TCN</button>
-          <button type="button" data-answer="correct">Năm 40 SCN</button>
-          <button type="button" data-answer="wrong">Năm 248 SCN</button>
+      <!-- Màn 3 (ui.js): thanh khiên chiến xa (giai đoạn 1) / "Đợt N/3" (giai đoạn 2). -->
+      <div id="bossHud" class="boss-hud" hidden>
+        <span id="bossHudLabel" class="boss-hud__label"></span>
+        <span id="shieldPips" class="boss-hud__pips"><i></i><i></i><i></i></span>
+      </div>
+
+      <!-- Ô kỹ năng (ui.js): ô Lướt hiện ở mọi màn; ô kỹ năng/buff màn 3 chỉ
+           hiện phần thưởng đã nhận ở màn 2. -->
+      <div id="skillBar" class="skill-bar">
+        <div id="dashSlot" class="skill skill--dash">
+          <img class="skill__icon" alt="Lướt" width="32" height="32" hidden>
+          <b class="skill__glyph" aria-hidden="true">»</b>
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">S</kbd>
+        </div>
+        <div class="skill" data-skill="SK_LE_CHAN_ARROW_RAIN" hidden>
+          <img class="skill__icon" alt="Mưa tên" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">K</kbd>
+        </div>
+        <div class="skill" data-skill="SK_TRUNG_NHI_SHADOW" hidden>
+          <img class="skill__icon" alt="Bóng Trưng Nhị" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">L</kbd>
+        </div>
+        <div class="skill skill--buff" data-skill="BUFF_Y_CHI_KIEN_CUONG" hidden>
+          <img class="skill__icon" alt="Ý chí kiên cường" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span>
+        </div>
+      </div>
+
+      <!-- Nút cảm ứng (TT-MOBILE-01): phủ lên canvas, chỉ hiện trên máy cảm ứng.
+           Trái: ◀ ▶ + ▲ nhảy; phải: ĐÁNH ở góc, LƯỚT/TÊN/BÓNG xếp vòng cung.
+           Ảnh nút chiêu do ui.js gán (cùng ảnh ô kỹ năng HUD); chưa tải thì hiện chữ. -->
+      <div class="mobile-controls" aria-label="Điều khiển cảm ứng">
+        <div class="mobile-controls__move">
+          <button class="control control--jump" data-control="jump" aria-label="Nhảy">▲</button>
+          <button class="control control--left" data-control="left" aria-label="Đi sang trái">◀</button>
+          <button class="control control--right" data-control="right" aria-label="Đi sang phải">▶</button>
+        </div>
+        <div class="mobile-controls__action">
+          <button class="control control--attack" data-control="attack" aria-label="Đánh"><img class="control__icon" alt="" hidden><span class="control__label">ĐÁNH</span></button>
+          <button class="control control--slide" data-control="dash" aria-label="Lướt"><img class="control__icon" alt="" hidden><span class="control__label">LƯỚT</span></button>
+          <button class="control control--skill control--arrow-rain" data-control="arrowRain" data-skill="SK_LE_CHAN_ARROW_RAIN" aria-label="Mưa tên" hidden><img class="control__icon" alt="" hidden><span class="control__label">TÊN</span></button>
+          <button class="control control--skill control--shadow" data-control="shadow" data-skill="SK_TRUNG_NHI_SHADOW" aria-label="Bóng Trưng Nhị" hidden><img class="control__icon" alt="" hidden><span class="control__label">BÓNG</span></button>
+        </div>
+      </div>
+
+      <!-- Hội thoại NPC / cốt truyện / câu hỏi lịch sử màn 1 (dialogue.js). -->
+      <div id="dialoguePanel" class="panel dialogue" role="dialog" aria-modal="true" aria-labelledby="dialogueName">
+        <div class="dialogue__box">
+          <img id="dialoguePortrait" class="dialogue__portrait" alt="" width="64" height="64">
+          <div class="dialogue__body">
+            <h2 id="dialogueName" class="dialogue__name"></h2>
+            <p id="dialogueTitle" class="dialogue__title"></p>
+            <p id="dialogueLabel" class="dialogue__label" hidden></p>
+            <p id="dialogueText" class="dialogue__text" aria-live="polite"></p>
+            <div id="dialogueAnswers" class="answers dialogue__answers" hidden></div>
+            <p id="dialogueHint" class="dialogue__hint" hidden></p>
+            <button id="dialogueNext" class="dialogue__next" type="button">Tiếp ▸</button>
+          </div>
         </div>
       </div>
 
       <div id="endPanel" class="panel">
-        <h2 id="endTitle">Hoàn thành màn thử!</h2>
+        <h2 id="endTitle">Hoàn thành {{ title }}</h2>
         <p id="endText"></p>
         <button id="restartButton" type="button">Chơi lại</button>
+        <button id="nextLevelButton" type="button" hidden>Sang Màn 2</button>
+        <button id="replayChapterButton" type="button" hidden>Chơi lại chương</button>
+        <button id="homeButton" type="button" hidden>Về trang chủ</button>
       </div>
     </section>
 
@@ -48,21 +102,18 @@
       <span><kbd>W</kbd> hoặc <kbd>Space</kbd> nhảy</span>
       <span><kbd>S</kbd> hoặc <kbd>Shift</kbd> lướt</span>
       <span><kbd>J</kbd> tấn công</span>
+      <span data-skill="SK_LE_CHAN_ARROW_RAIN" hidden><kbd>K</kbd> mưa tên</span>
+      <span data-skill="SK_TRUNG_NHI_SHADOW" hidden><kbd>L</kbd> bóng Trưng Nhị</span>
       <span><kbd>R</kbd> chơi lại</span>
     </section>
-
-    <section class="mobile-controls" aria-label="Điều khiển cảm ứng">
-      <div class="mobile-controls__group">
-        <button class="control" data-control="left" aria-label="Đi sang trái">◀</button>
-        <button class="control" data-control="right" aria-label="Đi sang phải">▶</button>
-      </div>
-      <div class="mobile-controls__group">
-        <button class="control control--slide" data-control="dash">LƯỚT</button>
-        <button class="control control--attack" data-control="attack">ĐÁNH</button>
-        <button class="control control--jump" data-control="jump">NHẢY</button>
-      </div>
-    </section>
   </main>
+
+  <!-- Máy cảm ứng cầm dọc (TT-MOBILE-01): che màn + nhắc xoay ngang; main.js
+       không chạy update() khi lớp này hiện. -->
+  <div id="rotateOverlay" class="rotate-overlay" role="alert">
+    <div class="rotate-overlay__phone" aria-hidden="true"></div>
+    <p>Hãy xoay ngang điện thoại để chơi</p>
+  </div>
 
   <script type="module" src="{{ url_for('static', filename='js/levels/trung-trac/main.js') }}"></script>
 </body>

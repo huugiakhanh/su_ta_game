@@ -3,8 +3,39 @@
 // phát ở x1/x3/x4 kèm lưới pixel, baseline (hàng chân = frame_h - 2) và pivot
 // bottom-center. Frame chứa hit_frame (đếm từ 1) được đánh dấu đỏ.
 
-import { loadImage, joinAssetPath, loadSpriteManifest } from './assets.js';
-import { SPRITE_8BIT_ROOT } from './config.js';
+import { loadImage, joinAssetPath, loadSpriteManifest, loadMapManifest } from './assets.js';
+import { SPRITE_8BIT_ROOT, MAP_8BIT_ROOT, BOOK_SPRITE_ID, BOOK_FPS } from './config.js';
+
+// Asset môi trường trong maps_tt.json (vật cản, bình thư, cổng, cột đá) đổi
+// sang dạng mục manifest sprite để viewer dùng chung một đường xem. Nền
+// parallax/tileset không có ô nên bỏ qua. fps null: bình thư dùng BOOK_FPS,
+// ảnh nhiều trạng thái (cột đá) lật 2 ô/giây để soát.
+function mapAssetEntries(mapManifest) {
+  return (mapManifest?.assets || [])
+    .filter(asset => ['obstacle', 'item', 'prop'].includes(asset.category))
+    .map(asset => {
+      const frames = asset.frames || 1;
+      return {
+        id: asset.id,
+        category: `map/${asset.category}`,
+        priority: asset.priority,
+        status: asset.status,
+        facing: '—',
+        pivot: asset.anchor,
+        root: MAP_8BIT_ROOT,
+        frame_w: asset.frame_w || asset.w,
+        frame_h: asset.frame_h || asset.h,
+        animations: [{
+          name: asset.frame_states ? asset.frame_states.join('|') : 'idle',
+          file: asset.file,
+          frames,
+          fps: asset.fps ?? (asset.id === BOOK_SPRITE_ID ? BOOK_FPS : 2),
+          loop: asset.loop ?? true,
+          hit_frame: null
+        }]
+      };
+    });
+}
 
 const SCALES = [1, 3, 4];
 const PAD = 8; // lề quanh khung, tính theo pixel sprite
@@ -37,11 +68,12 @@ export async function startViewer() {
   const root = el('main', { className: 'viewer' });
   document.body.append(root);
 
-  const manifest = await loadSpriteManifest();
-  if (!manifest) {
+  const [spriteManifest, mapManifest] = await Promise.all([loadSpriteManifest(), loadMapManifest()]);
+  if (!spriteManifest) {
     root.append(el('p', { textContent: 'Không tải được manifest_tt.json (xem console / đường dẫn sprites-8bit).' }));
     return;
   }
+  const manifest = { ...spriteManifest, assets: [...spriteManifest.assets, ...mapAssetEntries(mapManifest)] };
 
   const assetSelect = el('select', { ariaLabel: 'Asset' });
   manifest.assets.forEach((asset, index) => {
@@ -78,7 +110,7 @@ export async function startViewer() {
   async function selectAnimation() {
     view.asset = manifest.assets[Number(assetSelect.value)];
     view.anim = view.asset.animations[Number(animSelect.value)] || view.asset.animations[0];
-    const url = joinAssetPath(SPRITE_8BIT_ROOT, view.anim.file);
+    const url = joinAssetPath(view.asset.root || SPRITE_8BIT_ROOT, view.anim.file);
     if (!imageCache.has(url)) imageCache.set(url, await loadImage(url, true));
     view.image = imageCache.get(url);
     view.frame = 0;

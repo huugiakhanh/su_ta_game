@@ -5,3 +5,4 @@ __pycache__/
 *.log
 artifacts/
 assets/sprites
+assets/maps
