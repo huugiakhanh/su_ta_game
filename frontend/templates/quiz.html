@@ -30,7 +30,8 @@
             <button class="btn-action" style="margin-top: 25px; padding: 14px 40px; font-size: 18px;" onclick="startQuiz()">BẮT ĐẦU CHƠI</button>
         </div>
 
-        <!-- MÀN HÌNH LÀM BÀI (Thêm class hidden) -->
+        
+        <!-- MÀN HÌNH LÀM BÀI -->
         <div id="quiz-screen" class="hidden">
             <div class="quiz-header">
                 <span id="question-progress">Đang tải...</span>
@@ -41,11 +42,12 @@
                 <h3 id="question-text">Đang tải câu hỏi...</h3>
             </div>
 
+            <!-- KHỐI GIẢI THÍCH CHUYỂN LÊN ĐÂY -->
+            <div id="explanation-box" class="explanation-box hidden"></div>
+
             <div class="options-grid" id="options-container">
                 <!-- Các nút đáp án render bằng JS -->
             </div>
-
-            <div id="explanation-box" class="explanation-box hidden"></div>
         </div>
 
         <!-- MÀN HÌNH KẾT QUẢ -->

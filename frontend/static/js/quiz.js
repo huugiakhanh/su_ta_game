@@ -74,7 +74,7 @@ function startQuiz() {
     showQuestion();
 }
 
-// 4. Render câu hỏi
+// 4. Render câu hỏi (ĐÃ THÊM LOGIC XÁO TRỘN ĐÁP ÁN)
 function showQuestion() {
     canAnswer = true;
     const currentQ = activeQuestions[currentIndex];
@@ -89,11 +89,27 @@ function showQuestion() {
     const container = document.getElementById("options-container");
     container.innerHTML = ""; 
 
-    currentQ.options.forEach((opt, idx) => {
+    // --- BƯỚC XÁO TRỘN VỊ TRÍ ĐÁP ÁN ---
+    // 1. Tạo một mảng tạm chứa nội dung đáp án và cờ đánh dấu đâu là đáp án đúng gốc
+    let optionsWithStatus = currentQ.options.map((optText, originalIndex) => {
+        return {
+            text: optText,
+            isCorrect: (originalIndex === currentQ.correct)
+        };
+    });
+
+    // 2. Xáo trộn ngẫu nhiên mảng tạm này
+    let shuffledOptions = shuffleArray(optionsWithStatus);
+
+    // 3. Tìm xem đáp án đúng hiện tại đã bị đảo tới vị trí (index) số mấy
+    currentQ.currentCorrectIndex = shuffledOptions.findIndex(opt => opt.isCorrect === true);
+
+    // 4. Tạo nút bấm dựa trên danh sách đã xáo trộn
+    shuffledOptions.forEach((optObj, newIndex) => {
         const btn = document.createElement("button");
         btn.className = "option-btn";
-        btn.innerText = opt;
-        btn.onclick = () => selectAnswer(idx);
+        btn.innerText = optObj.text; // Hiển thị nội dung chữ
+        btn.onclick = () => selectAnswer(newIndex); // Gắn sự kiện click với vị trí mới
         container.appendChild(btn);
     });
 }
@@ -107,22 +123,44 @@ function selectAnswer(selectedIndex) {
     const buttons = document.querySelectorAll(".option-btn");
     const explanationBox = document.getElementById("explanation-box");
 
-    if (selectedIndex === currentQ.correct) {
-        score += 10;
-        buttons[selectedIndex].classList.add("correct-choice");
-    } else {
-        buttons[selectedIndex].classList.add("wrong-choice");
-        buttons[currentQ.correct].classList.add("correct-choice"); 
+    let isCorrect = (selectedIndex === currentQ.currentCorrectIndex);
+    
+    // Đổi màu các nút
+    buttons.forEach((btn, index) => {
+        if (index === currentQ.currentCorrectIndex) {
+            btn.classList.add("correct-choice"); // Đáp án đúng -> Xanh lá
+        } else if (index === selectedIndex) {
+            btn.classList.add("wrong-choice");   // Ô chọn sai -> Đỏ
+        } else {
+            btn.style.opacity = "0.4";           // Làm mờ các ô không được chọn
+        }
+    });
+
+    // Lấy nội dung text của đáp án đúng để in ra màn hình
+    const correctText = buttons[currentQ.currentCorrectIndex].innerText;
+
+    // Reset lại class của hộp giải thích (hiển thị hộp)
+    explanationBox.classList.remove("hidden", "explain-correct", "explain-wrong");
+
+    // Xóa câu "Đáp án đúng là A/B/C/D" bị fix cứng từ Excel
+    let expText = currentQ.explanation || "";
+    if (expText.includes("Đáp án đúng là")) {
+        expText = ""; // Bỏ đi vì ta đã có câu thông báo chi tiết bên dưới
     }
 
-    if (currentQ.explanation) {
-        explanationBox.innerText = currentQ.explanation;
-        explanationBox.classList.remove("hidden");
+    // Xử lý thông báo và điểm
+    if (isCorrect) {
+        score += 10;
+        explanationBox.classList.add("explain-correct");
+        explanationBox.innerHTML = `<strong>🎉 CHÍNH XÁC!</strong><br>${expText}`;
+    } else {
+        explanationBox.classList.add("explain-wrong");
+        explanationBox.innerHTML = `<strong>❌ SAI RỒI! Đáp án đúng là: ${correctText}</strong><br>${expText}`;
     }
 
     document.getElementById("score-display").innerText = `Điểm: ${score}`;
 
-    // Tự động chuyển câu sau 2.5 giây
+    // Chuyển câu sau 3.5 giây
     setTimeout(() => {
         currentIndex++;
         if (currentIndex < activeQuestions.length) {
@@ -130,7 +168,7 @@ function selectAnswer(selectedIndex) {
         } else {
             finishQuiz();
         }
-    }, 2500);
+    }, 3500); 
 }
 
 // 6. Hoàn thành
