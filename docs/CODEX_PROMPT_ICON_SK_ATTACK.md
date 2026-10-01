@@ -2,7 +2,7 @@
 
 Trạng thái: Codex giao 29/09 (`NORMALIZED`); đã chép PNG + chèn đúng mục manifest (không
 chép đè cả manifest — bản chạy có `qa_notes` mới hơn ở `NPC_TRUNG_NHI`, `EN_HAN_RUSHER`) sang
-`frontend/static/assets/images/sprites-8bit/`; nút ĐÁNH đang dùng (`ATTACK_ICON`, `ui.js`).
+`frontend/static/assets/images/trung-trac/sprites-8bit/`; nút ĐÁNH đang dùng (`ATTACK_ICON`, `ui.js`).
 Team đã duyệt 29/09 → `status: IN_GAME` ở cả 2 manifest.
 
 ---

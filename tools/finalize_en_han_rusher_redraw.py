@@ -16,7 +16,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 ACTOR = ROOT / "assets/sprites/enemy/EN_HAN_RUSHER"
-RUNTIME = ROOT / "frontend/static/assets/images/sprites-8bit/enemy/EN_HAN_RUSHER"
+RUNTIME = ROOT / "frontend/static/assets/images/trung-trac/sprites-8bit/enemy/EN_HAN_RUSHER"
 REDRAW = ACTOR / "redraw-2026-09-26"
 ALPHA_THRESHOLD = 96
 

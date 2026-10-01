@@ -1,7 +1,7 @@
 # Prompt giao Codex — icon kỹ năng Lướt `ICON_SK_DASH`
 
 Trạng thái: Codex giao 27/09 (`NORMALIZED`); đã chép strip + mục manifest sang
-`frontend/static/assets/images/sprites-8bit/`, ô HUD đang dùng. Team đã duyệt 27/09 →
+`frontend/static/assets/images/trung-trac/sprites-8bit/`, ô HUD đang dùng. Team đã duyệt 27/09 →
 `status: IN_GAME` ở cả 2 manifest.
 
 ---

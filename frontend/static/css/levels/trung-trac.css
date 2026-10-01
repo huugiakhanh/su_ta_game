@@ -49,10 +49,30 @@ button { font: inherit; }
 }
 
 .hud__brand {
+  display: flex;
+  gap: 8px;
+  align-items: center;
   color: var(--gold);
   font-weight: 900;
   letter-spacing: .06em;
 }
+
+/* Nút loa bật/tắt âm thanh (TT-AUDIO-01). */
+.hud__mute {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid #5b351d;
+  border-radius: 4px;
+  background: #110b08;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+.hud__mute:hover { border-color: var(--gold); }
+.hud__mute[aria-pressed="true"] { opacity: .6; }
 
 .hud__item {
   display: flex;

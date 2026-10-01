@@ -70,7 +70,7 @@ export async function startViewer() {
 
   const [spriteManifest, mapManifest] = await Promise.all([loadSpriteManifest(), loadMapManifest()]);
   if (!spriteManifest) {
-    root.append(el('p', { textContent: 'Không tải được manifest_tt.json (xem console / đường dẫn sprites-8bit).' }));
+    root.append(el('p', { textContent: 'Không tải được manifest_tt.json (xem console / đường dẫn trung-trac/sprites-8bit).' }));
     return;
   }
   const manifest = { ...spriteManifest, assets: [...spriteManifest.assets, ...mapAssetEntries(mapManifest)] };

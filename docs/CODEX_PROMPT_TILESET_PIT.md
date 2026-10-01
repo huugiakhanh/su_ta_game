@@ -10,7 +10,7 @@ cầu bắc qua) hiện được **vẽ tạm bằng code**: dùng tile `fill` c
 
 Code **đã sẵn sàng**: khi vùng có đủ tile vai trò `pit-top` + `pit-deep`, `drawHoles()` tự vẽ tile đó thay cho
 bản tạm, không cần sửa code. Sau khi team duyệt: Claude chép `tileset_tt_ground.png` + `.json` sang
-`frontend/static/assets/images/maps-8bit/tiles/TILESET_TT_GROUND/`.
+`frontend/static/assets/images/trung-trac/maps-8bit/tiles/TILESET_TT_GROUND/`.
 
 ---
 

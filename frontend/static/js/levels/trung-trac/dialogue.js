@@ -13,6 +13,7 @@ import { joinAssetPath } from './assets.js';
 import { getAsset } from './animation.js';
 import { SPRITE_8BIT_ROOT, NPC_SPRITES, QUESTION_SCORE, QUIZ } from './config.js';
 import { NPC_DIALOGUES } from './dialogue-data.js';
+import { playSfx, duckMusic } from './audio.js';
 
 const el = {
   panel: document.getElementById('dialoguePanel'),
@@ -84,6 +85,8 @@ function open(next) {
   // Cốt truyện mặc định chân dung trắng đen (Thi Sách); `memorial: false` = màu.
   el.portrait.classList.toggle('dialogue__portrait--memorial', next.kind === 'story' && next.data.memorial !== false);
   el.panel.classList.add('panel--visible');
+  duckMusic(true);
+  playSfx(next.kind === 'quiz' ? 'quizOpen' : 'talk');
   render();
 }
 
@@ -196,6 +199,7 @@ function choose(index) {
   const option = current.options[index];
   if (!option || current.wrong.has(index)) return;
   if (current.kind === 'quiz') return chooseQuiz(option);
+  playSfx(option.correct ? 'correct' : 'wrong');
   if (!option.correct) {
     current.wrong.add(index);
     state.health -= 1;
@@ -220,6 +224,7 @@ function choose(index) {
 // thua ngay. Còn chơi tiếp thì hiện kết quả + giải thích, Enter để đóng.
 function chooseQuiz(option) {
   current.correct = option.correct;
+  playSfx(option.correct ? 'correct' : 'wrong');
   if (option.correct) {
     state.score += current.data.score;
   } else {
@@ -249,6 +254,7 @@ function advance() {
   } else if (step === 'reward') {
     return finish();
   }
+  playSfx(current.step === 'reward' ? 'reward' : 'talk');
   render();
 }
 
@@ -264,6 +270,7 @@ export function closeDialogue() {
   if (current?.npc) current.npc.talking = false;
   current = null;
   el.panel.classList.remove('panel--visible');
+  duckMusic(false);
   el.answers.innerHTML = '';
   clearInput();
 }
