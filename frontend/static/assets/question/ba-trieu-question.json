@@ -1,0 +1,602 @@
+[
+  {
+    "id": 1,
+    "question": "Bà Triệu có tên thật là gì?",
+    "options": [
+      "Triệu Thị Nhị",
+      "Triệu Thị Trinh",
+      "Triệu Ẩu",
+      "Triệu Trinh Nương"
+    ],
+    "correct": 1,
+    "explanation": "Tên thật của bà là Triệu Thị Trinh, sinh năm 226."
+  },
+  {
+    "id": 2,
+    "question": "Bà Triệu quê ở đâu?",
+    "options": [
+      "Chu Diên (Hưng Yên)",
+      "Mê Linh (Hà Nội)",
+      "Quan Yên (Thanh Hóa)",
+      "Hoa Lư (Ninh Bình)"
+    ],
+    "correct": 2,
+    "explanation": "Quê bà ở vùng núi Quan Yên, quận Cửu Chân (nay thuộc Yên Định, Thanh Hóa)."
+  },
+  {
+    "id": 3,
+    "question": "Cuộc khởi nghĩa của Bà Triệu nổ ra vào năm nào?",
+    "options": [
+      "248",
+      "40",
+      "544",
+      "938"
+    ],
+    "correct": 0,
+    "explanation": "Khởi nghĩa bùng nổ vào năm 248."
+  },
+  {
+    "id": 4,
+    "question": "Kẻ thù mà khởi nghĩa Bà Triệu hướng tới là triều đại nào ở Trung Quốc?",
+    "options": [
+      "Nhà Hán",
+      "Nhà Đường",
+      "Nhà Đông Ngô",
+      "Nhà Tống"
+    ],
+    "correct": 2,
+    "explanation": "Nước ta lúc đó đang bị nhà Đông Ngô (thời Tam Quốc) đô hộ."
+  },
+  {
+    "id": 5,
+    "question": "Anh trai của Bà Triệu tên là gì?",
+    "options": [
+      "Triệu Quang Phục",
+      "Triệu Túc",
+      "Triệu Quốc Đạt",
+      "Triệu Đà"
+    ],
+    "correct": 2,
+    "explanation": "Triệu Quốc Đạt là Hào trưởng vùng Quan Yên, cùng bà lãnh đạo khởi nghĩa."
+  },
+  {
+    "id": 6,
+    "question": "Câu nói: \"Tôi chỉ muốn cưỡi cơn gió mạnh, đạp luồng sóng dữ, chém cá kình ở Biển Đông...\" là của ai?",
+    "options": [
+      "Hai Bà Trưng",
+      "Bà Triệu",
+      "Bùi Thị Xuân",
+      "Lê Chân"
+    ],
+    "correct": 1,
+    "explanation": "Lời khẳng định ý chí lẫm liệt của Bà Triệu khi được khuyên lấy chồng."
+  },
+  {
+    "id": 7,
+    "question": "Linh vật mà Bà Triệu cưỡi khi ra trận là con vật gì?",
+    "options": [
+      "Ngựa xích thố",
+      "Voi trắng một ngà",
+      "Hổ vằn",
+      "Rồng"
+    ],
+    "correct": 1,
+    "explanation": "Tương truyền bà cưỡi voi trắng (Bạch Tượng) ra trận."
+  },
+  {
+    "id": 8,
+    "question": "Trang phục nổi bật của Bà Triệu khi ra trận được miêu tả như thế nào?",
+    "options": [
+      "Mặc áo giáp vàng, đi guốc ngà",
+      "Mặc áo the thâm",
+      "Mặc áo lụa đỏ",
+      "Mặc giáp sắt đen"
+    ],
+    "correct": 0,
+    "explanation": "Dân gian miêu tả bà mặc áo giáp vàng, cài trâm vàng, đi guốc ngà."
+  },
+  {
+    "id": 9,
+    "question": "Căn cứ khởi nghĩa đầu tiên của Bà Triệu nằm ở ngọn núi nào?",
+    "options": [
+      "Núi Tản Viên",
+      "Núi Nưa",
+      "Núi Lam Sơn",
+      "Núi Yên Tử"
+    ],
+    "correct": 1,
+    "explanation": "Ngàn Nưa (Núi Nưa) là nơi bà thu nạp nghĩa quân, rèn luyện võ nghệ."
+  },
+  {
+    "id": 10,
+    "question": "Sau khi phát động khởi nghĩa, nghĩa quân đã tấn công vào đâu đầu tiên?",
+    "options": [
+      "Thành Tư Phố",
+      "Trị sở Giao Châu",
+      "Thành Luy Lâu",
+      "Các thành ấp của nhà Ngô ở Cửu Chân"
+    ],
+    "correct": 3,
+    "explanation": "Nghĩa quân tràn xuống đánh phá các thành ấp của quan lại nhà Ngô ở Cửu Chân."
+  },
+  {
+    "id": 11,
+    "question": "Nhà Ngô đã cử viên tướng nào sang đàn áp khởi nghĩa Bà Triệu?",
+    "options": [
+      "Mã Viện",
+      "Lục Dận",
+      "Trần Bá Tiên",
+      "Cao Biền"
+    ],
+    "correct": 1,
+    "explanation": "Lục Dận, một danh tướng nhà Ngô được phong làm Thứ sử Giao Châu sang đàn áp."
+  },
+  {
+    "id": 12,
+    "question": "Thủ đoạn chính mà Lục Dận dùng để đối phó với nghĩa quân là gì?",
+    "options": [
+      "Chỉ dùng sức mạnh quân sự",
+      "Đắp đập ngăn sông",
+      "Vừa đánh vừa mua chuộc, chia rẽ nội bộ",
+      "Gọi viện binh từ Nam Hán"
+    ],
+    "correct": 2,
+    "explanation": "Hắn dùng tiền bạc phong tước để mua chuộc các lãnh tụ địa phương, làm suy yếu nghĩa quân."
+  },
+  {
+    "id": 13,
+    "question": "Sau khi Triệu Quốc Đạt mất, nghĩa quân đã làm gì?",
+    "options": [
+      "Giải tán",
+      "Tôn Bà Triệu làm chủ tướng",
+      "Bỏ chạy lên rừng",
+      "Đầu hàng Lục Dận"
+    ],
+    "correct": 1,
+    "explanation": "Nghĩa quân thấy bà làm tướng có can đảm nên tôn bà lên làm chủ tướng."
+  },
+  {
+    "id": 14,
+    "question": "Nhân dân đương thời suy tôn Bà Triệu với danh hiệu gì?",
+    "options": [
+      "Trưng Nữ Vương",
+      "Lệ Hải Bà Vương",
+      "Dạ Trạch Vương",
+      "Nam Đế"
+    ],
+    "correct": 1,
+    "explanation": "Bà được tôn xưng là Lệ Hải Bà Vương (Nữ vương xinh đẹp vùng ven biển) và Nhụy Kiều tướng quân."
+  },
+  {
+    "id": 15,
+    "question": "Đặc điểm ngoại hình dị thường của Bà Triệu theo truyền thuyết dân gian là gì?",
+    "options": [
+      "Cao 3 trượng",
+      "Tóc dài tới gót chân",
+      "Vú dài 3 thước",
+      "Mắt sáng như sao"
+    ],
+    "correct": 2,
+    "explanation": "Dân gian truyền tụng bà có vú dài 3 thước, vắt ra sau lưng khi đánh trận."
+  },
+  {
+    "id": 16,
+    "question": "Đỉnh cao của cuộc khởi nghĩa diễn ra tại căn cứ nào?",
+    "options": [
+      "Thành Cổ Loa",
+      "Bãi sậy",
+      "Chiến lũy Bồ Điền",
+      "Đầm Dạ Trạch"
+    ],
+    "correct": 2,
+    "explanation": "Bồ Điền (Hậu Lộc, Thanh Hóa) là nơi diễn ra các trận đánh ác liệt nhất."
+  },
+  {
+    "id": 17,
+    "question": "Vì sao Bà Triệu chọn Bồ Điền làm căn cứ phòng thủ?",
+    "options": [
+      "Gần biển dễ chạy trốn",
+      "Địa hình núi thấp đan xen sình lầy hiểm trở",
+      "Có thành lũy do người Hoa xây",
+      "Dân cư đông đúc"
+    ],
+    "correct": 1,
+    "explanation": "Địa hình đầm lầy, rừng cây rậm rạp rất thuận lợi để phòng thủ và đánh du kích."
+  },
+  {
+    "id": 18,
+    "question": "Cuộc khởi nghĩa Bà Triệu kéo dài trong khoảng thời gian bao lâu?",
+    "options": [
+      "Khoảng 5-6 tháng",
+      "3 năm",
+      "10 năm",
+      "1 tháng"
+    ],
+    "correct": 0,
+    "explanation": "Dù phát triển mạnh mẽ nhưng cuộc khởi nghĩa chỉ kéo dài khoảng 5-6 tháng thì bị đàn áp."
+  },
+  {
+    "id": 19,
+    "question": "Bà Triệu đã anh dũng hy sinh tại đâu?",
+    "options": [
+      "Sông Bạch Đằng",
+      "Núi Tùng (Hậu Lộc)",
+      "Sông Hát",
+      "Cửa biển Đại Nha"
+    ],
+    "correct": 1,
+    "explanation": "Bà đã tuẫn tiết tại núi Tùng (xã Triệu Lộc, huyện Hậu Lộc, Thanh Hóa ngày nay)."
+  },
+  {
+    "id": 20,
+    "question": "Tại sao khởi nghĩa Bà Triệu thất bại?",
+    "options": [
+      "Thiếu lương thực nghiêm trọng",
+      "Lực lượng chênh lệch, giặc dùng thủ đoạn chia rẽ",
+      "Bị bệnh dịch",
+      "Lãnh đạo hèn nhát"
+    ],
+    "correct": 1,
+    "explanation": "Do chênh lệch lực lượng lớn và thủ đoạn mua chuộc đê hèn của giặc."
+  },
+  {
+    "id": 21,
+    "question": "Sau khi Bà Triệu mất, nhà Ngô đã có hành động gì với nhân dân ta?",
+    "options": [
+      "Giảm thuế",
+      "Tiếp tục bóc lột hà khắc",
+      "Trả lại độc lập",
+      "Rút toàn bộ quân về nước"
+    ],
+    "correct": 1,
+    "explanation": "Ách thống trị của nhà Ngô tiếp tục đè nặng lên nhân dân Giao Châu."
+  },
+  {
+    "id": 22,
+    "question": "Tướng giặc Đông Ngô từng phải thốt lên câu gì khi đối đầu với Bà Triệu?",
+    "options": [
+      "Vung tay đánh hổ dễ, đối mặt Bà Vương khó",
+      "Quân Giao Chỉ dũng mãnh vô song",
+      "Nước Nam nhiều nhân tài",
+      "Đàn bà nước Nam thật đáng sợ"
+    ],
+    "correct": 0,
+    "explanation": "Quân Ngô truyền nhau câu: \"Hoành qua đương hổ dị, đối diện Bà Vương nan\"."
+  },
+  {
+    "id": 23,
+    "question": "Câu ca dao: \"Ru con con ngủ cho lành / Để mẹ gánh nước rửa bành con...\" nhắc tới loài vật nào của Bà Triệu?",
+    "options": [
+      "Ngựa",
+      "Voi",
+      "Trâu",
+      "Hổ"
+    ],
+    "correct": 1,
+    "explanation": "\"Rửa bành con voi\" chỉ việc chăm sóc voi chiến của Bà Triệu."
+  },
+  {
+    "id": 24,
+    "question": "Đền thờ chính của Bà Triệu hiện nay nằm ở tỉnh nào?",
+    "options": [
+      "Nghệ An",
+      "Thanh Hóa",
+      "Ninh Bình",
+      "Hà Nội"
+    ],
+    "correct": 1,
+    "explanation": "Đền thờ Bà Triệu nằm ở núi Tùng, xã Triệu Lộc, huyện Hậu Lộc, Thanh Hóa."
+  },
+  {
+    "id": 25,
+    "question": "Khởi nghĩa Bà Triệu đánh dấu sự tiếp nối truyền thống gì của phụ nữ Việt Nam?",
+    "options": [
+      "Giỏi việc nước, đảm việc nhà",
+      "Trọng nam khinh nữ",
+      "Anh hùng, bất khuất, chống ngoại xâm",
+      "An phận thủ thường"
+    ],
+    "correct": 2,
+    "explanation": "Tiếp nối truyền thống yêu nước, bất khuất từ thời Hai Bà Trưng."
+  },
+  {
+    "id": 26,
+    "question": "Nhà Ngô (Đông Ngô) cai trị Giao Châu trong bối cảnh lịch sử nào của Trung Quốc?",
+    "options": [
+      "Xuân Thu - Chiến Quốc",
+      "Tam Quốc diễn nghĩa",
+      "Hán - Sở tranh hùng",
+      "Nam - Bắc triều"
+    ],
+    "correct": 1,
+    "explanation": "Thời kỳ Tam Quốc (Ngụy - Thục - Ngô)."
+  },
+  {
+    "id": 27,
+    "question": "Trước khi khởi nghĩa, Bà Triệu và anh trai đã bí mật chuẩn bị những gì ở núi Nưa?",
+    "options": [
+      "Trồng lúa",
+      "Xây dựng cung điện",
+      "Chiêu mộ nghĩa quân, rèn vũ khí",
+      "Đàm phán với giặc"
+    ],
+    "correct": 2,
+    "explanation": "Hai anh em bí mật chiêu mộ lực lượng và ngày đêm rèn đúc vũ khí."
+  },
+  {
+    "id": 28,
+    "question": "Lục Dận là cháu của viên danh tướng nào thời Đông Ngô?",
+    "options": [
+      "Chu Du",
+      "Lục Tốn",
+      "Lữ Mông",
+      "Tôn Quyền"
+    ],
+    "correct": 1,
+    "explanation": "Lục Dận là cháu của Lục Tốn, một danh tướng kiệt xuất của Đông Ngô."
+  },
+  {
+    "id": 29,
+    "question": "\"Chém cá kình ở Biển Đông\" trong câu nói của Bà Triệu mang ý nghĩa ẩn dụ cho việc gì?",
+    "options": [
+      "Nghề đánh cá",
+      "Tiêu diệt giặc ngoại xâm tàn bạo",
+      "Khám phá đại dương",
+      "Lập chiến công trên biển"
+    ],
+    "correct": 1,
+    "explanation": "\"Cá kình\" ám chỉ kẻ thù lớn mạnh tàn ác, việc chém cá kình thể hiện ý chí diệt giặc."
+  },
+  {
+    "id": 30,
+    "question": "Thái độ của người dân Cửu Chân khi Bà Triệu dấy binh là gì?",
+    "options": [
+      "Thờ ơ",
+      "Phản đối",
+      "Nô nức hưởng ứng",
+      "Sợ hãi bỏ trốn"
+    ],
+    "correct": 2,
+    "explanation": "Nhân dân khắp nơi, đặc biệt là Cửu Chân, đã nhiệt liệt hưởng ứng cuộc khởi nghĩa."
+  },
+  {
+    "id": 31,
+    "question": "Cuộc khởi nghĩa Bà Triệu nổ ra sau khởi nghĩa Hai Bà Trưng bao nhiêu năm?",
+    "options": [
+      "Khoảng 100 năm",
+      "Khoảng 208 năm",
+      "Khoảng 50 năm",
+      "Khoảng 300 năm"
+    ],
+    "correct": 1,
+    "explanation": "Khởi nghĩa Hai Bà Trưng năm 40, Bà Triệu năm 248 (cách nhau hơn 200 năm)."
+  },
+  {
+    "id": 32,
+    "question": "Danh xưng \"Nhụy Kiều tướng quân\" có nghĩa là gì?",
+    "options": [
+      "Vị tướng xinh đẹp như hoa",
+      "Vị tướng mạnh như cọp",
+      "Tướng quân vĩ đại",
+      "Người cai quản biển cả"
+    ],
+    "correct": 0,
+    "explanation": "Ý chỉ một vị nữ tướng kiều diễm, xinh đẹp nhưng vô cùng uy dũng."
+  },
+  {
+    "id": 33,
+    "question": "Giai thoại kể rằng Lục Dận đã dùng kế gì bẩn thỉu để đối phó với Bà Triệu trên chiến trường?",
+    "options": [
+      "Bỏ thuốc độc vào nguồn nước",
+      "Bắt quân lính khỏa thân xông trận",
+      "Đốt rừng",
+      "Dùng hỏa công"
+    ],
+    "correct": 1,
+    "explanation": "Tương truyền quân giặc biết bà là phụ nữ giữ gìn lễ giáo nên đã cởi trần truồng để làm bà bối rối."
+  },
+  {
+    "id": 34,
+    "question": "Bà Triệu tuẫn tiết vào năm bà bao nhiêu tuổi?",
+    "options": [
+      "20 tuổi",
+      "23 tuổi",
+      "30 tuổi",
+      "40 tuổi"
+    ],
+    "correct": 1,
+    "explanation": "Sinh năm 226, mất năm 248, bà hy sinh khi mới 23 tuổi."
+  },
+  {
+    "id": 35,
+    "question": "Lễ hội Bà Triệu tại Hậu Lộc, Thanh Hóa thường diễn ra vào khoảng thời gian nào?",
+    "options": [
+      "Tháng Giêng âm lịch",
+      "Cuối tháng 2 âm lịch",
+      "Tháng 8 âm lịch",
+      "Tháng 3 âm lịch"
+    ],
+    "correct": 1,
+    "explanation": "Lễ hội thường được tổ chức vào khoảng ngày 21 - 24 tháng 2 Âm lịch hàng năm."
+  },
+  {
+    "id": 36,
+    "question": "Khi mới 19 tuổi, Bà Triệu đã thể hiện sự mạnh mẽ của mình qua hành động gì?",
+    "options": [
+      "Bắn chết voi rừng",
+      "Cứu anh trai khỏi ngục",
+      "Cãi lại quan huyện",
+      "Giết con mãng xà"
+    ],
+    "correct": 0,
+    "explanation": "Truyền thuyết kể bà có sức mạnh phi phàm, từng vào rừng bắn chết voi dữ."
+  },
+  {
+    "id": 37,
+    "question": "Huyện Yên Định và Hậu Lộc (Thanh Hóa) hiện nay là những địa danh gắn liền với quá trình nào của Bà Triệu?",
+    "options": [
+      "Sinh ra và hy sinh",
+      "Lập đô và đánh thủy chiến",
+      "Đàm phán và bị bắt",
+      "Luyện quân và xuất xuất ngoại"
+    ],
+    "correct": 0,
+    "explanation": "Quan Yên (Yên Định) là quê hương, Bồ Điền/Núi Tùng (Hậu Lộc) là nơi bà chiến đấu và hy sinh."
+  },
+  {
+    "id": 38,
+    "question": "Đạo quân Đông Ngô sang Giao Châu do Lục Dận chỉ huy có số lượng khoảng bao nhiêu người?",
+    "options": [
+      "30 vạn",
+      "8.000 (8 ngàn) người",
+      "5 vạn",
+      "10 vạn"
+    ],
+    "correct": 1,
+    "explanation": "Sử chép Lục Dận đem theo 8.000 quân tinh nhuệ sang tiếp viện đàn áp."
+  },
+  {
+    "id": 39,
+    "question": "Quan lại Đông Ngô trước khi Lục Dận sang đã cai trị Giao Châu như thế nào?",
+    "options": [
+      "Tham lam, tàn bạo, bắt dân mò ngọc trai, tìm ngà voi",
+      "Phát triển giáo dục",
+      "Cấp đất cho nông dân",
+      "Xây dựng cầu đường"
+    ],
+    "correct": 0,
+    "explanation": "Sự bóc lột tàn bạo tận xương tủy là nguyên nhân chính dẫn đến khởi nghĩa."
+  },
+  {
+    "id": 40,
+    "question": "Hình ảnh Bà Triệu ra trận tạo ra hiệu ứng tâm lý gì cho quân địch?",
+    "options": [
+      "Thích thú",
+      "Không quan tâm",
+      "Khiếp sợ",
+      "Tức giận"
+    ],
+    "correct": 2,
+    "explanation": "Sự uy dũng của bà khiến quân địch kinh hồn bạt vía."
+  },
+  {
+    "id": 41,
+    "question": "Ngày nay, một con phố lớn ở thủ đô Hà Nội mang tên Bà Triệu giao với đường nào?",
+    "options": [
+      "Điện Biên Phủ",
+      "Trần Hưng Đạo",
+      "Nguyễn Trãi",
+      "Hai Bà Trưng"
+    ],
+    "correct": 3,
+    "explanation": "Phố Bà Triệu cắt ngang nhiều phố lớn, trong đó có phố Hai Bà Trưng."
+  },
+  {
+    "id": 42,
+    "question": "Câu ca dao: \"Có con lợn sề / Mua bầu mua bí...\" có liên quan thế nào đến Bà Triệu?",
+    "options": [
+      "Bà từng nuôi lợn",
+      "Nghĩa quân tăng gia sản xuất",
+      "Ám chỉ sự chế giễu bọn quan lại nhà Ngô",
+      "Lương thực chính của giặc"
+    ],
+    "correct": 2,
+    "explanation": "Đây là những bài đồng dao chế giễu quân giặc."
+  },
+  {
+    "id": 43,
+    "question": "Biểu tượng cái \"Trâm vàng\" của Bà Triệu thể hiện điều gì?",
+    "options": [
+      "Sự giàu có",
+      "Nguồn gốc quý tộc",
+      "Khí chất thanh cao, nữ tính giữ giữa vòng khói lửa",
+      "Vũ khí bí mật"
+    ],
+    "correct": 2,
+    "explanation": "Khẳng định vẻ đẹp và khí tiết của người phụ nữ Việt Nam dù ở chốn sa trường."
+  },
+  {
+    "id": 44,
+    "question": "Di tích lịch sử Quốc gia đặc biệt liên quan đến Bà Triệu bao gồm những địa điểm nào chính?",
+    "options": [
+      "Đền thờ, Lăng mộ ở núi Tùng và khu căn cứ Bồ Điền",
+      "Thành nhà Hồ",
+      "Lam Kinh",
+      "Thành Cổ Loa"
+    ],
+    "correct": 0,
+    "explanation": "Quần thể di tích này được công nhận là Di tích Quốc gia đặc biệt."
+  },
+  {
+    "id": 45,
+    "question": "Dưới góc độ game thiết kế, căn cứ Bồ Điền giống loại địa hình nào nhất?",
+    "options": [
+      "Sa mạc",
+      "Rừng nhiệt đới kết hợp đầm lầy (Swamp/Jungle)",
+      "Núi lửa",
+      "Băng tuyết"
+    ],
+    "correct": 1,
+    "explanation": "Là địa hình đầm lầy, cây cỏ rậm rạp sình lầy khó đi."
+  },
+  {
+    "id": 46,
+    "question": "Vũ khí chính của quân lính Đông Ngô thời kỳ này chủ yếu làm bằng gì?",
+    "options": [
+      "Đồng và đá",
+      "Sắt, thép",
+      "Súng hỏa mai",
+      "Tre vót nhọn"
+    ],
+    "correct": 1,
+    "explanation": "Quân đội phong kiến phương Bắc đã sử dụng vũ khí sắt thép tinh nhuệ."
+  },
+  {
+    "id": 47,
+    "question": "Người đã viết hai câu thơ chữ Hán ca ngợi Bà Triệu \"Thiên tải hương hồn tại / Quả xưng nữ trượng phu\" (Ngàn năm hương hồn còn mãi / Xứng danh nữ trượng phu) là ai?",
+    "options": [
+      "Lê Lợi",
+      "Nguyễn Du",
+      "Nguyễn Trãi",
+      "Vua Tự Đức"
+    ],
+    "correct": 3,
+    "explanation": "Vua Tự Đức triều Nguyễn đã làm thơ ca ngợi khí tiết của bà."
+  },
+  {
+    "id": 48,
+    "question": "Cuộc khởi nghĩa Bà Triệu chứng tỏ mâu thuẫn cốt lõi nào trong xã hội thời bấy giờ?",
+    "options": [
+      "Mâu thuẫn tôn giáo",
+      "Mâu thuẫn giữa nông dân và địa chủ",
+      "Mâu thuẫn dân tộc gay gắt giữa người Việt và chính quyền đô hộ Đông Ngô",
+      "Mâu thuẫn giữa các hào trưởng"
+    ],
+    "correct": 2,
+    "explanation": "Ách đô hộ ngoại bang là nguyên nhân gốc rễ của mọi cuộc khởi nghĩa thời Bắc thuộc."
+  },
+  {
+    "id": 49,
+    "question": "Chiến thuật của nghĩa quân Bà Triệu từ núi Nưa tiến xuống đồng bằng đánh thành ấp gọi là gì?",
+    "options": [
+      "Vây thành diệt viện",
+      "Từ căn cứ hiểm trở xuất kích tập kích địch",
+      "Thủy chiến phòng ngự",
+      "Trận địa chiến quy mô lớn"
+    ],
+    "correct": 1,
+    "explanation": "Dựa vào núi rừng hiểm trở để xuất kích đánh úp các đồn bốt giặc."
+  },
+  {
+    "id": 50,
+    "question": "Thông điệp cốt lõi của câu nói \"Không thèm bắt chước người đời cúi đầu cong lưng...\" là gì?",
+    "options": [
+      "Đề cao tự do cá nhân",
+      "Khát vọng giải phóng dân tộc và phản kháng sự áp đặt định kiến xã hội",
+      "Từ chối lao động",
+      "Khinh thường đàn ông"
+    ],
+    "correct": 1,
+    "explanation": "Bà không chỉ chống giặc mà còn đập tan định kiến hẹp hòi về thân phận nữ nhi đương thời."
+  }
+]

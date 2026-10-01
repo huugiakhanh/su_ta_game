@@ -1,0 +1,602 @@
+[
+  {
+    "id": 1,
+    "question": "Lý Nam Đế có tên thật là gì?",
+    "options": [
+      "Lý Công Uẩn",
+      "Lý Phật Tử",
+      "Lý Bí",
+      "Lý Thường Kiệt"
+    ],
+    "correct": 2,
+    "explanation": "Lý Nam Đế tên thật là Lý Bí (hoặc Lý Bôn)."
+  },
+  {
+    "id": 2,
+    "question": "Quê hương gốc của Lý Bí ở đâu?",
+    "options": [
+      "Thái Bình",
+      "Thái Nguyên",
+      "Hà Nội",
+      "Hưng Yên"
+    ],
+    "correct": 1,
+    "explanation": "Ông xuất thân từ một gia đình hào trưởng ở vùng Thái Nguyên (Phổ Yên ngày nay)."
+  },
+  {
+    "id": 3,
+    "question": "Trước khi khởi nghĩa, Lý Bí từng giữ chức vụ gì dưới chính quyền nhà Lương?",
+    "options": [
+      "Thái thú",
+      "Huyện lệnh",
+      "Giám quân",
+      "Thứ sử"
+    ],
+    "correct": 2,
+    "explanation": "Ông từng làm quan Giám quân ở Đức Châu (nay thuộc Hà Tĩnh) một thời gian ngắn."
+  },
+  {
+    "id": 4,
+    "question": "Lý Bí dấy binh khởi nghĩa vào năm nào?",
+    "options": [
+      "541",
+      "544",
+      "548",
+      "938"
+    ],
+    "correct": 0,
+    "explanation": "Mùa xuân năm 541, Lý Bí phất cờ khởi nghĩa chống nhà Lương."
+  },
+  {
+    "id": 5,
+    "question": "Tên Thứ sử tàn ác cai trị Giao Châu thời bấy giờ khiến nhân dân căm phẫn là ai?",
+    "options": [
+      "Tô Định",
+      "Mã Viện",
+      "Tiêu Tư",
+      "Tích Quang"
+    ],
+    "correct": 2,
+    "explanation": "Tiêu Tư là Thứ sử Giao Châu, nổi tiếng tàn bạo, tham lam."
+  },
+  {
+    "id": 6,
+    "question": "Khi Lý Bí tiến đánh thành Long Biên, Tiêu Tư đã có hành động gì?",
+    "options": [
+      "Tử chiến đến cùng",
+      "Nộp vàng bạc cho Lý Bí rồi bỏ chạy về Quảng Châu",
+      "Cầu viện Mã Viện",
+      "Mở thành đầu hàng"
+    ],
+    "correct": 1,
+    "explanation": "Tiêu Tư hèn nhát hối lộ vàng bạc để được tha mạng và chạy trốn."
+  },
+  {
+    "id": 7,
+    "question": "Tinh Thiều - vị tướng văn kiệt xuất của Lý Bí, vì sao lại bất mãn với nhà Lương?",
+    "options": [
+      "Bị tước đoạt tài sản",
+      "Xin làm quan nhưng bị khinh miệt xuất thân nên chỉ cho chức gác cổng",
+      "Bị bắt đi phu",
+      "Bị bắt gia đình"
+    ],
+    "correct": 1,
+    "explanation": "Do chế độ sĩ tộc của nhà Lương khinh miệt người Việt, không cho người tài làm quan to."
+  },
+  {
+    "id": 8,
+    "question": "Hào trưởng vùng Chu Diên (Hưng Yên) đã mang toàn bộ lực lượng theo Lý Bí là ai?",
+    "options": [
+      "Triệu Túc",
+      "Triệu Quang Phục",
+      "Phạm Tu",
+      "Lý Phật Tử"
+    ],
+    "correct": 0,
+    "explanation": "Triệu Túc cùng con trai Triệu Quang Phục đã đem quân gia nhập lực lượng Lý Bí."
+  },
+  {
+    "id": 9,
+    "question": "Lý Bí lên ngôi Hoàng đế vào thời gian nào?",
+    "options": [
+      "Mùa xuân năm 544",
+      "Mùa thu năm 542",
+      "Mùa đông năm 543",
+      "Mùa hè năm 545"
+    ],
+    "correct": 0,
+    "explanation": "Đầu năm 544, sau khi dẹp yên thù trong giặc ngoài, ông lên ngôi."
+  },
+  {
+    "id": 10,
+    "question": "Quốc hiệu nước ta dưới thời Lý Nam Đế là gì?",
+    "options": [
+      "Đại Nam",
+      "Đại Việt",
+      "Vạn Xuân",
+      "Giao Chỉ"
+    ],
+    "correct": 2,
+    "explanation": "Ý nghĩa mong muốn đất nước mãi mãi trường tồn, tươi đẹp như vạn mùa xuân."
+  },
+  {
+    "id": 11,
+    "question": "Việc Lý Bí xưng \"Đế\" (Lý Nam Đế) mang ý nghĩa chính trị gì?",
+    "options": [
+      "Sánh ngang hàng với Hoàng đế Trung Hoa, phủ nhận sự lệ thuộc",
+      "Bắt chước các triều đại cũ",
+      "Thể hiện sự tôn trọng nhà Lương",
+      "Muốn làm vua cả thế giới"
+    ],
+    "correct": 0,
+    "explanation": "Xưng Đế là lời tuyên bố độc lập hoàn toàn, ngang hàng với Bắc Đế."
+  },
+  {
+    "id": 12,
+    "question": "Niên hiệu đầu tiên do Lý Nam Đế đặt cho nước Vạn Xuân là gì?",
+    "options": [
+      "Thái Bình",
+      "Thiên Đức",
+      "Thái Đức",
+      "Thuận Thiên"
+    ],
+    "correct": 1,
+    "explanation": "Ông lấy niên hiệu là Thiên Đức (đức của trời)."
+  },
+  {
+    "id": 13,
+    "question": "Ngôi chùa trấn quốc được Lý Nam Đế cho xây dựng có tên là gì?",
+    "options": [
+      "Chùa Diên Hựu",
+      "Chùa Khai Quốc",
+      "Chùa Dâu",
+      "Chùa Trấn Quốc"
+    ],
+    "correct": 1,
+    "explanation": "Chùa Khai Quốc (Mở nước), sau này được đổi tên thành chùa Trấn Quốc."
+  },
+  {
+    "id": 14,
+    "question": "Vị tướng võ đứng đầu triều đình Vạn Xuân (Thái úy) là ai?",
+    "options": [
+      "Tinh Thiều",
+      "Phạm Tu",
+      "Triệu Túc",
+      "Triệu Quang Phục"
+    ],
+    "correct": 1,
+    "explanation": "Lão tướng Phạm Tu được giao phó chức vụ cao nhất bên ban võ."
+  },
+  {
+    "id": 15,
+    "question": "Năm 543, Lý Nam Đế đã chỉ huy quân đội đánh bại đội quân xâm lược nào ở phía Nam?",
+    "options": [
+      "Quân Chăm-pa (Lâm Ấp)",
+      "Quân Nam Hán",
+      "Quân Mông Cổ",
+      "Quân Tống"
+    ],
+    "correct": 0,
+    "explanation": "Ông cử Phạm Tu đánh tan quân Lâm Ấp dòm ngó bờ cõi phía Nam."
+  },
+  {
+    "id": 16,
+    "question": "Tướng giặc nào được nhà Lương cử sang đàn áp nước Vạn Xuân vào năm 545?",
+    "options": [
+      "Dương Sàn",
+      "Trần Bá Tiên",
+      "Mã Viện",
+      "Hoàng Thao"
+    ],
+    "correct": 1,
+    "explanation": "Trần Bá Tiên, một tướng giỏi và vô cùng xảo quyệt của nhà Lương."
+  },
+  {
+    "id": 17,
+    "question": "Khi quân Lương ồ ạt tấn công, Lý Nam Đế đã cho xây dựng thành lũy ở đâu để cản giặc?",
+    "options": [
+      "Cửa sông Tô Lịch",
+      "Thành Cổ Loa",
+      "Thành Luy Lâu",
+      "Đầm Dạ Trạch"
+    ],
+    "correct": 0,
+    "explanation": "Thành lũy bằng tre gỗ được dựng lên gấp rút tại cửa sông Tô Lịch (Hà Nội)."
+  },
+  {
+    "id": 18,
+    "question": "Vị tướng tài ba nào đã hy sinh anh dũng tại trận tuyến sông Tô Lịch?",
+    "options": [
+      "Tinh Thiều",
+      "Phạm Tu",
+      "Triệu Túc",
+      "Lý Thiên Bảo"
+    ],
+    "correct": 1,
+    "explanation": "Lão tướng Phạm Tu đã hy sinh oanh liệt khi chặn giặc tại đây."
+  },
+  {
+    "id": 19,
+    "question": "Sau khi thành Tô Lịch vỡ, Lý Nam Đế phải lui binh về đâu?",
+    "options": [
+      "Thành Gia Ninh (Phú Thọ)",
+      "Đầm Dạ Trạch",
+      "Thành Hoa Lư",
+      "Ải Chi Lăng"
+    ],
+    "correct": 0,
+    "explanation": "Ông lui quân về giữ thành Gia Ninh (vùng Việt Trì, Phú Thọ)."
+  },
+  {
+    "id": 20,
+    "question": "Khi thành Gia Ninh thất thủ, Lý Nam Đế tiếp tục rút quân về vùng núi nào?",
+    "options": [
+      "Núi Tản Viên",
+      "Hồ Điển Triệt",
+      "Đầm Dạ Trạch",
+      "Động Khuất Lão"
+    ],
+    "correct": 1,
+    "explanation": "Ông đem thuyền bè ra đóng ở hồ Điển Triệt (Vĩnh Phúc) để thủy chiến."
+  },
+  {
+    "id": 21,
+    "question": "Tại sao quân Lý Nam Đế thất thủ ở hồ Điển Triệt?",
+    "options": [
+      "Bị giặc đốt thuyền",
+      "Lương thực cạn kiệt",
+      "Giặc lợi dụng đêm mưa gió, nước sông dâng cao đánh úp",
+      "Bị nội bộ phản bội"
+    ],
+    "correct": 2,
+    "explanation": "Trần Bá Tiên mạo hiểm lợi dụng đêm tối mưa to gió lớn dốc quân đánh úp."
+  },
+  {
+    "id": 22,
+    "question": "Địa điểm cuối cùng Lý Nam Đế rút về ẩn náu và giao lại binh quyền là ở đâu?",
+    "options": [
+      "Rừng Cấm Khê",
+      "Động Khuất Lão",
+      "Núi Nưa",
+      "Bãi Sậy"
+    ],
+    "correct": 1,
+    "explanation": "Bị bệnh nặng, ông rút vào động Khuất Lão (Phú Thọ/Tuyên Quang)."
+  },
+  {
+    "id": 23,
+    "question": "Tại động Khuất Lão, Lý Nam Đế đã trao lại toàn quyền chỉ huy kháng chiến cho ai?",
+    "options": [
+      "Triệu Quang Phục",
+      "Lý Thiên Bảo",
+      "Lý Phật Tử",
+      "Phạm Tu"
+    ],
+    "correct": 0,
+    "explanation": "Thấy Triệu Quang Phục là người tài đức, ông đã giao phó binh quyền."
+  },
+  {
+    "id": 24,
+    "question": "Lý Nam Đế băng hà vào năm nào?",
+    "options": [
+      "544",
+      "548",
+      "550",
+      "571"
+    ],
+    "correct": 1,
+    "explanation": "Ông bệnh nặng và qua đời vào năm 548 tại động Khuất Lão."
+  },
+  {
+    "id": 25,
+    "question": "Lý Thiên Bảo (anh trai Lý Nam Đế) sau khi thua trận đã chạy về đâu?",
+    "options": [
+      "Đầm Dạ Trạch",
+      "Sang nước Lào",
+      "Vùng Dã Năng (vùng đồi núi Thanh - Nghệ)",
+      "Về Thái Nguyên"
+    ],
+    "correct": 2,
+    "explanation": "Lý Thiên Bảo rút quân về phía Nam, xưng là Đào Lang Vương ở Dã Năng."
+  },
+  {
+    "id": 26,
+    "question": "Vương triều Tiền Lý do Lý Nam Đế sáng lập tồn tại từ năm nào đến năm nào?",
+    "options": [
+      "544 - 602",
+      "939 - 965",
+      "1009 - 1225",
+      "40 - 43"
+    ],
+    "correct": 0,
+    "explanation": "Từ năm 544 đến năm 602 (khi Lý Phật Tử đầu hàng nhà Tùy)."
+  },
+  {
+    "id": 27,
+    "question": "Sự ra đời của nhà nước Vạn Xuân có ý nghĩa lịch sử sâu sắc như thế nào?",
+    "options": [
+      "Mở ra thời kỳ phong kiến độc lập",
+      "Củng cố chế độ Bắc thuộc",
+      "Khẳng định ý chí độc lập, tự chủ và sự trưởng thành của ý thức dân tộc",
+      "Đánh dấu sự chia cắt đất nước"
+    ],
+    "correct": 2,
+    "explanation": "Đây là lần đầu tiên người Việt có hoàng đế, quốc hiệu và niên hiệu riêng."
+  },
+  {
+    "id": 28,
+    "question": "Triều đình Vạn Xuân được tổ chức thành mấy ban?",
+    "options": [
+      "6 bộ",
+      "2 ban: Văn và Võ",
+      "4 ban",
+      "3 ban"
+    ],
+    "correct": 1,
+    "explanation": "Triều đình tổ chức tinh gọn gồm 2 ban: ban Văn (Tinh Thiều) và ban Võ (Phạm Tu)."
+  },
+  {
+    "id": 29,
+    "question": "Tổ tiên của Lý Nam Đế là người gốc ở đâu?",
+    "options": [
+      "Người Giao Chỉ gốc",
+      "Người phương Bắc lánh nạn sang Giao Châu từ nhiều đời trước",
+      "Người Chăm-pa",
+      "Người Nam Chiếu"
+    ],
+    "correct": 1,
+    "explanation": "Tổ tiên ông là người phương Bắc chạy nạn sang nước ta từ thời Tây Hán, đã hoàn toàn Việt hóa."
+  },
+  {
+    "id": 30,
+    "question": "Thái phó Triệu Túc được giao nhiệm vụ gì trong triều đình Vạn Xuân?",
+    "options": [
+      "Đứng đầu ban võ",
+      "Đứng đầu ban văn",
+      "Trông coi việc thuế khóa, quan lại",
+      "Đi sứ phương Bắc"
+    ],
+    "correct": 2,
+    "explanation": "Với vai trò Thái phó, ông phò tá vua lo việc chính sự, nội trị."
+  },
+  {
+    "id": 31,
+    "question": "Đình thờ Lý Nam Đế lớn nhất hiện nay nằm ở đâu?",
+    "options": [
+      "Hà Nội (Làng Giang Xá, Hoài Đức)",
+      "Thái Bình",
+      "Thái Nguyên",
+      "Hưng Yên"
+    ],
+    "correct": 0,
+    "explanation": "Đình Giang Xá (Hoài Đức, Hà Nội) là nơi thờ tự và tưởng niệm Lý Nam Đế rất lớn."
+  },
+  {
+    "id": 32,
+    "question": "Khởi nghĩa Lý Bí đã đánh dấu sự kết thúc của thời kỳ Bắc thuộc lần thứ mấy?",
+    "options": [
+      "Lần 1",
+      "Lần 2",
+      "Lần 3",
+      "Lần 4"
+    ],
+    "correct": 1,
+    "explanation": "Khởi nghĩa lật đổ ách thống trị của nhà Lương, chấm dứt thời Bắc thuộc lần 2."
+  },
+  {
+    "id": 33,
+    "question": "Tại sao Trần Bá Tiên phải rút quân về nước khi đang vây hãm Triệu Quang Phục?",
+    "options": [
+      "Bị ốm nặng",
+      "Ở Trung Quốc nổ ra loạn Hầu Cảnh",
+      "Vua Lương gọi về phong tước",
+      "Hết lương thảo"
+    ],
+    "correct": 1,
+    "explanation": "Loạn Hầu Cảnh đe dọa triều đình nhà Lương nên Bá Tiên phải về dẹp loạn."
+  },
+  {
+    "id": 34,
+    "question": "Người đã kế tục xứng đáng sự nghiệp của Lý Nam Đế, đánh bại hoàn toàn quân Lương là ai?",
+    "options": [
+      "Lý Thiên Bảo",
+      "Lý Phật Tử",
+      "Triệu Quang Phục",
+      "Khúc Thừa Dụ"
+    ],
+    "correct": 2,
+    "explanation": "Triệu Quang Phục (Dạ Trạch Vương) đã đánh đuổi giặc Lương, khôi phục Vạn Xuân."
+  },
+  {
+    "id": 35,
+    "question": "Vì sao quân nghĩa quân của Lý Bí giai đoạn đầu lại có sức chiến đấu rất mạnh?",
+    "options": [
+      "Có vũ khí hiện đại",
+      "Được rèn luyện nhiều năm",
+      "Có tinh thần yêu nước, căm thù giặc và quy tụ được sự ủng hộ toàn dân",
+      "Nhờ có ngoại viện"
+    ],
+    "correct": 2,
+    "explanation": "Sự đoàn kết của các hào trưởng, trí thức và nhân dân tạo nên sức mạnh áp đảo."
+  },
+  {
+    "id": 36,
+    "question": "Lý Nam Đế sống trong độ tuổi khoảng bao nhiêu khi khởi nghĩa nổ ra?",
+    "options": [
+      "Khoảng 20 tuổi",
+      "Khoảng gần 40 tuổi",
+      "Khoảng 60 tuổi",
+      "Hơn 70 tuổi"
+    ],
+    "correct": 1,
+    "explanation": "Sinh năm 503, khởi nghĩa năm 541, lúc đó ông khoảng 38 tuổi."
+  },
+  {
+    "id": 37,
+    "question": "Theo truyền thuyết, thời trẻ Lý Bí được một vị thiền sư nuôi dưỡng tại đâu?",
+    "options": [
+      "Chùa Dâu",
+      "Chùa Linh Xét (Pháp Vân)",
+      "Chùa Trấn Quốc",
+      "Chùa Hương"
+    ],
+    "correct": 1,
+    "explanation": "Từ nhỏ cha mẹ mất sớm, Lý Bí được một thiền sư nhận nuôi và dạy dỗ tại chùa."
+  },
+  {
+    "id": 38,
+    "question": "Đạo Phật thời Lý Nam Đế có vị trí như thế nào?",
+    "options": [
+      "Bị cấm đoán",
+      "Rất phát triển, được hoàng gia tôn sùng",
+      "Đóng cửa các chùa",
+      "Phải tuân theo Đạo giáo"
+    ],
+    "correct": 1,
+    "explanation": "Việc xây chùa Khai Quốc cho thấy Đạo Phật rất được coi trọng và phát triển."
+  },
+  {
+    "id": 39,
+    "question": "Cuộc khởi nghĩa Lý Bí diễn ra trong bối cảnh triều đại phong kiến nào ở Trung Quốc đang suy yếu?",
+    "options": [
+      "Nhà Tùy",
+      "Nhà Đường",
+      "Nhà Lương (thời Nam Bắc triều)",
+      "Nhà Hán"
+    ],
+    "correct": 2,
+    "explanation": "Nhà Lương ở Nam Triều Trung Quốc lúc bấy giờ cai trị hà khắc nhưng nội bộ mục nát."
+  },
+  {
+    "id": 40,
+    "question": "Chiến thắng trước quân Lâm Ấp (năm 543) mang lại lợi ích gì cho nước Vạn Xuân mới lập?",
+    "options": [
+      "Mở rộng lãnh thổ gấp đôi",
+      "Xóa bỏ hiểm họa hai mặt thù trong giặc ngoài",
+      "Chiếm được kinh đô Lâm Ấp",
+      "Thu được nhiều vàng bạc"
+    ],
+    "correct": 1,
+    "explanation": "Yên ổn mặt phía Nam để tập trung đối phó với sức ép từ nhà Lương ở phía Bắc."
+  },
+  {
+    "id": 41,
+    "question": "Nhân dân thường gọi những người có công đầu trong cuộc khởi nghĩa Lý Bí là \"Bộ ba quyền lực\", đó là những ai?",
+    "options": [
+      "Lý Bí, Triệu Túc, Triệu Quang Phục",
+      "Lý Bí, Phạm Tu, Tinh Thiều",
+      "Lý Bí, Lý Phật Tử, Lý Thiên Bảo",
+      "Lý Bí, Phạm Tu, Mã Viện"
+    ],
+    "correct": 1,
+    "explanation": "Lý Bí làm Đế, Tinh Thiều đứng đầu Văn, Phạm Tu đứng đầu Võ tạo thành thế chân vạc."
+  },
+  {
+    "id": 42,
+    "question": "Tiêu Tư đã có hành động gì trước khi bỏ trốn khỏi thành Long Biên?",
+    "options": [
+      "Đốt thành",
+      "Hối lộ của cải cho Lý Bí",
+      "Thả tù nhân",
+      "Tự sát"
+    ],
+    "correct": 1,
+    "explanation": "Tiêu Tư sợ chết nên đã ngầm xin hối lộ của cải để được mở đường chạy trốn."
+  },
+  {
+    "id": 43,
+    "question": "Chùa Trấn Quốc (tiền thân là chùa Khai Quốc) hiện nay nằm ở đâu?",
+    "options": [
+      "Hồ Tây (Hà Nội)",
+      "Bắc Ninh",
+      "Hồ Hoàn Kiếm",
+      "Núi Ba Vì"
+    ],
+    "correct": 0,
+    "explanation": "Chùa hiện nằm trên một hòn đảo nhỏ phía đông Hồ Tây, Hà Nội."
+  },
+  {
+    "id": 44,
+    "question": "Tên gọi \"Giao Châu\" thời bấy giờ chỉ khu vực nào?",
+    "options": [
+      "Vùng đồng bằng sông Cửu Long",
+      "Khu vực Bắc Bộ và Bắc Trung Bộ Việt Nam ngày nay",
+      "Toàn bộ nước Việt Nam",
+      "Vùng Quảng Đông (Trung Quốc)"
+    ],
+    "correct": 1,
+    "explanation": "Giao Châu là tên gọi vùng lãnh thổ Bắc Bộ và một phần Bắc Trung Bộ lúc bấy giờ."
+  },
+  {
+    "id": 45,
+    "question": "Hành động từ quan của Lý Bí cho thấy phẩm chất gì của ông?",
+    "options": [
+      "Trốn tránh trách nhiệm",
+      "Khí tiết thanh cao, không chấp nhận đồng lõa với tham quan",
+      "Muốn làm kinh tế",
+      "Sợ hãi nhà Lương"
+    ],
+    "correct": 1,
+    "explanation": "Ông không màng danh lợi, từ quan vì không muốn cùng bè lũ Tiêu Tư bóc lột nhân dân."
+  },
+  {
+    "id": 46,
+    "question": "Hồ Điển Triệt, nơi diễn ra trận thủy chiến ác liệt, ngày nay thuộc địa phương nào?",
+    "options": [
+      "Huyện Lập Thạch (Vĩnh Phúc)",
+      "Khoái Châu (Hưng Yên)",
+      "Đông Anh (Hà Nội)",
+      "Tiên Du (Bắc Ninh)"
+    ],
+    "correct": 0,
+    "explanation": "Hồ Điển Triệt nằm ở khu vực sông Lô, thuộc huyện Lập Thạch, tỉnh Vĩnh Phúc."
+  },
+  {
+    "id": 47,
+    "question": "Sau khi Lý Nam Đế qua đời, người đã soán ngôi của Triệu Quang Phục để giành lại quyền lực cho họ Lý là ai?",
+    "options": [
+      "Lý Thiên Bảo",
+      "Lý Phật Tử",
+      "Lý Kế Huyết",
+      "Lý Công Uẩn"
+    ],
+    "correct": 1,
+    "explanation": "Lý Phật Tử (tướng cũ) đã dùng mưu đánh úp Triệu Quang Phục để đoạt ngôi."
+  },
+  {
+    "id": 48,
+    "question": "Yếu tố nào chứng minh nhà nước Vạn Xuân có cơ cấu tổ chức độc lập và hoàn chỉnh?",
+    "options": [
+      "Có đủ Hoàng đế, vương hiệu, niên hiệu, quân đội và hai ban Văn - Võ",
+      "Đóng thuế cho nhà Lương",
+      "Chỉ có quân đội, không có quan lại",
+      "Vẫn dùng tiền nhà Lương"
+    ],
+    "correct": 0,
+    "explanation": "Các yếu tố này khẳng định một quốc gia có chủ quyền, thoát ly hoàn toàn với phương Bắc."
+  },
+  {
+    "id": 49,
+    "question": "Chức danh \"Thái phó\" của Triệu Túc có nghĩa là gì?",
+    "options": [
+      "Người chỉ huy quân sự cao nhất",
+      "Người thầy, quan cố vấn cao cấp bậc nhất của nhà vua",
+      "Người ghi chép sử sách",
+      "Người coi kho lương"
+    ],
+    "correct": 1,
+    "explanation": "Thái phó là một trong \"Tam công\", là chức quan vinh dự, cố vấn cao cấp trị quốc."
+  },
+  {
+    "id": 50,
+    "question": "Lý Nam Đế là vị vua đầu tiên của Việt Nam thực hiện điều gì?",
+    "options": [
+      "Phát hành tiền giấy",
+      "Xưng \"Hoàng Đế\" thay vì xưng \"Vương\"",
+      "Dời đô về Thăng Long",
+      "Viết ra Hịch tướng sĩ"
+    ],
+    "correct": 1,
+    "explanation": "Trưng Trắc, Triệu Đà xưng Vương; Lý Bí là người đầu tiên xưng Hoàng Đế của người Việt."
+  }
+]
