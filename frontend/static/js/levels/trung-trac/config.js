@@ -45,7 +45,7 @@ export const GROUND_SNAP_DISTANCE = 11;
 // thư mục). maps_tt.json là nguồn cho đường dẫn + cỡ ảnh (đọc lúc chạy trong
 // assets.js); các số dưới đây là cách VẼ (parallax, vị trí, vùng). Mọi lớp vẽ
 // x1, không smoothing, lặp ngang theo đúng chiều rộng gốc của ảnh.
-export const MAP_8BIT_ROOT = '/static/assets/images/maps-8bit/';
+export const MAP_8BIT_ROOT = '/static/assets/images/trung-trac/maps-8bit/';
 export const MAP_MANIFEST_FILE = 'maps_tt.json';
 export const TILESET_ID = 'TILESET_TT_GROUND';
 
@@ -510,7 +510,7 @@ export const HURT_ANIMATION_TIME = 0.45;
 // DUY NHẤT cho frames/fps/loop/hit_frame — đọc lúc chạy (animation.js), không
 // chép các số đó vào đây. Mọi strip vẽ x1 (không co giãn), pivot bottom-center:
 // chân nằm ở hàng frame_h - 2 (1px đệm dưới chân), quay mặt PHẢI trong ảnh.
-export const SPRITE_8BIT_ROOT = '/static/assets/images/sprites-8bit/';
+export const SPRITE_8BIT_ROOT = '/static/assets/images/trung-trac/sprites-8bit/';
 export const SPRITE_MANIFEST_FILE = 'manifest_tt.json';
 // Các asset 8-bit game cần tải strip (viewer tự tải riêng mọi asset).
 export const SPRITE_8BIT_IN_GAME = [

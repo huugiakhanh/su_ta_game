@@ -2,19 +2,23 @@
 
 import { images, loadAssets } from './assets.js';
 import { state, setState, createLevelState } from './state.js';
-import { ui, showMessage, updateHud } from './ui.js';
+import { ui, showMessage, updateHud, updateMuteButton } from './ui.js';
 import { clearInput, bindInput } from './input.js';
 import { update, endGame } from './physics.js';
 import { draw, fitCanvas } from './render.js';
 import { MAP_8BIT_ROOT, SPRITE_8BIT_ROOT, LEVEL, setLevel } from './config.js';
 import { LEVEL_URLS, requireLevel, clearProgress } from './progress.js';
 import { initDialogue, closeDialogue } from './dialogue.js';
+import { initAudio, playMusic, playSfx, setAudioSuspended, toggleMuted, isMuted } from './audio.js';
 
 let lastTime = 0;
 // Máy cảm ứng cầm dọc (TT-MOBILE-01): CSS hiện #rotateOverlay, frame() ngừng
 // update() tới khi xoay ngang. Cờ riêng, không dùng state.paused (của hội thoại).
 const portraitQuery = window.matchMedia('(pointer: coarse) and (orientation: portrait)');
-portraitQuery.addEventListener?.('change', () => clearInput());
+portraitQuery.addEventListener?.('change', () => {
+  clearInput();
+  setAudioSuspended('portrait', portraitQuery.matches);
+});
 const params = new URLSearchParams(window.location.search);
 // Màn đang chơi lấy từ `data-level` của trang (route truyền vào) — cùng bộ
 // module cho mọi màn (TT-NPC-01). Chưa hoàn thành màn trước -> requireLevel()
@@ -52,6 +56,8 @@ function resetGame(startImmediately = true) {
   clearInput();
   updateHud();
   showMessage(INTRO_MESSAGES[LEVEL.id], LEVEL.arena ? 4200 : 2600);
+  // Nhạc nền của màn (TT-AUDIO-01); chưa mở khoá âm thanh thì phát khi mở.
+  if (startImmediately) playMusic(`level${LEVEL.id}`);
 }
 
 function frame(timestamp) {
@@ -78,8 +84,26 @@ async function initAssets() {
   draw();
 }
 
-bindInput({ onRestart: () => resetGame(true) });
+// Âm thanh (TT-AUDIO-01): phím M / nút loa bật-tắt, lựa chọn nhớ trong localStorage.
+function toggleSound() {
+  updateMuteButton(toggleMuted());
+  playSfx('click');
+}
+initAudio();
+setAudioSuspended('portrait', portraitQuery.matches);
+updateMuteButton(isMuted());
+ui.mute.addEventListener('click', () => {
+  toggleSound();
+  // Bỏ focus để Space (nhảy) không "bấm" lại nút loa.
+  ui.mute.blur();
+});
 
+bindInput({ onRestart: () => resetGame(true), onToggleMute: toggleSound });
+
+// Tiếng bấm cho các nút panel.
+[ui.start, ui.restart, ui.next, ui.replayChapter, ui.home].forEach(button => {
+  button.addEventListener('click', () => playSfx('click'));
+});
 ui.start.addEventListener('click', () => {
   ui.loading.classList.remove('panel--visible');
   resetGame(true);

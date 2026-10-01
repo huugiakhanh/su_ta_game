@@ -1,12 +1,12 @@
 # Prompt giao Codex — bia đá đánh dấu câu hỏi `PROP_TT_QUIZ_STELE`
 
 Trạng thái: Codex giao 29/09 (`NORMALIZED`), **đã tích hợp** (PNG + mục manifest chép sang
-`frontend/static/assets/images/maps-8bit/`, vẽ ở `render.js` `drawQuizSteles()`). Team đã duyệt 29/09 →
+`frontend/static/assets/images/trung-trac/maps-8bit/`, vẽ ở `render.js` `drawQuizSteles()`). Team đã duyệt 29/09 →
 `status: IN_GAME` ở cả 2 bản `maps_tt.json`.
 Ghi chú gốc: Dùng cho mốc câu hỏi chặn đường (TT-QUIZ-01): màn 1 chunk 3, 5, 8,
 10 (vùng Z1, Z2, Z3, Z4); màn 2 chunk 2, 5, 8 (Z1, Z3, Z4). Hiện câu hỏi tự hiện khi chạm mốc, người chơi
 không thấy trước.
-Sau khi team duyệt: Claude chép PNG + mục `maps_tt.json` sang `frontend/static/assets/images/maps-8bit/`,
+Sau khi team duyệt: Claude chép PNG + mục `maps_tt.json` sang `frontend/static/assets/images/trung-trac/maps-8bit/`,
 thêm vào `MAP_PROPS_IN_GAME` và vẽ bia tại `quiz.x` (đổi `active` → `done` khi đã trả lời). Bia **không có
 hitbox**.
 

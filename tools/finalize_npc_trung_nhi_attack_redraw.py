@@ -11,7 +11,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 ACTOR = ROOT / "assets/sprites/npc/NPC_TRUNG_NHI"
-RUNTIME = ROOT / "frontend/static/assets/images/sprites-8bit/npc/NPC_TRUNG_NHI"
+RUNTIME = ROOT / "frontend/static/assets/images/trung-trac/sprites-8bit/npc/NPC_TRUNG_NHI"
 SOURCE = ACTOR / "redraw-2026-09-27/attack/final"
 RAW_SOURCE = ACTOR / "redraw-2026-09-27/attack/raw-sheet.png"
 ALPHA_THRESHOLD = 96

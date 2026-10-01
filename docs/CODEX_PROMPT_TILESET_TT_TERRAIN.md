@@ -12,7 +12,7 @@ ghép địa hình dễ. Hiện game vẽ tạm bằng tile Z1 của `TILESET_TT
 Code **đã sẵn sàng**: khi `maps_tt.json` có asset `TILESET_TT_TERRAIN`, engine tự ghép tile theo độ cao
 từng cột (`terrainTileRole()` ở `render.js`), thay luôn tile mép hố cũ và lòng hố — không cần sửa code.
 Soát ghép bằng **F2** (nhãn vai trò tile từng ô). Sau khi team duyệt: Claude chép PNG + JSON + `maps_tt.json`
-sang `frontend/static/assets/images/maps-8bit/`.
+sang `frontend/static/assets/images/trung-trac/maps-8bit/`.
 
 Ảnh mẫu người dùng gửi (tileset stock 16×16 có watermark Shutterstock) **chỉ để tham khảo cách chia ô** —
 **không** chép, không đồ lại nét, không đưa ảnh đó vào repo. Vẽ mới hoàn toàn theo art bible SUTA.

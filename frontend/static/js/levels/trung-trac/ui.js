@@ -23,6 +23,8 @@ export const ui = {
   replayChapter: document.getElementById('replayChapterButton'),
   home: document.getElementById('homeButton'),
   message: document.getElementById('messageBox'),
+  // Nút loa bật/tắt âm thanh (TT-AUDIO-01).
+  mute: document.getElementById('muteButton'),
   // Màn 3: ô kỹ năng/buff + mọi phần tử gắn `data-skill` (ô HUD, dòng trợ
   // giúp, nút cảm ứng) — chỉ hiện với phần thưởng đã nhận.
   skillBar: document.getElementById('skillBar'),
@@ -75,6 +77,14 @@ export function updateHud() {
   updateDashHud();
   updateSkillHud();
   updateBossHud();
+}
+
+// Nút loa: biểu tượng + nhãn theo trạng thái tắt tiếng.
+export function updateMuteButton(muted) {
+  ui.mute.textContent = muted ? '🔇' : '🔊';
+  ui.mute.setAttribute('aria-pressed', String(muted));
+  ui.mute.setAttribute('aria-label', muted ? 'Bật âm thanh (M)' : 'Tắt âm thanh (M)');
+  ui.mute.title = ui.mute.getAttribute('aria-label');
 }
 
 function updateBossHud() {
