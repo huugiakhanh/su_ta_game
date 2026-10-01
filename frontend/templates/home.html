@@ -70,17 +70,24 @@
                     🗺️ CHỌN CHƯƠNG
                 </button> -->
 
-                <a href="/gameplay/levels/trung-trac" class="btn btn-main btn-3d" 
-                    style="text-decoration: none; 
-                    display: flex; align-items: center; justify-content: center;">
-                    ⚔️ BẮT ĐẦU CHƠI
+                <!-- NÚT BẮT ĐẦU CHƠI -->
+                <a href="/gameplay/levels/trung-trac" id="btn-start-game" class="btn btn-main btn-3d" 
+                    style="text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.3; padding: 10px 24px;">
+                    <div>⚔️ BẮT ĐẦU CHƠI</div>
+                    <span style="font-size: 13px; color: #ffeb3b; font-weight: normal;">(Chưa chọn tướng)</span>
                 </a>
 
-                <button class="btn btn-main btn-green btn-3d btn-updating"
+                <button class="btn btn-main btn-green btn-3d"
+                        type="button"
+                        onclick="openTimeline()">
+                    🗺️ CHỌN CHƯƠNG
+                </button>
+
+                <!-- <button class="btn btn-main btn-green btn-3d btn-updating"
                         type="button"
                         onclick="showUpdateNotice(this)">
                     🗺️ CHỌN CHƯƠNG
-                </button>
+                </button> -->
 
             
                 <!-- quan trọng -->
@@ -145,6 +152,252 @@
 
     </div> 
 
+    <div id="timeline-modal" class="modal-overlay hidden">
+        <div class="timeline-container">
+            <!-- Nút Đóng -->
+            <button class="btn-close" onclick="closeTimeline()">❌</button>
+            
+            <div class="timeline-header">
+                <h2>DÒNG THỜI GIAN LỊCH SỬ VIỆT NAM</h2>
+                <p>Khởi nghĩa Hai Bà Trưng đến thời Tây Sơn</p>
+            </div>
+
+            <!-- Khung kéo ngang chứa dòng thời gian -->
+            <div class="timeline-scroll-area">
+                <!-- Trục thời gian (Đường kẻ ngang) -->
+                <div class="timeline-line"></div>
+
+                <!-- Các thẻ nhân vật/sự kiện -->
+                <div class="timeline-items">
+                    
+                    <!-- 1. Trưng Trắc (ĐÃ MỞ KHÓA) -->
+                    <div class="t-item t-top" onclick="selectHero('Trưng Trắc', '/gameplay/levels/trung-trac')">
+                        <div class="t-card">
+                            <img src="/static/assets/images/characters/trung-trac.jpg" alt="Trưng Trắc">
+                            <div class="t-info">
+                                <h4>Trưng Trắc</h4>
+                                <p>Khởi nghĩa Hai Bà Trưng</p>
+                            </div>
+                        </div>
+                        <div class="t-dot"></div>
+                        <div class="t-year">Năm 40</div>
+                    </div>
+
+                    <!-- 2. Bà Triệu (KHÓA) -->
+                    <div class="t-item t-bottom">
+                        <div class="t-year">Năm 248</div>
+                        <div class="t-dot"></div>
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/ba-trieu.jpg" alt="Bà Triệu">
+                            <div class="t-info">
+                                <h4>Bà Triệu</h4>
+                                <p>Khởi nghĩa chống quân Ngô</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Lý Bí (KHÓA) -->
+                    <div class="t-item t-top">
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/ly-nam-de.jpg" alt="Lý Bí">
+                            <div class="t-info">
+                                <h4>Lý Bí</h4>
+                                <p>Khởi nghĩa lập nước Vạn Xuân</p>
+                            </div>
+                        </div>
+                        <div class="t-dot"></div>
+                        <div class="t-year">Năm 542</div>
+                    </div>
+
+                    <!-- 4. Triệu Quang Phục (KHÓA) -->
+                    <div class="t-item t-bottom">
+                        <div class="t-year">Năm 550</div>
+                        <div class="t-dot"></div>
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/trieu-quang-phuc.jpg" alt="Triệu Quang Phục">
+                            <div class="t-info">
+                                <h4>Triệu Quang Phục</h4>
+                                <p>Đánh bại quân Lương</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Mai Hắc Đế (KHÓA) -->
+                    <div class="t-item t-top">
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/mai-hac-de.jpg" alt="Mai Hắc Đế">
+                            <div class="t-info">
+                                <h4>Mai Hắc Đế</h4>
+                                <p>Khởi nghĩa chống nhà Đường</p>
+                            </div>
+                        </div>
+                        <div class="t-dot"></div>
+                        <div class="t-year">Năm 713</div>
+                    </div>
+
+                    <!-- 6. Phùng Hưng (KHÓA) -->
+                    <div class="t-item t-bottom">
+                        <div class="t-year">Năm 791</div>
+                        <div class="t-dot"></div>
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/phung-hung.jpg" alt="Phùng Hưng">
+                            <div class="t-info">
+                                <h4>Phùng Hưng</h4>
+                                <p>Khởi nghĩa Bố Cái Đại Vương</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. Khúc Thừa Dụ (KHÓA) -->
+                    <div class="t-item t-top">
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/khuc-thua-du.jpg" alt="Khúc Thừa Dụ">
+                            <div class="t-info">
+                                <h4>Khúc Thừa Dụ</h4>
+                                <p>Giành quyền tự chủ</p>
+                            </div>
+                        </div>
+                        <div class="t-dot"></div>
+                        <div class="t-year">Năm 905</div>
+                    </div>
+
+                    <!-- 8. Ngô Quyền (KHÓA) -->
+                    <div class="t-item t-bottom">
+                        <div class="t-year">Năm 938</div>
+                        <div class="t-dot"></div>
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/ngo-quyen.jpg" alt="Ngô Quyền">
+                            <div class="t-info">
+                                <h4>Ngô Quyền</h4>
+                                <p>Chiến thắng Bạch Đằng</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 9. Đinh Bộ Lĩnh (KHÓA) -->
+                    <div class="t-item t-top">
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/dinh-bo-linh.jpg" alt="Đinh Bộ Lĩnh">
+                            <div class="t-info">
+                                <h4>Đinh Bộ Lĩnh</h4>
+                                <p>Dẹp loạn 12 sứ quân</p>
+                            </div>
+                        </div>
+                        <div class="t-dot"></div>
+                        <div class="t-year">Năm 968</div>
+                    </div>
+
+                    <!-- 10. Lê Hoàn (KHÓA) -->
+                    <div class="t-item t-bottom">
+                        <div class="t-year">Năm 980</div>
+                        <div class="t-dot"></div>
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/le-hoan.jpg" alt="Lê Hoàn">
+                            <div class="t-info">
+                                <h4>Lê Hoàn</h4>
+                                <p>Kháng chiến chống Tống</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 11. Lý Công Uẩn (KHÓA) -->
+                    <div class="t-item t-top">
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/ly-cong-uan.jpg" alt="Lý Công Uẩn">
+                            <div class="t-info">
+                                <h4>Lý Công Uẩn</h4>
+                                <p>Dời đô về Thăng Long</p>
+                            </div>
+                        </div>
+                        <div class="t-dot"></div>
+                        <div class="t-year">Năm 1009</div>
+                    </div>
+
+                    <!-- 12. Trần Thủ Độ (KHÓA) -->
+                    <div class="t-item t-bottom">
+                        <div class="t-year">Năm 1226</div>
+                        <div class="t-dot"></div>
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/tran-thu-do.jpg" alt="Trần Thủ Độ">
+                            <div class="t-info">
+                                <h4>Trần Thủ Độ</h4>
+                                <p>Sáng lập triều Trần</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 13. Trần Hưng Đạo (KHÓA) -->
+                    <div class="t-item t-top">
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/tran-hung-dao.jpg" alt="Trần Hưng Đạo">
+                            <div class="t-info">
+                                <h4>Trần Hưng Đạo</h4>
+                                <p>Ba lần đại thắng Mông-Nguyên</p>
+                            </div>
+                        </div>
+                        <div class="t-dot"></div>
+                        <div class="t-year">Năm 1258</div>
+                    </div>
+
+                    <!-- 14. Hồ Quý Ly (KHÓA) -->
+                    <div class="t-item t-bottom">
+                        <div class="t-year">Năm 1400</div>
+                        <div class="t-dot"></div>
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/ho-quy-ly.jpg" alt="Hồ Quý Ly">
+                            <div class="t-info">
+                                <h4>Hồ Quý Ly</h4>
+                                <p>Thành lập nhà Hồ</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 15. Lê Lợi (KHÓA) -->
+                    <div class="t-item t-top">
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/le-loi.jpg" alt="Lê Lợi">
+                            <div class="t-info">
+                                <h4>Lê Lợi</h4>
+                                <p>Khởi nghĩa Lam Sơn</p>
+                            </div>
+                        </div>
+                        <div class="t-dot"></div>
+                        <div class="t-year">Năm 1418</div>
+                    </div>
+
+                    <!-- 16. Nguyễn Huệ (KHÓA) -->
+                    <div class="t-item t-bottom">
+                        <div class="t-year">Năm 1789</div>
+                        <div class="t-dot"></div>
+                        <div class="t-card locked">
+                            <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                            <img src="/static/assets/images/characters/nguyen-hue.jpg" alt="Nguyễn Huệ">
+                            <div class="t-info">
+                                <h4>Quang Trung</h4>
+                                <p>Đại phá quân Thanh</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ========================================== -->
 
     <!-- Component chọn chương được render cùng template để không cần fetch HTML lần hai. -->
     {% include "components/chapter-modal.html" %}

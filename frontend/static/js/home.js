@@ -18,22 +18,81 @@
   //     ? `⚔️ BẮT ĐẦU CHƠI<br><span>(CHƯƠNG ${chapterNumber})</span>`
   //     : '⚔️ BẮT ĐẦU CHƠI';
   // }
-  // cập nhật sau xóa cái này đi 
-  function showUpdateNotice(btn) {
-    const originalText = btn.innerHTML;
-    
-    // Đổi chữ và khóa bấm tạm thời
-    btn.innerHTML = "⏳ ĐANG CẬP NHẬT...";
-    btn.style.opacity = "0.5";
-    btn.disabled = true;
 
-    // Trả lại chữ cũ sau 1.5 giây
-    setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.style.opacity = "";
-        btn.disabled = false;
-    }, 1500);
-  }
+  // cập nhật sau xóa cái này đi 
+  // function showUpdateNotice(btn) {
+  //   const originalText = btn.innerHTML;
+    
+  //   // Đổi chữ và khóa bấm tạm thời
+  //   btn.innerHTML = "⏳ ĐANG CẬP NHẬT...";
+  //   btn.style.opacity = "0.5";
+  //   btn.disabled = true;
+
+  //   // Trả lại chữ cũ sau 1.5 giây
+  //   setTimeout(() => {
+  //       btn.innerHTML = originalText;
+  //       btn.style.opacity = "";
+  //       btn.disabled = false;
+  //   }, 1500);
+  // }
+
+  // Hàm Mở Timeline
+  // Hàm Mở Timeline
+  window.openTimeline = function openTimeline() {
+      const modal = document.getElementById("timeline-modal");
+      if(modal) {
+          modal.classList.remove("hidden");
+      }
+  };
+
+  // Hàm Đóng Timeline
+  window.closeTimeline = function closeTimeline() {
+      const modal = document.getElementById("timeline-modal");
+      if(modal) {
+          modal.classList.add("hidden");
+      }
+  };
+
+  // --- CHỨC NĂNG CHỌN TƯỚNG TỪ TIMELINE ---
+  window.selectHero = function(heroName, routeUrl) {
+      const startBtn = document.getElementById('btn-start-game');
+      
+      if (startBtn) {
+          // 1. Cập nhật đường link cho nút
+          startBtn.href = routeUrl;
+          
+          // 2. Cập nhật giao diện nút (Hiện tên thử thách)
+          startBtn.innerHTML = `
+              <div>⚔️ BẮT ĐẦU CHƠI</div>
+              <span style="font-size: 13px; color: #ffeb3b; font-weight: normal;">(Thử Thách: ${heroName})</span>
+          `;
+      }
+
+      // 3. Lưu thông tin vào LocalStorage để không bị mất khi F5 tải lại trang
+      localStorage.setItem('savedHeroName', heroName);
+      localStorage.setItem('savedHeroRoute', routeUrl);
+
+      // 4. Đóng cửa sổ Timeline
+      window.closeTimeline();
+  };
+
+  // --- TỰ ĐỘNG TẢI LẠI TƯỚNG ĐÃ CHỌN KHI MỞ TRANG ---
+  document.addEventListener("DOMContentLoaded", () => {
+      const savedName = localStorage.getItem('savedHeroName');
+      const savedRoute = localStorage.getItem('savedHeroRoute');
+      
+      // Nếu trước đó người chơi đã chọn 1 tướng, khôi phục lại hiển thị đó
+      if (savedName && savedRoute) {
+          const startBtn = document.getElementById('btn-start-game');
+          if (startBtn) {
+              startBtn.href = savedRoute;
+              startBtn.innerHTML = `
+                  <div>⚔️️ BẮT ĐẦU CHƠI</div>
+                  <span style="font-size: 13px; color: #ffeb3b; font-weight: normal;">(Thử Thách: ${savedName})</span>
+              `;
+          }
+      }
+  });
 
   window.openChapterModal = function openChapterModal() {
     const modal = document.getElementById('chapterModalOverlay');
