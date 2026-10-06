@@ -82,19 +82,36 @@ export function fitCanvas() {
   return scale;
 }
 
-// ---- Nền 8-bit (TT-MAP-01): trời -> đồi xa -> lớp giữa -> tile mặt đất ----
-// Mọi lớp vẽ x1 ở cỡ gốc, không smoothing, toạ độ nguyên.
+// ---- Nền (TT-MAP-01, bộ 32-bit TT-HIBIT-03): trời -> đồi xa -> lớp giữa -> tile mặt đất ----
+// Mọi lớp vẽ theo cỡ LOGIC (mapWidth/mapHeight), toạ độ nguyên.
 
 function mod(value, size) {
   return ((value % size) + size) % size;
 }
 
-// Lặp ngang 1 ảnh theo chiều rộng GỐC. Offset làm tròn về pixel nguyên TRƯỚC
+// Ảnh môi trường mang `image.density` (assets.js; bộ 32-bit = 4). Cỡ LOGIC của
+// ảnh — dùng thay image.width/height (không gọi thẳng với ảnh map).
+const mapDensity = image => image.density || 1;
+const mapWidth = image => image.width / mapDensity(image);
+const mapHeight = image => image.height / mapDensity(image);
+
+// Vẽ 1 vùng ảnh môi trường: toạ độ nguồn (sx..sh) và đích là pixel LOGIC, nguồn
+// nhân density khi lấy từ ảnh. Bộ đệm N < density (màn thấp) thì thu nhỏ có
+// nội suy như drawSprite; còn lại nearest-neighbor.
+function drawMapImage(target, image, sx, sy, sw, sh, dx, dy, dw = sw, dh = sh) {
+  const density = mapDensity(image);
+  if (density > 1 && backingScale < density) target.imageSmoothingEnabled = true;
+  target.drawImage(image, sx * density, sy * density, sw * density, sh * density, dx, dy, dw, dh);
+  target.imageSmoothingEnabled = false;
+}
+
+// Lặp ngang 1 ảnh theo chiều rộng LOGIC. Offset làm tròn về pixel nguyên TRƯỚC
 // khi lấy modulo để lớp nền không rung dưới pixel khi camera lerp chậm.
 function drawTiledLayer(target, image, parallax, y) {
-  const width = image.width;
+  const width = mapWidth(image);
+  const height = mapHeight(image);
   const offset = mod(Math.round(state.cameraX * parallax), width);
-  for (let x = -offset; x < VIEW_W; x += width) target.drawImage(image, x, y);
+  for (let x = -offset; x < VIEW_W; x += width) drawMapImage(target, image, 0, 0, width, height, x, y);
 }
 
 // Vùng cảnh của màn đang chơi (LEVEL.zones — màn 1: 5 vùng, màn 2: 3 vùng).
@@ -144,7 +161,7 @@ function drawFarHills() {
   const alpha = to ? (hidden(from) ? 0 : 1) * (1 - t) + (hidden(to) ? 0 : 1) * t : (hidden(from) ? 0 : 1);
   if (alpha <= 0) return;
   ctx.globalAlpha = alpha;
-  drawTiledLayer(ctx, image, FAR_HILLS.parallax, FAR_HILLS.bottomY - image.height);
+  drawTiledLayer(ctx, image, FAR_HILLS.parallax, FAR_HILLS.bottomY - mapHeight(image));
   ctx.globalAlpha = 1;
 }
 
@@ -152,14 +169,19 @@ function drawFarHills() {
 // globalAlpha sẽ làm chỗ hai ảnh cùng đục bị mờ (t = .5 chỉ phủ 75%). Cộng
 // 'lighter' A x (1 - t) + B x t trên nền trong suốt cho nội suy tuyến tính
 // đúng cả màu lẫn độ phủ, rồi vẽ kết quả x1 lên canvas chính.
+// Canvas phụ ở độ phân giải BỘ ĐỆM (logic x backingScale, transform như canvas
+// chính) để không mất chi tiết lớp giữa bộ 32-bit.
 let blendCanvas = null;
 function blendContext(width, height) {
   if (!blendCanvas) blendCanvas = document.createElement('canvas');
-  if (blendCanvas.width !== width || blendCanvas.height !== height) {
-    blendCanvas.width = width;
-    blendCanvas.height = height;
+  const w = width * backingScale;
+  const h = height * backingScale;
+  if (blendCanvas.width !== w || blendCanvas.height !== h) {
+    blendCanvas.width = w;
+    blendCanvas.height = h;
   }
   const blend = blendCanvas.getContext('2d');
+  blend.setTransform(backingScale, 0, 0, backingScale, 0, 0);
   blend.imageSmoothingEnabled = false;
   return blend;
 }
@@ -169,7 +191,7 @@ function drawMidground() {
   const a = images.maps.layers[from];
   const b = to ? images.maps.layers[to] : null;
   if (!a && !b) return;
-  const height = (a || b).height;
+  const height = mapHeight(a || b);
   const top = GROUND_Y - height;
   if (!b || !a) {
     // Không hoà (hoặc thiếu 1 ảnh): vẽ thẳng ảnh đang có.
@@ -187,7 +209,7 @@ function drawMidground() {
   drawTiledLayer(blend, b, MID_PARALLAX, 0);
   blend.globalAlpha = 1;
   blend.globalCompositeOperation = 'source-over';
-  ctx.drawImage(blendCanvas, 0, top);
+  ctx.drawImage(blendCanvas, 0, top, VIEW_W, height);
 }
 
 function drawBackdrops() {
@@ -233,7 +255,7 @@ function drawTileSegments(image, rect, columnX, screenY, segments, camera) {
   segments.forEach(([s, e]) => {
     const sx = s - columnX;
     const w = e - s;
-    ctx.drawImage(image, rect.x + sx, rect.y, w, rect.h, s - camera, screenY, w, rect.h);
+    drawMapImage(ctx, image, rect.x + sx, rect.y, w, rect.h, s - camera, screenY);
   });
 }
 
@@ -257,7 +279,7 @@ function columnTiles(region, column) {
 function drawGroundDecor(image, region, hash, columnX, topY, camera) {
   if (((hash >>> 16) & 0xff) >= 256 * GROUND_DECOR_DENSITY) return;
   const decor = pick(region.decoration, hash >>> 24);
-  if (decor) ctx.drawImage(image, decor.x, decor.y, decor.w, decor.h, columnX - camera, topY - decor.h, decor.w, decor.h);
+  if (decor) drawMapImage(ctx, image, decor.x, decor.y, decor.w, decor.h, columnX - camera, topY - decor.h);
 }
 
 // ---- Ghép tile địa hình tự động (bộ TILESET_TT_TERRAIN, TT-TERRAIN-01) ----
@@ -323,7 +345,7 @@ function drawGroundAutotile(sheet, first, last, camera) {
     const x = column * TERRAIN_CELL - camera;
     for (let y = top; y < VIEW_H; y += TERRAIN_CELL) {
       const rect = terrainRect(sheet, terrainTileRole(column, y));
-      if (rect) ctx.drawImage(sheet.image, rect.x, rect.y, rect.w, rect.h, x, y, rect.w, rect.h);
+      if (rect) drawMapImage(ctx, sheet.image, rect.x, rect.y, rect.w, rect.h, x, y);
     }
     if (decorRegion && terrainTileRole(column, top) === 'surface') {
       drawGroundDecor(images.maps.tileset.image, decorRegion, tileHash(column), column * TERRAIN_CELL, top, camera);
@@ -367,9 +389,9 @@ function drawRaisedColumn(image, region, column, level, camera) {
   const openLeft = neighborTop.left > top;
   const openRight = neighborTop.right > top;
   const x = columnX - camera;
-  if (surface) ctx.drawImage(image, surface.x, surface.y, surface.w, surface.h, x, top, surface.w, surface.h);
+  if (surface) drawMapImage(ctx, image, surface.x, surface.y, surface.w, surface.h, x, top);
   for (let y = top + TERRAIN_CELL; y < VIEW_H; y += TERRAIN_CELL) {
-    if (fill) ctx.drawImage(image, fill.x, fill.y, fill.w, fill.h, x, y, fill.w, fill.h);
+    if (fill) drawMapImage(ctx, image, fill.x, fill.y, fill.w, fill.h, x, y);
   }
   // Dải bóng dọc phần sườn lộ ra (sáng từ trên-trái như lòng hố).
   [['left', openLeft], ['right', openRight]].forEach(([name, open]) => {
@@ -444,7 +466,7 @@ function drawGround() {
     edges.forEach(([role, x]) => {
       if (x + tileW < camera || x > camera + VIEW_W) return;
       const rect = groundTile(region, role);
-      if (rect) ctx.drawImage(image, rect.x, rect.y, rect.w, rect.h, Math.round(x - camera), GROUND_Y, rect.w, rect.h);
+      if (rect) drawMapImage(ctx, image, rect.x, rect.y, rect.w, rect.h, Math.round(x - camera), GROUND_Y);
     });
   });
 }
@@ -464,13 +486,13 @@ function drawFinishGate(time = 0) {
   if (!gate) return;
   const prop = images.maps.props[finishGateOpen() ? gate.open : gate.closed]
     || images.maps.props[gate.closed];
-  const w = prop ? prop.image.width : 131;
-  const h = prop ? prop.image.height : 150;
+  const w = prop ? mapWidth(prop.image) : 131;
+  const h = prop ? mapHeight(prop.image) : 150;
   const pivot = prop?.asset.pivot || { x: w / 2, y: h };
   const left = Math.round(gate.worldX - pivot.x - state.cameraX);
   if (left + w < -48 || left > VIEW_W + 48) return;
   const top = GROUND_Y - pivot.y;
-  if (prop) ctx.drawImage(prop.image, left, top);
+  if (prop) drawMapImage(ctx, prop.image, 0, 0, w, h, left, top);
   else drawLandmarkFallback(left, top, w, h);
   if (LEVEL.arena && state.gateOpen) drawVictoryFlag(prop, left, top, time);
 }
@@ -484,7 +506,7 @@ function drawVictoryFlag(gateProp, gateLeft, gateTop, time) {
   if (!flag || !attach) return;
   const { frame_w: fw, frame_h: fh, frames = 1, fps = 6, pivot = { x: 0, y: fh } } = flag.asset;
   const frame = Math.floor(time * fps) % frames;
-  ctx.drawImage(flag.image, frame * fw, 0, fw, fh, gateLeft + attach.x - pivot.x, gateTop + attach.y - pivot.y, fw, fh);
+  drawMapImage(ctx, flag.image, frame * fw, 0, fw, fh, gateLeft + attach.x - pivot.x, gateTop + attach.y - pivot.y);
 }
 
 // Bia đá đánh dấu mốc câu hỏi (TT-QUIZ-01): x1, pivot bottom-center tại
@@ -501,7 +523,7 @@ function drawQuizSteles(time) {
     const done = quiz.done && stele.states.done;
     const image = done ? stele.states.done : (stele.states.active || stele.image);
     const frame = done ? 0 : Math.floor(time * fps) % frames;
-    ctx.drawImage(image, frame * fw, 0, fw, fh, left, top, fw, fh);
+    drawMapImage(ctx, image, frame * fw, 0, fw, fh, left, top);
   });
 }
 
@@ -525,8 +547,7 @@ function drawLandmarkFallback(left, top, w, h) {
 }
 
 // Lòng hố (state.holes). Bộ tile chung có vai trò `pit-top` (hàng 248–264) +
-// `pit-deep` (hàng dưới, còn thấy 6px) thì vẽ tile đó (Codex 29/09 —
-// docs/CODEX_PROMPT_TILESET_PIT.md). Thiếu tile thì dự phòng
+// `pit-deep` (hàng dưới, còn thấy 6px) thì vẽ tile đó. Thiếu tile thì dự phòng
 // bằng tile `fill` (đất) phủ các dải tối dần theo bậc (không gradient
 // mịn), vách trái trong bóng + bóng dưới mép cỏ. Vẽ sau drawGround, trước vật cản
 // (cầu đè lên hố).
@@ -591,7 +612,7 @@ function drawHoles() {
   });
 }
 
-// Hướng cần quay (-1 trái / 1 phải) cho sprite 8-bit (ảnh gốc quay PHẢI):
+// Hướng cần quay (-1 trái / 1 phải) cho sprite (ảnh gốc quay PHẢI):
 // vật có hướng chạy riêng (`facing` của roller, giữ nguyên cả khi đang chết)
 // quay theo hướng đó; lính/boss quay về phía người chơi; còn lại (bẫy, tháp)
 // giữ hướng gốc.
@@ -602,6 +623,19 @@ function facingDirection(centerX, fixedFacing = 0, watchesPlayer = false) {
   return playerCenter > centerX ? 1 : -1;
 }
 
+// Strip `name` của sprite `assetId`. Asset đã tải xong mà màn không nạp
+// (thiếu trong LEVEL_SPRITES của config.js — nạp theo màn, Phần D) thì cảnh báo
+// 1 lần/asset để thêm vào danh sách; caller vẽ hộp tạm như khi thiếu ảnh.
+const unloadedWarned = new Set();
+function spriteImage(assetId, name) {
+  const strips = images.sprites[assetId];
+  if (!strips && images.loaded && assetId && !unloadedWarned.has(assetId)) {
+    unloadedWarned.add(assetId);
+    console.warn(`sprite ${assetId} chưa nạp ở màn ${LEVEL.id} — thêm vào LEVEL_SPRITES[${LEVEL.id}] (config.js)`);
+  }
+  return strips?.[name] || null;
+}
+
 // Vẽ ô hiện tại của entity có `anim = { name, time }` (đồng hồ riêng, tick ở
 // physics.js). `anims` ánh xạ tên trạng thái -> animation manifest; `durations`
 // ép thời lượng (vd. throw .85s). Trả về { label, top } hoặc null nếu thiếu
@@ -610,14 +644,14 @@ function drawAnimated(assetId, anims, durations, entity, pivotX, footY, facing, 
   const key = entity.anim?.name;
   const name = anims[key] || anims.idle || anims.move;
   const meta = name ? getAnimMeta(assetId, name) : null;
-  const image = name ? images.sprites8[assetId]?.[name] : null;
+  const image = name ? spriteImage(assetId, name) : null;
   if (!meta || !image) return null;
   const frame = frameIndex(meta, entity.anim?.time || 0, durations?.[key] ?? null);
-  drawSprite8(image, meta, frame, pivotX, footY, facing, alpha);
+  drawSprite(image, meta, frame, pivotX, footY, facing, alpha);
   return { label: `${name} ${frame + 1}/${meta.frames}`, top: footY - (meta.frame_h - 1) };
 }
 
-// Hộp tạm theo hitbox khi thiếu sprite 8-bit.
+// Hộp tạm theo hitbox khi thiếu sprite.
 function drawPlaceholder(entity, alpha = 1) {
   ctx.globalAlpha = alpha;
   ctx.fillStyle = '#4a3020';
@@ -639,9 +673,9 @@ function drawBooks(time) {
       ctx.fillRect(x - 8, y - 8, 16, 16);
       return;
     }
-    const { frame_w: fw = prop.image.width, frame_h: fh = prop.image.height, frames = 1 } = prop.asset;
+    const { frame_w: fw = mapWidth(prop.image), frame_h: fh = mapHeight(prop.image), frames = 1 } = prop.asset;
     const frame = Math.floor(time * BOOK_FPS + index) % frames;
-    ctx.drawImage(prop.image, frame * fw, 0, fw, fh, x - fw / 2, y - fh / 2, fw, fh);
+    drawMapImage(ctx, prop.image, frame * fw, 0, fw, fh, x - fw / 2, y - fh / 2);
   });
 }
 
@@ -657,7 +691,7 @@ export function obstacleDrawRect(obstacle, asset) {
   };
 }
 
-// Vật cản tĩnh: ảnh 8-bit x1 (không co giãn, không quầng — G5). Thiếu ảnh thì
+// Vật cản tĩnh: ảnh theo cỡ logic (không co giãn, không quầng — G5). Thiếu ảnh thì
 // vẽ hộp tạm đúng hitbox.
 function drawObstacles() {
   state.obstacles.forEach(obstacle => {
@@ -679,19 +713,20 @@ function drawObstacles() {
       if (left + asset.frame_w < -48 || left > VIEW_W + 48) return;
       const top = Math.round(obstacle.y + obstacle.h + obstacle.groundSink - asset.frame_h);
       ctx.globalAlpha = obstacle.alpha ?? 1;
-      ctx.drawImage(prop.image, frame * asset.frame_w, 0, asset.frame_w, asset.frame_h, left, top, asset.frame_w, asset.frame_h);
+      drawMapImage(ctx, prop.image, frame * asset.frame_w, 0, asset.frame_w, asset.frame_h, left, top);
       ctx.globalAlpha = 1;
       debugLabels.set(obstacle, `${obstacle.type} ${obstacle.state || ''}`);
       return;
     }
     const rect = obstacleDrawRect(obstacle, asset);
     const left = Math.round(rect.x - state.cameraX);
-    if (left + prop.image.width < -48 || left > VIEW_W + 48) return;
-    ctx.drawImage(prop.image, left, Math.round(rect.y));
+    const w = mapWidth(prop.image);
+    if (left + w < -48 || left > VIEW_W + 48) return;
+    drawMapImage(ctx, prop.image, 0, 0, w, mapHeight(prop.image), left, Math.round(rect.y));
   });
 }
 
-// Vật có trạng thái (sprite 8-bit, pivot bottom-center = tâm ngang + chân
+// Vật có trạng thái (sprite, pivot bottom-center = tâm ngang + chân
 // hitbox). Chia làm 2 lượt vẽ theo `grounded`:
 //   submerged (thuyền, grounded = false) vẽ TRƯỚC drawHoles() để thân thuyền
 //     chìm dưới lớp tối của khe sông.
@@ -709,7 +744,7 @@ function drawHazards(time, submerged = false) {
     const pivotX = Math.round(centerX - state.cameraX);
     if (pivotX < -80 || pivotX > VIEW_W + 80) return;
     const footY = Math.round(hazard.baseY + (sprite?.sink || 0));
-    const facing = facingDirection(centerX, hazard.facing, hazard.kind === 'thrower' || hazard.kind === 'boat');
+    const facing = facingDirection(centerX, hazard.facing, hazard.kind === 'thrower');
     const drawn = sprite && drawAnimated(sprite.id, sprite.anims, sprite.durations, hazard, pivotX, footY, facing);
     if (!drawn) {
       drawPlaceholder(hazard);
@@ -733,7 +768,7 @@ function drawProjectiles() {
     // Đoạn cuối tầm bay mờ dần để đạn không biến mất đột ngột.
     const alpha = Math.max(0, Math.min(1, (PROJECTILE_MAX_RANGE - projectile.traveled) / PROJECTILE_FADE_RANGE));
     const meta = art ? getAnimMeta(art.id, art.anim) : null;
-    const image = art ? images.sprites8[art.id]?.[art.anim] : null;
+    const image = art ? spriteImage(art.id, art.anim) : null;
     if (!meta || !image) {
       drawPlaceholder(projectile, alpha);
       return;
@@ -742,7 +777,7 @@ function drawProjectiles() {
     // tâm hitbox; ảnh gốc quay PHẢI nên bay sang trái thì lật.
     const frame = frameIndex(meta, projectile.age);
     const footY = centerY - Math.round(meta.frame_h / 2) + meta.frame_h - 1;
-    drawSprite8(image, meta, frame, centerX, footY, projectile.direction < 0 ? -1 : 1, alpha);
+    drawSprite(image, meta, frame, centerX, footY, projectile.direction < 0 ? -1 : 1, alpha);
     debugLabels.set(projectile, `${art.anim} ${frame + 1}/${meta.frames}`);
   });
 }
@@ -754,7 +789,7 @@ function drawHealthBar(x, y, width, ratio, color) {
   ctx.fillRect(Math.round(x + 1), Math.round(y + 1), Math.round((width - 2) * ratio), 2);
 }
 
-// Lính canh / boss đứng yên (sprite 8-bit, pivot = tâm ngang + chân hitbox).
+// Lính canh / boss đứng yên (sprite, pivot = tâm ngang + chân hitbox).
 // Boss không có animation `hurt` nên trúng đòn thì nháy mờ như bản cũ.
 function drawEnemies() {
   state.enemies.forEach(enemy => {
@@ -786,7 +821,7 @@ function drawEnemies() {
   });
 }
 
-// NPC màn 2: sprite 8-bit x1, pivot bottom-center tại (centerX, mặt đất = npc.y + npc.h),
+// NPC màn 2: sprite theo cỡ logic, pivot bottom-center tại (centerX, mặt đất = npc.y + npc.h),
 // quay về phía người chơi. `idle`, hoặc `talk` khi đang nói thoại — cả hai
 // lặp theo đồng hồ chung `time` (game tạm dừng lúc hội thoại nên không dùng
 // đồng hồ riêng tick trong physics). Gặp xong thì mờ dần theo npc.fade.
@@ -822,7 +857,7 @@ function drawBossFoot() {
 function drawJars() {
   const jarArt = BOSS_TD.jar;
   const meta = getAnimMeta(jarArt.id, jarArt.anim);
-  const image = images.sprites8[jarArt.id]?.[jarArt.anim];
+  const image = spriteImage(jarArt.id, jarArt.anim);
   state.jars.forEach(jar => {
     const centerX = Math.round(jar.x - state.cameraX);
     const centerY = Math.round(jar.y);
@@ -832,7 +867,7 @@ function drawJars() {
       return;
     }
     const footY = centerY - Math.round(meta.frame_h / 2) + meta.frame_h - 1;
-    drawSprite8(image, meta, frameIndex(meta, jar.age), centerX, footY, jar.vx < 0 ? -1 : 1);
+    drawSprite(image, meta, frameIndex(meta, jar.age), centerX, footY, jar.vx < 0 ? -1 : 1);
     debugLabels.set(jar, jar.reflected ? 'hũ phản' : 'hũ');
   });
 }
@@ -841,7 +876,7 @@ function drawJars() {
 function drawFires() {
   const fireArt = BOSS_TD.fire;
   const meta = getAnimMeta(fireArt.id, fireArt.anim);
-  const image = images.sprites8[fireArt.id]?.[fireArt.anim];
+  const image = spriteImage(fireArt.id, fireArt.anim);
   state.fires.forEach(fire => {
     const pivotX = Math.round(fire.x - state.cameraX);
     if (!meta || !image) {
@@ -849,7 +884,7 @@ function drawFires() {
       ctx.fillRect(pivotX - fireArt.width / 2, fire.footY - fireArt.h, fireArt.width, fireArt.h);
       return;
     }
-    drawSprite8(image, meta, frameIndex(meta, fire.time), pivotX, Math.round(fire.footY), 1);
+    drawSprite(image, meta, frameIndex(meta, fire.time), pivotX, Math.round(fire.footY), 1);
   });
 }
 
@@ -859,18 +894,21 @@ const SHADOW_ANIMS = { idle: 'idle', run: 'run', attack: 'attack_01' };
 let tintCanvas = null;
 
 // Ô sprite phủ một lớp màu (source-atop, chỉ tô lên pixel có hình) rồi vẽ
-// như drawSprite8. Dùng 1 canvas phụ cỡ 1 ô.
+// như drawSprite. Dùng 1 canvas phụ cỡ 1 ô.
 function drawTintedSprite(image, meta, frame, pivotX, footY, facing, alpha, tint) {
+  // Canvas phụ giữ đúng mật độ của ô (bộ 32-bit: density x cỡ logic).
+  const sw = meta.frame_w * (meta.density || 1);
+  const sh = meta.frame_h * (meta.density || 1);
   tintCanvas ||= document.createElement('canvas');
-  tintCanvas.width = meta.frame_w;
-  tintCanvas.height = meta.frame_h;
+  tintCanvas.width = sw;
+  tintCanvas.height = sh;
   const tctx = tintCanvas.getContext('2d');
   tctx.imageSmoothingEnabled = false;
-  tctx.drawImage(image, frame * meta.frame_w, 0, meta.frame_w, meta.frame_h, 0, 0, meta.frame_w, meta.frame_h);
+  tctx.drawImage(image, frame * sw, 0, sw, sh, 0, 0, sw, sh);
   tctx.globalCompositeOperation = 'source-atop';
   tctx.fillStyle = tint;
-  tctx.fillRect(0, 0, meta.frame_w, meta.frame_h);
-  drawSprite8(tintCanvas, meta, 0, pivotX, footY, facing, alpha);
+  tctx.fillRect(0, 0, sw, sh);
+  drawSprite(tintCanvas, meta, 0, pivotX, footY, facing, alpha);
 }
 
 // Bóng Trưng Nhị: NPC_TRUNG_NHI alpha .5 ánh chàm, vẽ SAU lưng người chơi
@@ -882,7 +920,7 @@ function drawShadow() {
   const key = shadow.anim?.name || 'idle';
   const name = SHADOW_ANIMS[key] || 'idle';
   const meta = getAnimMeta(SHADOW.sprite, name);
-  const image = images.sprites8[SHADOW.sprite]?.[name];
+  const image = spriteImage(SHADOW.sprite, name);
   const pivotX = Math.round(pose.x + pose.w / 2 - state.cameraX);
   const footY = Math.round(pose.y + pose.h);
   if (!meta || !image) {
@@ -910,7 +948,7 @@ function drawWallArrowMarks(time) {
 // Mưa tên (kỹ năng) + tên trên thành: PJ_ARROW_RAIN (mũi ở đáy ô) vẽ x1 tại (centerX, tipY).
 function drawArrows() {
   const meta = getAnimMeta(ARROW_RAIN_SPRITE.id, ARROW_RAIN_SPRITE.anim);
-  const image = images.sprites8[ARROW_RAIN_SPRITE.id]?.[ARROW_RAIN_SPRITE.anim];
+  const image = spriteImage(ARROW_RAIN_SPRITE.id, ARROW_RAIN_SPRITE.anim);
   const falling = [
     ...state.arrows.filter(arrow => arrow.delay <= 0),
     ...state.wallArrows.filter(arrow => arrow.warn <= 0).map(arrow => ({ centerX: arrow.x, tipY: arrow.tipY }))
@@ -919,7 +957,7 @@ function drawArrows() {
     const pivotX = Math.round(arrow.centerX - state.cameraX);
     if (pivotX < -16 || pivotX > VIEW_W + 16) return;
     const tipY = Math.round(arrow.tipY);
-    if (meta && image) drawSprite8(image, meta, 0, pivotX, tipY, 1);
+    if (meta && image) drawSprite(image, meta, 0, pivotX, tipY, 1);
     else {
       ctx.fillStyle = '#e8d9a8';
       ctx.fillRect(pivotX - 1, tipY - 18, 2, 18);
@@ -938,22 +976,26 @@ function playerFrame(config, meta, p, animTime) {
   return frameIndex(meta, animTime, config.duration);
 }
 
-// Vẽ 1 ô strip 8-bit, pivot bottom-center: chân (hàng frame_h - 2) nằm ngay
+// Vẽ 1 ô strip, pivot bottom-center: chân (hàng frame_h - 2) nằm ngay
 // trên `footY`, lật ngang quanh pivot khi quay trái (ảnh gốc quay phải).
-// Luôn vẽ x1.
-function drawSprite8(image, meta, frame, pivotX, footY, facing, alpha = 1) {
+// Luôn vẽ x1 theo pixel LOGIC. Bộ 32-bit (density > 1): ô ảnh dày gấp
+// density được ép vào đúng khung logic — bộ đệm N = density thì khớp 1:1;
+// bộ đệm nhỏ hơn (màn thấp) thì thu nhỏ có nội suy để không rụng hàng pixel.
+function drawSprite(image, meta, frame, pivotX, footY, facing, alpha = 1) {
   const w = meta.frame_w;
   const h = meta.frame_h;
+  const density = meta.density || 1;
   const left = pivotX - w / 2;
   const top = footY - (meta.frame_h - 1);
   ctx.save();
   ctx.globalAlpha = alpha;
+  if (density > 1 && backingScale < density) ctx.imageSmoothingEnabled = true;
   if (facing < 0) {
     ctx.translate(pivotX, 0);
     ctx.scale(-1, 1);
     ctx.translate(-pivotX, 0);
   }
-  ctx.drawImage(image, frame * meta.frame_w, 0, meta.frame_w, meta.frame_h, left, top, w, h);
+  ctx.drawImage(image, frame * w * density, 0, w * density, h * density, left, top, w, h);
   ctx.restore();
 }
 
@@ -970,7 +1012,7 @@ function drawPlayer(time) {
   const animTime = dead ? Math.max(0, time - p.deathTime) : (p.anim?.time || 0);
   const config = PLAYER_ANIMATIONS[key];
   const meta = getAnimMeta(PLAYER_SPRITE_ID, config.anim);
-  const image = images.sprites8[PLAYER_SPRITE_ID]?.[config.anim];
+  const image = spriteImage(PLAYER_SPRITE_ID, config.anim);
 
   if (meta && image) {
     const frame = playerFrame(config, meta, p, animTime);
@@ -979,7 +1021,7 @@ function drawPlayer(time) {
     const pivotX = Math.round(p.x + p.w / 2 - state.cameraX);
     const footY = Math.round(p.y + p.h);
     const facing = p.facing < 0 ? -1 : 1;
-    drawSprite8(image, meta, frame, pivotX, footY, facing);
+    drawSprite(image, meta, frame, pivotX, footY, facing);
     return;
   }
 

@@ -431,6 +431,9 @@ kbd {
 }
 .skill--buff { width: 26px; height: 26px; border-radius: 50%; }
 .skill__icon { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+/* Ảnh bộ 32-bit (TT-HIBIT-02, ui.js setSpriteImage): ảnh dày hơn ô hiển thị
+   -> thu nhỏ mượt; pixelated sẽ làm rụng hàng pixel. */
+.dialogue__portrait.img--hibit, .skill__icon.img--hibit, .control__icon.img--hibit, .hud__hearts img.img--hibit { image-rendering: auto; }
 .skill__icon[hidden] { display: none; }
 /* Ô Lướt: chữ tạm khi chưa có icon ICON_SK_DASH (TODO_MISSING — chờ Codex). */
 .skill__glyph {

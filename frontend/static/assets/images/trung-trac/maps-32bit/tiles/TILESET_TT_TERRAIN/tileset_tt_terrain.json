@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "id": "TILESET_TT_TERRAIN",
+  "file": "tileset_tt_terrain.png",
+  "tile_size": {
+    "w": 16,
+    "h": 16
+  },
+  "sheet_size": {
+    "w": 64,
+    "h": 48
+  },
+  "grid": {
+    "columns": 4,
+    "rows": 3,
+    "gutter": 0,
+    "margin": 0
+  },
+  "tiles": [
+    {
+      "id": "TT_TERRAIN_CORNER_LEFT",
+      "column": 0,
+      "row": 0,
+      "region": "ALL",
+      "role": "corner-left",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_TERRAIN_SURFACE",
+      "column": 1,
+      "row": 0,
+      "region": "ALL",
+      "role": "surface",
+      "rect": {
+        "x": 16,
+        "y": 0,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_TERRAIN_CORNER_RIGHT",
+      "column": 2,
+      "row": 0,
+      "region": "ALL",
+      "role": "corner-right",
+      "rect": {
+        "x": 32,
+        "y": 0,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_TERRAIN_CORNER_SINGLE",
+      "column": 3,
+      "row": 0,
+      "region": "ALL",
+      "role": "corner-single",
+      "rect": {
+        "x": 48,
+        "y": 0,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_TERRAIN_WALL_LEFT",
+      "column": 0,
+      "row": 1,
+      "region": "ALL",
+      "role": "wall-left",
+      "rect": {
+        "x": 0,
+        "y": 16,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_TERRAIN_FILL",
+      "column": 1,
+      "row": 1,
+      "region": "ALL",
+      "role": "fill",
+      "rect": {
+        "x": 16,
+        "y": 16,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_TERRAIN_WALL_RIGHT",
+      "column": 2,
+      "row": 1,
+      "region": "ALL",
+      "role": "wall-right",
+      "rect": {
+        "x": 32,
+        "y": 16,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_TERRAIN_WALL_SINGLE",
+      "column": 3,
+      "row": 1,
+      "region": "ALL",
+      "role": "wall-single",
+      "rect": {
+        "x": 48,
+        "y": 16,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_TERRAIN_INNER_LEFT",
+      "column": 0,
+      "row": 2,
+      "region": "ALL",
+      "role": "inner-left",
+      "rect": {
+        "x": 0,
+        "y": 32,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_TERRAIN_INNER_RIGHT",
+      "column": 1,
+      "row": 2,
+      "region": "ALL",
+      "role": "inner-right",
+      "rect": {
+        "x": 16,
+        "y": 32,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_TERRAIN_PIT_TOP",
+      "column": 2,
+      "row": 2,
+      "region": "ALL",
+      "role": "pit-top",
+      "rect": {
+        "x": 32,
+        "y": 32,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_TERRAIN_PIT_DEEP",
+      "column": 3,
+      "row": 2,
+      "region": "ALL",
+      "role": "pit-deep",
+      "rect": {
+        "x": 48,
+        "y": 32,
+        "w": 16,
+        "h": 16
+      }
+    }
+  ]
+}

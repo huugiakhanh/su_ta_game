@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "id": "TILESET_TT_GROUND",
+  "file": "tileset_tt_ground.png",
+  "tile_size": {
+    "w": 16,
+    "h": 16
+  },
+  "sheet_size": {
+    "w": 48,
+    "h": 320
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 20,
+    "gutter": 0,
+    "margin": 0
+  },
+  "region_layout": {
+    "Z1": {
+      "start_row": 0,
+      "row_count": 4,
+      "material": "packed-earth-and-village-grass"
+    },
+    "Z3": {
+      "start_row": 4,
+      "row_count": 4,
+      "material": "dense-forest-grass-and-roots"
+    },
+    "Z5": {
+      "start_row": 8,
+      "row_count": 4,
+      "material": "packed-red-earth-and-wheel-ruts"
+    },
+    "Z2": {
+      "start_row": 12,
+      "row_count": 4,
+      "material": "wet-rice-field-embankment"
+    },
+    "Z4": {
+      "start_row": 16,
+      "row_count": 4,
+      "material": "muddy-sandy-river-bank"
+    }
+  },
+  "collision": {
+    "surface": "top-edge",
+    "surface_world_y": 248,
+    "decoration_collision": false
+  },
+  "runtime_slice": {
+    "surface_height": 16,
+    "fill_visible_height": 6,
+    "total_ground_height": 22
+  },
+  "tiles": [
+    {
+      "id": "TT_GROUND_SURFACE_01",
+      "column": 0,
+      "row": 0,
+      "region": "Z1",
+      "role": "surface",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_GROUND_SURFACE_02",
+      "column": 1,
+      "row": 0,
+      "region": "Z1",
+      "role": "surface",
+      "rect": {
+        "x": 16,
+        "y": 0,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_GROUND_SURFACE_03",
+      "column": 2,
+      "row": 0,
+      "region": "Z1",
+      "role": "surface",
+      "rect": {
+        "x": 32,
+        "y": 0,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_GROUND_FILL_01",
+      "column": 0,
+      "row": 1,
+      "region": "Z1",
+      "role": "fill",
+      "rect": {
+        "x": 0,
+        "y": 16,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_GROUND_FILL_02",
+      "column": 1,
+      "row": 1,
+      "region": "Z1",
+      "role": "fill",
+      "rect": {
+        "x": 16,
+        "y": 16,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_GROUND_EDGE_LEFT",
+      "column": 0,
+      "row": 2,
+      "region": "Z1",
+      "role": "left-edge",
+      "rect": {
+        "x": 0,
+        "y": 32,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_GROUND_EDGE_RIGHT",
+      "column": 1,
+      "row": 2,
+      "region": "Z1",
+      "role": "right-edge",
+      "rect": {
+        "x": 16,
+        "y": 32,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_GROUND_DECOR_GRASS",
+      "column": 0,
+      "row": 3,
+      "region": "Z1",
+      "role": "decoration",
+      "rect": {
+        "x": 0,
+        "y": 48,
+        "w": 16,
+        "h": 8
+      }
+    },
+    {
+      "id": "TT_GROUND_DECOR_RICE_SPROUT",
+      "column": 1,
+      "row": 3,
+      "region": "Z1",
+      "role": "decoration",
+      "rect": {
+        "x": 16,
+        "y": 48,
+        "w": 16,
+        "h": 8
+      }
+    },
+    {
+      "id": "TT_GROUND_DECOR_DRY_GRASS",
+      "column": 2,
+      "row": 3,
+      "region": "Z1",
+      "role": "decoration",
+      "rect": {
+        "x": 32,
+        "y": 48,
+        "w": 16,
+        "h": 8
+      }
+    },
+    {
+      "id": "TT_Z1_PIT_TOP",
+      "column": 2,
+      "row": 1,
+      "region": "Z1",
+      "role": "pit-top",
+      "rect": {
+        "x": 32,
+        "y": 16,
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "TT_Z1_PIT_DEEP",
+      "column": 2,
+      "row": 2,
+      "region": "Z1",
+      "role": "pit-deep",
+      "rect": {
+        "x": 32,
+        "y": 32,
+        "w": 16,
+        "h": 16
+      }
+    }
+  ],
+  "unused_cells": [
+    {
+      "column": 0,
+      "row": 3,
+      "lower_half_only": true
+    },
+    {
+      "column": 1,
+      "row": 3,
+      "lower_half_only": true
+    },
+    {
+      "column": 2,
+      "row": 3,
+      "lower_half_only": true
+    }
+  ]
+}

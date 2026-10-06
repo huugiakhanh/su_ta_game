@@ -6,12 +6,10 @@
 // sai tới hết máu thì gọi `onDefeat` do main.js truyền vào (initDialogue).
 
 import { state } from './state.js';
-import { ui, updateHud } from './ui.js';
+import { ui, updateHud, setSpriteImage } from './ui.js';
 import { clearInput } from './input.js';
 import { addReward } from './progress.js';
-import { joinAssetPath } from './assets.js';
-import { getAsset } from './animation.js';
-import { SPRITE_8BIT_ROOT, NPC_SPRITES, QUESTION_SCORE, QUIZ } from './config.js';
+import { NPC_SPRITES, QUESTION_SCORE, QUIZ } from './config.js';
 import { NPC_DIALOGUES } from './dialogue-data.js';
 import { playSfx, duckMusic } from './audio.js';
 
@@ -56,12 +54,9 @@ export function dialogueOpen() {
   return current !== null;
 }
 
-// URL chân dung 64x64 theo manifest; thiếu -> null (ẩn ảnh, TODO_MISSING).
-// `portraitId` = id asset chân dung (cutscene màn 3), không có thì lấy theo NPC.
-function portraitUrl(npcId, portraitId = null) {
-  const asset = getAsset(portraitId || NPC_SPRITES[npcId]?.portrait);
-  const file = asset?.animations?.[0]?.file;
-  return file ? joinAssetPath(SPRITE_8BIT_ROOT, file) : null;
+// Id asset chân dung: `portraitId` (cutscene màn 3), không có thì lấy theo NPC.
+function portraitId(npcId, id = null) {
+  return id || NPC_SPRITES[npcId]?.portrait || null;
 }
 
 function shuffle(list) {
@@ -79,9 +74,9 @@ function open(next) {
   clearInput();
   // Game dừng thì thông báo đang hiện không tự tắt (tickMessage) — ẩn luôn.
   ui.message.classList.remove('message--visible');
-  const url = portraitUrl(next.portraitNpc, next.portraitId);
-  el.portrait.hidden = !url;
-  if (url) el.portrait.src = url;
+  // Chân dung theo manifest (bản 32-bit nếu đã chọn); thiếu -> ẩn (TODO_MISSING).
+  const id = portraitId(next.portraitNpc, next.portraitId);
+  el.portrait.hidden = !(id && setSpriteImage(el.portrait, id));
   // Cốt truyện mặc định chân dung trắng đen (Thi Sách); `memorial: false` = màu.
   el.portrait.classList.toggle('dialogue__portrait--memorial', next.kind === 'story' && next.data.memorial !== false);
   el.panel.classList.add('panel--visible');
