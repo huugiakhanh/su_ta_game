@@ -1,4 +1,4 @@
-// Trạng thái animation theo từng entity + tra cứu manifest bộ sprite 8-bit.
+// Trạng thái animation theo từng entity + tra cứu manifest bộ sprite.
 // Dùng chung bởi physics.js (thời điểm gây sát thương / nhả đạn theo
 // hit_frame) và render.js (chọn ô cần vẽ) — tách riêng để hai module đó không
 // phụ thuộc vòng nhau. Không đụng DOM, không đụng state.
@@ -18,11 +18,14 @@ export function getAsset(id) {
   return manifestById.get(id) || null;
 }
 
-// { ...animation trong manifest, frame_w, frame_h } hoặc null nếu thiếu.
+// { ...animation trong manifest, frame_w, frame_h, density } hoặc null nếu
+// thiếu. frame_w/frame_h là pixel LOGIC; ô trong ảnh rộng frame_w * density
+// (bộ 32-bit: density 4). Animation có `frame_w` riêng (vd. attack_01 đâm giáo của Trưng Trắc ô 128) thì dùng số đó — ô vẫn
+// căn giữa pivot nên hitbox/chân không đổi.
 export function getAnimMeta(id, name) {
   const asset = manifestById.get(id);
   const anim = asset?.animations.find(item => item.name === name);
-  return anim ? { ...anim, frame_w: asset.frame_w, frame_h: asset.frame_h } : null;
+  return anim ? { ...anim, frame_w: anim.frame_w || asset.frame_w, frame_h: asset.frame_h, density: asset.density || 1 } : null;
 }
 
 export function createAnim(name) {

@@ -283,12 +283,14 @@ function fireProjectile(hazard) {
   const player = state.player;
   const originX = hazard.x + hazard.w / 2;
   const direction = Math.sign(player.x + player.w / 2 - originX) || -1;
-  // Đạn sinh ở độ cao `muzzle` so với chân (HAZARD_SPRITES) — ngang tay ném.
-  const muzzle = HAZARD_SPRITES[hazard.sprite]?.muzzle ?? hazard.h * .7;
+  // Đạn sinh ở độ cao `muzzle` so với chân (HAZARD_SPRITES) — ngang tay ném;
+  // cách tâm `muzzleX` (mặc định ngay ngoài mép hitbox).
+  const spec = HAZARD_SPRITES[hazard.sprite];
+  const muzzle = spec?.muzzle ?? hazard.h * .7;
   playSfx('throw');
   state.projectiles.push(makeProjectile(
     hazard.projectile,
-    originX + direction * (hazard.w / 2 + 4),
+    originX + direction * (spec?.muzzleX ?? hazard.w / 2 + 4),
     hazard.baseY - muzzle,
     direction
   ));
@@ -528,7 +530,6 @@ function updateEnemies(dt) {
 //   roller  — nằm chờ tới khi người chơi vượt triggerX (hoặc bị gọi bằng báo
 //             động) rồi lao sang trái, ra khỏi tầm thì xoá.
 //   thrower — đứng yên, vào tầm thì bắn đạn theo chu kỳ.
-//   boat    — trôi chậm trên sông và bắn như thrower.
 //   trap    — đứng yên, vô hại tới khi người chơi tới sát thì bật chông
 //             (animation `sprung`) và bắt đầu gây sát thương.
 //   prop    — chỉ để vẽ (tháp canh), không va chạm.
@@ -561,14 +562,6 @@ function updateHazards(dt) {
     }
 
     if (hazard.kind === 'patrol') updatePatrol(hazard, dt, playerCenter);
-
-    if (hazard.kind === 'boat' && hazard.speed !== 0) {
-      hazard.x += hazard.speed * dt;
-      if (hazard.x + hazard.w < playerCenter - HAZARD_DESPAWN_MARGIN) {
-        hazard.alive = false;
-        return;
-      }
-    }
 
     if (hazard.kind === 'trap' && !hazard.sprung) {
       if (Math.abs(playerCenter - (hazard.x + hazard.w / 2)) <= hazard.triggerDistance) {

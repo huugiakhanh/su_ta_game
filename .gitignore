@@ -6,5 +6,7 @@ __pycache__/
 artifacts/
 assets/sprites
 assets/maps
+assets/maps-32bit
+assets/sprites-32bit
 # Bản build Web của Godot (TT-GODOT-01) — build khi deploy, không commit
 # frontend/static/godot/
