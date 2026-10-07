@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+          content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
     <title>Sử Ta - Game Lịch Sử Việt Nam</title>
 
@@ -16,26 +16,24 @@
         
         <div class="top-bar">
             
-            <div class="panel player-info" style="justify-content: center; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(55, 38, 26, 0.9)'" onmouseout="this.style.background='rgba(35, 24, 16, 0.88)'" onclick="moBangDangNhap()">
+            <div class="panel player-info player-info--guest" onmouseover="this.style.background='rgba(55, 38, 26, 0.9)'" onmouseout="this.style.background='rgba(35, 24, 16, 0.88)'" onclick="moBangDangNhap()">
                 
-                <div class="avatar" style="background: #444; border-color: #888; display: flex; justify-content: center; align-items: center; color: #aaa; font-size: 24px; font-weight: bold;">
+                <div class="avatar avatar--guest">
                     ?
                 </div>
                 
                 <div class="info-text">
-                    <h3 style="color: #fff; text-shadow: none; font-size: 15px;">KHÁCH TRUY CẬP</h3>
-                    <div style="font-size: 12px; color: #f1c40f; margin-top: 5px; font-weight: bold; text-transform: uppercase;">
+                    <h3 class="guest-name">KHÁCH TRUY CẬP</h3>
+                    <div class="guest-hint">
                         Chạm để Đăng nhập
                     </div>
                 </div>
             </div>
 
             <div class="resources">
-                <div class="panel res-item">🪙 0 <button class="btn-plus">+</button></div>
                 <div class="panel res-item">💎 0 <button class="btn-plus">+</button></div>
                 <div class="panel res-item">⚡ 0/30 <button class="btn-plus">+</button></div>
-                <button class="btn panel
-                " style="padding: 6px 12px;">⚙️</button>
+                <button class="btn panel btn-settings">⚙️</button>
             </div>
         </div>
 
@@ -43,11 +41,11 @@
             
             <div class="left-menu">
                 
-                <button class="btn btn-side">🏆 THÀNH TỰU</button>
+                <button class="btn btn-side"><span class="btn-side__icon">🏆</span> <span class="btn-side__label">THÀNH TỰU</span></button>
                 <!-- <button class="btn btn-side">💼 NHIỆM VỤ HẰNG NGÀY</button> -->
-                <button class="btn btn-side" onclick="openLeaderboard()">📊 BẢNG XẾP HẠNG</button>
-                <button class="btn btn-side">🏪 CỬA HÀNG</button>
-                <button class="btn btn-side" onclick="window.location.href='/history'"> 📖 THƯ VIỆN LỊCH SỬ</button>
+                <button class="btn btn-side" onclick="openLeaderboard()"><span class="btn-side__icon">📊</span> <span class="btn-side__label">BẢNG XẾP HẠNG</span></button>
+                <button class="btn btn-side"><span class="btn-side__icon">🏪</span> <span class="btn-side__label">CỬA HÀNG</span></button>
+                <button class="btn btn-side" onclick="window.location.href='/history'"><span class="btn-side__icon">📖</span> <span class="btn-side__label">THƯ VIỆN LỊCH SỬ</span></button>
             </div>
 
             <div class="center-menu">
@@ -71,9 +69,10 @@
                     🗺️ CHỌN CHƯƠNG
                 </button> -->
 
+                <!-- 3 nút chính: desktop dùng display: contents (không đổi bố cục), điện thoại ngang xếp thành hàng -->
+                <div class="main-actions">
                 <!-- NÚT BẮT ĐẦU CHƠI -->
-                <a href="/gameplay/levels/trung-trac" id="btn-start-game" class="btn btn-main btn-3d" 
-                    style="text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.3; padding: 10px 24px;">
+                <a href="/gameplay/levels/trung-trac" id="btn-start-game" class="btn btn-main btn-3d btn-start">
                     <div>⚔️ BẮT ĐẦU CHƠI</div>
                     <span style="font-size: 13px; color: #ffeb3b; font-weight: normal;">(Chưa chọn tướng)</span>
                 </a>
@@ -97,6 +96,7 @@
                         onclick="window.location.href='/quiz'">
                     🕹️ CÂU HỎI LỊCH SỬ
                 </button>
+                </div>
                 
                 <!-- <button class="btn btn-main btn-blue">⚔️ ĐẤU TRƯỜNG</button> -->
                 <!-- <button class="btn btn-main btn-purple">🤖 LUYỆN TẬP</button> -->
