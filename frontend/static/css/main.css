@@ -713,3 +713,565 @@ body {
     background: #ff4500;
     transform: scale(1.1);
 }
+
+
+/* ========================================== */
+/* CLASS THAY INLINE STYLE (HOME-RESP-01)     */
+/* Giữ nguyên giao diện desktop, chỉ để       */
+/* @media bên dưới ghi đè được.               */
+/* ========================================== */
+.player-info--guest {
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.avatar--guest {
+    background: #444;
+    border-color: #888;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #aaa;
+    font-size: 24px;
+    font-weight: bold;
+}
+.info-text .guest-name {
+    color: #fff;
+    text-shadow: none;
+    font-size: 15px;
+}
+.guest-hint {
+    font-size: 12px;
+    color: #f1c40f;
+    margin-top: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.btn-settings {
+    padding: 6px 12px;
+}
+.btn-main.btn-start {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.3;
+    padding: 10px 24px;
+}
+/* Khung bọc 3 nút chính: desktop không tạo hộp riêng, bố cục y như cũ */
+.main-actions {
+    display: contents;
+}
+
+
+/* ========================================== */
+/* RESPONSIVE — TABLET (601–1024px)           */
+/* ========================================== */
+@media (min-width: 601px) and (max-width: 1024px) and (min-height: 501px) {
+    /* main-area chỉ chiếm phần còn lại dưới top-bar (desktop để 100vh nên bị đẩy xuống) */
+    .main-area {
+        height: auto;
+        flex: 1;
+        min-height: 0;
+    }
+    .left-menu {
+        left: 12px;
+        gap: 10px;
+    }
+    .btn-side {
+        padding: 10px;
+        font-size: 12px;
+        max-width: 175px;
+    }
+    .center-menu {
+        max-width: 340px;
+    }
+    .game-logo {
+        max-width: 290px;
+        margin-bottom: 12px;
+    }
+    .subtitle {
+        font-size: 12px;
+        padding: 6px 12px;
+        text-align: center;
+    }
+    .btn-main {
+        width: 270px;
+        font-size: 17px;
+    }
+}
+
+
+/* Tablet ngang / màn thấp (VD 1024×768): thu logo để nút chính không chạm khung chào mừng */
+@media (min-width: 601px) and (max-width: 1024px) and (min-height: 501px) and (max-height: 800px) {
+    .game-logo {
+        max-width: 240px;
+    }
+    .welcome-box {
+        bottom: 12px;
+    }
+}
+
+/* ========================================== */
+/* RESPONSIVE — ĐIỆN THOẠI (dọc ≤ 600px rộng, */
+/* hoặc ngang ≤ 500px cao): phần chung        */
+/* ========================================== */
+@media (max-width: 600px), (max-height: 500px) and (orientation: landscape) {
+    :root {
+        --mobile-nav-h: 58px;
+    }
+
+    .game-screen {
+        height: 100vh;
+        height: 100dvh;
+        padding: 8px;
+        padding-top: max(8px, env(safe-area-inset-top));
+        padding-left: max(8px, env(safe-area-inset-left));
+        padding-right: max(8px, env(safe-area-inset-right));
+        /* chừa chỗ cho thanh menu cố định dưới đáy */
+        padding-bottom: calc(var(--mobile-nav-h) + 6px + env(safe-area-inset-bottom));
+        justify-content: flex-start;
+    }
+
+    /* --- TOP BAR thu gọn --- */
+    .top-bar {
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .player-info {
+        width: auto;
+        min-width: 0;
+        flex-shrink: 1;
+        gap: 8px;
+        padding: 5px 8px;
+    }
+    .avatar {
+        width: 36px;
+        height: 36px;
+    }
+    .avatar--guest {
+        font-size: 18px;
+    }
+    .info-text {
+        min-width: 0;
+    }
+    .info-text h3,
+    .info-text .guest-name {
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .guest-hint {
+        font-size: 10px;
+        margin-top: 2px;
+        white-space: nowrap;
+    }
+    .resources {
+        gap: 4px;
+        margin-left: auto;
+    }
+    .res-item {
+        padding: 4px 7px;
+        gap: 4px;
+        font-size: 12px;
+        border-width: 2px;
+        white-space: nowrap;
+    }
+    .btn-plus {
+        display: none;
+    }
+    .btn-settings {
+        padding: 4px 8px;
+        font-size: 14px;
+        border-width: 2px;
+    }
+
+    /* --- VÙNG GIỮA: bỏ absolute, xếp theo dòng chảy --- */
+    .main-area {
+        height: auto;
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 1;
+    }
+    .center-menu {
+        position: static;
+        transform: none;
+        max-width: none;
+        gap: 12px;
+        margin: auto 0; /* căn giữa dọc, nội dung dài thì cuộn được */
+    }
+    .logo-area {
+        margin-bottom: 4px;
+    }
+    .game-logo {
+        margin-bottom: 8px;
+    }
+    .subtitle {
+        font-size: 11px;
+        padding: 5px 10px;
+        letter-spacing: 0.5px;
+        text-align: center;
+        max-width: 92vw;
+    }
+
+    /* --- MENU PHỤ thành thanh icon cố định dưới đáy --- */
+    .left-menu {
+        position: fixed;
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transform: none;
+        flex-direction: row;
+        gap: 0;
+        height: calc(var(--mobile-nav-h) + env(safe-area-inset-bottom));
+        padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        background: rgba(35, 24, 16, 0.94);
+        border-top: 3px solid #6b4d32;
+        box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.6);
+        z-index: 20;
+    }
+    .btn-side {
+        flex: 1 1 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        padding: 4px 2px;
+        font-size: 10px;
+        line-height: 1.15;
+        border: none;
+        border-radius: 0;
+        border-right: 1px solid rgba(141, 110, 99, 0.45);
+        background: transparent;
+        box-shadow: none;
+    }
+    .btn-side:last-child {
+        border-right: none;
+    }
+    .btn-side:hover {
+        transform: none;
+    }
+    .btn-side:active {
+        transform: none;
+        box-shadow: none;
+        background: rgba(255, 255, 255, 0.08);
+    }
+    .btn-side__icon {
+        font-size: 20px;
+        line-height: 1;
+    }
+    .btn-side__label {
+        text-align: center;
+    }
+
+    /* --- ĐÁY: phiên bản --- */
+    .version-tag {
+        font-size: 10px;
+        right: 8px;
+        bottom: calc(var(--mobile-nav-h) + 4px + env(safe-area-inset-bottom));
+    }
+
+    /* --- POPUP ĐĂNG NHẬP --- */
+    #loginModal {
+        padding: 18px !important;
+    }
+    #loginModal input {
+        font-size: 16px; /* < 16px thì iOS tự phóng to khi gõ */
+    }
+
+    /* --- TIMELINE CHỌN CHƯƠNG --- */
+    .timeline-container {
+        width: 96%;
+        height: 92vh;
+        height: 92dvh;
+        padding: 12px;
+    }
+    .btn-close {
+        top: 6px;
+        right: 6px;
+        width: 34px;
+        height: 34px;
+        font-size: 14px;
+    }
+    .timeline-header {
+        margin-bottom: 6px;
+        padding: 0 38px;
+    }
+    .timeline-header h2 {
+        font-size: 17px;
+        letter-spacing: 1px;
+    }
+    .timeline-header p {
+        font-size: 12px;
+    }
+    .timeline-scroll-area {
+        padding: 10px 12px;
+        -webkit-overflow-scrolling: touch;
+    }
+    .timeline-scroll-area::-webkit-scrollbar {
+        height: 6px;
+    }
+    .timeline-items {
+        gap: 30px;
+    }
+    /* 16 thẻ × 150px + 15 khoảng × 30px ≈ 2850px (desktop để 3800px) */
+    .timeline-line {
+        width: 2880px;
+    }
+    .t-item {
+        width: 150px;
+    }
+    .t-item:hover {
+        transform: none;
+    }
+    .t-top { margin-bottom: 100px; }
+    .t-bottom { margin-top: 100px; }
+    .t-dot {
+        width: 14px;
+        height: 14px;
+        border-width: 3px;
+        margin: 6px 0;
+    }
+    .t-year {
+        font-size: 14px;
+    }
+    .t-card img {
+        height: 72px;
+    }
+    .t-info {
+        padding: 8px;
+    }
+    .t-info h4 {
+        font-size: 14px;
+        margin-bottom: 3px;
+    }
+    .t-info p {
+        font-size: 11px;
+    }
+
+    /* --- BẢNG XẾP HẠNG --- */
+    .leaderboard-container {
+        width: 96% !important;
+        max-height: 92vh !important;
+        max-height: 92dvh !important;
+        padding: 12px !important;
+        border-width: 3px !important;
+    }
+    .leaderboard-header {
+        margin-bottom: 10px;
+        padding: 0 40px;
+    }
+    .leaderboard-title {
+        font-size: 22px;
+        letter-spacing: 1px;
+    }
+    .close-btn {
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+    .leaderboard-tabs {
+        margin-bottom: 8px;
+    }
+    .tab-btn {
+        padding: 7px 14px;
+        font-size: 12px;
+    }
+    .table-wrapper {
+        max-height: none;
+        min-height: 0;
+        flex: 1 1 auto;
+    }
+    .leaderboard-table {
+        font-size: 12px;
+    }
+    .leaderboard-table th,
+    .leaderboard-table td {
+        padding: 8px 4px;
+    }
+    .my-rank-footer {
+        margin-top: 8px;
+        padding: 8px 14px;
+    }
+    .my-rank-title {
+        font-size: 11px;
+    }
+    .my-rank-title span {
+        font-size: 18px;
+    }
+    .my-rank-info {
+        font-size: 14px;
+        gap: 14px;
+    }
+}
+
+
+/* ========================================== */
+/* RESPONSIVE — ĐIỆN THOẠI DỌC (≤ 600px rộng) */
+/* ========================================== */
+@media (max-width: 600px) {
+    .game-logo {
+        max-width: min(270px, 72vw);
+    }
+    .center-menu {
+        width: 100%;
+        padding: 0 8px;
+    }
+    .btn-main {
+        width: min(300px, 86vw);
+        font-size: 16px;
+        padding: 12px;
+    }
+    .btn-main.btn-start {
+        padding: 8px 16px;
+    }
+
+    /* Chào mừng + phiên bản nằm theo dòng chảy, ngay trên thanh menu */
+    .bottom-bar {
+        position: static;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 6px;
+    }
+    .welcome-box {
+        position: static;
+        transform: none;
+        white-space: normal;
+        max-width: 92vw;
+        padding: 6px 12px;
+    }
+    .welcome-box h4 {
+        font-size: 12px;
+    }
+    .welcome-box p {
+        font-size: 10px;
+    }
+
+    /* Bảng xếp hạng: ẩn cột Thời gian, Thành tích */
+    .leaderboard-table th:nth-child(5),
+    .leaderboard-table td:nth-child(5),
+    .leaderboard-table th:nth-child(6),
+    .leaderboard-table td:nth-child(6) {
+        display: none;
+    }
+}
+
+/* Điện thoại dọc thấp (VD 360×640): thu logo thêm */
+@media (max-width: 600px) and (max-height: 700px) {
+    .game-logo {
+        max-width: min(210px, 60vw);
+    }
+    .center-menu {
+        gap: 9px;
+    }
+    .btn-main {
+        padding: 10px;
+        font-size: 15px;
+    }
+}
+
+
+/* ========================================== */
+/* RESPONSIVE — ĐIỆN THOẠI NGANG (≤ 500px cao)*/
+/* ========================================== */
+@media (max-height: 500px) and (orientation: landscape) {
+    :root {
+        --mobile-nav-h: 44px;
+    }
+
+    .game-logo {
+        max-width: none;
+        width: auto;
+        max-height: min(130px, 34vh);
+        margin-bottom: 4px;
+    }
+    .center-menu {
+        width: auto;
+        gap: 10px;
+    }
+    /* 3 nút chính thành 1 hàng */
+    .main-actions {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .btn-main {
+        width: 180px;
+        font-size: 14px;
+        padding: 10px 8px;
+        min-height: 54px;
+    }
+    .btn-main.btn-start {
+        padding: 6px 8px;
+    }
+    .btn-main.btn-start span {
+        font-size: 11px !important;
+    }
+
+    /* Thanh menu đáy: icon + chữ cùng hàng */
+    .btn-side {
+        flex-direction: row;
+        gap: 6px;
+        font-size: 11px;
+    }
+    .btn-side__icon {
+        font-size: 17px;
+    }
+
+    /* Không đủ chiều cao cho khung chào mừng; số phiên bản đè lên hàng nút */
+    .welcome-box,
+    .version-tag {
+        display: none;
+    }
+
+    /* Timeline: thẻ thấp hơn, bỏ dòng mô tả */
+    .timeline-header p {
+        display: none;
+    }
+    .t-card img {
+        height: 50px;
+    }
+    .t-info {
+        padding: 6px 8px;
+    }
+    .t-info h4 {
+        margin-bottom: 0;
+    }
+    .t-info p {
+        display: none;
+    }
+    .t-top { margin-bottom: 64px; }
+    .t-bottom { margin-top: 64px; }
+
+    /* Bảng xếp hạng: ẩn cột Thành tích */
+    .leaderboard-header {
+        margin-bottom: 6px;
+    }
+    .leaderboard-title {
+        font-size: 18px;
+    }
+    .leaderboard-table th:nth-child(6),
+    .leaderboard-table td:nth-child(6) {
+        display: none;
+    }
+    .leaderboard-table th,
+    .leaderboard-table td {
+        padding: 6px 4px;
+    }
+}
