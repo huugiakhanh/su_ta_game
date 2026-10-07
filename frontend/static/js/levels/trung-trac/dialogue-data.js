@@ -1,10 +1,3 @@
-// Nội dung màn 2 "Chiêu mộ hiền tài" — SOURCE OF TRUTH: task card TT-NPC-01
-// mục 5 (docs/SUTA_TT_TASK_NPC_01.md). Chép NGUYÊN VĂN, không viết lại, không
-// thêm chi tiết; nghi sai thì hỏi team. Tách riêng file để đối chiếu từng chữ.
-// Tên người nói hiện ở tiêu đề khung hội thoại nên `lines` bỏ tiền tố
-// "Thi Sách: " và cặp ngoặc kép bao ngoài câu thoại (chữ trong câu giữ nguyên).
-// Đáp án đầu tiên của mỗi câu hỏi là đáp án ĐÚNG (dialogue.js xáo thứ tự khi hiện).
-
 export const NPC_DIALOGUES = {
   // 5.1 Thi Sách — Hào trưởng Chu Diên
   thiSach: {

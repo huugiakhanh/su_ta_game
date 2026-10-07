@@ -34,14 +34,23 @@ export function clearInput() {
 // Gắn toàn bộ listener bàn phím/cảm ứng. `onRestart` được main.js truyền vào
 // vì phím R gọi resetGame() — input.js không cần biết resetGame là gì.
 // `onToggleMute`: phím M bật/tắt âm thanh (TT-AUDIO-01).
-export function bindInput({ onRestart, onToggleMute }) {
+// `onToggleSettings`: phím Esc/P mở/đóng menu cài đặt; `isBlocked()` = menu
+// đang mở -> bỏ qua phím chơi + R (TT-TIME-01). Truyền callback thay vì import
+// settings.js (settings.js đã import clearInput từ đây).
+export function bindInput({ onRestart, onToggleMute, onToggleSettings, isBlocked = () => false }) {
   window.addEventListener('keydown', event => {
-    if (event.code === 'KeyR') {
-      onRestart();
+    if (event.code === 'Escape' || event.code === 'KeyP') {
+      event.preventDefault();
+      if (!event.repeat) onToggleSettings?.();
       return;
     }
     if (event.code === 'KeyM') {
       if (!event.repeat) onToggleMute();
+      return;
+    }
+    if (isBlocked()) return;
+    if (event.code === 'KeyR') {
+      onRestart();
       return;
     }
     if (event.code === 'F2') {
@@ -60,6 +69,7 @@ export function bindInput({ onRestart, onToggleMute }) {
     const action = button.dataset.control;
     const press = event => {
       event.preventDefault();
+      if (isBlocked()) return;
       if (!keys[action] && PRESS_ACTIONS.includes(action)) pressed[action] = true;
       keys[action] = true;
       button.classList.add('is-pressed');

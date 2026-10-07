@@ -1,14 +1,17 @@
 // DOM refs (HUD, panel) + cập nhật hiển thị. Không chứa logic gameplay.
 
-import { spriteUrl } from './assets.js';
-import { ATTACK_ICON, DASH_COOLDOWN, DASH_ICON, HEART_ICON, LEVEL, SKILLS } from './config.js';
+import { images, spriteUrl } from './assets.js';
+import { ATTACK_ICON, BOOK_SPRITE_ID, DASH_COOLDOWN, DASH_ICON, HEART_ICON, LEVEL, SKILLS } from './config.js';
 import { state } from './state.js';
 import { getAsset } from './animation.js';
+import { formatTime } from './timer.js';
 
 export const ui = {
   health: document.getElementById('healthHearts'),
+  // Máu + sách nằm ở góc trên-trái khung chơi (TT-HUD-02), không còn trên thanh HUD.
   books: document.getElementById('bookValue'),
   bookHud: document.getElementById('bookHud'),
+  bookIcon: document.getElementById('bookIcon'),
   score: document.getElementById('scoreValue'),
   progress: document.getElementById('progressBar'),
   loading: document.getElementById('loadingPanel'),
@@ -17,14 +20,16 @@ export const ui = {
   end: document.getElementById('endPanel'),
   endTitle: document.getElementById('endTitle'),
   endText: document.getElementById('endText'),
+  // Thời gian màn/chương + trạng thái lưu kỷ lục (TT-TIME-01).
+  endTime: document.getElementById('endTime'),
   restart: document.getElementById('restartButton'),
   next: document.getElementById('nextLevelButton'),
   // Panel kết chương (màn 3).
   replayChapter: document.getElementById('replayChapterButton'),
   home: document.getElementById('homeButton'),
   message: document.getElementById('messageBox'),
-  // Nút loa bật/tắt âm thanh (TT-AUDIO-01).
-  mute: document.getElementById('muteButton'),
+  // Ô thời gian màn trên HUD (TT-TIME-01).
+  time: document.getElementById('timeValue'),
   // Màn 3: ô kỹ năng/buff + mọi phần tử gắn `data-skill` (ô HUD, dòng trợ
   // giúp, nút cảm ứng) — chỉ hiện với phần thưởng đã nhận.
   skillBar: document.getElementById('skillBar'),
@@ -42,6 +47,10 @@ let lastRenderedHealth = -1;
 // Nguồn ảnh tim lúc vẽ lần trước — HUD có thể vẽ trước khi asset tải xong,
 // tải xong icon thì phải vẽ lại dù máu không đổi.
 let lastHeartUrl = null;
+// Hiệu ứng mất/hồi máu, nhặt sách (TT-HUD-02) chỉ chạy khi số đổi TRONG cùng
+// một lượt chơi — state bị thay mỗi lần chơi lại (máu đầy lại) thì không chạy.
+let lastHudState = null;
+let lastBooks = 0;
 
 export function showMessage(text, duration = 1900) {
   ui.message.textContent = text;
@@ -59,22 +68,33 @@ export function tickMessage(dt) {
 }
 
 export function updateHud() {
+  const sameRun = state === lastHudState;
+  lastHudState = state;
   const heartUrl = spriteUrl(HEART_ICON);
   if (state.health !== lastRenderedHealth || heartUrl !== lastHeartUrl) {
+    // Đổi máu trong cùng lượt: tim mất nhấp nháy rồi mờ, cả hàng rung; tim
+    // hồi sáng lên. Lượt mới / ảnh tim vừa tải xong: vẽ lại, không hiệu ứng.
+    const previous = sameRun && lastRenderedHealth >= 0 ? lastRenderedHealth : state.health;
     lastRenderedHealth = state.health;
     lastHeartUrl = heartUrl;
     ui.health.innerHTML = '';
-    for (let i = 0; i < state.health; i += 1) {
-      // Icon máu ICON_HUD_HEART; chưa tải xong/thiếu thì chữ ♥ tạm.
-      const icon = document.createElement('img');
-      icon.alt = 'Máu';
-      if (setSpriteImage(icon, HEART_ICON)) ui.health.appendChild(icon);
-      else ui.health.append('♥');
+    for (let i = 0; i < Math.max(state.health, previous); i += 1) {
+      const heart = makeHeart();
+      if (i >= state.health) {
+        heart.classList.add('is-lost');
+        heart.addEventListener('animationend', () => heart.remove(), { once: true });
+      } else if (i >= previous) heart.classList.add('is-gained');
+      ui.health.append(heart);
     }
+    ui.health.setAttribute('aria-label', `Máu: ${state.health}`);
+    if (state.health < previous) replayAnimation(ui.health, 'is-hurt');
   }
-  // Màn không có sách (màn 2) thì ẩn ô Sách trên HUD.
+  // Màn không có sách (màn 2) thì ẩn ô Sách.
   ui.bookHud.hidden = state.books.length === 0;
   ui.books.textContent = `${state.booksCollected}/${state.books.length}`;
+  if (sameRun && state.booksCollected > lastBooks) replayAnimation(ui.bookHud, 'is-bumped');
+  lastBooks = state.booksCollected;
+  updateBookIcon();
   ui.score.textContent = state.score;
   const percent = Math.max(0, Math.min(100, state.player.x / state.finishX * 100));
   ui.progress.style.width = `${percent}%`;
@@ -85,12 +105,42 @@ export function updateHud() {
   updateBossHud();
 }
 
-// Nút loa: biểu tượng + nhãn theo trạng thái tắt tiếng.
-export function updateMuteButton(muted) {
-  ui.mute.textContent = muted ? '🔇' : '🔊';
-  ui.mute.setAttribute('aria-pressed', String(muted));
-  ui.mute.setAttribute('aria-label', muted ? 'Bật âm thanh (M)' : 'Tắt âm thanh (M)');
-  ui.mute.title = ui.mute.getAttribute('aria-label');
+// Một tim: icon ICON_HUD_HEART; chưa tải xong/thiếu thì chữ ♥ tạm.
+function makeHeart() {
+  const icon = document.createElement('img');
+  icon.alt = '';
+  if (setSpriteImage(icon, HEART_ICON)) return icon;
+  const glyph = document.createElement('span');
+  glyph.className = 'status-bar__heart-glyph';
+  glyph.textContent = '♥';
+  return glyph;
+}
+
+// Chạy lại animation CSS `className` trên `node` (kể cả khi đang chạy dở).
+function replayAnimation(node, className) {
+  node.classList.remove(className);
+  void node.offsetWidth;
+  node.classList.add(className);
+}
+
+// Ô sách dùng ô đầu của strip bình thư ITEM_BINH_THU (maps_tt.json, nạp sẵn
+// trong images.maps.props); chưa tải/thiếu thì giữ chữ 📖 tạm.
+function updateBookIcon() {
+  if (ui.bookIcon.dataset.ready) return;
+  const prop = images.maps.props[BOOK_SPRITE_ID];
+  if (!prop?.image) return;
+  const frames = prop.asset?.frames || 1;
+  ui.bookIcon.style.backgroundImage = `url("${prop.image.src}")`;
+  ui.bookIcon.style.backgroundSize = `${frames * 100}% 100%`;
+  ui.bookIcon.textContent = '';
+  ui.bookIcon.classList.add('status-bar__book-icon--image');
+  ui.bookIcon.dataset.ready = '1';
+}
+
+// Ô ⏱ trên HUD — main.js gọi mỗi frame; chỉ ghi DOM khi đổi giây.
+export function updateTimeHud(seconds) {
+  const text = formatTime(seconds);
+  if (ui.time.textContent !== text) ui.time.textContent = text;
 }
 
 function updateBossHud() {

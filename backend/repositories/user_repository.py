@@ -36,3 +36,22 @@ def create(username, password, name):
             f"VALUES ({mark}, {mark}, {mark}, {mark}, {mark}, {mark})",
             (username, password, name, 1, 1000, 50),
         )
+
+
+def find_by_username(username):
+    mark = placeholder()
+    with db_cursor() as (_, cursor):
+        cursor.execute(
+            f"SELECT name, level, gold, gems FROM users WHERE username = {mark}",
+            (username,),
+        )
+        row = cursor.fetchone()
+
+    if not row:
+        return None
+    return {
+        "name": row[0],
+        "level": row[1],
+        "gold": row[2],
+        "gems": row[3],
+    }

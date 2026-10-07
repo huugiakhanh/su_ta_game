@@ -16,7 +16,8 @@ import {
   ARENA, RUSHER, SKILLS, ARROW_RAIN_SPRITE, BOSS_TD, WAVES, BOSS_TEXT, WALL_ARROWS
 } from './config.js';
 import { setAnim, tickAnim, getAnimMeta, hitTime, animLength, createAnim } from './animation.js';
-import { saveProgress, REWARD_NAMES } from './progress.js';
+import { readProgress, saveProgress, submitLevelRecord, REWARD_NAMES } from './progress.js';
+import { formatTime, levelTime } from './timer.js';
 import { openNpcDialogue, openStory, openQuiz } from './dialogue.js';
 import {
   STORY_THI_SACH, STORY_TO_DINH_FLEES, STORY_LUY_LAU_VICTORY, CHAPTER_END, NPC_DIALOGUES
@@ -1556,15 +1557,22 @@ export function endGame(won) {
   // (D11). Màn 1 ghi tiến trình MỚI (xoá phần của lượt trước — màn 2/3 phải
   // chơi lại); màn 2 giữ dữ liệu màn 1 + phần thưởng đã ghi khi trả lời đúng.
   const toNextLevel = won;
+  // TT-TIME-01: chốt thời gian màn; điểm của riêng màn = điểm cuối − điểm mang
+  // sang (đọc tiến trình TRƯỚC khi ghi đè).
+  const seconds = levelTime();
+  const levelScore = state.score - (LEVEL.id === 1 ? 0 : readProgress().score);
+  state.levelCleared = won;
+  let progress = null;
   if (won && LEVEL.id === 1) {
-    saveProgress({
+    progress = saveProgress({
       score: state.score, books: state.booksCollected,
-      level1Complete: true, level2Complete: false, level3Complete: false, rewards: []
+      level1Complete: true, level2Complete: false, level3Complete: false, rewards: [],
+      times: { 1: seconds }
     });
   } else if (won && LEVEL.id === 2) {
-    saveProgress({ score: state.score, level2Complete: true });
+    progress = saveProgress({ score: state.score, level2Complete: true, times: { ...readProgress().times, 2: seconds } });
   } else if (won && LEVEL.id === 3) {
-    saveProgress({ score: state.score, level3Complete: true });
+    progress = saveProgress({ score: state.score, level3Complete: true, times: { ...readProgress().times, 3: seconds } });
   }
   ui.next.hidden = !toNextLevel;
   ui.next.textContent = `Sang Màn ${LEVEL.id + 1}`;
@@ -1586,5 +1594,55 @@ export function endGame(won) {
     ui.endTitle.textContent = CHAPTER_END.title;
     ui.endText.textContent = CHAPTER_END.text(state.score);
   }
+  ui.endTime.hidden = !won;
+  if (won) {
+    const status = showLevelTime(seconds, progress.times, chapterEnd);
+    submitLevelRecord(LEVEL.id, seconds, levelScore).then(result => {
+      status.textContent = RECORD_STATUS[result];
+    });
+  }
   ui.end.classList.add('panel--visible');
+}
+
+// ---- Thời gian qua màn/chương trên panel kết thúc (TT-TIME-01) ----
+
+const RECORD_STATUS = {
+  saved: 'Đã lưu kỷ lục lên bảng xếp hạng.',
+  guest: 'Đăng nhập ở trang chủ để lưu kỷ lục lên bảng xếp hạng.',
+  skipped: 'Lượt chơi thử — không lưu kỷ lục.',
+  error: 'Chưa lưu được kỷ lục (lỗi kết nối).'
+};
+
+// Màn 1–2: "Thời gian: mm:ss". Hết chương: thời gian từng màn + tổng (màn
+// thiếu số — vào thẳng bằng ?debug=1 — hiện "—"). Trả về dòng trạng thái lưu.
+function showLevelTime(seconds, times, chapterEnd) {
+  const box = ui.endTime;
+  box.replaceChildren();
+  if (chapterEnd) {
+    const list = document.createElement('ul');
+    list.className = 'end-time__list';
+    let total = 0;
+    [1, 2, 3].forEach(level => {
+      const time = times[level];
+      if (time) total += time;
+      const item = document.createElement('li');
+      item.textContent = `Màn ${level}: ${time ? formatTime(time) : '—'}`;
+      list.append(item);
+    });
+    const totalItem = document.createElement('li');
+    totalItem.className = 'end-time__total';
+    totalItem.textContent = `Tổng chương: ${formatTime(total)}`;
+    list.append(totalItem);
+    box.append(list);
+  } else {
+    const line = document.createElement('p');
+    line.className = 'end-time__value';
+    line.textContent = `Thời gian: ${formatTime(seconds)}`;
+    box.append(line);
+  }
+  const status = document.createElement('p');
+  status.className = 'end-time__status';
+  status.textContent = 'Đang lưu kỷ lục…';
+  box.append(status);
+  return status;
 }

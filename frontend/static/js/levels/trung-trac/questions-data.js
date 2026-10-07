@@ -1,16 +1,3 @@
-// Bộ câu hỏi chương Trưng Trắc — SOURCE OF TRUTH: file "DATA các nhân vật.xlsx",
-// sheet "1 Trưng trắc" (team gửi 29/09/2026), cột STT / Câu hỏi / Đáp án A–D /
-// Đáp án đúng / Giải thích ngắn gọn. Chép NGUYÊN VĂN bằng script (không gõ tay),
-// không viết lại; nghi sai thì hỏi team (TT-QUIZ-01).
-//   stt      số thứ tự trong sheet.
-//   answers  đúng thứ tự A–D của sheet; dialogue.js xáo khi hiện.
-//   correct  chỉ số đáp án đúng trong `answers` (0 = A).
-// Chỉ chép các câu ĐANG DÙNG (team duyệt 29/09): bộ màn 1 = thời kỳ trước/trong
-// khởi nghĩa; bộ màn 2 = câu gắn với từng NPC. Không dùng: câu về Mã Viện/Lãng
-// Bạc/năm 43/hậu thế (15–17, 19–22, 25, 28, 33, 34, 37, 38, 40, 42, 48, 49),
-// sau chiến thắng (13, 47), câu 41 (đáp án lưu dạng số ngày Excel + nội dung
-// đáng ngờ — chờ team).
-
 export const QUESTIONS = {
   1: {stt: 1, question: "Hai Bà Trưng có tên thật là gì?", answers: ["Trưng Trắc, Trưng Nhị", "Lê Chân, Bát Nàn", "Thiều Hoa, Xuân Nương", "Triệu Ẩu, Triệu Trinh"], correct: 0, explain: "Tên thật của hai chị em là Trưng Trắc và Trưng Nhị."},
   2: {stt: 2, question: "Quê quán của Hai Bà Trưng ở đâu?", answers: ["Chu Diên", "Luy Lâu", "Mê Linh", "Hoa Lư"], correct: 2, explain: "Hai bà sinh ra tại vùng Mê Linh, nay thuộc Hà Nội / Vĩnh Phúc."},
