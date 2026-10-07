@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sử Ta - Hào Khí Ngàn Năm</title>
+    <title>Sử Ta - Thư Viện Lịch Sử</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <!-- Nhúng CSS qua Flask static -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
 </head>
 <body>
 
-    <!-- Phần mở đầu -->
+    <!-- PHẦN 1: MÀN HÌNH KHỞI ĐẦU (HERO SECTION) -->
     <header class="hero-section">
         <div class="overlay">
             <h1 class="title-glow">SỬ TA</h1>
@@ -23,103 +22,212 @@
         </div>
     </header>
 
-    <section class="content-section">
-        <h2 class="section-title">Tiến Trình Lịch Sử</h2>
+    <!-- PHẦN 2: TIMELINE (Sẽ trượt xuống đây) -->
+    <div id="timeline-section" class="library-container">
         
-        <!-- 4 Tab Giai Đoạn -->
-        <div class="tab-container">
-            <button class="tab-btn active" onclick="openEra(event, 'tab-1')">Khởi Nguồn & Dựng Nước</button>
-            <button class="tab-btn" onclick="openEra(event, 'tab-2')">Thời Bắc Thuộc</button>
-            <button class="tab-btn" onclick="openEra(event, 'tab-3')">Kỷ Nguyên Độc Lập</button>
-            <button class="tab-btn" onclick="openEra(event, 'tab-4')">Kỷ Nguyên Mới</button>
+        <button class="btn-back" onclick="window.location.href='/'"> Quay lại trang chủ</button>
+
+        <div class="header-title">
+            <h1>Tiến Trình Lịch Sử</h1>
         </div>
 
-        <!-- Khung Nội Dung Tab 1 -->
-        <div id="tab-1" class="era-content active">
-            <h3>Giai Đoạn Khởi Nguồn & Dựng Nước (Chương 1, 2, 3)</h3>
-            <p style="color: #d8b888;">Nội dung đang được cập nhật...</p>
-        </div>
+        <div class="timeline-scroll-area">
+            <div class="timeline-line"></div>
+                    <div class="timeline-items">
+                        <!-- GIAI ĐOẠN 1 -->
+                        <div class="era-group">
+                            <div class="era-label" style="background-color: #8b2520;">Đấu tranh chống Bắc thuộc & Những giai đoạn tự chủ</div>
+                            <div class="era-characters">
+                                <!-- 1. Trưng Trắc -->
+                                <div class="t-item t-top" onclick="window.location.href='/history_library/trung-trac'">
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/trung-trac.jpg') }}" alt="Trưng Trắc">
+                                        <div class="t-info">
+                                            <h4>Trưng Trắc</h4><p>Khởi nghĩa Hai Bà Trưng</p>
+                                        </div>
+                                    </div>
+                                    <div class="t-dot"></div><div class="t-year">Năm 40</div>
+                                </div>
+                                <!-- 2. Bà Triệu -->
+                                <div class="t-item t-bottom" onclick="window.location.href='/history_library/ba-trieu'">
+                                    <div class="t-year">Năm 248</div><div class="t-dot"></div>
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/ba-trieu.jpg') }}" alt="Bà Triệu">
+                                        <div class="t-info">
+                                            <h4>Bà Triệu</h4><p>Khởi nghĩa chống quân Ngô</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 3. Lý Bí -->
+                                <div class="t-item t-top" onclick="window.location.href='/history_library/ly-nam-de'">
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/ly-nam-de.jpg') }}" alt="Lý Bí">
+                                        <div class="t-info">
+                                            <h4>Lý Bí</h4><p>Khởi nghĩa lập nước Vạn Xuân</p>
+                                        </div>
+                                    </div>
+                                    <div class="t-dot"></div><div class="t-year">Năm 542</div>
+                                </div>
+                                <!-- 4. Triệu Quang Phục -->
+                                <div class="t-item t-bottom" onclick="window.location.href='/history_library/trieu-quang-phuc'">
+                                    <div class="t-year">Năm 550</div><div class="t-dot"></div>
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/trieu-quang-phuc.jpg') }}" alt="Triệu Quang Phục">
+                                        <div class="t-info">
+                                            <h4>Triệu Quang Phục</h4><p>Đánh bại quân Lương</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 5. Mai Hắc Đế -->
+                                <div class="t-item t-top" onclick="window.location.href='/history_library/mai-hac-de'">
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/mai-hac-de.jpg') }}" alt="Mai Hắc Đế">
+                                        <div class="t-info">
+                                            <h4>Mai Hắc Đế</h4><p>Khởi nghĩa chống nhà Đường</p>
+                                        </div>
+                                    </div>
+                                    <div class="t-dot"></div><div class="t-year">Năm 713</div>
+                                </div>
+                                <!-- 6. Phùng Hưng -->
+                                <div class="t-item t-bottom" onclick="window.location.href='/history_library/phung-hung'">
+                                    <div class="t-year">Năm 791</div><div class="t-dot"></div>
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/phung-hung.jpg') }}" alt="Phùng Hưng">
+                                        <div class="t-info">
+                                            <h4>Phùng Hưng</h4><p>Khởi nghĩa Bố Cái Đại Vương</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Khung Nội Dung Tab 2 -->
-        <div id="tab-2" class="era-content">
-            <h3>Giai Đoạn Thời Bắc Thuộc (Chương 4)</h3>
-            <p style="color: #d8b888; margin-bottom: 20px;">Các vị anh hùng tiêu biểu lãnh đạo các cuộc khởi nghĩa giành độc lập:</p>
-            
-            <div class="hero-grid">
+                        <!-- GIAI ĐOẠN 2 -->
+                        <div class="era-group">
+                            <div class="era-label" style="background-color: #2e625a;">Khôi phục độc lập • Ngô - Đinh - Tiền Lê</div>
+                            <div class="era-characters">
+                                <!-- 7. Khúc Thừa Dụ -->
+                                <div class="t-item t-top" onclick="window.location.href='/history_library/khuc-thua-du'">
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/khuc-thua-du.jpg') }}" alt="Khúc Thừa Dụ">
+                                        <div class="t-info">
+                                            <h4>Khúc Thừa Dụ</h4><p>Giành quyền tự chủ</p>
+                                        </div>
+                                    </div>
+                                    <div class="t-dot"></div><div class="t-year">Năm 905</div>
+                                </div>
+                                <!-- 8. Ngô Quyền -->
+                                <div class="t-item t-bottom" onclick="window.location.href='/history_library/ngo-quyen'">
+                                    <div class="t-year">Năm 938</div><div class="t-dot"></div>
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/ngo-quyen.jpg') }}" alt="Ngô Quyền">
+                                        <div class="t-info">
+                                            <h4>Ngô Quyền</h4><p>Chiến thắng Bạch Đằng</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 9. Đinh Bộ Lĩnh -->
+                                <div class="t-item t-top" onclick="window.location.href='/history_library/dinh-bo-linh'">
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/dinh-bo-linh.jpg') }}" alt="Đinh Bộ Lĩnh">
+                                        <div class="t-info">
+                                            <h4>Đinh Bộ Lĩnh</h4><p>Dẹp loạn 12 sứ quân</p>
+                                        </div>
+                                    </div>
+                                    <div class="t-dot"></div><div class="t-year">Năm 968</div>
+                                </div>
+                                <!-- 10. Lê Hoàn -->
+                                <div class="t-item t-bottom" onclick="window.location.href='/history_library/le-hoan'">
+                                    <div class="t-year">Năm 980</div><div class="t-dot"></div>
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/le-hoan.jpg') }}" alt="Lê Hoàn">
+                                        <div class="t-info">
+                                            <h4>Lê Hoàn</h4><p>Kháng chiến chống Tống</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="hero-card" onclick="window.location.href='/history/trung-trac'">
-                    <span class="hero-year">Năm 40</span>
-                    <strong class="hero-name">Trưng Trắc</strong>
-                    <span class="hero-sub">(Hai Bà Trưng)</span>
-                </div>  
+                        <!-- GIAI ĐOẠN 3 -->
+                        <div class="era-group">
+                            <div class="era-label" style="background-color: #3b4e76;">Đại Việt thời Lý - Trần</div>
+                            <div class="era-characters">
+                                <!-- 11. Lý Công Uẩn -->
+                                <div class="t-item t-top" onclick="window.location.href='/history_library/ly-cong-uan'">
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/ly-cong-uan.jpg') }}" alt="Lý Công Uẩn">
+                                        <div class="t-info">
+                                            <h4>Lý Công Uẩn</h4><p>Dời đô về Thăng Long</p>
+                                        </div>
+                                    </div>
+                                    <div class="t-dot"></div><div class="t-year">Năm 1009</div>
+                                </div>
+                                <!-- 12. Trần Thủ Độ -->
+                                <div class="t-item t-bottom" onclick="window.location.href='/history_library/tran-thu-do'">
+                                    <div class="t-year">Năm 1226</div><div class="t-dot"></div>
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/tran-thu-do.jpg') }}" alt="Trần Thủ Độ">
+                                        <div class="t-info">
+                                            <h4>Trần Thủ Độ</h4><p>Sáng lập triều Trần</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 13. Trần Hưng Đạo -->
+                                <div class="t-item t-top" onclick="window.location.href='/history_library/tran-hung-dao'">
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/tran-hung-dao.jpg') }}" alt="Trần Hưng Đạo">
+                                        <div class="t-info">
+                                            <h4>Trần Hưng Đạo</h4><p>Đại thắng Mông-Nguyên</p>
+                                        </div>
+                                    </div>
+                                    <div class="t-dot"></div><div class="t-year">Năm 1258</div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="hero-card" onclick="openEraModal('Bà Triệu', 'Khởi nghĩa Bà Triệu (Năm 248)')">
-                    <span class="hero-year">Năm 248</span>
-                    <strong class="hero-name">Bà Triệu</strong>
-                    <span class="hero-sub">(Triệu Thị Trinh)</span>
+                        <!-- GIAI ĐOẠN 4 -->
+                        <div class="era-group">
+                            <div class="era-label" style="background-color: #a46f2c;">Nhà Hồ / Lê Sơ / Tây Sơn</div>
+                            <div class="era-characters">
+                                <!-- 14. Hồ Quý Ly -->
+                                <div class="t-item t-bottom" onclick="window.location.href='/history_library/ho-quy-ly'">
+                                    <div class="t-year">Năm 1400</div><div class="t-dot"></div>
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/ho-quy-ly.jpg') }}" alt="Hồ Quý Ly">
+                                        <div class="t-info">
+                                            <h4>Hồ Quý Ly</h4><p>Thành lập nhà Hồ</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 15. Lê Lợi -->
+                                <div class="t-item t-top" onclick="window.location.href='/history_library/le-loi'">
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/le-loi.jpg') }}" alt="Lê Lợi">
+                                        <div class="t-info">
+                                            <h4>Lê Lợi</h4><p>Khởi nghĩa Lam Sơn</p>
+                                        </div>
+                                    </div>
+                                    <div class="t-dot"></div><div class="t-year">Năm 1418</div>
+                                </div>
+                                <!-- 16. Quang Trung -->
+                                <div class="t-item t-bottom" onclick="window.location.href='/history_library/nguyen-hue'">
+                                    <div class="t-year">Năm 1789</div><div class="t-dot"></div>
+                                    <div class="t-card">
+                                        <img src="{{ url_for('static', filename='assets/images/characters/nguyen-hue.jpg') }}" alt="Quang Trung">
+                                        <div class="t-info">
+                                            <h4>Quang Trung</h4><p>Đại phá quân Thanh</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="hero-card" onclick="openEraModal('Lý Nam Đế', 'Khởi nghĩa Lý Bôn - Nước Vạn Xuân (Năm 544)')">
-                    <span class="hero-year">Năm 544</span>
-                    <strong class="hero-name">Lý Nam Đế</strong>
-                    <span class="hero-sub">(Lý Bôn)</span>
-                </div>
-
-                <div class="hero-card" onclick="openEraModal('Triệu Quang Phục', 'Khởi nghĩa Dạ Trạch Vương (Năm 550)')">
-                    <span class="hero-year">Năm 550</span>
-                    <strong class="hero-name">Triệu Quang Phục</strong>
-                    <span class="hero-sub">(Dạ Trạch Vương)</span>
-                </div>
-
-                <div class="hero-card" onclick="openEraModal('Mai Hắc Đế', 'Khởi nghĩa Mai Thúc Loan (Năm 722)')">
-                    <span class="hero-year">Năm 722</span>
-                    <strong class="hero-name">Mai Hắc Đế</strong>
-                    <span class="hero-sub">(Mai Thúc Loan)</span>
-                </div>
-
-                <div class="hero-card" onclick="openEraModal('Phùng Hưng', 'Khởi nghĩa Bố Cái Đại Vương (Năm 766)')">
-                    <span class="hero-year">Năm 766</span>
-                    <strong class="hero-name">Phùng Hưng</strong>
-                    <span class="hero-sub">(Bố Cái Đại Vương)</span>
-                </div>
-            </div> <!-- Đóng hero-grid tại đây -->
-        </div>
-
-        <!-- Khung Nội Dung Tab 3 -->
-        <div id="tab-3" class="era-content">
-            <h3>Giai Đoạn Kỷ Nguyên Độc Lập (Chương 5, 6, 7, 8, 9)</h3>
-            <p style="color: #d8b888;">Nội dung đang được cập nhật...</p>
-        </div>
-
-        <!-- Khung Nội Dung Tab 4 -->
-        <div id="tab-4" class="era-content">
-            <h3>Giai Đoạn Kỷ Nguyên Mới (Chương 10)</h3>
-            <p style="color: #d8b888;">Nội dung đang được cập nhật...</p>
-        </div>
-        
-    </section>
-
-    <!-- Điểm nhấn Văn hóa & Kiến trúc -->
-    <section class="content-section reveal">
-        <h2 class="section-title">Dấu Ấn Kiến Trúc Cổ</h2>
-        <div class="culture-card">
-            <div class="card-text">
-                <p>Không chỉ lẫy lừng trong chiến trận, người Việt còn để lại di sản đồ sộ qua nghệ thuật tổ chức không gian sống. Từ những nếp nhà sàn truyền thống mộc mạc thích ứng với thiên nhiên khắc nghiệt, đình làng mái cong vút vươn lên bầu trời, cho đến các hệ thống thành lũy kiên cố bằng đá, gạch nung. Mỗi viên gạch, mỗi vì kèo gỗ đều mang đậm tư duy thẩm mỹ và đôi bàn tay tài hoa của những người thợ, những vị kiến trúc sư thầm lặng đi trước thời đại.</p>
             </div>
         </div>
-    </section>
-    
-    <button id="btnBackToGame" 
-        onclick="window.location.href='/'" 
-        style="position: fixed; bottom: 30px; right: 30px; z-index: 1000; padding: 12px 22px; background: linear-gradient(180deg, #5d331d, #2b1509); color: #ffcc00; border: 2px solid #ffcc00; border-radius: 30px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.8); opacity: 0; pointer-events: none; transition: opacity 0.4s ease, transform 0.2s ease;">
-        ← Quay lại Game
-    </button>
+    </div>
 
-    <footer class="site-footer">
-        <p>© 2026 SỬ TA - Phát triển bởi thế hệ trẻ yêu sử Việt</p>
-    </footer>
-
-    <!-- NOTE FIX CODE: Nhúng JS qua Flask static -->
+    <!-- Script điều khiển -->
     <script src="{{ url_for('static', filename='js/history.js') }}"></script>
 
 </body>

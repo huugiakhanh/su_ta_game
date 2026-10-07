@@ -1,6 +1,9 @@
 // Cuộn xuống phần tiến trình lịch sử
 function scrollToTimeline() {
-    document.querySelector('.content-section')?.scrollIntoView({ behavior: 'smooth' });
+    const timelineSection = document.getElementById('timeline-section');
+    if (timelineSection) {
+        timelineSection.scrollIntoView({ behavior: 'smooth' });
+    }
 }
 
 // Chuyển đổi giữa các Tab Giai Đoạn

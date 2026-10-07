@@ -1,218 +1,330 @@
-/* Thiết lập cơ bản */
+/* ========================================= */
+/* STYLE TRANG THƯ VIỆN LỊCH SỬ (HISTORY)    */
+/* ========================================= */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1a100b;
-    color: #f5dfbb;
-    line-height: 1.6;
+    background-color: #fcf9f2; /* Nền màu trắng ngà */
+    color: #3e2723;
+    overflow-x: hidden; 
 }
 
-/* Banner Mở Đầu */
+/* ========================================= */
+/* PHẦN 1: MÀN HÌNH KHỞI ĐẦU (HERO)          */
+/* ========================================= */
 .hero-section {
+    width: 100vw;
     height: 100vh;
-    background: linear-gradient(rgba(26, 16, 11, 0.7), rgba(26, 16, 11, 0.9)), 
-                url('https://images.unsplash.com/photo-1540205082585-a6f95bb5d2db?q=80&w=2000&auto=format&fit=crop'); /* Có thể thay bằng ảnh nền trống đồng */
-    background-size: cover;
-    background-position: center;
+    background-color: #fcf9f2; 
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
+    position: relative;
+}
+
+.overlay {
+    z-index: 10;
 }
 
 .title-glow {
     font-size: 5rem;
-    color: #ffcc00;
-    text-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+    color: #c62828; /* Chữ Đỏ */
+    text-shadow: 2px 2px 0px #ffca28, 0 0 20px rgba(198, 40, 40, 0.3);
     margin-bottom: 10px;
     letter-spacing: 5px;
+    font-weight: 900;
 }
 
 .subtitle {
     font-size: 1.5rem;
     margin-bottom: 30px;
-    color: #d8b888;
+    color: #555555; 
+    font-weight: bold;
 }
 
+/* Nút Khám phá ngay */
 .btn-explore {
     margin-top: 25px;
     padding: 12px 30px;
     font-size: 1.1rem;
     font-weight: bold;
-    color: #110a07;
-    background: linear-gradient(180deg, #ffcc00, #d4a000);
-    border: 2px solid #fff3c4;
+    color: #ffffff; 
+    background: linear-gradient(180deg, #d32f2f, #c62828);
+    border: 3px solid #ffca28;
     border-radius: 8px;
     cursor: pointer;
-    box-shadow: 0 5px 0 #8f6b00, 0 8px 15px rgba(0, 0, 0, 0.6);
-    transition: all 0.15s ease;
+    box-shadow: 0 5px 0 #8e0000, 0 8px 15px rgba(198, 40, 40, 0.4);
+    transition: all 0.2s ease;
 }
 
 .btn-explore:hover {
     transform: translateY(-2px);
-    box-shadow: 0 7px 0 #8f6b00, 0 0 15px rgba(255, 204, 0, 0.5);
+    background: linear-gradient(180deg, #ffca28, #ffb300);
+    color: #c62828;
+    border-color: #c62828;
+    box-shadow: 0 7px 0 #b28900, 0 8px 20px rgba(255, 202, 40, 0.6);
 }
 
 .btn-explore:active {
     transform: translateY(3px);
-    box-shadow: 0 2px 0 #8f6b00;
+    box-shadow: 0 2px 0 #b28900;
 }
 
-/* Khu vực Nội dung */
-.content-section {
-    padding: 80px 20px;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.section-title {
-    text-align: center;
-    font-size: 2.5rem;
-    color: #ffcc00;
-    margin-bottom: 40px;
-    border-bottom: 2px solid #5d331d;
-    display: inline-block;
-    padding-bottom: 10px;
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-/* Tabs Dòng thời gian */
-.tab-container {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-}
-
-.tab-btn {
-    padding: 12px 24px;
-    background: #3e2723;
-    color: #d8b888;
-    border: 2px solid #5d331d;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-.tab-btn:hover, .tab-btn.active {
-    background: #5d331d;
-    color: #ffcc00;
-    border-color: #ffcc00;
-}
-
-.era-content {
-    display: none;
-    background: #2b1d14;
-    padding: 30px;
-    border-radius: 8px;
-    border-left: 4px solid #ffcc00;
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-.era-content.active {
-    display: block;
-}
-
-.era-content h3 {
-    color: #ffcc00;
-    margin-bottom: 15px;
-    font-size: 1.5rem;
-}
-
-/* Kiến trúc cổ */
-.culture-card {
-    background: rgba(62, 39, 35, 0.6);
-    padding: 30px;
-    border-radius: 12px;
-    border: 1px solid #5d331d;
-    font-size: 1.1rem;
-    line-height: 1.8;
-}
-
-/* Hiệu ứng trượt khi cuộn trang */
-.reveal {
-    opacity: 0;
-    transform: translateY(50px);
-    transition: all 0.8s ease-out;
-}
-
-.reveal.active {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.site-footer {
-    text-align: center;
-    padding: 30px;
-    background: #110a07;
-    color: #7a6a58;
-    border-top: 1px solid #2b1d14;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* NOTE FIX CODE: Cấu hình giao diện thẻ nhân vật lịch sử */
-.hero-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-top: 15px;
-}
-
-.hero-card {
-    background: linear-gradient(145deg, #3a2215, #22120a);
-    border: 2px solid #a66a2c;
-    border-radius: 8px;
-    padding: 16px 12px;
-    text-align: center;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-    transition: all 0.2s ease;
+/* ========================================= */
+/* PHẦN 2: TIMELINE CONTAINER                */
+/* ========================================= */
+.library-container {
+    width: 100vw;
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    position: relative;
+    padding-top: 40px;
+    background-color: #fcf9f2;
 }
 
-.hero-card:hover {
-    transform: translateY(-4px);
-    border-color: #ffcc00;
-    box-shadow: 0 0 12px rgba(255, 204, 0, 0.4);
-    background: linear-gradient(145deg, #4d2e1c, #2c170d);
-}
-
-.hero-year {
-    font-size: 12px;
+/* Nút quay lại (Góc dưới phải - Bo tròn viên thuốc) */
+.btn-back {
+    position: fixed; 
+    bottom: 30px; 
+    right: 30px;  
+    background: #c62828; 
+    color: #ffffff; 
+    border: 3px solid #ffca28;
+    padding: 12px 25px;
+    border-radius: 50px; 
+    font-size: 15px;
     font-weight: bold;
-    color: #ffc107;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 2px 10px;
-    border-radius: 12px;
-    border: 1px solid #7c522d;
-    margin-bottom: 8px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(198, 40, 40, 0.4);
+    transition: all 0.2s;
+    z-index: 100;
 }
 
-.hero-name {
-    font-size: 18px;
-    color: #ffffff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Đã fix lỗi font tiếng Việt */
-    font-weight: 700;
-    margin-bottom: 4px;
+.btn-back:hover {
+    background: #ffca28;
+    color: #c62828;
+    border-color: #c62828;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(198, 40, 40, 0.5);
 }
 
-.hero-sub {
-    font-size: 13px;
-    color: #d1b188;
+.header-title {
+    text-align: center;
+    margin-bottom: 20px;
 }
+
+.header-title h1 {
+    color: #c62828; 
+    font-size: 38px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    letter-spacing: 2px;
+}
+
+/* ========================================== */
+/* VÙNG CUỘN & TRỤC THỜI GIAN                 */
+/* ========================================== */
+.timeline-scroll-area {
+    flex-grow: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    position: relative;
+    display: flex;
+    align-items: center; /* Căn giữa dọc tuyệt đối */
+    padding: 0 40px;
+}
+
+.timeline-scroll-area::-webkit-scrollbar { height: 12px; }
+.timeline-scroll-area::-webkit-scrollbar-track { background: #e0e0e0; border-radius: 6px; }
+.timeline-scroll-area::-webkit-scrollbar-thumb { background: #c62828; border-radius: 6px; }
+
+/* Trục ngang Đỏ + Vàng */
+.timeline-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #c62828, #ffca28, #c62828);
+    transform: translateY(-50%);
+    width: max(100%, 10000px); /* Đảm bảo đường line kéo dài vô tận */
+    box-shadow: 0 0 10px rgba(198, 40, 40, 0.3);
+    z-index: 1;
+}
+
+/* ========================================== */
+/* BĂNG RÔN & GIAI ĐOẠN LỊCH SỬ               */
+/* ========================================== */
+.timeline-items {
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    min-width: max-content;
+    height: 700px; /* Khung tổng cao 700px */
+}
+
+/* Nhóm Giai đoạn */
+.era-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    height: 100%; /* Kế thừa 700px */
+    min-width: max-content;
+}
+
+/* Băng rôn bám chặt lên mép trên cùng (top: 0) của vùng 700px */
+.era-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 46px; /* Chiều cao băng rôn */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    white-space: nowrap;
+    z-index: 5;
+    border-right: 2px solid rgba(255,255,255,0.4);
+}
+
+.era-group:last-child .era-label { border-right: none; }
+
+.era-characters {
+    display: flex;
+    align-items: center;
+    gap: 40px; 
+    padding: 0 40px;
+}
+
+/* ========================================== */
+/* THẺ NHÂN VẬT & TOẠ ĐỘ TOÁN HỌC CHUẨN XÁC   */
+/* ========================================== */
+.t-item {
+    position: relative;
+    width: 250px;
+    height: 500px; /* Thẻ con cao 500px, nằm giữa 700px nên sẽ cách băng rôn 100px khoảng trống */
+    cursor: pointer;
+}
+
+/* Chấm tròn - Nằm chính giữa 50% */
+.t-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    background: #ffca28; 
+    border: 5px solid #c62828; 
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(198, 40, 40, 0.4);
+    transition: transform 0.3s;
+    z-index: 4;
+}
+
+/* Khung Card */
+.t-card {
+    background: #ffffff; 
+    border: 3px solid #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: absolute;
+    left: 0;
+    z-index: 3;
+}
+
+.t-card img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-bottom: 3px solid #e0e0e0;
+    background-color: #f5f5f5; 
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.t-info { padding: 16px; text-align: center; }
+.t-info h4 { color: #c62828; font-size: 18px; margin-bottom: 8px; font-weight: 900; }
+.t-info p { color: #555555; font-size: 13px; line-height: 1.5; font-weight: bold; }
+
+/* Năm (Year) */
+.t-year {
+    color: #c62828; 
+    font-weight: 900;
+    font-size: 16px;
+    position: absolute;
+    left: 50%;
+    white-space: nowrap;
+    z-index: 5;
+}
+
+/* -------------------------------------- */
+/* PHÂN BỔ THẺ TRÊN & DƯỚI                */
+/* -------------------------------------- */
+
+/* THỂ LOẠI NẰM TRÊN */
+.t-top .t-card { 
+    bottom: calc(50% + 50px); /* Cách trục tâm 50px trở lên */
+}
+.t-top::before {
+    /* Thanh dọc nối xuống */
+    content: ''; position: absolute; bottom: 50%; left: 50%;
+    width: 3px; height: 50px; background-color: #c62828; 
+    transform: translateX(-50%); z-index: 2;
+}
+.t-top .t-year { 
+    /* Năm nằm dưới chấm tròn */
+    top: calc(50% + 18px); 
+    transform: translateX(-50%); 
+}
+
+/* THỂ LOẠI NẰM DƯỚI */
+.t-bottom .t-card { 
+    top: calc(50% + 50px); /* Cách trục tâm 50px trở xuống */
+}
+.t-bottom::before {
+    /* Thanh dọc nối lên */
+    content: ''; position: absolute; top: 50%; left: 50%;
+    width: 3px; height: 50px; background-color: #c62828; 
+    transform: translateX(-50%); z-index: 2;
+}
+.t-bottom .t-year { 
+    /* Năm nằm trên chấm tròn */
+    bottom: calc(50% + 18px); 
+    transform: translateX(-50%); 
+}
+
+/* ========================================== */
+/* HIỆU ỨNG KHI RÊ CHUỘT (HOVER)              */
+/* ========================================== */
+.t-item:hover .t-card {
+    border-color: #ffca28; 
+    box-shadow: 0 15px 25px rgba(0,0,0,0.15), 0 0 15px rgba(255, 202, 40, 0.4);
+}
+.t-item:hover .t-card img { transform: scale(1.08); }
+.t-item:hover .t-dot {
+    transform: translate(-50%, -50%) scale(1.3);
+    background: #fff;
+}
+.t-item:hover .t-info h4 { color: #d84315; }
