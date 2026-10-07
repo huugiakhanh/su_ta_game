@@ -48,7 +48,7 @@ Chưa chơi thử hết màn bằng tay (độ khó, cảm giác bậc đất) �
 ## Asset
 
 - `TODO_MISSING`: bộ tile ghép địa hình `TILESET_TT_TERRAIN` — prompt
-  [CODEX_PROMPT_TILESET_TT_TERRAIN.md](CODEX_PROMPT_TILESET_TT_TERRAIN.md). Tạm: tile Z1 `surface` + `fill` + dải bóng.
+  `CODEX_PROMPT_TILESET_TT_TERRAIN.md` (đã xoá 06/10). Tạm: tile Z1 `surface` + `fill` + dải bóng.
 - Tile `fill` giờ được xếp chồng dọc (trước chỉ thấy 6 px) — nhìn tạm ổn ở Z1; team soát thêm các vùng
   khác, nếu lộ đường nối dọc thì ghi `NEED_REDRAW` vào prompt trên.
 
@@ -71,7 +71,7 @@ trúc, có watermark/bản quyền, không đưa vào repo) để ghép địa h
 cần hàng đáy/góc dưới.
 
 - Contract: sheet 64×48, 12 vai trò (`corner-left/right/single`, `surface`, `wall-left/right/single`, `fill`,
-  `inner-left/right`, `pit-top/deep`) — [CODEX_PROMPT_TILESET_TT_TERRAIN.md](CODEX_PROMPT_TILESET_TT_TERRAIN.md)
+  `inner-left/right`, `pit-top/deep`) — `CODEX_PROMPT_TILESET_TT_TERRAIN.md` (đã xoá 06/10)
   (thay prompt tile sườn cũ, đã xoá).
 - `config.js`: `TERRAIN_TILESET_ID`, `TERRAIN_TILE_ROLES`. `assets.js`: `loadTerrainTiles()` — nạp nếu có
   trong `maps_tt.json`, không có thì không tính thiếu. `render.js`: `terrainTileRole()` (chọn vai trò theo

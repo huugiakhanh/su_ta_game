@@ -126,7 +126,7 @@ export function makeObstacle(type, chunk, localX, width, height, options = {}) {
 
 // Hazard = vật cản/kẻ địch CÓ TRẠNG THÁI (di chuyển, bắn đạn, bật bẫy) — khác
 // `obstacles` vốn là vật tĩnh thuần. Khác obstacle ở một điểm nữa: `localX` là
-// TÂM vật (= pivot bottom-center của sprite 8-bit) chứ không phải mép trái.
+// TÂM vật (= pivot bottom-center của sprite) chứ không phải mép trái.
 export function makeHazard(kind, sprite, chunk, localX, options = {}) {
   const size = HAZARD_SPRITES[sprite];
   const centerX = worldX(chunk, localX);

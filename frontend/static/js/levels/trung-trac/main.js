@@ -2,19 +2,23 @@
 
 import { images, loadAssets } from './assets.js';
 import { state, setState, createLevelState } from './state.js';
-import { ui, showMessage, updateHud } from './ui.js';
+import { ui, showMessage, updateHud, updateMuteButton } from './ui.js';
 import { clearInput, bindInput } from './input.js';
 import { update, endGame } from './physics.js';
 import { draw, fitCanvas } from './render.js';
-import { MAP_8BIT_ROOT, SPRITE_8BIT_ROOT, LEVEL, setLevel } from './config.js';
+import { LEVEL, setLevel } from './config.js';
 import { LEVEL_URLS, requireLevel, clearProgress } from './progress.js';
 import { initDialogue, closeDialogue } from './dialogue.js';
+import { initAudio, playMusic, playSfx, setAudioSuspended, toggleMuted, isMuted } from './audio.js';
 
 let lastTime = 0;
 // Máy cảm ứng cầm dọc (TT-MOBILE-01): CSS hiện #rotateOverlay, frame() ngừng
 // update() tới khi xoay ngang. Cờ riêng, không dùng state.paused (của hội thoại).
 const portraitQuery = window.matchMedia('(pointer: coarse) and (orientation: portrait)');
-portraitQuery.addEventListener?.('change', () => clearInput());
+portraitQuery.addEventListener?.('change', () => {
+  clearInput();
+  setAudioSuspended('portrait', portraitQuery.matches);
+});
 const params = new URLSearchParams(window.location.search);
 // Màn đang chơi lấy từ `data-level` của trang (route truyền vào) — cùng bộ
 // module cho mọi màn (TT-NPC-01). Chưa hoàn thành màn trước -> requireLevel()
@@ -52,6 +56,8 @@ function resetGame(startImmediately = true) {
   clearInput();
   updateHud();
   showMessage(INTRO_MESSAGES[LEVEL.id], LEVEL.arena ? 4200 : 2600);
+  // Nhạc nền của màn (TT-AUDIO-01); chưa mở khoá âm thanh thì phát khi mở.
+  if (startImmediately) playMusic(`level${LEVEL.id}`);
 }
 
 function frame(timestamp) {
@@ -65,21 +71,38 @@ function frame(timestamp) {
 async function initAssets() {
   const missing = await loadAssets();
   const notices = [];
-  if (missing.missingMaps.length) notices.push(`thiếu nền 8-bit: ${missing.missingMaps.join(', ')} (đang dùng màu tạm)`);
-  if (missing.missingItems) notices.push(`thiếu ${missing.missingItems} ảnh vật phẩm`);
-  if (!missing.manifestLoaded) notices.push('không tải được manifest sprite 8-bit (nhân vật dùng hộp tạm)');
-  if (missing.missingSprites8.length) notices.push(`thiếu sprite 8-bit: ${missing.missingSprites8.join(', ')}`);
+  if (missing.missingMaps.length) notices.push(`thiếu ảnh môi trường: ${missing.missingMaps.join(', ')} (đang dùng màu/hộp tạm)`);
+  if (!missing.manifestLoaded) notices.push('không tải được manifest sprite (nhân vật dùng hộp tạm)');
+  if (missing.missingSprites.length) notices.push(`thiếu sprite: ${missing.missingSprites.join(', ')}`);
+  if (notices.length) console.warn('SUTA thiếu asset:', notices);
   ui.loadingText.textContent = notices.length
     ? `Đang chạy với placeholder tạm: ${notices.join('; ')}.`
     : 'Đã tải đủ lớp nền, chướng ngại vật, vật phẩm và hoạt ảnh nhân vật.';
-  console.info('SUTA map 8-bit root:', MAP_8BIT_ROOT, Object.keys(images.maps.layers));
-  console.info('SUTA sprite 8-bit root:', SPRITE_8BIT_ROOT, Object.keys(images.sprites8));
+  console.info(`SUTA màn ${LEVEL.id} đã nạp — nền:`, Object.keys(images.maps.layers), 'sprite:', Object.keys(images.sprites));
   ui.start.disabled = false;
   draw();
 }
 
-bindInput({ onRestart: () => resetGame(true) });
+// Âm thanh (TT-AUDIO-01): phím M / nút loa bật-tắt, lựa chọn nhớ trong localStorage.
+function toggleSound() {
+  updateMuteButton(toggleMuted());
+  playSfx('click');
+}
+initAudio();
+setAudioSuspended('portrait', portraitQuery.matches);
+updateMuteButton(isMuted());
+ui.mute.addEventListener('click', () => {
+  toggleSound();
+  // Bỏ focus để Space (nhảy) không "bấm" lại nút loa.
+  ui.mute.blur();
+});
 
+bindInput({ onRestart: () => resetGame(true), onToggleMute: toggleSound });
+
+// Tiếng bấm cho các nút panel.
+[ui.start, ui.restart, ui.next, ui.replayChapter, ui.home].forEach(button => {
+  button.addEventListener('click', () => playSfx('click'));
+});
 ui.start.addEventListener('click', () => {
   ui.loading.classList.remove('panel--visible');
   resetGame(true);
@@ -96,7 +119,7 @@ ui.home.addEventListener('click', () => { window.location.href = '/'; });
 // Trả lời sai tới hết máu trong hội thoại (câu hỏi màn 1, NPC màn 2) -> thua theo luật hiện tại.
 initDialogue({ onDefeat: () => endGame(false) });
 
-// Chế độ xem sprite (?viewer=1): soát bộ sprite 8-bit theo manifest, không
+// Chế độ xem sprite (?viewer=1): soát bộ sprite theo manifest, không
 // chạy màn chơi. Nạp động để trang chơi bình thường không tải viewer.js.
 const viewerMode = params.get('viewer') === '1';
 

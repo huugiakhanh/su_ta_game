@@ -1,0 +1,1050 @@
+{
+  "chapter": "TRUNG_TRAC",
+  "version": "32.2",
+  "assets": [
+    {
+      "id": "PLAYER_TRUNG_TRAC",
+      "category": "player",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "player/PLAYER_TRUNG_TRAC/player_trung_trac_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "run",
+          "file": "player/PLAYER_TRUNG_TRAC/player_trung_trac_run.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "jump",
+          "file": "player/PLAYER_TRUNG_TRAC/player_trung_trac_jump.png",
+          "frames": 3,
+          "fps": 8,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "player/PLAYER_TRUNG_TRAC/player_trung_trac_attack_01.png",
+          "frames": 9,
+          "fps": 21,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "hurt",
+          "file": "player/PLAYER_TRUNG_TRAC/player_trung_trac_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "player/PLAYER_TRUNG_TRAC/player_trung_trac_death.png",
+          "frames": 5,
+          "fps": 8,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "victory",
+          "file": "player/PLAYER_TRUNG_TRAC/player_trung_trac_victory.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "dash",
+          "file": "player/PLAYER_TRUNG_TRAC/player_trung_trac_dash.png",
+          "frames": 6,
+          "fps": 24,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "GATE 2 — đủ animation; người dùng duyệt 02/10/2026; chờ chơi thử trong game"
+    },
+    {
+      "id": "EN_HAN_GUARD",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_HAN_GUARD/en_han_guard_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_HAN_GUARD/en_han_guard_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_HAN_GUARD/en_han_guard_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_HAN_GUARD/en_han_guard_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_HAN_GUARD/en_han_guard_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "GATE 2 — đủ animation; người dùng duyệt 02/10/2026; chờ chơi thử trong game"
+    },
+    {
+      "id": "NPC_TRUNG_NHI",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_TRUNG_NHI/npc_trung_nhi_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_TRUNG_NHI/npc_trung_nhi_talk.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "run",
+          "file": "npc/NPC_TRUNG_NHI/npc_trung_nhi_run.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "npc/NPC_TRUNG_NHI/npc_trung_nhi_attack_01.png",
+          "frames": 9,
+          "fps": 21,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        }
+      ],
+      "qa_notes": "A3a — đủ animation; người dùng duyệt 02/10/2026"
+    },
+    {
+      "id": "NPC_THI_SACH",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_THI_SACH/npc_thi_sach_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_THI_SACH/npc_thi_sach_talk.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A3a — đủ animation; người dùng duyệt 02/10/2026"
+    },
+    {
+      "id": "NPC_LE_CHAN",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_LE_CHAN/npc_le_chan_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_LE_CHAN/npc_le_chan_talk.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A3a — đủ animation; người dùng duyệt 02/10/2026"
+    },
+    {
+      "id": "EN_HAN_TAXMAN",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_HAN_TAXMAN/en_han_taxman_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_HAN_TAXMAN/en_han_taxman_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_HAN_TAXMAN/en_han_taxman_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_HAN_TAXMAN/en_han_taxman_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_HAN_TAXMAN/en_han_taxman_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A3b — đủ animation; người dùng duyệt 02/10/2026"
+    },
+    {
+      "id": "EN_HAN_WATCHTOWER",
+      "category": "enemy",
+      "priority": "P1",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_HAN_WATCHTOWER/en_han_watchtower_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "alarm",
+          "file": "enemy/EN_HAN_WATCHTOWER/en_han_watchtower_alarm.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_HAN_WATCHTOWER/en_han_watchtower_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_HAN_WATCHTOWER/en_han_watchtower_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_HAN_WATCHTOWER/en_han_watchtower_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A3b — throw đã vẽ lại, 8 ô raw sạch biên; người dùng duyệt 02/10/2026"
+    },
+    {
+      "id": "EN_HAN_RUSHER",
+      "category": "enemy",
+      "priority": "P1",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "run",
+          "file": "enemy/EN_HAN_RUSHER/en_han_rusher_run.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_HAN_RUSHER/en_han_rusher_attack_01.png",
+          "frames": 8,
+          "fps": 28,
+          "loop": false,
+          "hit_frame": 3
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_HAN_RUSHER/en_han_rusher_death.png",
+          "frames": 6,
+          "fps": 15,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A3b — đủ animation; người dùng duyệt 02/10/2026"
+    },
+    {
+      "id": "BOSS_TO_DINH_FOOT",
+      "category": "boss",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "boss/BOSS_TO_DINH_FOOT/boss_to_dinh_foot_idle.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "hurt",
+          "file": "boss/BOSS_TO_DINH_FOOT/boss_to_dinh_foot_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "disarmed",
+          "file": "boss/BOSS_TO_DINH_FOOT/boss_to_dinh_foot_disarmed.png",
+          "frames": 6,
+          "fps": 15,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "flee",
+          "file": "boss/BOSS_TO_DINH_FOOT/boss_to_dinh_foot_flee.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A3b — đủ animation; người dùng duyệt 02/10/2026"
+    },
+    {
+      "id": "EN_HAN_PALANQUIN",
+      "category": "enemy",
+      "priority": "P1",
+      "frame_w": 96,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "walk",
+          "file": "enemy/EN_HAN_PALANQUIN/en_han_palanquin_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_HAN_PALANQUIN/en_han_palanquin_throw.png",
+          "frames": 6,
+          "fps": 15,
+          "loop": false,
+          "hit_frame": 4
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_HAN_PALANQUIN/en_han_palanquin_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "enemy/EN_HAN_PALANQUIN/en_han_palanquin_break.png",
+          "frames": 9,
+          "fps": 15,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A4a — generated and normalized; awaiting visual approval"
+    },
+    {
+      "id": "EN_HAN_CAVALRY",
+      "category": "enemy",
+      "priority": "P1",
+      "frame_w": 96,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "gallop",
+          "file": "enemy/EN_HAN_CAVALRY/en_han_cavalry_gallop.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_HAN_CAVALRY/en_han_cavalry_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_HAN_CAVALRY/en_han_cavalry_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A4a — generated and normalized; awaiting visual approval"
+    },
+    {
+      "id": "EN_TIGER",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_TIGER/en_tiger_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "run",
+          "file": "enemy/EN_TIGER/en_tiger_run.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_TIGER/en_tiger_attack_01.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_TIGER/en_tiger_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_TIGER/en_tiger_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A4a — generated and normalized; awaiting visual approval"
+    },
+    {
+      "id": "OB_TRIBUTE_CART",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "roll",
+          "file": "obstacle/OB_TRIBUTE_CART/ob_tribute_cart_roll.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "obstacle/OB_TRIBUTE_CART/ob_tribute_cart_break.png",
+          "frames": 5,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A4a — generated and normalized; awaiting visual approval"
+    },
+    {
+      "id": "BOSS_TO_DINH_CHARIOT",
+      "category": "boss",
+      "priority": "P0",
+      "frame_w": 128,
+      "frame_h": 96,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "boss/BOSS_TO_DINH_CHARIOT/boss_to_dinh_chariot_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "charge",
+          "file": "boss/BOSS_TO_DINH_CHARIOT/boss_to_dinh_chariot_charge.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "stun",
+          "file": "boss/BOSS_TO_DINH_CHARIOT/boss_to_dinh_chariot_stun.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "boss/BOSS_TO_DINH_CHARIOT/boss_to_dinh_chariot_throw.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": false,
+          "hit_frame": 4
+        },
+        {
+          "name": "shield_break",
+          "file": "boss/BOSS_TO_DINH_CHARIOT/boss_to_dinh_chariot_shield_break.png",
+          "frames": 9,
+          "fps": 15,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "idle_cracked",
+          "file": "boss/BOSS_TO_DINH_CHARIOT/boss_to_dinh_chariot_idle_cracked.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A4b — normalized; awaiting visual approval"
+    },
+    {
+      "id": "PROP_WATCHTOWER",
+      "category": "prop",
+      "priority": "P1",
+      "frame_w": 48,
+      "frame_h": 112,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "prop/PROP_WATCHTOWER/prop_watchtower_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A4b — normalized; awaiting visual approval"
+    },
+    {
+      "id": "TR_SPIKE_PIT",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "hidden",
+          "file": "obstacle/TR_SPIKE_PIT/tr_spike_pit_hidden.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "reveal",
+          "file": "obstacle/TR_SPIKE_PIT/tr_spike_pit_reveal.png",
+          "frames": 6,
+          "fps": 24,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A4b — normalized; awaiting visual approval"
+    },
+    {
+      "id": "PJ_COIN_POUCH",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "projectile/PJ_COIN_POUCH/pj_coin_pouch_loop.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "PJ_SPEAR",
+      "category": "projectile",
+      "priority": "P1",
+      "frame_w": 32,
+      "frame_h": 8,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "projectile/PJ_SPEAR/pj_spear_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "PJ_FIRE_ARROW",
+      "category": "projectile",
+      "priority": "P1",
+      "frame_w": 24,
+      "frame_h": 8,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "projectile/PJ_FIRE_ARROW/pj_fire_arrow_loop.png",
+          "frames": 6,
+          "fps": 24,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "PJ_THROWING_KNIFE",
+      "category": "projectile",
+      "priority": "P1",
+      "frame_w": 16,
+      "frame_h": 8,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "projectile/PJ_THROWING_KNIFE/pj_throwing_knife_loop.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "PJ_OIL_JAR",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "projectile/PJ_OIL_JAR/pj_oil_jar_loop.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "PJ_ARROW_RAIN",
+      "category": "projectile",
+      "priority": "P1",
+      "frame_w": 8,
+      "frame_h": 24,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "down",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "projectile/PJ_ARROW_RAIN/pj_arrow_rain_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "FX_OIL_FIRE",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "impact",
+          "file": "fx/FX_OIL_FIRE/fx_oil_fire_impact.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "PORTRAIT_TRUNG_TRAC",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_TRUNG_TRAC/portrait_trung_trac_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TT-HIBIT-02 approved by user on 2026-10-02; pending integration"
+    },
+    {
+      "id": "PORTRAIT_TRUNG_NHI",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_TRUNG_NHI/portrait_trung_nhi_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TT-HIBIT-02 approved by user on 2026-10-02; pending integration"
+    },
+    {
+      "id": "PORTRAIT_THI_SACH",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_THI_SACH/portrait_thi_sach_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TT-HIBIT-02 approved by user on 2026-10-02; pending integration"
+    },
+    {
+      "id": "PORTRAIT_LE_CHAN",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_LE_CHAN/portrait_le_chan_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TT-HIBIT-02 approved by user on 2026-10-02; pending integration"
+    },
+    {
+      "id": "PORTRAIT_TO_DINH",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_TO_DINH/portrait_to_dinh_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TT-HIBIT-02 approved by user on 2026-10-02; pending integration"
+    },
+    {
+      "id": "ICON_SK_DASH",
+      "category": "icon",
+      "priority": "P1",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_SK_DASH/icon_sk_dash_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TT-HIBIT-02 approved by user on 2026-10-02; pending integration"
+    },
+    {
+      "id": "ICON_SK_ATTACK",
+      "category": "icon",
+      "priority": "P1",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_SK_ATTACK/icon_sk_attack_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TT-HIBIT-02 approved by user on 2026-10-02; pending integration"
+    },
+    {
+      "id": "ICON_HUD_HEART",
+      "category": "icon",
+      "priority": "P1",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_HUD_HEART/icon_hud_heart_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TT-HIBIT-02 approved by user on 2026-10-02; pending integration"
+    }
+  ]
+}

@@ -39,13 +39,23 @@ export const DASH_COOLDOWN = 2;
 export const DASH_ICON = 'ICON_SK_DASH';
 // Icon nút cảm ứng ĐÁNH (TT-MOBILE-01, Codex 29/09, IN_GAME) — chỉ dùng cho nút, thiếu thì chữ tạm.
 export const ATTACK_ICON = 'ICON_SK_ATTACK';
+// Ảnh hiển thị bằng DOM (<img>): chân dung hội thoại/ô kỹ năng + icon nút
+// (TT-HIBIT-02), nạp ở mọi màn (nhỏ). URL lấy qua spriteUrl(id) (assets.js).
+// Icon máu HUD (TT-HIBIT-02, người dùng duyệt 02/10); thiếu thì ui.js hiện chữ ♥.
+export const HEART_ICON = 'ICON_HUD_HEART';
+export const SPRITE_DOM_IN_GAME = [
+  'PORTRAIT_TRUNG_TRAC', 'PORTRAIT_TRUNG_NHI', 'PORTRAIT_THI_SACH', 'PORTRAIT_LE_CHAN', 'PORTRAIT_TO_DINH',
+  DASH_ICON, ATTACK_ICON, HEART_ICON
+];
 export const GROUND_SNAP_DISTANCE = 11;
 
-// Bộ môi trường 8-bit (Codex, bản chép từ assets/maps/trung-trac/, giữ cấu trúc
-// thư mục). maps_tt.json là nguồn cho đường dẫn + cỡ ảnh (đọc lúc chạy trong
-// assets.js); các số dưới đây là cách VẼ (parallax, vị trí, vùng). Mọi lớp vẽ
-// x1, không smoothing, lặp ngang theo đúng chiều rộng gốc của ảnh.
-export const MAP_8BIT_ROOT = '/static/assets/images/maps-8bit/';
+// Bộ môi trường 32-bit (TT-HIBIT-03, Codex — nguồn ở assets/maps-32bit/trung-trac/,
+// chép sang đây giữ cấu trúc thư mục). maps_tt.json là nguồn cho đường dẫn +
+// cỡ logic + neo (đọc lúc chạy trong assets.js): mọi số (w/h, frame_w/h,
+// visible_bbox, pivot, rect tile) là pixel LOGIC, ảnh vẽ dày gấp `density`
+// (4). Các số dưới đây là cách VẼ (parallax, vị trí, vùng). Mọi lớp lặp ngang
+// theo đúng chiều rộng logic (mapWidth ở render.js).
+export const MAP_ROOT = '/static/assets/images/trung-trac/maps-32bit/';
 export const MAP_MANIFEST_FILE = 'maps_tt.json';
 export const TILESET_ID = 'TILESET_TT_GROUND';
 
@@ -73,8 +83,7 @@ export const ZONES = [
 // vùng và mọi màn, chỉ tile đầu tiên của mỗi vai trò — không đổi theo vùng,
 // không biến thể theo cột (team 30/09, cho đồng bộ). Decor vẫn rải theo cột.
 export const GROUND_TILE_REGION = 'Z1';
-// Bộ tile ghép địa hình (TT-TERRAIN-01, Codex 30/09, team duyệt -> IN_GAME —
-// docs/CODEX_PROMPT_TILESET_TT_TERRAIN.md): sheet 64x48 riêng, 12 vai trò dưới
+// Bộ tile ghép địa hình (TT-TERRAIN-01; bản 32-bit TT-HIBIT-03 C2): sheet 64x48 logic riêng, 12 vai trò dưới
 // đây, 1 tile/vai trò. Mặt đất + bậc + mép hố + lòng hố ghép tự động theo độ
 // cao cột (terrainTileRole ở render.js); thiếu sheet thì dự phòng bằng tile Z1
 // của TILESET_TT_GROUND.
@@ -183,7 +192,7 @@ export function setLevel(id) {
 export const TERRAIN_CELL = 16;
 export const TERRAIN_MAX_STEP = 3; // DESIGN_BASELINE
 
-// Vật cản tĩnh (`obstacles`) -> asset 8-bit trong maps_tt.json + cách neo/cờ.
+// Vật cản tĩnh (`obstacles`) -> asset trong maps_tt.json + cách neo/cờ.
 // Hitbox (w, h) do state.js truyền vào makeObstacle — KHÔNG lấy từ cỡ ảnh. Vẽ
 // x1 theo cỡ PNG, căn sao cho PHẦN NHÌN THẤY trùng hitbox:
 //   - asset có `visible_bbox` (3 loại P0): góc bbox trùng góc trên-trái hitbox;
@@ -196,9 +205,8 @@ export const TERRAIN_MAX_STEP = 3; // DESIGN_BASELINE
 //   requiresHole  chỉ được tạo khi có hố tương ứng (state.js kiểm tra).
 // P2 (fenceLow...logDrift): khai báo sẵn, màn thường CHƯA dùng — chỉ có trong
 // layout thử `?layout=p2`. Hitbox P2 là DESIGN_BASELINE (task TT-MAP-01 §3.3.4).
-// spikesTrap: không có asset 8-bit (màn dùng hazard TR_SPIKE_PIT) — giữ khai
-// báo, thiếu ảnh thì render vẽ hộp tạm (G8). Ảnh cũ trong images/obstacles/ đã
-// ngừng tham chiếu nhưng vẫn giữ trên đĩa.
+// spikesTrap: không có asset (màn dùng hazard TR_SPIKE_PIT) — giữ khai
+// báo, thiếu ảnh thì render vẽ hộp tạm (G8).
 export const OBSTACLE_TYPES = {
   fallenBranch: { id: 'OBS_FALLEN_BRANCH', anchor: 'bottom', groundSink: 4 },
   stoneBlock: { id: 'OBS_STONE_BLOCK', anchor: 'bottom', groundSink: 4 },
@@ -216,11 +224,8 @@ export const OBSTACLE_TYPES = {
   // trong maps_tt.json) — render chọn ô theo obstacle.state.
   stonePillar: { id: 'PROP_STONE_PILLAR', anchor: 'bottom', groundSink: 0, blocking: true }
 };
-// (Các ảnh hazard cũ spike_pit_*.png, tribute_cart_broken.png, watchtower.png
-// và các strip *_strip*.png đã ngừng tham chiếu — hazard/enemy/đạn giờ dùng
-// bộ sprite 8-bit, xem HAZARD_SPRITES. File ảnh cũ vẫn giữ nguyên trên đĩa.)
 
-// Ảnh 8-bit của map cần tải ngoài các lớp nền/tileset (vật cản, sách, cổng).
+// Ảnh môi trường cần tải ngoài các lớp nền/tileset (vật cản, sách, cổng) — mọi màn.
 export const MAP_PROPS_IN_GAME = [
   ...Object.values(OBSTACLE_TYPES).map(type => type.id).filter(Boolean),
   'ITEM_BINH_THU', FINISH_GATE.closed, FINISH_GATE.open, 'PROP_TT_VICTORY_FLAG', 'PROP_TT_QUIZ_STELE'
@@ -234,14 +239,12 @@ export const QUIZ_STELE_ID = 'PROP_TT_QUIZ_STELE';
 // bottom-left đặt tại `flag_attach` của PROP_LUYLAU_GATE_OPEN (maps_tt.json).
 // Thiếu ảnh/điểm gắn thì bỏ qua (TODO_MISSING).
 export const VICTORY_FLAG_ID = 'PROP_TT_VICTORY_FLAG';
-// Điểm gắn cờ GHI ĐÈ `flag_attach` (166,31 — đỉnh cột cờ bên phải) của
-// maps_tt.json: cờ cắm ở GIỮA mái cổng (yêu cầu team 27/09). Toạ độ trong canvas
-// cổng 192x176 (nơi đặt pivot bottom-left của cờ): nóc mái phẳng ở hàng y = 7
-// (x 80–112); cán cờ ở cột 1–3 của ô, chân cán ở hàng 30 -> x = 96 − 2 để cán
-// đứng đúng giữa, y = 10 để chân cán cắm 1px vào nóc mái. null = dùng flag_attach.
+// Điểm gắn cờ: null = dùng `flag_attach` của maps_tt.json — (94,10) logic,
+// giữa nóc mái cổng (yêu cầu team 27/09; bản 32-bit C3: chân cán chạm ngói nóc).
+// Đặt { x, y } (toạ độ logic trong ảnh cổng 192x176) để ghi đè.
 export const VICTORY_FLAG_ATTACH = null;
 
-// Hazard (vật cản/kẻ địch có trạng thái) -> asset 8-bit trong manifest. Khoá
+// Hazard (vật cản/kẻ địch có trạng thái) -> asset trong manifest sprite. Khoá
 // (jungleTiger, hanTaxSoldier...) là tên `sprite` state.js dùng.
 //   id      asset trong manifest_tt.json (mọi strip quay mặt PHẢI; render tự lật
 //           để vật chạy quay theo hướng chạy, lính/boss quay về phía người chơi).
@@ -257,6 +260,8 @@ export const VICTORY_FLAG_ATTACH = null;
 //   alarmTime  thời gian thổi tù và (giây, như bản cũ).
 //   muzzle  độ cao điểm sinh đạn so với chân (px logic) — giữ đúng độ cao đạn
 //           bản cũ quy đổi (≈32) để né/nhảy qua như trước.
+//   muzzleX khoảng cách ngang từ tâm tới điểm sinh đạn (px logic); không ghi
+//           = ngay ngoài mép hitbox (w/2 + 4).
 //   sink    số px chìm xuống dưới mặt đất khi vẽ (bẫy chông nằm lọt vào cỏ).
 //   corpse  hết máu thì phát death 1 lần rồi NẰM LẠI map ở ô cuối, vô hại
 //           (xe cống — quyết định team §9.2).
@@ -266,9 +271,11 @@ export const HAZARD_SPRITES = {
   // Cùng asset/hitbox với kiệu `roller` (hiện không còn trong nhóm xáo). Kiệu
   // không có `idle`: khi đứng chờ ném thì dừng ở ô 1 của `walk` (`idleHold`,
   // quyết định team D6). Dao rời tay ở hit_frame 3 của `throw` (fps manifest,
-  // không ép thời lượng). muzzle 24 = DESIGN_BASELINE (D10).
+  // không ép thời lượng). muzzle 24 = DESIGN_BASELINE (D10). muzzleX 12 =
+  // tay quan ở giữa kiệu trong strip 32-bit (TT-HIBIT-01 A4, người dùng chọn
+  // 02/10 — trước đây dao sinh ở mép trước kiệu, cách tâm 42). DESIGN_BASELINE.
   palanquinBoss: {
-    id: 'EN_HAN_PALANQUIN', w: 76, h: 44, muzzle: 24, idleHold: true,
+    id: 'EN_HAN_PALANQUIN', w: 76, h: 44, muzzle: 24, muzzleX: 12, idleHold: true,
     anims: { move: 'walk', idle: 'walk', throw: 'throw', hurt: 'hurt', death: 'break' }
   },
   jungleTiger: { id: 'EN_TIGER', w: 48, h: 24, anims: { move: 'run', idle: 'idle', hurt: 'hurt', death: 'death' } },
@@ -285,15 +292,10 @@ export const HAZARD_SPRITES = {
   watchtower: { id: 'PROP_WATCHTOWER', w: 29, h: 91, anims: { idle: 'idle' } },
   // Hố chông mới là hố NÔNG 48x16 (không còn ảnh mặt cắt): cỏ -> chông trồi
   // lên (reveal 1 lần). Chìm 3px vào dải cỏ; hitbox mỏng sát mặt đất.
-  spikePit: { id: 'TR_SPIKE_PIT', w: 36, h: 6, sink: 3, anims: { idle: 'hidden', sprung: 'reveal' } },
-  // Thuyền tuần tra: khai báo sẵn, KHÔNG có trong màn hiện tại.
-  patrolBoat: {
-    id: 'EN_HAN_BOAT', w: 70, h: 24, muzzle: 22,
-    anims: { idle: 'float', move: 'float', throw: 'shoot', death: 'death' }
-  }
+  spikePit: { id: 'TR_SPIKE_PIT', w: 36, h: 6, sink: 3, anims: { idle: 'hidden', sprung: 'reveal' } }
 };
 
-// Enemy (lính canh / boss) -> asset 8-bit. Hitbox nằm trong state.js (enemy
+// Enemy (lính canh / boss) -> asset sprite. Hitbox nằm trong state.js (enemy
 // là object phẳng). Boss hiện chỉ đứng + nhận đòn (chưa có cơ chế 3 giai
 // đoạn), nên chỉ dùng idle; hết máu phát shield_break 1 lần rồi xoá.
 // Boss Tô Định TẠM KHÔNG đặt vào màn 1 (TT-NPC-01: thay bằng mini-boss kiệu
@@ -318,7 +320,7 @@ export const ENEMY_SPRITES = {
   dummy: { id: null, anims: {} }
 };
 
-// Đạn -> asset 8-bit (khoá là tên `projectile` hazard khai báo). Hitbox (w, h)
+// Đạn -> asset sprite (khoá là tên `projectile` hazard khai báo). Hitbox (w, h)
 // nhỏ hơn hình một chút để đuôi lửa/cán giáo không gây sát thương oan. Mọi
 // strip đạn quay PHẢI, bay sang trái thì lật.
 export const PROJECTILE_SPRITES = {
@@ -490,11 +492,6 @@ export const PROJECTILE_FADE_RANGE = 54;
 // state (tránh mảng phình to vô hạn khi chơi lâu).
 export const HAZARD_DESPAWN_MARGIN = 312;
 
-// Icon HUD lấy từ frontend/static/assets/images/items (heart vẽ bằng DOM ở ui.js).
-export const ITEM_ROOT = '/static/assets/images/items/';
-export const ITEM_FILES = {
-  heart: 'heart.png'
-};
 // Bình thư (`books`): strip ITEM_BINH_THU (4 ô 16x16) vẽ x1, tâm tại
 // (book.x, book.y + bob), lặp BOOK_FPS (manifest để fps null). Hitbox nhặt
 // 22x26 ở physics.js giữ nguyên (lớn hơn hình — dễ nhặt).
@@ -506,23 +503,38 @@ export const BOOK_BOB_AMPLITUDE = 3;
 // để nhân vật quay lại tư thế thường trong lúc vẫn còn nhấp nháy miễn thương.
 export const HURT_ANIMATION_TIME = 0.45;
 
-// Bộ sprite 8-bit mới (Codex, bản chép từ assets/sprites/). Manifest là nguồn
-// DUY NHẤT cho frames/fps/loop/hit_frame — đọc lúc chạy (animation.js), không
-// chép các số đó vào đây. Mọi strip vẽ x1 (không co giãn), pivot bottom-center:
-// chân nằm ở hàng frame_h - 2 (1px đệm dưới chân), quay mặt PHẢI trong ảnh.
-export const SPRITE_8BIT_ROOT = '/static/assets/images/sprites-8bit/';
+// Bộ sprite 32-bit (TT-HIBIT-01, Codex — nguồn ở assets/sprites-32bit/, brief
+// SUTA_TT_ART_BRIEF_32.md). Manifest là nguồn DUY NHẤT cho frames/fps/loop/
+// hit_frame — đọc lúc chạy (animation.js), không chép các số đó vào đây.
+// frame_w/frame_h là pixel LOGIC, ảnh vẽ dày gấp `density` (ô 48x48 -> ảnh
+// 192x192 khi density 4); pivot bottom-center: chân ở hàng frame_h - 2 (1px
+// đệm dưới chân), quay mặt PHẢI trong ảnh.
+// Đổi số frame/fps/hit_frame của animation KHÔNG lặp thì phải giữ nhịp
+// gameplay (thời lượng frames/fps và tỉ lệ (hit_frame−1)/frames) vì physics
+// tính thời điểm chạm từ đó; `jump` người chơi chọn ô theo chỉ số (byVelocity)
+// nên phải đúng 3 ô.
+export const SPRITE_ROOT = '/static/assets/images/trung-trac/sprites-32bit/';
 export const SPRITE_MANIFEST_FILE = 'manifest_tt.json';
-// Các asset 8-bit game cần tải strip (viewer tự tải riêng mọi asset).
-export const SPRITE_8BIT_IN_GAME = [
-  'PLAYER_TRUNG_TRAC',
-  'EN_HAN_PALANQUIN', 'EN_TIGER', 'OB_TRIBUTE_CART', 'EN_HAN_CAVALRY',
-  'EN_HAN_TAXMAN', 'EN_HAN_WATCHTOWER', 'PROP_WATCHTOWER', 'TR_SPIKE_PIT', 'EN_HAN_BOAT',
-  'EN_HAN_GUARD', 'BOSS_TO_DINH_CHARIOT',
-  'PJ_COIN_POUCH', 'PJ_SPEAR', 'PJ_FIRE_ARROW', 'PJ_THROWING_KNIFE',
-  'NPC_THI_SACH', 'NPC_LE_CHAN', 'NPC_TRUNG_NHI',
-  'EN_HAN_RUSHER', 'PJ_ARROW_RAIN',
-  'BOSS_TO_DINH_FOOT', 'PJ_OIL_JAR', 'FX_OIL_FIRE'
-];
+// Sprite canvas mỗi màn cần (Phần D — chỉ nạp ảnh màn đang chơi dùng; sprite
+// ×4 nặng ~2–14 MB/asset khi giải nén). Thêm thực thể dùng sprite mới vào màn
+// thì thêm ID vào đây — thiếu thì render cảnh báo 1 lần "chưa nạp" và vẽ hộp
+// tạm. Màn 1 cả layout thử ?layout=p2; màn 3 cả ?layout=skills.
+// (PJ_FIRE_ARROW có trong manifest/PROJECTILE_SPRITES nhưng chưa màn nào dùng.)
+const SPRITES_TOWER = ['EN_HAN_WATCHTOWER', 'PROP_WATCHTOWER', 'EN_HAN_CAVALRY', 'PJ_SPEAR'];
+export const LEVEL_SPRITES = {
+  1: [
+    'PLAYER_TRUNG_TRAC', 'EN_HAN_GUARD', 'TR_SPIKE_PIT', 'EN_TIGER', 'OB_TRIBUTE_CART',
+    'EN_HAN_TAXMAN', 'PJ_COIN_POUCH', ...SPRITES_TOWER, 'EN_HAN_PALANQUIN', 'PJ_THROWING_KNIFE'
+  ],
+  2: [
+    'PLAYER_TRUNG_TRAC', 'EN_HAN_GUARD', 'TR_SPIKE_PIT', 'EN_TIGER', 'OB_TRIBUTE_CART',
+    'EN_HAN_TAXMAN', 'PJ_COIN_POUCH', ...SPRITES_TOWER, 'NPC_THI_SACH', 'NPC_LE_CHAN', 'NPC_TRUNG_NHI'
+  ],
+  3: [
+    'PLAYER_TRUNG_TRAC', 'EN_HAN_GUARD', 'EN_HAN_RUSHER', 'BOSS_TO_DINH_CHARIOT', 'BOSS_TO_DINH_FOOT',
+    'PJ_OIL_JAR', 'FX_OIL_FIRE', 'PJ_ARROW_RAIN', 'NPC_TRUNG_NHI'
+  ]
+};
 
 // NPC màn 2 (TT-NPC-01 §3.2.3). Khoá = `npc.id` trong state.js và
 // dialogue-data.js. Sprite 48x48 quay PHẢI, pivot bottom-center; render lật để

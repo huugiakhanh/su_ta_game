@@ -75,6 +75,6 @@ Ghi nhận thêm: đầu màn 1 (người chơi x = 84, camera kẹp ở 0) nhâ
 
 ## Lưu ý / TODO
 
-- Nút ĐÁNH: icon `ICON_SK_ATTACK` (Codex 29/09, prompt [CODEX_PROMPT_ICON_SK_ATTACK.md](CODEX_PROMPT_ICON_SK_ATTACK.md)) — team duyệt 29/09 → `status: IN_GAME` ở cả 2 manifest.
+- Nút ĐÁNH: icon `ICON_SK_ATTACK` (Codex 29/09, prompt `CODEX_PROMPT_ICON_SK_ATTACK.md` (đã xoá 06/10)) — team duyệt 29/09 → `status: IN_GAME` ở cả 2 manifest.
 - TODO: thử trên máy thật (iPhone Safari, Android Chrome, iPad) — đặc biệt thanh địa chỉ trình duyệt khi ngang và vùng tai thỏ.
 - Cỡ/vị trí nút là `DESIGN_BASELINE`.

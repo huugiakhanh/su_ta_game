@@ -33,10 +33,15 @@ export function clearInput() {
 
 // Gắn toàn bộ listener bàn phím/cảm ứng. `onRestart` được main.js truyền vào
 // vì phím R gọi resetGame() — input.js không cần biết resetGame là gì.
-export function bindInput({ onRestart }) {
+// `onToggleMute`: phím M bật/tắt âm thanh (TT-AUDIO-01).
+export function bindInput({ onRestart, onToggleMute }) {
   window.addEventListener('keydown', event => {
     if (event.code === 'KeyR') {
       onRestart();
+      return;
+    }
+    if (event.code === 'KeyM') {
+      if (!event.repeat) onToggleMute();
       return;
     }
     if (event.code === 'F2') {

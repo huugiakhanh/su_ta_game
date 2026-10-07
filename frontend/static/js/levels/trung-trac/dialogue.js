@@ -6,13 +6,12 @@
 // sai tới hết máu thì gọi `onDefeat` do main.js truyền vào (initDialogue).
 
 import { state } from './state.js';
-import { ui, updateHud } from './ui.js';
+import { ui, updateHud, setSpriteImage } from './ui.js';
 import { clearInput } from './input.js';
 import { addReward } from './progress.js';
-import { joinAssetPath } from './assets.js';
-import { getAsset } from './animation.js';
-import { SPRITE_8BIT_ROOT, NPC_SPRITES, QUESTION_SCORE, QUIZ } from './config.js';
+import { NPC_SPRITES, QUESTION_SCORE, QUIZ } from './config.js';
 import { NPC_DIALOGUES } from './dialogue-data.js';
+import { playSfx, duckMusic } from './audio.js';
 
 const el = {
   panel: document.getElementById('dialoguePanel'),
@@ -55,12 +54,9 @@ export function dialogueOpen() {
   return current !== null;
 }
 
-// URL chân dung 64x64 theo manifest; thiếu -> null (ẩn ảnh, TODO_MISSING).
-// `portraitId` = id asset chân dung (cutscene màn 3), không có thì lấy theo NPC.
-function portraitUrl(npcId, portraitId = null) {
-  const asset = getAsset(portraitId || NPC_SPRITES[npcId]?.portrait);
-  const file = asset?.animations?.[0]?.file;
-  return file ? joinAssetPath(SPRITE_8BIT_ROOT, file) : null;
+// Id asset chân dung: `portraitId` (cutscene màn 3), không có thì lấy theo NPC.
+function portraitId(npcId, id = null) {
+  return id || NPC_SPRITES[npcId]?.portrait || null;
 }
 
 function shuffle(list) {
@@ -78,12 +74,14 @@ function open(next) {
   clearInput();
   // Game dừng thì thông báo đang hiện không tự tắt (tickMessage) — ẩn luôn.
   ui.message.classList.remove('message--visible');
-  const url = portraitUrl(next.portraitNpc, next.portraitId);
-  el.portrait.hidden = !url;
-  if (url) el.portrait.src = url;
+  // Chân dung theo manifest (bản 32-bit nếu đã chọn); thiếu -> ẩn (TODO_MISSING).
+  const id = portraitId(next.portraitNpc, next.portraitId);
+  el.portrait.hidden = !(id && setSpriteImage(el.portrait, id));
   // Cốt truyện mặc định chân dung trắng đen (Thi Sách); `memorial: false` = màu.
   el.portrait.classList.toggle('dialogue__portrait--memorial', next.kind === 'story' && next.data.memorial !== false);
   el.panel.classList.add('panel--visible');
+  duckMusic(true);
+  playSfx(next.kind === 'quiz' ? 'quizOpen' : 'talk');
   render();
 }
 
@@ -196,6 +194,7 @@ function choose(index) {
   const option = current.options[index];
   if (!option || current.wrong.has(index)) return;
   if (current.kind === 'quiz') return chooseQuiz(option);
+  playSfx(option.correct ? 'correct' : 'wrong');
   if (!option.correct) {
     current.wrong.add(index);
     state.health -= 1;
@@ -220,6 +219,7 @@ function choose(index) {
 // thua ngay. Còn chơi tiếp thì hiện kết quả + giải thích, Enter để đóng.
 function chooseQuiz(option) {
   current.correct = option.correct;
+  playSfx(option.correct ? 'correct' : 'wrong');
   if (option.correct) {
     state.score += current.data.score;
   } else {
@@ -249,6 +249,7 @@ function advance() {
   } else if (step === 'reward') {
     return finish();
   }
+  playSfx(current.step === 'reward' ? 'reward' : 'talk');
   render();
 }
 
@@ -264,6 +265,7 @@ export function closeDialogue() {
   if (current?.npc) current.npc.talking = false;
   current = null;
   el.panel.classList.remove('panel--visible');
+  duckMusic(false);
   el.answers.innerHTML = '';
   clearInput();
 }

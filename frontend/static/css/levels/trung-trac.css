@@ -49,10 +49,30 @@ button { font: inherit; }
 }
 
 .hud__brand {
+  display: flex;
+  gap: 8px;
+  align-items: center;
   color: var(--gold);
   font-weight: 900;
   letter-spacing: .06em;
 }
+
+/* Nút loa bật/tắt âm thanh (TT-AUDIO-01). */
+.hud__mute {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid #5b351d;
+  border-radius: 4px;
+  background: #110b08;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+.hud__mute:hover { border-color: var(--gold); }
+.hud__mute[aria-pressed="true"] { opacity: .6; }
 
 .hud__item {
   display: flex;
@@ -411,6 +431,9 @@ kbd {
 }
 .skill--buff { width: 26px; height: 26px; border-radius: 50%; }
 .skill__icon { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+/* Ảnh bộ 32-bit (TT-HIBIT-02, ui.js setSpriteImage): ảnh dày hơn ô hiển thị
+   -> thu nhỏ mượt; pixelated sẽ làm rụng hàng pixel. */
+.dialogue__portrait.img--hibit, .skill__icon.img--hibit, .control__icon.img--hibit, .hud__hearts img.img--hibit { image-rendering: auto; }
 .skill__icon[hidden] { display: none; }
 /* Ô Lướt: chữ tạm khi chưa có icon ICON_SK_DASH (TODO_MISSING — chờ Codex). */
 .skill__glyph {

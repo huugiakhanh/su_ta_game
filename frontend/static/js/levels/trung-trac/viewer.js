@@ -2,9 +2,10 @@
 // team, KHÔNG phải gameplay. Đọc manifest_tt.json, chọn asset -> animation,
 // phát ở x1/x3/x4 kèm lưới pixel, baseline (hàng chân = frame_h - 2) và pivot
 // bottom-center. Frame chứa hit_frame (đếm từ 1) được đánh dấu đỏ.
+// Lưới/baseline/pivot theo pixel LOGIC (×4 = cỡ gốc của ảnh density 4).
 
 import { loadImage, joinAssetPath, loadSpriteManifest, loadMapManifest } from './assets.js';
-import { SPRITE_8BIT_ROOT, MAP_8BIT_ROOT, BOOK_SPRITE_ID, BOOK_FPS } from './config.js';
+import { SPRITE_ROOT, MAP_ROOT, BOOK_SPRITE_ID, BOOK_FPS } from './config.js';
 
 // Asset môi trường trong maps_tt.json (vật cản, bình thư, cổng, cột đá) đổi
 // sang dạng mục manifest sprite để viewer dùng chung một đường xem. Nền
@@ -22,7 +23,8 @@ function mapAssetEntries(mapManifest) {
         status: asset.status,
         facing: '—',
         pivot: asset.anchor,
-        root: MAP_8BIT_ROOT,
+        root: MAP_ROOT,
+        density: asset.density,
         frame_w: asset.frame_w || asset.w,
         frame_h: asset.frame_h || asset.h,
         animations: [{
@@ -70,10 +72,11 @@ export async function startViewer() {
 
   const [spriteManifest, mapManifest] = await Promise.all([loadSpriteManifest(), loadMapManifest()]);
   if (!spriteManifest) {
-    root.append(el('p', { textContent: 'Không tải được manifest_tt.json (xem console / đường dẫn sprites-8bit).' }));
+    root.append(el('p', { textContent: 'Không tải được manifest_tt.json (xem console / đường dẫn trung-trac/sprites-32bit).' }));
     return;
   }
-  const manifest = { ...spriteManifest, assets: [...spriteManifest.assets, ...mapAssetEntries(mapManifest)] };
+  const spriteAssets = spriteManifest.assets.map(asset => ({ ...asset, root: SPRITE_ROOT }));
+  const manifest = { ...spriteManifest, assets: [...spriteAssets, ...mapAssetEntries(mapManifest)] };
 
   const assetSelect = el('select', { ariaLabel: 'Asset' });
   manifest.assets.forEach((asset, index) => {
@@ -110,7 +113,7 @@ export async function startViewer() {
   async function selectAnimation() {
     view.asset = manifest.assets[Number(assetSelect.value)];
     view.anim = view.asset.animations[Number(animSelect.value)] || view.asset.animations[0];
-    const url = joinAssetPath(view.asset.root || SPRITE_8BIT_ROOT, view.anim.file);
+    const url = joinAssetPath(view.asset.root, view.anim.file);
     if (!imageCache.has(url)) imageCache.set(url, await loadImage(url, true));
     view.image = imageCache.get(url);
     view.frame = 0;
@@ -119,7 +122,7 @@ export async function startViewer() {
     const n = view.anim;
     meta.textContent = [
       `id ${a.id}  category ${a.category}  priority ${a.priority}  status ${a.status}  facing ${a.facing}  pivot ${a.pivot}`,
-      `anim ${n.name}  frame ${a.frame_w}×${a.frame_h}  frames ${n.frames}  fps ${n.fps}  loop ${n.loop}  hit_frame ${n.hit_frame ?? '—'}`,
+      `anim ${n.name}  frame ${n.frame_w || a.frame_w}×${a.frame_h}${a.density > 1 ? ` (ảnh ×${a.density}: cần strip ${n.frames * (n.frame_w || a.frame_w) * a.density}×${a.frame_h * a.density})` : ''}  frames ${n.frames}  fps ${n.fps}  loop ${n.loop}  hit_frame ${n.hit_frame ?? '—'}`,
       `file ${n.file}${view.image ? `  (${view.image.width}×${view.image.height})` : '  — THIẾU FILE'}`
     ].join('\n');
     render();
@@ -132,9 +135,13 @@ export async function startViewer() {
   }
 
   function drawFrame(ctx, frame, originX, originY, scale) {
-    const { frame_w: fw, frame_h: fh } = view.asset;
+    const fw = view.anim.frame_w || view.asset.frame_w;
+    const fh = view.asset.frame_h;
+    const density = view.asset.density || 1;
+    // Thu nhỏ ảnh dày (scale < density) thì nội suy, như render.js trong màn.
+    ctx.imageSmoothingEnabled = scale < density;
+    ctx.drawImage(view.image, frame * fw * density, 0, fw * density, fh * density, originX, originY, fw * scale, fh * scale);
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(view.image, frame * fw, 0, fw, fh, originX, originY, fw * scale, fh * scale);
     if (gridToggle.checked && scale >= 3) {
       ctx.strokeStyle = 'rgba(255, 255, 255, .08)';
       ctx.lineWidth = 1;
@@ -161,7 +168,8 @@ export async function startViewer() {
   }
 
   function render() {
-    const { frame_w: fw, frame_h: fh } = view.asset;
+    const fw = view.anim.frame_w || view.asset.frame_w;
+    const fh = view.asset.frame_h;
     const s = view.scale;
     canvas.width = (fw + PAD * 2) * s;
     canvas.height = (fh + PAD * 2) * s;
