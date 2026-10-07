@@ -19,24 +19,6 @@
   //     : '⚔️ BẮT ĐẦU CHƠI';
   // }
 
-  // cập nhật sau xóa cái này đi 
-  // function showUpdateNotice(btn) {
-  //   const originalText = btn.innerHTML;
-    
-  //   // Đổi chữ và khóa bấm tạm thời
-  //   btn.innerHTML = "⏳ ĐANG CẬP NHẬT...";
-  //   btn.style.opacity = "0.5";
-  //   btn.disabled = true;
-
-  //   // Trả lại chữ cũ sau 1.5 giây
-  //   setTimeout(() => {
-  //       btn.innerHTML = originalText;
-  //       btn.style.opacity = "";
-  //       btn.disabled = false;
-  //   }, 1500);
-  // }
-
-  // Hàm Mở Timeline
   // Hàm Mở Timeline
   window.openTimeline = function openTimeline() {
       const modal = document.getElementById("timeline-modal");
@@ -87,12 +69,86 @@
           if (startBtn) {
               startBtn.href = savedRoute;
               startBtn.innerHTML = `
-                  <div>⚔️️ BẮT ĐẦU CHƠI</div>
+                  <div>⚔ BẮT ĐẦU CHƠI</div>
                   <span style="font-size: 13px; color: #ffeb3b; font-weight: normal;">(Thử Thách: ${savedName})</span>
               `;
           }
       }
   });
+
+  // --- BẢNG XẾP HẠNG ---
+  window.openLeaderboard = async function openLeaderboard() {
+      try {
+          const response = await fetch('/api/game/leaderboard');
+          const result = await response.json();
+          
+          if (result.status === 'success') {
+              renderLeaderboardUI(result.data);
+              document.getElementById('leaderboard-modal').style.display = 'flex';
+          }
+      } catch (error) {
+          console.error('Lỗi lấy dữ liệu bảng xếp hạng:', error);
+          document.getElementById('leaderboard-modal').style.display = 'flex';
+      }
+  };
+
+  function formatTime(totalSeconds) {
+      if (!totalSeconds) return "00:00:00";
+      const h = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+      const m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+      const s = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+      return `${h}:${m}:${s}`;
+  }
+
+  function renderLeaderboardUI(data) {
+      const tbody = document.getElementById('leaderboard-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = ''; 
+      
+      // Lấy tên người dùng hiện tại
+      const userTextEl = document.querySelector('.info-text h3');
+      const currentUserName = userTextEl ? userTextEl.textContent : "KHÁCH TRUY CẬP";
+      
+      let myRank = "NO";
+      let myScore = 0;
+      
+      if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="padding: 20px; color: #8b4513;">Chưa có dữ liệu xếp hạng</td></tr>';
+      } else {
+          data.forEach((player) => {
+              const tr = document.createElement('tr');
+              
+              let rankDisplay = player.rank;
+              if (player.rank === 1) rankDisplay = '🥇 1';
+              else if (player.rank === 2) rankDisplay = '🥈 2';
+              else if (player.rank === 3) rankDisplay = '🥉 3';
+
+              tr.innerHTML = `
+                  <td style="color: ${player.rank <= 3 ? '#d32f2f' : 'inherit'}; font-size: ${player.rank <= 3 ? '18px' : 'inherit'};">${rankDisplay}</td>
+                  <td>${player.name}</td>
+                  <td>${player.levels_passed}/12</td>
+                  <td style="color: #b22222;">⭐ ${player.total_score.toLocaleString()}</td>
+                  <td>🕒 ${formatTime(player.total_time)}</td>
+                  <td>...</td> 
+              `;
+              tbody.appendChild(tr);
+
+              if (player.name === currentUserName) {
+                  myRank = player.rank;
+                  myScore = player.total_score;
+              }
+          });
+      }
+
+      const rankEl = document.getElementById('my-current-rank');
+      const nameEl = document.getElementById('my-current-name');
+      const scoreEl = document.getElementById('my-current-score');
+      
+      if (rankEl) rankEl.textContent = myRank;
+      if (nameEl) nameEl.textContent = currentUserName;
+      if (scoreEl) scoreEl.textContent = `⭐ ${myScore.toLocaleString()}`;
+  }
+  // -----------------------
 
   window.openChapterModal = function openChapterModal() {
     const modal = document.getElementById('chapterModalOverlay');
@@ -209,15 +265,12 @@
     okButton.style.cursor = 'not-allowed';
   };
 
- window.xacNhanChonChuong = function xacNhanChonChuong() {
+  window.xacNhanChonChuong = function xacNhanChonChuong() {
     if (!selectedChapter) return;
     localStorage.setItem('sutaSelectedChapter', String(selectedChapter));
-    updateStartButton(selectedChapter);
+    // updateStartButton(selectedChapter); // Đã comment vì updateStartButton không được định nghĩa
 
-    // 1. Đóng Modal Chọn Chương
     window.closeChapterModal();
-
-    // 2. Mở Modal Chọn Tướng
     window.openHeroSelectModal();
   };
 
@@ -251,7 +304,7 @@
     }
   });
 
-  updateStartButton(localStorage.getItem('sutaSelectedChapter'));
-
+  // Tắt gọi hàm này vì nó gây lỗi nếu chưa được định nghĩa ở trên
+  // updateStartButton(localStorage.getItem('sutaSelectedChapter'));
 
 })();

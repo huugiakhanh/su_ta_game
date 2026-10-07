@@ -45,7 +45,7 @@
                 
                 <button class="btn btn-side">🏆 THÀNH TỰU</button>
                 <!-- <button class="btn btn-side">💼 NHIỆM VỤ HẰNG NGÀY</button> -->
-                <button class="btn btn-side">📊 BẢNG XẾP HẠNG</button>
+                <button class="btn btn-side" onclick="openLeaderboard()">📊 BẢNG XẾP HẠNG</button>
                 <button class="btn btn-side">🏪 CỬA HÀNG</button>
                 <button class="btn btn-side" onclick="window.location.href='/history'"> 📖 THƯ VIỆN LỊCH SỬ</button>
             </div>
@@ -398,6 +398,60 @@
             </div>
         </div>
     </div>
+
+    <!-- MODAL BẢNG XẾP HẠNG -->
+    <div id="leaderboard-modal" class="modal-overlay" style="display: none;">
+        <!-- Bảng xếp hạng chính (Khung gỗ lớn) -->
+        <div class="leaderboard-container">
+            
+            <!-- Tiêu đề Bảng Xếp Hạng -->
+            <div class="leaderboard-header">
+                <h2 class="leaderboard-title">BẢNG XẾP HẠNG</h2>
+            </div>
+
+            <!-- Nút đóng -->
+            <button class="close-btn" onclick="document.getElementById('leaderboard-modal').style.display='none'">X</button>
+
+            <!-- Tiêu đề / Tabs chọn tướng -->
+            <div class="leaderboard-tabs">
+                <button class="tab-btn active">🏆 TOÀN GAME</button>
+                <!-- <button class="tab-btn">👩 TRƯNG TRẮC</button> -->
+                <!-- <button class="tab-btn">🧔 ĐINH BỘ LĨNH</button> -->
+                <!-- <button class="tab-btn">📜 LÝ CÔNG UẨN</button> -->
+                <!-- <button class="tab-btn">⚔️ LÊ LỢI</button> -->
+            </div>
+
+            <!-- Bảng nội dung (Giấy cuộn) -->
+            <div class="table-wrapper">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>HẠNG</th>
+                            <th>NGƯỜI CHƠI</th>
+                            <th>ĐÃ QUA MÀN</th>
+                            <th>TỔNG ĐIỂM</th>
+                            <th>THỜI GIAN</th>
+                            <th>THÀNH TÍCH</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-table-body">
+                        <!-- Javascript sẽ nhúng các thẻ <tr> vào đây -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Hạng của bản thân ở dưới cùng -->
+            <div class="my-rank-footer" id="my-rank-footer">
+                <div class="my-rank-title">HẠNG CỦA BẠN<br><span id="my-current-rank">NO</span></div>
+                <div class="my-rank-info">
+                    <span id="my-current-name">Khách</span>
+                    <span id="my-current-score">⭐ 0</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <!-- ========================================== -->
 
     <!-- Component chọn chương được render cùng template để không cần fetch HTML lần hai. -->

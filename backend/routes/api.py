@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 
 from backend.repositories.user_repository import create, exists, find_by_credentials
 from backend.repositories.record_repository import save_level_clear_time
+from backend.repositories.record_repository import get_top_players
 
 api_bp = Blueprint("api", __name__)
 
@@ -61,3 +62,13 @@ def save_time():
         return jsonify({"status": "success", "message": "Đã lưu thời gian và điểm số thành công!"})
     except Exception as e:
         return payload_error(f"Có lỗi xảy ra: {str(e)}")
+
+
+@api_bp.get("/leaderboard")
+@api_bp.get("/api/game/leaderboard")
+def leaderboard():
+    try:
+        data = get_top_players(10) # Trả về top 10 người cao điểm nhất toàn server
+        return jsonify({"status": "success", "data": data})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
