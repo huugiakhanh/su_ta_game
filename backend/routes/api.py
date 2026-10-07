@@ -40,6 +40,7 @@ def register():
     create(username, password, name)
     return jsonify({"status": "success", "message": "Đăng ký thành công! Hãy đăng nhập lại."})
 
+
 @api_bp.post("/save-time")
 @api_bp.post("/api/game/save-time")
 def save_time():
@@ -48,12 +49,15 @@ def save_time():
     level_id = data.get("level_id")
     clear_time = data.get("clear_time")
     
-    # Kiểm tra dữ liệu đầu vào
+    # Lấy thêm điểm số (nếu người dùng không gửi lên thì mặc định là 0)
+    score = data.get("score", 0) 
+    
     if not username or level_id is None or clear_time is None:
         return payload_error("Vui lòng gửi đầy đủ thông tin: username, level_id, clear_time!")
     
     try:
-        save_level_clear_time(username, level_id, clear_time)
-        return jsonify({"status": "success", "message": "Đã lưu thời gian qua màn thành công!"})
+        # Gọi hàm và truyền thêm score
+        save_level_clear_time(username, level_id, clear_time, score) 
+        return jsonify({"status": "success", "message": "Đã lưu thời gian và điểm số thành công!"})
     except Exception as e:
         return payload_error(f"Có lỗi xảy ra: {str(e)}")

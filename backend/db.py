@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS level_records (
     username VARCHAR(50) REFERENCES users(username),
     level_id INTEGER NOT NULL,
     clear_time_seconds FLOAT NOT NULL,
+    score INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 """
@@ -58,6 +59,17 @@ def init_db():
     with db_cursor(commit=True) as (_, cursor):
         cursor.execute(USERS_SCHEMA)
         cursor.execute(LEVEL_RECORDS_SCHEMA)
+
+
+        cursor.execute("""
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name='level_records' AND column_name='score'
+        """)
+        if not cursor.fetchone():
+            cursor.execute("ALTER TABLE level_records ADD COLUMN score INTEGER DEFAULT 0")
+
+        
         mark = placeholder()
         cursor.execute(f"SELECT 1 FROM users WHERE username = {mark}", ("admin",))
         if not cursor.fetchone():
