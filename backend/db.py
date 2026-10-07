@@ -14,6 +14,16 @@ CREATE TABLE IF NOT EXISTS users (
 )
 """
 
+LEVEL_RECORDS_SCHEMA = """
+CREATE TABLE IF NOT EXISTS level_records (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) REFERENCES users(username),
+    level_id INTEGER NOT NULL,
+    clear_time_seconds FLOAT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+"""
+
 
 def get_db_connection():
     database_url = current_app.config["DATABASE_URL"]
@@ -47,6 +57,7 @@ def db_cursor(commit=False):
 def init_db():
     with db_cursor(commit=True) as (_, cursor):
         cursor.execute(USERS_SCHEMA)
+        cursor.execute(LEVEL_RECORDS_SCHEMA)
         mark = placeholder()
         cursor.execute(f"SELECT 1 FROM users WHERE username = {mark}", ("admin",))
         if not cursor.fetchone():

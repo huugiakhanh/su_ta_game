@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 
 from backend.repositories.user_repository import create, exists, find_by_credentials
-
+from backend.repositories.record_repository import save_level_clear_time
 
 api_bp = Blueprint("api", __name__)
 
@@ -39,3 +39,21 @@ def register():
 
     create(username, password, name)
     return jsonify({"status": "success", "message": "Đăng ký thành công! Hãy đăng nhập lại."})
+
+@api_bp.post("/save-time")
+@api_bp.post("/api/game/save-time")
+def save_time():
+    data = request.get_json(silent=True) or {}
+    username = str(data.get("username", "")).strip()
+    level_id = data.get("level_id")
+    clear_time = data.get("clear_time")
+    
+    # Kiểm tra dữ liệu đầu vào
+    if not username or level_id is None or clear_time is None:
+        return payload_error("Vui lòng gửi đầy đủ thông tin: username, level_id, clear_time!")
+    
+    try:
+        save_level_clear_time(username, level_id, clear_time)
+        return jsonify({"status": "success", "message": "Đã lưu thời gian qua màn thành công!"})
+    except Exception as e:
+        return payload_error(f"Có lỗi xảy ra: {str(e)}")
