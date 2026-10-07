@@ -11,6 +11,9 @@
 import { AUDIO_MIX, SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
 
 const MUTE_KEY = 'suta.audio.muted';
+// Âm lượng người chơi chỉnh trong menu cài đặt (TT-TIME-01), 0–1, nhân thêm
+// vào AUDIO_MIX.music / AUDIO_MIX.sfx.
+const VOLUME_KEY = 'suta.audio.volume';
 const LOOKAHEAD = .12;      // giây lập lịch trước cho nhạc nền
 const TICK_MS = 25;         // chu kỳ bộ lập lịch
 const SFX_MIN_GAP = .04;    // cùng 1 hiệu ứng không phát dày hơn mức này
@@ -19,6 +22,7 @@ let ctx = null;
 let bus = null;             // { master, music, sfx }
 let noiseBuffer = null;
 let muted = readMuted();
+let volume = readVolume();
 let ducked = false;
 const suspendReasons = new Set();
 const lastPlayed = new Map();
@@ -50,6 +54,37 @@ function writeMuted(value) {
   }
 }
 
+function readVolume() {
+  const fallback = { music: 1, sfx: 1 };
+  try {
+    const saved = JSON.parse(localStorage.getItem(VOLUME_KEY) || 'null');
+    if (!saved) return fallback;
+    return {
+      music: clampVolume(saved.music, fallback.music),
+      sfx: clampVolume(saved.sfx, fallback.sfx)
+    };
+  } catch {
+    return fallback;
+  }
+}
+
+function clampVolume(value, fallback = 1) {
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.min(1, Math.max(0, number)) : fallback;
+}
+
+function writeVolume() {
+  try {
+    localStorage.setItem(VOLUME_KEY, JSON.stringify(volume));
+  } catch {
+    // Chặn storage — chỉ không nhớ lựa chọn.
+  }
+}
+
+function musicGain() {
+  return AUDIO_MIX.music * volume.music * (ducked ? AUDIO_MIX.duck : 1);
+}
+
 // Gắn listener mở khoá (thao tác đầu tiên) + tạm dừng khi ẩn tab. Gọi 1 lần.
 export function initAudio() {
   const unlock = () => unlockAudio();
@@ -73,8 +108,8 @@ export function unlockAudio() {
     bus.sfx.connect(bus.master);
     bus.master.connect(ctx.destination);
     bus.master.gain.value = muted ? 0 : AUDIO_MIX.master;
-    bus.music.gain.value = AUDIO_MIX.music * (ducked ? AUDIO_MIX.duck : 1);
-    bus.sfx.gain.value = AUDIO_MIX.sfx;
+    bus.music.gain.value = musicGain();
+    bus.sfx.gain.value = AUDIO_MIX.sfx * volume.sfx;
     noiseBuffer = makeNoise(ctx);
     timer = setInterval(scheduleMusic, TICK_MS);
     if (wanted) startTrack(wanted);
@@ -118,7 +153,21 @@ export function toggleMuted() {
 // Giảm nhỏ nhạc nền khi mở hội thoại/câu hỏi.
 export function duckMusic(on) {
   ducked = on;
-  if (bus) bus.music.gain.setTargetAtTime(AUDIO_MIX.music * (on ? AUDIO_MIX.duck : 1), ctx.currentTime, .1);
+  if (bus) bus.music.gain.setTargetAtTime(musicGain(), ctx.currentTime, .1);
+}
+
+// Âm lượng 'music' | 'sfx' (0–1) — menu cài đặt.
+export function getVolume(kind) {
+  return volume[kind];
+}
+
+export function setVolume(kind, value) {
+  if (!(kind in volume)) return;
+  volume = { ...volume, [kind]: clampVolume(value) };
+  writeVolume();
+  if (!bus) return;
+  if (kind === 'music') bus.music.gain.setTargetAtTime(musicGain(), ctx.currentTime, .05);
+  else bus.sfx.gain.setTargetAtTime(AUDIO_MIX.sfx * volume.sfx, ctx.currentTime, .05);
 }
 
 // ---- Hiệu ứng ----

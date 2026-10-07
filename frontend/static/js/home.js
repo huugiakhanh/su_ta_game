@@ -165,7 +165,50 @@
     document.body.classList.remove('chapter-modal-open');
   };
 
-  window.moBangDangNhap = function moBangDangNhap() {
+  // Tài khoản đang đăng nhập (Flask session — TT-TIME-01); null = khách.
+  let currentUser = null;
+
+  function showUser(user) {
+    currentUser = user;
+    document.querySelector('.info-text h3').textContent = user.name;
+    document.querySelector('.info-text div').textContent = `Cấp ${user.level}`;
+    document.querySelector('.avatar').textContent = '';
+    document.querySelectorAll('.res-item')[0].innerHTML = `🪙 ${user.gold} <button class="btn-plus">+</button>`;
+    document.querySelectorAll('.res-item')[1].innerHTML = `💎 ${user.gems} <button class="btn-plus">+</button>`;
+  }
+
+  function showGuest() {
+    currentUser = null;
+    document.querySelector('.info-text h3').textContent = 'KHÁCH TRUY CẬP';
+    document.querySelector('.info-text div').textContent = 'Chạm để Đăng nhập';
+    document.querySelector('.avatar').textContent = '?';
+    document.querySelectorAll('.res-item')[0].innerHTML = '🪙 0 <button class="btn-plus">+</button>';
+    document.querySelectorAll('.res-item')[1].innerHTML = '💎 0 <button class="btn-plus">+</button>';
+  }
+
+  // Tải lại trang vẫn giữ đăng nhập: hỏi server session hiện tại.
+  async function restoreSession() {
+    try {
+      const response = await fetch('/api/auth/me');
+      const data = await response.json();
+      if (data.status === 'success') showUser(data);
+    } catch (_) {
+      // Không kết nối được: giữ giao diện khách.
+    }
+  }
+  restoreSession();
+
+  window.moBangDangNhap = async function moBangDangNhap() {
+    if (currentUser) {
+      if (!window.confirm(`Đăng xuất khỏi tài khoản "${currentUser.name}"?`)) return;
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+      } catch (_) {
+        // Lỗi mạng: vẫn hiện như khách, session tự hết hạn sau.
+      }
+      showGuest();
+      return;
+    }
     document.getElementById('loginModal').style.display = 'block';
     setAuthMessage('');
   };
@@ -208,11 +251,7 @@
       }
 
       document.getElementById('loginModal').style.display = 'none';
-      document.querySelector('.info-text h3').textContent = data.name;
-      document.querySelector('.info-text div').textContent = `Cấp ${data.level}`;
-      document.querySelector('.avatar').textContent = '';
-      document.querySelectorAll('.res-item')[0].innerHTML = `🪙 ${data.gold} <button class="btn-plus">+</button>`;
-      document.querySelectorAll('.res-item')[1].innerHTML = `💎 ${data.gems} <button class="btn-plus">+</button>`;
+      showUser(data);
     } catch (_) {
       setAuthMessage('Không thể kết nối đến máy chủ!', '#ff6b6b');
     }

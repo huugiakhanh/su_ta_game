@@ -5,6 +5,9 @@
 // cập bọc try/catch, lỗi thì coi như chưa có tiến trình.
 
 const STORAGE_KEY = 'suta.tt.progress';
+// Chương Trưng Trắc = chương 1. Kỷ lục gửi server dùng level_id = 100 × chương
+// + màn (101/102/103 — TT-TIME-01), khớp VALID_LEVEL_IDS ở backend/routes/api.py.
+const CHAPTER_ID = 1;
 
 export const LEVEL_URLS = {
   1: '/gameplay/levels/trung-trac',
@@ -21,7 +24,8 @@ export const REWARD_NAMES = {
 };
 
 function emptyProgress() {
-  return { score: 0, books: 0, level1Complete: false, level2Complete: false, level3Complete: false, rewards: [] };
+  // `times`: giây qua từng màn của chương đang chơi ({ 1: 83.2, 2: ... }).
+  return { score: 0, books: 0, level1Complete: false, level2Complete: false, level3Complete: false, rewards: [], times: {} };
 }
 
 export function readProgress() {
@@ -79,4 +83,33 @@ export function requireLevel(level) {
   if (unlocked) return progress;
   window.location.replace(LEVEL_URLS[1]);
   return null;
+}
+
+// Lượt chơi thử (`?debug=1`, `?layout=…`) không gửi kỷ lục lên bảng xếp hạng.
+export function isTestRun() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('debug') === '1' || params.has('layout');
+}
+
+// Gửi kỷ lục 1 màn (TT-TIME-01). Server lấy người chơi từ session đăng nhập.
+// Trả về 'saved' | 'guest' (chưa đăng nhập) | 'skipped' (lượt thử) | 'error'.
+export async function submitLevelRecord(level, seconds, score) {
+  if (isTestRun()) return 'skipped';
+  try {
+    const response = await fetch('/api/game/save-time', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        level_id: CHAPTER_ID * 100 + level,
+        clear_time: Math.round(seconds * 100) / 100,
+        score: Math.max(0, Math.round(score))
+      })
+    });
+    if (response.status === 401) return 'guest';
+    const data = await response.json();
+    return data.status === 'success' ? 'saved' : 'error';
+  } catch (error) {
+    console.warn('Không gửi được kỷ lục.', error);
+    return 'error';
+  }
 }

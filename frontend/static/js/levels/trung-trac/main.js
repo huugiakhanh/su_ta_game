@@ -2,14 +2,16 @@
 
 import { images, loadAssets } from './assets.js';
 import { state, setState, createLevelState } from './state.js';
-import { ui, showMessage, updateHud, updateMuteButton } from './ui.js';
+import { ui, showMessage, updateHud, updateTimeHud } from './ui.js';
 import { clearInput, bindInput } from './input.js';
 import { update, endGame } from './physics.js';
 import { draw, fitCanvas } from './render.js';
 import { LEVEL, setLevel } from './config.js';
 import { LEVEL_URLS, requireLevel, clearProgress } from './progress.js';
 import { initDialogue, closeDialogue } from './dialogue.js';
-import { initAudio, playMusic, playSfx, setAudioSuspended, toggleMuted, isMuted } from './audio.js';
+import { initAudio, playMusic, playSfx, setAudioSuspended, toggleMuted } from './audio.js';
+import { initSettings, isSettingsOpen, syncSettings, toggleSettings } from './settings.js';
+import { levelTime, resetLevelTime, tickLevelTime } from './timer.js';
 
 let lastTime = 0;
 // Máy cảm ứng cầm dọc (TT-MOBILE-01): CSS hiện #rotateOverlay, frame() ngừng
@@ -43,6 +45,9 @@ const INTRO_MESSAGES = {
 };
 
 function resetGame(startImmediately = true) {
+  // Đồng hồ màn cộng dồn qua các lượt thua (TT-TIME-01); thắng rồi chơi lại
+  // (phím R) là lượt mới -> đếm lại từ 0.
+  if (state?.levelCleared) resetLevelTime();
   closeDialogue();
   setState(createLevelState(levelOptions));
   state.running = startImmediately;
@@ -52,6 +57,7 @@ function resetGame(startImmediately = true) {
   ui.restart.hidden = false;
   ui.replayChapter.hidden = true;
   ui.home.hidden = true;
+  ui.endTime.hidden = true;
   ui.loading.classList.toggle('panel--visible', !startImmediately);
   clearInput();
   updateHud();
@@ -60,11 +66,27 @@ function resetGame(startImmediately = true) {
   if (startImmediately) playMusic(`level${LEVEL.id}`);
 }
 
+// Đồng hồ màn (TT-TIME-01) chạy khi đang chơi, kể cả lúc hội thoại/câu hỏi
+// (state.paused) — không chạy ở panel Bắt đầu (running = false), sau khi kết
+// thúc (won), trong cutscene kết chương, khi menu cài đặt mở hoặc cầm dọc.
+function countsLevelTime() {
+  return state.running && !state.won && !state.cutscene;
+}
+
 function frame(timestamp) {
-  const dt = Math.min(.032, Math.max(0, (timestamp - lastTime) / 1000 || 0));
+  // Thời gian thật giữa 2 frame (kẹp .25s: tab ẩn thì rAF dừng, quay lại
+  // không cộng cả quãng ẩn). Mô phỏng vẫn kẹp .032s như cũ.
+  const realDt = Math.min(.25, Math.max(0, (timestamp - lastTime) / 1000 || 0));
+  const dt = Math.min(.032, realDt);
   lastTime = timestamp;
-  if (state && !portraitQuery.matches) update(dt);
-  if (state) draw(timestamp / 1000);
+  if (state && !portraitQuery.matches && !isSettingsOpen()) {
+    if (countsLevelTime()) tickLevelTime(realDt);
+    update(dt);
+  }
+  if (state) {
+    draw(timestamp / 1000);
+    updateTimeHud(levelTime());
+  }
   requestAnimationFrame(frame);
 }
 
@@ -83,21 +105,23 @@ async function initAssets() {
   draw();
 }
 
-// Âm thanh (TT-AUDIO-01): phím M / nút loa bật-tắt, lựa chọn nhớ trong localStorage.
+// Âm thanh (TT-AUDIO-01): phím M bật/tắt, lựa chọn nhớ trong localStorage.
+// Âm lượng + tắt tiếng chỉnh trong menu cài đặt ⚙️ (TT-TIME-01).
 function toggleSound() {
-  updateMuteButton(toggleMuted());
+  toggleMuted();
+  syncSettings();
   playSfx('click');
 }
 initAudio();
 setAudioSuspended('portrait', portraitQuery.matches);
-updateMuteButton(isMuted());
-ui.mute.addEventListener('click', () => {
-  toggleSound();
-  // Bỏ focus để Space (nhảy) không "bấm" lại nút loa.
-  ui.mute.blur();
-});
+initSettings();
 
-bindInput({ onRestart: () => resetGame(true), onToggleMute: toggleSound });
+bindInput({
+  onRestart: () => resetGame(true),
+  onToggleMute: toggleSound,
+  onToggleSettings: toggleSettings,
+  isBlocked: isSettingsOpen
+});
 
 // Tiếng bấm cho các nút panel.
 [ui.start, ui.restart, ui.next, ui.replayChapter, ui.home].forEach(button => {

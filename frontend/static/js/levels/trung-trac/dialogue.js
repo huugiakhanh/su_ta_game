@@ -12,6 +12,7 @@ import { addReward } from './progress.js';
 import { NPC_SPRITES, QUESTION_SCORE, QUIZ } from './config.js';
 import { NPC_DIALOGUES } from './dialogue-data.js';
 import { playSfx, duckMusic } from './audio.js';
+import { isSettingsOpen } from './settings.js';
 
 const el = {
   panel: document.getElementById('dialoguePanel'),
@@ -36,7 +37,8 @@ export function initDialogue(options) {
   // đang focus; input.js vẫn ghi phím Space vào `pressed.jump` nên đóng panel
   // phải clearInput().
   window.addEventListener('keydown', event => {
-    if (!current) return;
+    // Menu cài đặt đang mở (TT-TIME-01): phím thuộc về menu.
+    if (!current || isSettingsOpen()) return;
     const digit = /^(Digit|Numpad)([1-4])$/.exec(event.code);
     if (digit) {
       event.preventDefault();
