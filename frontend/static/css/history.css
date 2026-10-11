@@ -138,7 +138,7 @@ body {
     overflow-y: hidden;
     position: relative;
     display: flex;
-    align-items: center; /* Căn giữa dọc tuyệt đối */
+    align-items: center; 
     padding: 0 40px;
 }
 
@@ -146,17 +146,9 @@ body {
 .timeline-scroll-area::-webkit-scrollbar-track { background: #e0e0e0; border-radius: 6px; }
 .timeline-scroll-area::-webkit-scrollbar-thumb { background: #c62828; border-radius: 6px; }
 
-/* Trục ngang Đỏ + Vàng */
+/* 1. ẨN TRỤC NGANG CŨ CÓ ĐỘ DÀI VÔ TẬN */
 .timeline-line {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #c62828, #ffca28, #c62828);
-    transform: translateY(-50%);
-    width: max(100%, 10000px); /* Đảm bảo đường line kéo dài vô tận */
-    box-shadow: 0 0 10px rgba(198, 40, 40, 0.3);
-    z-index: 1;
+    display: none !important;
 }
 
 /* ========================================== */
@@ -168,7 +160,22 @@ body {
     position: relative;
     z-index: 2;
     min-width: max-content;
-    height: 700px; /* Khung tổng cao 700px */
+    height: 700px; 
+    padding-right: 120px; /* Thêm khoảng trống nhỏ ở cuối để nút mốc cuối cùng không bị sát mép */
+}
+
+/* 2. VẼ TRỤC NGANG MỚI TỰ ĐỘNG CẮT VỪA ĐÚNG CHIỀU DÀI */
+.timeline-items::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -40px; /* Bắt đầu từ lề bên trái */
+    right: 0;    /* Kết thúc VỪA ĐÚNG tại mép bên phải của nội dung */
+    height: 4px;
+    background: linear-gradient(90deg, #c62828, #ffca28, #c62828);
+    transform: translateY(-50%);
+    box-shadow: 0 0 10px rgba(198, 40, 40, 0.3);
+    z-index: 1; 
 }
 
 /* Nhóm Giai đoạn */

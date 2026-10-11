@@ -9,24 +9,25 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,600&display=swap" rel="stylesheet">
     
-    <!-- NOTE FIX CODE: Chuyển đường dẫn CSS tĩnh sang url_for trong static/css/library/ -->
+    <!-- Link CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/library/trung-trac.css') }}">
 </head>
 <body>
 
-<body>
-
     <!-- Nút Quay lại -->
-    <!-- NOTE FIX CODE: Nút Quay lại chuyển về Route /history thay vì dùng history.back() -->
     <button class="btn-back" onclick="window.location.href='/history'">← Quay lại Thư Viện</button>
 
     <!-- Header Banner Tươi Sáng & Tráng Lệ -->
     <header class="hero-section">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <!-- NOTE FIX CODE: Thêm ảnh chân dung Hai Bà Trưng và cập nhật url_for chuẩn Flask -->
+            
+            <!-- ẢNH AVATAR (Lấy từ thư mục avatar) -->
             <div class="hero-avatar-box">
-                <img src="{{ url_for('static', filename='assets/images/library/trung_trac_1.jpg') }}" alt="Chân dung Trưng Trắc" class="hero-avatar">
+                <img src="{{ url_for('static', filename='assets/images/characters/avatar/Trưng Trắc.png') }}" 
+                     alt="Chân dung Trưng Trắc" 
+                     class="hero-avatar" 
+                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
             </div>
 
             <span class="hero-badge">Hào Khí Mê Linh - Năm 40 SCN</span>
@@ -39,6 +40,14 @@
         </div>
     </header>
 
+    <!-- KHỐI ẢNH MINH HỌA LỚN (Lấy từ thư mục library) -->
+    <div class="library-showcase" style="text-align: center; margin: 50px auto; max-width: 900px; padding: 0 20px;">
+        <img src="{{ url_for('static', filename='assets/images/characters/library/Trưng Trắc_ Nữ vương phất cờ.png') }}" 
+             alt="Minh họa Trưng Trắc" 
+             style="width: 100%; height: auto; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 4px solid #c62828;">
+    </div>
+
+    <!-- Khung Nội Dung Sử Thi Với Hiệu Ứng Cuộn -->
     <main class="timeline-container">
         
         <article class="epic-card left">
@@ -47,16 +56,8 @@
             <div class="card-body">
                 <h2>Lãnh Đạo Khởi Nghĩa Toàn Dân Đầu Tiên</h2>
                 <p>Trước sự cai trị tàn bạo và lòng tham không đáy của Thái thú Tô Định (nhà Đông Hán), Trưng Trắc đã biến bi kịch gia đình thành sức mạnh giải phóng dân tộc. Cuộc khởi nghĩa nổ ra mùa xuân năm 40 SCN là cuộc nổi dậy quy mô lớn đầu tiên thời Bắc thuộc. Chỉ trong thời gian ngắn, nghĩa quân đã đánh đuổi bộ máy đô hộ, thu phục 65 thành trì trên toàn cõi Lĩnh Nam.</p>
-                
-                <!-- NOTE FIX CODE: Thêm ảnh minh họa bài viết vào dưới thẻ số 01 -->
-                <div class="card-img-box">
-                    <img src="frontend\static\assets\images\library\trung_trac_1.jpg" alt="Trưng Trắc khởi nghĩa" class="card-img">
-                </div>
             </div>
         </article>
-
-    <!-- Khung Nội Dung Sử Thi Với Hiệu Ứng Cuộn -->
-    <main class="timeline-container">
 
         <article class="epic-card right">
             <div class="card-glow"></div>
@@ -96,7 +97,8 @@
 
     </main>
 
-    <script src="frontend\static\assets\js\library\trung-trac.js"></script>
+    <!-- Sửa lại đường dẫn JS chuẩn Flask -->
+    <script src="{{ url_for('static', filename='js/library/trung-trac.js') }}"></script>
     
 </body>
 </html>
