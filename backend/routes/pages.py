@@ -14,10 +14,12 @@ def home():
 def history_library_timeline():
     return render_template("history.html")
 
-@pages_bp.get("/history_library/trung-trac")
-def history_trung_trac_detail():
-    # Đảm bảo trỏ đúng vào thư mục theo ảnh của bạn
-    return render_template("gameplay/library/trung-trac.html")
+@pages_bp.get("/history_library/<hero_name>")
+def history_hero_detail(hero_name):
+    try:
+        return render_template(f"gameplay/library/{hero_name}.html")
+    except:
+        return "Trang nhân vật này chưa được tạo hoặc đang cập nhật!", 404
 
 
 # QUIZ

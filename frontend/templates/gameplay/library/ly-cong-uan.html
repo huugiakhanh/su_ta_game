@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sử Ta - Hào Khí Lý Thái Tổ</title>
+    <!-- Nhúng Font Google: Playfair Display (Sử thi) & Be Vietnam Pro (Hiện đại) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Link CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/library/ly-cong-uan.css') }}">
+</head>
+<body>
+
+    <!-- Nút Quay lại -->
+    <button class="btn-back" onclick="window.location.href='/history'">← Quay lại Thư Viện</button>
+
+    <!-- Header Banner Tươi Sáng & Tráng Lệ -->
+    <header class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            
+            <!-- ẢNH AVATAR -->
+            <div class="hero-avatar-box">
+                <img src="{{ url_for('static', filename='assets/images/characters/avatar/Lý Công Uẩn.png') }}" 
+                     alt="Chân dung Lý Công Uẩn" 
+                     class="hero-avatar" 
+                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            </div>
+
+            <span class="hero-badge">Dời Đô Về Thăng Long - Năm 1010</span>
+            <h1 class="hero-title">LÝ CÔNG UẨN</h1>
+            <p class="hero-subtitle">Lý Thái Tổ - Người Khai Sáng Triều Lý (974 - 1028)</p>
+            
+            <div class="scroll-indicator">
+                <span>CUỘN ĐỂ KHÁM PHÁ HÀO KHÍ</span>
+                <div class="arrow-down"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- KHỐI ẢNH MINH HỌA LỚN -->
+    <div class="library-showcase" style="text-align: center; margin: 50px auto; max-width: 900px; padding: 0 20px;">
+        <img src="{{ url_for('static', filename='assets/images/characters/library/Lý Công Uẩn.png') }}" 
+             alt="Minh họa Lý Công Uẩn" 
+             style="width: 100%; height: auto; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 4px solid #c62828;">
+    </div>
+
+    <!-- Khung Nội Dung Sử Thi Với Hiệu Ứng Cuộn -->
+    <main class="timeline-container">
+        
+        <article class="epic-card left">
+            <div class="card-glow"></div>
+            <div class="card-number">01</div>
+            <div class="card-body">
+                <h2>Tuổi Trẻ Và Thử Thách</h2>
+                <p>Mồ côi từ nhỏ, Lý Công Uẩn được sư Lý Khánh Văn nhận nuôi. Tại chùa Lục Tổ vùng Cổ Pháp, cậu bé sớm được rèn đức, luyện tài dưới sự dìu dắt uyên thâm của thiền sư Vạn Hạnh. Khi trưởng thành, ông rời Cổ Pháp đến Hoa Lư làm quan dưới triều Tiền Lê. Bằng tấm lòng trung hậu và tài năng xuất chúng, ông từng bước gây dựng được uy tín lớn mạnh với triều thần và nhân dân.</p>
+            </div>
+        </article>
+
+        <article class="epic-card right">
+            <div class="card-glow"></div>
+            <div class="card-number">02</div>
+            <div class="card-body">
+                <h2>Những Người Đồng Hành</h2>
+                <p>Lý Công Uẩn là người luôn trọng hiền tài, thuận lòng người. Đứng sau thành công của ông là <strong>Thiền sư Vạn Hạnh</strong> - người thầy lỗi lạc dạy đạo lý và tầm nhìn trị quốc; <strong>Đào Cam Mộc</strong> - vị đại thần góp công lớn trong việc quy tụ lòng người; và <strong>Lý Khánh Văn</strong> - người cha nuôi đã vun đắp nền tảng đạo đức từ thủa ấu thơ.</p>
+            </div>
+        </article>
+
+        <article class="epic-card left">
+            <div class="card-glow"></div>
+            <div class="card-number">03</div>
+            <div class="card-body">
+                <h2>Mở Ra Triều Đại Mới</h2>
+                <p>Năm 1009, triều Tiền Lê suy vong, Lý Công Uẩn được bá quan văn võ suy tôn lên ngôi Hoàng đế, lấy niên hiệu là Thuận Thiên, chính thức mở đầu triều đại nhà Lý. Vừa lên ngôi, ông lập tức ban hành hàng loạt chính sách khoan hòa, ân xá thiên hạ, giúp nhân dân an cư lạc nghiệp và nhanh chóng ổn định lòng dân.</p>
+            </div>
+        </article>
+
+        <article class="epic-card right">
+            <div class="card-glow"></div>
+            <div class="card-number">04</div>
+            <div class="card-body">
+                <h2>Chiếu Dời Đô Lịch Sử (1010)</h2>
+                <p>Với tầm nhìn chiến lược xuất chúng, năm 1010, Lý Thái Tổ tự tay viết "Chiếu dời đô", quyết định chuyển kinh đô từ vùng núi Hoa Lư chật hẹp ra thành Đại La - nơi "trung tâm trời đất, được thế rồng cuộn hổ ngồi". Ông đổi tên Đại La thành <strong>Thăng Long</strong> (Rồng bay lên), đặt nền móng cho một kỷ nguyên phát triển rực rỡ và lâu dài của văn minh Đại Việt.</p>
+            </div>
+        </article>
+
+        <article class="epic-card center">
+            <div class="card-glow"></div>
+            <div class="card-number">05</div>
+            <div class="card-body">
+                <h2>5 Bài Học Cho Hôm Nay</h2>
+                <p>
+                    <strong>1. Ham học hỏi:</strong> Kiến thức giúp mở rộng con đường tương lai.<br>
+                    <strong>2. Kiên nhẫn chờ thời:</strong> Chuẩn bị năng lực vững vàng trước khi nắm cơ hội.<br>
+                    <strong>3. Lấy đức thu phục:</strong> Gây dựng niềm tin bằng cách hành xử tử tế, trung hậu.<br>
+                    <strong>4. Biết lắng nghe:</strong> Trân trọng người thầy và ý kiến của người tài.<br>
+                    <strong>5. Tầm nhìn dài hạn:</strong> Nghĩ xa, làm đúng, chọn điều có lợi bền vững cho cộng đồng.
+                </p>
+            </div>
+        </article>
+
+    </main>
+
+    <!-- Script điều khiển -->
+    <script src="{{ url_for('static', filename='js/library/ly-cong-uan.js') }}"></script>
+    
+</body>
+</html>

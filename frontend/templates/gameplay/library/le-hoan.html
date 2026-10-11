@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sử Ta - Hào Khí Lê Đại Hành</title>
+    <!-- Nhúng Font Google: Playfair Display (Sử thi) & Be Vietnam Pro (Hiện đại) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Link CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/library/le-hoan.css') }}">
+</head>
+<body>
+
+    <!-- Nút Quay lại -->
+    <button class="btn-back" onclick="window.location.href='/history'">← Quay lại Thư Viện</button>
+
+    <!-- Header Banner Tươi Sáng & Tráng Lệ -->
+    <header class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            
+            <!-- ẢNH AVATAR -->
+            <div class="hero-avatar-box">
+                <img src="{{ url_for('static', filename='assets/images/characters/avatar/Lê Hoàn.png') }}" 
+                     alt="Chân dung Lê Hoàn" 
+                     class="hero-avatar" 
+                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            </div>
+
+            <span class="hero-badge">Đại Cồ Việt - 941 - 1005</span>
+            <h1 class="hero-title">LÊ HOÀN</h1>
+            <p class="hero-subtitle">Lê Đại Hành - Người Giữ Vững Nền Độc Lập</p>
+            
+            <div class="scroll-indicator">
+                <span>CUỘN ĐỂ KHÁM PHÁ HÀO KHÍ</span>
+                <div class="arrow-down"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- KHỐI ẢNH MINH HỌA LỚN -->
+    <div class="library-showcase" style="text-align: center; margin: 50px auto; max-width: 900px; padding: 0 20px;">
+        <img src="{{ url_for('static', filename='assets/images/characters/library/Lê Hoàn.png') }}" 
+             alt="Minh họa Lê Hoàn" 
+             style="width: 100%; height: auto; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 4px solid #c62828;">
+    </div>
+
+    <!-- Khung Nội Dung Sử Thi Với Hiệu Ứng Cuộn -->
+    <main class="timeline-container">
+        
+        <article class="epic-card left">
+            <div class="card-glow"></div>
+            <div class="card-number">01</div>
+            <div class="card-body">
+                <h2>Tuổi Trẻ Và Thử Thách</h2>
+                <p>Mồ côi cha mẹ từ nhỏ, Lê Hoàn được một người họ Lê nhận nuôi. Tuy xuất thân nghèo khó nhưng ông có sức vóc phi thường, ý chí vươn lên mạnh mẽ và tài thao lược nổi bật. Ông theo Đinh Bộ Lĩnh dẹp loạn 12 sứ quân, trưởng thành giữa muôn vàn chiến trận, từng bước khẳng định tài năng để trở thành "Thập Đạo Tướng Quân" quyền lực nhất triều Đinh.</p>
+            </div>
+        </article>
+
+        <article class="epic-card right">
+            <div class="card-glow"></div>
+            <div class="card-number">02</div>
+            <div class="card-body">
+                <h2>Những Người Đồng Hành</h2>
+                <p>Bí quyết thành công của Lê Hoàn là khả năng quy tụ người tài, đồng lòng giữ nước. Sát cánh cùng ông có <strong>Phạm Cự Lượng</strong> - tướng lĩnh góp sức thống nhất quân tâm; <strong>Thái hậu Dương Vân Nga</strong> - người quyết đoán đặt vận nước lên trên lợi ích riêng; và các bậc cao tăng <strong>Khuông Việt, Pháp Thuận</strong> với trí tuệ ngoại giao xuất chúng, giúp giữ vững thế nước trước giặc mạnh.</p>
+            </div>
+        </article>
+
+        <article class="epic-card left">
+            <div class="card-glow"></div>
+            <div class="card-number">03</div>
+            <div class="card-body">
+                <h2>Đại Thắng Năm 981 - Giữ Vững Non Sông</h2>
+                <p>Năm 981, trước họa xâm lăng, Lê Hoàn trực tiếp chỉ huy cuộc kháng chiến chống quân Tống. Ông vận dụng chiến thuật phối hợp thủy - bộ nhịp nhàng, tận dụng tối đa địa hình hiểm yếu của sông Bạch Đằng. Bằng mưu trí và lòng quả cảm, quân Đại Cồ Việt đã đánh bại hoàn toàn đạo quân của Hầu Nhân Bảo. Tiếp đà thắng lợi, năm 982, ông tiến quân về phía Nam, củng cố vững chắc vị thế Đại Cồ Việt.</p>
+            </div>
+        </article>
+
+        <article class="epic-card right">
+            <div class="card-glow"></div>
+            <div class="card-number">04</div>
+            <div class="card-body">
+                <h2>Khuyến Nông, Tịch Điền - Quý Trọng Sức Dân</h2>
+                <p>Không chỉ là một danh tướng kiệt xuất trên chiến trường, Lê Đại Hành còn là một vị vua rất chú trọng đến đời sống nhân dân. Ông là vị hoàng đế đầu tiên trong lịch sử Việt Nam cử hành lễ Tịch điền (đích thân xuống đồng cày cấy) nhằm khuyến khích nông nghiệp, thể hiện sự quan tâm sâu sắc và lòng quý trọng sức dân, tạo nền tảng ấm no cho xã hội.</p>
+            </div>
+        </article>
+
+        <article class="epic-card center">
+            <div class="card-glow"></div>
+            <div class="card-number">05</div>
+            <div class="card-body">
+                <h2>5 Bài Học Cho Hôm Nay</h2>
+                <p>
+                    <strong>1. Vượt nghịch cảnh:</strong> Khó khăn không quyết định tương lai.<br>
+                    <strong>2. Đặt việc chung lên trước:</strong> Ưu tiên lợi ích cộng đồng.<br>
+                    <strong>3. Quyết đoán đúng lúc:</strong> Bình tĩnh chọn việc cần làm.<br>
+                    <strong>4. Dùng người tài:</strong> Lắng nghe và giao đúng người, đúng việc.<br>
+                    <strong>5. Cương nhu linh hoạt:</strong> Kiên quyết khi bảo vệ nguyên tắc, mềm dẻo khi đối thoại.
+                </p>
+            </div>
+        </article>
+
+    </main>
+
+    <!-- Script điều khiển -->
+    <script src="{{ url_for('static', filename='js/library/le-hoan.js') }}"></script>
+    
+</body>
+</html>

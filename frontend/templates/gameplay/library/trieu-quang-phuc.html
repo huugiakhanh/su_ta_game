@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sử Ta - Hào Khí Triệu Việt Vương</title>
+    <!-- Nhúng Font Google: Playfair Display (Sử thi) & Be Vietnam Pro (Hiện đại) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Link CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/library/trieu-quang-phuc.css') }}">
+</head>
+<body>
+
+    <!-- Nút Quay lại -->
+    <button class="btn-back" onclick="window.location.href='/history'">← Quay lại Thư Viện</button>
+
+    <!-- Header Banner Tươi Sáng & Tráng Lệ -->
+    <header class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            
+            <!-- ẢNH AVATAR -->
+            <div class="hero-avatar-box">
+                <img src="{{ url_for('static', filename='assets/images/characters/avatar/Triệu Quang Phục.png') }}" 
+                     alt="Chân dung Triệu Quang Phục" 
+                     class="hero-avatar" 
+                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            </div>
+
+            <span class="hero-badge">Bậc Thầy Du Kích Dạ Trạch - Năm 550</span>
+            <h1 class="hero-title">TRIỆU QUANG PHỤC</h1>
+            <p class="hero-subtitle">Triệu Việt Vương - Khôi Phục Nước Vạn Xuân</p>
+            
+            <div class="scroll-indicator">
+                <span>CUỘN ĐỂ KHÁM PHÁ HÀO KHÍ</span>
+                <div class="arrow-down"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- KHỐI ẢNH MINH HỌA LỚN -->
+    <div class="library-showcase" style="text-align: center; margin: 50px auto; max-width: 900px; padding: 0 20px;">
+        <img src="{{ url_for('static', filename='assets/images/characters/library/Triệu Quang Phục.png') }}" 
+             alt="Minh họa Triệu Quang Phục" 
+             style="width: 100%; height: auto; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 4px solid #c62828;">
+    </div>
+
+    <!-- Khung Nội Dung Sử Thi Với Hiệu Ứng Cuộn -->
+    <main class="timeline-container">
+        
+        <article class="epic-card left">
+            <div class="card-glow"></div>
+            <div class="card-number">01</div>
+            <div class="card-body">
+                <h2>Tuổi Trẻ Và Thử Thách</h2>
+                <p>Là con trai của Thái phó Triệu Túc, Triệu Quang Phục sớm giỏi võ nghệ và việc sông nước. Ông theo cha tham gia khởi nghĩa của Lý Bí chống quân Lương. Khi lực lượng Vạn Xuân suy yếu trước sức mạnh của quân địch, ông đã quyết định rút quân về đầm Dạ Trạch, vượt qua muôn vàn thiếu thốn, sình lầy và vòng vây siết chặt của giặc để bảo toàn lực lượng.</p>
+            </div>
+        </article>
+
+        <article class="epic-card right">
+            <div class="card-glow"></div>
+            <div class="card-number">02</div>
+            <div class="card-body">
+                <h2>Những Người Đồng Hành</h2>
+                <p>Đồng hành cùng Triệu Quang Phục là <strong>Triệu Túc</strong>, người cha truyền chí lớn và <strong>Lý Nam Đế</strong>, người đã tin tưởng trao toàn bộ binh quyền chống giặc cho ông. Quan trọng nhất chính là <strong>Nghĩa quân Dạ Trạch</strong>, những con người đồng lòng bám đất, giữ quân. Trong truyền thuyết, hình tượng <strong>Chử Đồng Tử</strong> hiện lên giúp đỡ cũng thể hiện niềm tin và sự ủng hộ của lòng dân.</p>
+            </div>
+        </article>
+
+        <article class="epic-card left">
+            <div class="card-glow"></div>
+            <div class="card-number">03</div>
+            <div class="card-body">
+                <h2>Chiến Thuật Du Kích Dạ Trạch</h2>
+                <p>Tại đầm lầy Dạ Trạch mênh mông lau sậy, Triệu Quang Phục đã sáng tạo ra chiến thuật "Ban ngày ẩn quân - Ban đêm xuất kích". Dùng thuyền độc mộc lướt nhẹ trên mặt đầm, nghĩa quân liên tục tập kích bất ngờ vào ban đêm, khiến quân Lương mất ăn mất ngủ, hao mòn sinh lực mà không làm gì được.</p>
+            </div>
+        </article>
+
+        <article class="epic-card right">
+            <div class="card-glow"></div>
+            <div class="card-number">04</div>
+            <div class="card-body">
+                <h2>Chiến Thắng Vẻ Vang</h2>
+                <p>Sau nhiều năm kiên trì bám trụ, chớp lấy thời cơ nhà Lương có biến loạn, năm 550, nghĩa quân Dạ Trạch dốc toàn lực đánh bại quân đô hộ. Tướng giặc là Dương Sàn tử trận. Triệu Quang Phục khải hoàn tiến vào Long Biên, khôi phục lại nước Vạn Xuân và chính thức xưng là <strong>Triệu Việt Vương</strong> (Vua Việt họ Triệu).</p>
+            </div>
+        </article>
+
+        <article class="epic-card center">
+            <div class="card-glow"></div>
+            <div class="card-number">05</div>
+            <div class="card-body">
+                <h2>5 Bài Học Cho Hôm Nay</h2>
+                <p>
+                    <strong>1. Biết lùi đúng lúc:</strong> Bảo toàn lực lượng để tiến xa hơn.<br>
+                    <strong>2. Kiên nhẫn:</strong> Âm thầm chuẩn bị, chờ đúng thời cơ.<br>
+                    <strong>3. Tận dụng lợi thế:</strong> Biến địa hình khó khăn thành sức mạnh.<br>
+                    <strong>4. Linh hoạt:</strong> Thay đổi cách làm khi đối đầu trực diện bất lợi.<br>
+                    <strong>5. Đoàn kết:</strong> Dựa vào dân và đồng đội để vượt qua thử thách.
+                </p>
+            </div>
+        </article>
+
+    </main>
+
+    <!-- Script điều khiển -->
+    <script src="{{ url_for('static', filename='js/library/trieu-quang-phuc.js') }}"></script>
+    
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sử Ta - Hào Khí Lê Thái Tổ</title>
+    <!-- Nhúng Font Google: Playfair Display (Sử thi) & Be Vietnam Pro (Hiện đại) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;0,900;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Link CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/library/le-loi.css') }}">
+</head>
+<body>
+
+    <!-- Nút Quay lại -->
+    <button class="btn-back" onclick="window.location.href='/history'">← Quay lại Thư Viện</button>
+
+    <!-- Header Banner Tươi Sáng & Tráng Lệ -->
+    <header class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            
+            <!-- ẢNH AVATAR -->
+            <div class="hero-avatar-box">
+                <img src="{{ url_for('static', filename='assets/images/characters/avatar/Lê Lợi.png') }}" 
+                     alt="Chân dung Lê Lợi" 
+                     class="hero-avatar" 
+                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            </div>
+
+            <span class="hero-badge">Lãnh Tụ Khởi Nghĩa Lam Sơn (1385 - 1433)</span>
+            <h1 class="hero-title">LÊ LỢI</h1>
+            <p class="hero-subtitle">Lê Thái Tổ – Đem Đại Nghĩa Để Thắng Hung Tàn</p>
+            
+            <div class="scroll-indicator">
+                <span>CUỘN ĐỂ KHÁM PHÁ HÀO KHÍ</span>
+                <div class="arrow-down"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- KHỐI ẢNH MINH HỌA LỚN -->
+    <div class="library-showcase" style="text-align: center; margin: 50px auto; max-width: 900px; padding: 0 20px;">
+        <img src="{{ url_for('static', filename='assets/images/characters/library/Lê Lợi.png') }}" 
+             alt="Minh họa Lê Lợi" 
+             style="width: 100%; height: auto; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 4px solid #c62828;">
+    </div>
+
+    <!-- Khung Nội Dung Sử Thi Với Hiệu Ứng Cuộn -->
+    <main class="timeline-container">
+        
+        <article class="epic-card left">
+            <div class="card-glow"></div>
+            <div class="card-number">01</div>
+            <div class="card-body">
+                <h2>Gian Khó Không Lùi Bước</h2>
+                <p>Sinh trưởng tại Lam Sơn (Thanh Hóa), Lê Lợi sớm trở thành một hào trưởng có uy tín lớn. Dưới ách đô hộ tàn bạo của nhà Minh, ông sớm nuôi chí cứu dân, giành lại nền độc lập. Năm 1416, ông cùng các hào kiệt tổ chức Hội thề Lũng Nhai lịch sử. Khởi nghĩa bùng nổ năm 1418, dù nhiều lần bị địch vây hãm tại núi Chí Linh, chịu cảnh cạn kiệt lương thực, ông và nghĩa quân vẫn kiên cường không chịu khuất phục.</p>
+            </div>
+        </article>
+
+        <article class="epic-card right">
+            <div class="card-glow"></div>
+            <div class="card-number">02</div>
+            <div class="card-body">
+                <h2>Đồng Tâm - Đồng Cam Cộng Khổ</h2>
+                <p>Bên cạnh Lê Lợi là những người anh hùng kiệt xuất đã tạo nên sức mạnh vô song cho nghĩa quân. Đó là <strong>Nguyễn Trãi</strong> - vị mưu sĩ tài năng với chiến lược "Tâm công" sắc bén; <strong>Lê Lai</strong> - dũng tướng đã hi sinh thân mình cứu chủ tướng ở Chí Linh; cùng các tướng lĩnh quả cảm, mưu trí như <strong>Đinh Lễ, Lê Sát</strong>... Họ chính là biểu tượng của tinh thần đồng cam cộng khổ.</p>
+            </div>
+        </article>
+
+        <article class="epic-card left">
+            <div class="card-glow"></div>
+            <div class="card-number">03</div>
+            <div class="card-body">
+                <h2>Chi Lăng - Xương Giang (1427)</h2>
+                <p>Bằng chiến lược linh hoạt, Lê Lợi mở rộng căn cứ từ Thanh Hóa vào Nghệ An để tạo thế chủ động. Năm 1427, nghĩa quân lập nên chiến công vang dội: đánh bại hoàn toàn viện binh nhà Minh tại trận địa hiểm trở Chi Lăng - Xương Giang. Tướng giặc Liễu Thăng tử trận, buộc quân Minh phải rút về nước, khôi phục hoàn toàn nền độc lập cho Đại Việt.</p>
+            </div>
+        </article>
+
+        <article class="epic-card right">
+            <div class="card-glow"></div>
+            <div class="card-number">04</div>
+            <div class="card-body">
+                <h2>Bình Ngô Đại Cáo & Gươm Thuận Thiên</h2>
+                <p>Kháng chiến thắng lợi, Nguyễn Trãi vâng lệnh Lê Lợi soạn bản "Bình Ngô Đại Cáo" hào hùng - bản tuyên ngôn độc lập thứ hai của nước ta. Cuộc khởi nghĩa Lam Sơn cũng gắn liền với huyền thoại Gươm Thuận Thiên, biểu tượng thiêng liêng thể hiện ý trời và lòng dân cùng hướng về sứ mệnh giải phóng dân tộc của Lê Lợi.</p>
+            </div>
+        </article>
+
+        <article class="epic-card center">
+            <div class="card-glow"></div>
+            <div class="card-number">05</div>
+            <div class="card-body">
+                <h2>5 Bài Học Cho Hôm Nay</h2>
+                <p>
+                    <strong>1. Nuôi chí lớn:</strong> Có mục tiêu rõ ràng và kiên trì theo đuổi.<br>
+                    <strong>2. Đồng cam cộng khổ:</strong> Người lãnh đạo phải cùng chia sẻ khó khăn.<br>
+                    <strong>3. Trọng dụng nhân tài:</strong> Tin người giỏi và phát huy sức mạnh tập thể.<br>
+                    <strong>4. Lấy nhân nghĩa làm gốc:</strong> Thuyết phục lòng người trước khi dùng sức mạnh.<br>
+                    <strong>5. Linh hoạt nắm thời cơ:</strong> Biết tiến, lui và thay đổi cách làm đúng lúc.
+                </p>
+            </div>
+        </article>
+
+    </main>
+
+    <!-- Script điều khiển -->
+    <script src="{{ url_for('static', filename='js/library/le-loi.js') }}"></script>
+    
+</body>
+</html>
