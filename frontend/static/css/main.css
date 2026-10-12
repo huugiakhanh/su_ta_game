@@ -169,11 +169,41 @@ body {
 }
 .avatar {
     width: 55px; height: 55px;
-    background: #d1c4e9;
+    background: #4e342e;
     border: 2px solid #ffca28;
     border-radius: 4px;
     flex-shrink: 0;
+    overflow: hidden;
 }
+/* Avatar người chơi (SUTA-DB-01): ảnh 32-bit dày ×4 -> thu nhỏ mượt. */
+.avatar__img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: auto; }
+.avatar--fallback {
+    display: flex; justify-content: center; align-items: center;
+    color: #f1c40f; font-size: 13px; font-weight: bold;
+}
+
+/* Chọn avatar: form đăng ký + hồ sơ. */
+.avatar-picker { display: flex; justify-content: center; gap: 14px; margin-bottom: 12px; }
+.avatar-option {
+    position: relative;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 6px; border: 2px solid transparent; border-radius: 6px;
+    background: transparent; color: #f1c40f; font-weight: bold; cursor: pointer;
+}
+.avatar-option input { position: absolute; opacity: 0; pointer-events: none; }
+.avatar-option:has(input:checked), .avatar-option.is-selected { border-color: #f1c40f; background: rgba(241, 196, 15, 0.15); }
+.avatar-option:has(input:focus-visible), .avatar-option:focus-visible { outline: 2px solid #fff; }
+.avatar-picker .avatar-option__img { width: 64px; height: 64px; }
+
+.profile-modal {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100;
+    width: min(320px, 92vw); padding: 25px; text-align: center;
+    background: #3e2723; border: 3px solid #f1c40f; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+}
+.profile-modal[hidden] { display: none; }
+.profile-modal__name { color: #f1c40f; font-size: 18px; margin-bottom: 6px; }
+.profile-modal__hint { color: #d7ccc8; font-size: 13px; margin-bottom: 8px; }
+.profile-modal__message { color: #ffcc00; font-size: 12px; min-height: 16px; margin-bottom: 8px; }
 .info-text h3 {
     color: #f1c40f; font-size: 16px; margin-bottom: 2px;
     text-shadow: 1px 1px 3px #000;
@@ -199,6 +229,14 @@ body {
     padding: 6px 14px;
     font-weight: bold; font-size: 14px;
     color: #fff;
+}
+/* Icon vàng — ảnh chung toàn web assets/images/icon/icon_gold.png (Codex vẽ ICON_HUD_GOLD,
+   64×64, bộ 32-bit — thu nhỏ mượt). */
+.res-icon--gold {
+    display: inline-block;
+    width: 22px; height: 22px;
+    flex: none;
+    background: url('../assets/images/icon/icon_gold.png') center / contain no-repeat;
 }
 .btn-plus {
     background: #4caf50; color: #fff; border: 1px solid #fff;
@@ -632,6 +670,16 @@ body {
     border-color: #ffdb58;
 }
 
+/* Bảng thành tựu (SUTA-DB-01): chưa mở thì mờ + xám. */
+.achievement-table .achievement-icon { font-size: 22px; }
+.achievement-table .achievement-desc { text-align: left; }
+/* Chưa mở: chỉ mờ icon thành tựu + chữ nhạt; thưởng giữ màu (người dùng 10/10). */
+.achievement-table tr.is-locked td { color: #8a7458; }
+.achievement-table tr.is-locked .achievement-icon { opacity: 0.4; filter: grayscale(1); }
+.achievement-table .achievement-status--done { color: #2e7d32; font-weight: bold; }
+.achievement-table .achievement-reward { white-space: nowrap; }
+.achievement-table .res-icon--gold { width: 18px; height: 18px; vertical-align: middle; }
+
 /* Vùng chứa bảng - Cho phép cuộn dọc */
 .table-wrapper {
     background: #f4e3c5; 
@@ -872,6 +920,9 @@ body {
     .resources {
         gap: 4px;
         margin-left: auto;
+    }
+    .res-icon--gold {
+        width: 18px; height: 18px;
     }
     .res-item {
         padding: 4px 7px;

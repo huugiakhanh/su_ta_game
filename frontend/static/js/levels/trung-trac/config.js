@@ -43,6 +43,9 @@ export const ATTACK_ICON = 'ICON_SK_ATTACK';
 // (TT-HIBIT-02), nạp ở mọi màn (nhỏ). URL lấy qua spriteUrl(id) (assets.js).
 // Icon máu HUD (TT-HIBIT-02, người dùng duyệt 02/10); thiếu thì ui.js hiện chữ ♥.
 export const HEART_ICON = 'ICON_HUD_HEART';
+// Icon vàng (SUTA-DB-01): ảnh chung toàn web (không thuộc manifest chương) — panel qua
+// màn "+N vàng"; trang chủ dùng cùng ảnh qua CSS .res-icon--gold.
+export const GOLD_ICON_URL = '/static/assets/images/icon/icon_gold.png';
 export const SPRITE_DOM_IN_GAME = [
   'PORTRAIT_TRUNG_TRAC', 'PORTRAIT_TRUNG_NHI', 'PORTRAIT_THI_SACH', 'PORTRAIT_LE_CHAN', 'PORTRAIT_TO_DINH',
   DASH_ICON, ATTACK_ICON, HEART_ICON

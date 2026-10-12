@@ -210,6 +210,8 @@ function choose(index) {
     return;
   }
   current.gained = current.wrong.size ? QUESTION_SCORE.retry : QUESTION_SCORE.firstTry;
+  state.stats.quizTotal += 1;
+  if (!current.wrong.size) state.stats.quizCorrect += 1;
   state.score += current.gained;
   addReward(current.data.reward.id);
   updateHud();
@@ -221,6 +223,8 @@ function choose(index) {
 // thua ngay. Còn chơi tiếp thì hiện kết quả + giải thích, Enter để đóng.
 function chooseQuiz(option) {
   current.correct = option.correct;
+  state.stats.quizTotal += 1;
+  if (option.correct) state.stats.quizCorrect += 1;
   playSfx(option.correct ? 'correct' : 'wrong');
   if (option.correct) {
     state.score += current.data.score;

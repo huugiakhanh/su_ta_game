@@ -591,6 +591,10 @@ export function createLevelState(options = {}) {
     score: options.score ?? 0,
     health: 5,
     booksCollected: 0,
+    // Thống kê lượt chơi gửi kèm kỷ lục để xét thành tựu (SUTA-DB-01):
+    // hitsTaken = lần mất máu do đòn/vật cản/hố (không tính trả lời sai);
+    // quizCorrect/quizTotal = câu hỏi chặn đường + câu hỏi NPC (đúng ngay lần đầu).
+    stats: { hitsTaken: 0, quizCorrect: 0, quizTotal: 0 },
     // Mốc sự kiện 1 lần: màn 1 = nghỉ chân / cốt truyện chunk 10; màn 2 =
     // cốt truyện Thi Sách hy sinh.
     storyShown: false,

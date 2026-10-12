@@ -13,7 +13,7 @@ import {
   HURT_ANIMATION_TIME, PROJECTILE_SPEED, PROJECTILE_MAX_RANGE, HAZARD_DESPAWN_MARGIN,
   ATTACK_COOLDOWN, ATTACK_ACTIVE_TIME, PLAYER_SPRITE_ID, PLAYER_ANIMATIONS,
   HAZARD_SPRITES, ENEMY_SPRITES, MINIBOSS, GUARD, GROUND_Y,
-  ARENA, RUSHER, SKILLS, ARROW_RAIN_SPRITE, BOSS_TD, WAVES, BOSS_TEXT, WALL_ARROWS
+  ARENA, RUSHER, SKILLS, ARROW_RAIN_SPRITE, BOSS_TD, WAVES, BOSS_TEXT, WALL_ARROWS, GOLD_ICON_URL
 } from './config.js';
 import { setAnim, tickAnim, getAnimMeta, hitTime, animLength, createAnim } from './animation.js';
 import { readProgress, saveProgress, submitLevelRecord, REWARD_NAMES } from './progress.js';
@@ -73,6 +73,7 @@ export function hurtPlayer(reason) {
   if (p.invulnerable > 0 || state.won) return;
   playSfx('hurt');
   state.health -= 1;
+  state.stats.hitsTaken += 1;
   state.score = Math.max(0, state.score - 50);
   p.invulnerable = 1.25;
   p.hurtTimer = HURT_ANIMATION_TIME;
@@ -90,6 +91,7 @@ export function respawnAfterFall() {
   const p = state.player;
   playSfx('fall');
   state.health -= 1;
+  state.stats.hitsTaken += 1;
   if (state.health <= 0) {
     endGame(false);
     return;
@@ -1597,8 +1599,9 @@ export function endGame(won) {
   ui.endTime.hidden = !won;
   if (won) {
     const status = showLevelTime(seconds, progress.times, chapterEnd);
-    submitLevelRecord(LEVEL.id, seconds, levelScore).then(result => {
+    submitLevelRecord(LEVEL.id, seconds, levelScore, state.stats).then(({ status: result, reward }) => {
       status.textContent = RECORD_STATUS[result];
+      if (reward) showRecordReward(reward);
     });
   }
   ui.end.classList.add('panel--visible');
@@ -1612,6 +1615,37 @@ const RECORD_STATUS = {
   skipped: 'Lượt chơi thử — không lưu kỷ lục.',
   error: 'Chưa lưu được kỷ lục (lỗi kết nối).'
 };
+
+// Vàng/KC + thành tựu mới server trả về khi lưu kỷ lục (SUTA-DB-01).
+// Vàng hiện icon (GOLD_ICON_URL) trước số; lỗi tải ảnh thì chữ "+N vàng".
+function showRecordReward({ gold_gained: gold, gems_gained: gems, new_achievements: achievements = [] }) {
+  if (!gold && !gems && !achievements.length) return;
+  if (gold || gems) {
+    const line = document.createElement('p');
+    line.className = 'end-time__reward';
+    if (gold) {
+      const icon = document.createElement('img');
+      icon.className = 'end-time__gold';
+      icon.alt = 'Vàng';
+      const amount = document.createTextNode(`+${gold}`);
+      icon.addEventListener('error', () => {
+        icon.remove();
+        amount.textContent = `+${gold} vàng`;
+      }, { once: true });
+      icon.src = GOLD_ICON_URL;
+      line.append(icon, amount);
+    }
+    if (gems) line.append(`${gold ? ' · ' : ''}+${gems} kim cương`);
+    ui.endTime.append(line);
+  }
+  achievements.forEach(({ icon, name }) => {
+    const line = document.createElement('p');
+    line.className = 'end-time__achievement';
+    line.textContent = `${icon} Thành tựu mới: ${name}`;
+    ui.endTime.append(line);
+  });
+  playSfx('reward');
+}
 
 // Màn 1–2: "Thời gian: mm:ss". Hết chương: thời gian từng màn + tổng (màn
 // thiếu số — vào thẳng bằng ?debug=1 — hiện "—"). Trả về dòng trạng thái lưu.
