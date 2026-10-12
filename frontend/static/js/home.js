@@ -76,21 +76,27 @@
       }
   });
 
-  // --- BẢNG XẾP HẠNG ---
-  window.openLeaderboard = async function openLeaderboard() {
+  // --- BẢNG XẾP HẠNG (phạm vi theo tab — SUTA-DB-01) ---
+  let leaderboardScope = 'all';
+
+  window.openLeaderboard = async function openLeaderboard(scope = leaderboardScope) {
+      leaderboardScope = scope;
+      document.querySelectorAll('.leaderboard-tabs .tab-btn').forEach((tab) => {
+          tab.classList.toggle('active', tab.dataset.scope === scope);
+      });
+      document.getElementById('leaderboard-modal').style.display = 'flex';
       try {
-          const response = await fetch('/api/game/leaderboard');
+          const response = await fetch(`/api/game/leaderboard?scope=${encodeURIComponent(scope)}`);
           const result = await response.json();
-          
-          if (result.status === 'success') {
-              renderLeaderboardUI(result.data);
-              document.getElementById('leaderboard-modal').style.display = 'flex';
-          }
+          if (result.status === 'success' && scope === leaderboardScope) renderLeaderboardUI(result);
       } catch (error) {
           console.error('Lỗi lấy dữ liệu bảng xếp hạng:', error);
-          document.getElementById('leaderboard-modal').style.display = 'flex';
       }
   };
+
+  document.querySelectorAll('.leaderboard-tabs .tab-btn').forEach((tab) => {
+      tab.addEventListener('click', () => window.openLeaderboard(tab.dataset.scope));
+  });
 
   function formatTime(totalSeconds) {
       if (!totalSeconds) return "00:00:00";
@@ -100,53 +106,105 @@
       return `${h}:${m}:${s}`;
   }
 
-  function renderLeaderboardUI(data) {
+  // Ô bảng bằng textContent — tên người chơi do người dùng nhập, không đưa vào innerHTML.
+  // `nodes` (thay `text`): danh sách node/chuỗi gắn vào ô (vd. icon vàng).
+  function tableRow(cells) {
+      const tr = document.createElement('tr');
+      cells.forEach(({ text, nodes, style, className }) => {
+          const td = document.createElement('td');
+          if (nodes) td.append(...nodes);
+          else td.textContent = text;
+          if (style) td.style.cssText = style;
+          if (className) td.className = className;
+          tr.appendChild(td);
+      });
+      return tr;
+  }
+
+  function messageRow(tbody, colspan, text) {
+      tbody.innerHTML = `<tr><td colspan="${colspan}" style="padding: 20px; color: #8b4513;"></td></tr>`;
+      tbody.querySelector('td').textContent = text;
+  }
+
+  const MEDALS = { 1: '🥇 1', 2: '🥈 2', 3: '🥉 3' };
+
+  function renderLeaderboardUI({ data, me, levels_total: levelsTotal }) {
       const tbody = document.getElementById('leaderboard-table-body');
       if (!tbody) return;
-      tbody.innerHTML = ''; 
-      
-      // Lấy tên người dùng hiện tại
-      const userTextEl = document.querySelector('.info-text h3');
-      const currentUserName = userTextEl ? userTextEl.textContent : "KHÁCH TRUY CẬP";
-      
-      let myRank = "NO";
-      let myScore = 0;
-      
+      tbody.innerHTML = '';
       if (!data || data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" style="padding: 20px; color: #8b4513;">Chưa có dữ liệu xếp hạng</td></tr>';
+          messageRow(tbody, 6, 'Chưa có dữ liệu xếp hạng');
       } else {
           data.forEach((player) => {
-              const tr = document.createElement('tr');
-              
-              let rankDisplay = player.rank;
-              if (player.rank === 1) rankDisplay = '🥇 1';
-              else if (player.rank === 2) rankDisplay = '🥈 2';
-              else if (player.rank === 3) rankDisplay = '🥉 3';
-
-              tr.innerHTML = `
-                  <td style="color: ${player.rank <= 3 ? '#d32f2f' : 'inherit'}; font-size: ${player.rank <= 3 ? '18px' : 'inherit'};">${rankDisplay}</td>
-                  <td>${player.name}</td>
-                  <td>${player.levels_passed}/12</td>
-                  <td style="color: #b22222;">⭐ ${player.total_score.toLocaleString()}</td>
-                  <td>🕒 ${formatTime(player.total_time)}</td>
-                  <td>...</td> 
-              `;
-              tbody.appendChild(tr);
-
-              if (player.name === currentUserName) {
-                  myRank = player.rank;
-                  myScore = player.total_score;
-              }
+              const top = player.rank <= 3;
+              tbody.appendChild(tableRow([
+                  { text: MEDALS[player.rank] || player.rank, style: top ? 'color: #d32f2f; font-size: 18px;' : '' },
+                  { text: player.name },
+                  { text: `${player.levels_passed}/${levelsTotal}` },
+                  { text: `⭐ ${player.total_score.toLocaleString()}`, style: 'color: #b22222;' },
+                  { text: `🕒 ${formatTime(player.total_time)}` },
+                  { text: player.badges || '—' },
+              ]));
           });
       }
+      // Hạng của mình do server tính (kể cả ngoài top 10).
+      document.getElementById('my-current-rank').textContent = me ? me.rank : 'NO';
+      document.getElementById('my-current-name').textContent = currentUser ? currentUser.name : 'Khách';
+      document.getElementById('my-current-score').textContent = `⭐ ${(me ? me.total_score : 0).toLocaleString()}`;
+  }
 
-      const rankEl = document.getElementById('my-current-rank');
-      const nameEl = document.getElementById('my-current-name');
-      const scoreEl = document.getElementById('my-current-score');
-      
-      if (rankEl) rankEl.textContent = myRank;
-      if (nameEl) nameEl.textContent = currentUserName;
-      if (scoreEl) scoreEl.textContent = `⭐ ${myScore.toLocaleString()}`;
+  // --- THÀNH TỰU (SUTA-DB-01) ---
+  window.openAchievements = async function openAchievements() {
+      document.getElementById('achievement-modal').style.display = 'flex';
+      const tbody = document.getElementById('achievement-table-body');
+      try {
+          const result = await fetch('/api/game/achievements').then((response) => response.json());
+          if (result.status !== 'success') throw new Error(result.message);
+          renderAchievements(result.data);
+      } catch (error) {
+          console.error('Lỗi lấy danh sách thành tựu:', error);
+          messageRow(tbody, 5, 'Không tải được thành tựu');
+      }
+  };
+
+  // Icon vàng assets/images/icon/icon_gold.png qua CSS .res-icon--gold (cùng ô vàng trang
+  // chủ — emoji 🪙 không hiện trên Windows 10).
+  function goldIcon() {
+      const icon = document.createElement('span');
+      icon.className = 'res-icon res-icon--gold';
+      icon.setAttribute('role', 'img');
+      icon.setAttribute('aria-label', 'Vàng');
+      return icon;
+  }
+
+  function rewardNodes(gold, gems) {
+      const nodes = [];
+      if (gold) nodes.push(goldIcon(), ` ${gold}`);
+      if (gems) nodes.push(`${nodes.length ? ' ' : ''}💎 ${gems}`);
+      return nodes.length ? nodes : ['—'];
+  }
+
+  function renderAchievements(list) {
+      const tbody = document.getElementById('achievement-table-body');
+      tbody.innerHTML = '';
+      list.forEach((item) => {
+          const row = tableRow([
+              { text: item.icon, className: 'achievement-icon' },
+              { text: item.name },
+              { text: item.description, className: 'achievement-desc' },
+              { nodes: rewardNodes(item.reward_gold, item.reward_gems), className: 'achievement-reward' },
+              item.unlocked
+                  ? { text: `✅ ${new Date(item.unlocked_at).toLocaleDateString('vi-VN')}`, className: 'achievement-status--done' }
+                  : { text: '🔒 Chưa mở' },
+          ]);
+          row.classList.toggle('is-locked', !item.unlocked);
+          tbody.appendChild(row);
+      });
+      const unlocked = list.filter((item) => item.unlocked).length;
+      document.getElementById('achievement-count').textContent = `${unlocked}/${list.length}`;
+      document.getElementById('achievement-hint').textContent = currentUser
+          ? currentUser.name
+          : 'Đăng nhập để lưu thành tựu';
   }
   // -----------------------
 
@@ -168,22 +226,53 @@
   // Tài khoản đang đăng nhập (Flask session — TT-TIME-01); null = khách.
   let currentUser = null;
 
+  // Avatar người chơi (cột users.avatar — SUTA-DB-01). Ảnh chung toàn web (không
+  // thuộc chương nào) ở assets/images/avatar/ — Codex vẽ (AVATAR_MALE/AVATAR_FEMALE,
+  // 256×256, bộ 32-bit); lỗi tải thì hiện chữ tạm.
+  const AVATAR_ROOT = '/static/assets/images/avatar/';
+  const AVATARS = {
+    male: { label: 'Nam', src: `${AVATAR_ROOT}avatar_male.png` },
+    female: { label: 'Nữ', src: `${AVATAR_ROOT}avatar_female.png` },
+  };
+
+  function renderAvatar(box, key) {
+    const avatar = AVATARS[key] || AVATARS.male;
+    box.classList.remove('avatar--guest', 'avatar--fallback');
+    const img = document.createElement('img');
+    img.className = 'avatar__img';
+    img.alt = `Avatar ${avatar.label}`;
+    img.addEventListener('error', () => {
+      box.textContent = avatar.label;
+      box.classList.add('avatar--fallback');
+    }, { once: true });
+    img.src = avatar.src;
+    box.replaceChildren(img);
+  }
+
+  document.querySelectorAll('[data-avatar]').forEach((box) => renderAvatar(box, box.dataset.avatar));
+
+  function showResources(gold, gems) {
+    document.querySelector('[data-res="gold"]').textContent = gold.toLocaleString('vi-VN');
+    document.querySelector('[data-res="gems"]').textContent = gems.toLocaleString('vi-VN');
+  }
+
   function showUser(user) {
     currentUser = user;
     document.querySelector('.info-text h3').textContent = user.name;
-    document.querySelector('.info-text div').textContent = `Cấp ${user.level}`;
-    document.querySelector('.avatar').textContent = '';
-    document.querySelectorAll('.res-item')[0].innerHTML = `🪙 ${user.gold} <button class="btn-plus">+</button>`;
-    document.querySelectorAll('.res-item')[1].innerHTML = `💎 ${user.gems} <button class="btn-plus">+</button>`;
+    document.querySelector('.info-text div').textContent = `Đã qua ${user.levels_cleared} màn`;
+    renderAvatar(document.querySelector('.player-info .avatar'), user.avatar);
+    showResources(user.gold, user.gems);
   }
 
   function showGuest() {
     currentUser = null;
     document.querySelector('.info-text h3').textContent = 'KHÁCH TRUY CẬP';
     document.querySelector('.info-text div').textContent = 'Chạm để Đăng nhập';
-    document.querySelector('.avatar').textContent = '?';
-    document.querySelectorAll('.res-item')[0].innerHTML = '🪙 0 <button class="btn-plus">+</button>';
-    document.querySelectorAll('.res-item')[1].innerHTML = '💎 0 <button class="btn-plus">+</button>';
+    const avatar = document.querySelector('.player-info .avatar');
+    avatar.classList.remove('avatar--fallback');
+    avatar.classList.add('avatar--guest');
+    avatar.textContent = '?';
+    showResources(0, 0);
   }
 
   // Tải lại trang vẫn giữ đăng nhập: hỏi server session hiện tại.
@@ -198,19 +287,62 @@
   }
   restoreSession();
 
-  window.moBangDangNhap = async function moBangDangNhap() {
+  window.moBangDangNhap = function moBangDangNhap() {
     if (currentUser) {
-      if (!window.confirm(`Đăng xuất khỏi tài khoản "${currentUser.name}"?`)) return;
-      try {
-        await fetch('/api/auth/logout', { method: 'POST' });
-      } catch (_) {
-        // Lỗi mạng: vẫn hiện như khách, session tự hết hạn sau.
-      }
-      showGuest();
+      openProfile();
       return;
     }
     document.getElementById('loginModal').style.display = 'block';
     setAuthMessage('');
+  };
+
+  // --- HỒ SƠ: đổi avatar + đăng xuất (SUTA-DB-01) ---
+  function markAvatarChoice(key) {
+    document.querySelectorAll('[data-avatar-choice]').forEach((button) => {
+      const selected = button.dataset.avatarChoice === key;
+      button.classList.toggle('is-selected', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+  }
+
+  function openProfile() {
+    document.getElementById('profileName').textContent = currentUser.name;
+    document.getElementById('profileMessage').textContent = '';
+    markAvatarChoice(currentUser.avatar);
+    document.getElementById('profileModal').hidden = false;
+  }
+
+  window.dongHoSo = function dongHoSo() {
+    document.getElementById('profileModal').hidden = true;
+  };
+
+  document.querySelectorAll('[data-avatar-choice]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const key = button.dataset.avatarChoice;
+      if (!currentUser || key === currentUser.avatar) return;
+      const message = document.getElementById('profileMessage');
+      message.textContent = 'Đang lưu...';
+      try {
+        const data = await postAuth('/api/auth/avatar', { avatar: key });
+        if (data.status !== 'success') throw new Error(data.message);
+        currentUser.avatar = key;
+        renderAvatar(document.querySelector('.player-info .avatar'), key);
+        markAvatarChoice(key);
+        message.textContent = 'Đã đổi avatar.';
+      } catch (_) {
+        message.textContent = 'Không đổi được avatar, thử lại sau.';
+      }
+    });
+  });
+
+  window.dangXuat = async function dangXuat() {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (_) {
+      // Lỗi mạng: vẫn hiện như khách, session tự hết hạn sau.
+    }
+    window.dongHoSo();
+    showGuest();
   };
 
   window.doiTab = function doiTab(type) {
@@ -268,7 +400,8 @@
 
     setAuthMessage('Đang tạo tài khoản mới...');
     try {
-      const data = await postAuth('/register', { name, username, password });
+      const avatar = document.querySelector('input[name="regAvatar"]:checked')?.value || 'male';
+      const data = await postAuth('/register', { name, username, password, avatar });
       if (data.status === 'success') {
         setAuthMessage(data.message, '#51cf66');
         setTimeout(() => window.doiTab('login'), 1500);

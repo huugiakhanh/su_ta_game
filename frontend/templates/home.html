@@ -31,8 +31,9 @@
             </div>
 
             <div class="resources">
-                <div class="panel res-item">💎 0 <button class="btn-plus">+</button></div>
-                <div class="panel res-item">⚡ 0/30 <button class="btn-plus">+</button></div>
+                <!-- Vàng + kim cương (SUTA-DB-01; bỏ năng lượng ⚡). home.js chỉ ghi số vào [data-res]. -->
+                <div class="panel res-item"><span class="res-icon res-icon--gold" role="img" aria-label="Vàng"></span> <span data-res="gold">0</span> <button class="btn-plus">+</button></div>
+                <div class="panel res-item">💎 <span data-res="gems">0</span> <button class="btn-plus">+</button></div>
                 <button class="btn panel btn-settings">⚙️</button>
             </div>
         </div>
@@ -41,7 +42,7 @@
             
             <div class="left-menu">
                 
-                <button class="btn btn-side"><span class="btn-side__icon">🏆</span> <span class="btn-side__label">THÀNH TỰU</span></button>
+                <button class="btn btn-side" onclick="openAchievements()"><span class="btn-side__icon">🏆</span> <span class="btn-side__label">THÀNH TỰU</span></button>
                 <!-- <button class="btn btn-side">💼 NHIỆM VỤ HẰNG NGÀY</button> -->
                 <button class="btn btn-side" onclick="openLeaderboard()"><span class="btn-side__icon">📊</span> <span class="btn-side__label">BẢNG XẾP HẠNG</span></button>
                 <button class="btn btn-side"><span class="btn-side__icon">🏪</span> <span class="btn-side__label">CỬA HÀNG</span></button>
@@ -414,8 +415,12 @@
 
             <!-- Tiêu đề / Tabs chọn tướng -->
             <div class="leaderboard-tabs">
-                <button class="tab-btn active">🏆 TOÀN GAME</button>
-                <!-- <button class="tab-btn">👩 TRƯNG TRẮC</button> -->
+                <!-- data-scope: phạm vi gửi /api/game/leaderboard?scope= (SUTA-DB-01). -->
+                <button class="tab-btn active" data-scope="all">🏆 TOÀN GAME</button>
+                <button class="tab-btn" data-scope="chapter-1">👩 TRƯNG TRẮC</button>
+                <button class="tab-btn" data-scope="level-101">MÀN 1</button>
+                <button class="tab-btn" data-scope="level-102">MÀN 2</button>
+                <button class="tab-btn" data-scope="level-103">MÀN 3</button>
                 <!-- <button class="tab-btn">🧔 ĐINH BỘ LĨNH</button> -->
                 <!-- <button class="tab-btn">📜 LÝ CÔNG UẨN</button> -->
                 <!-- <button class="tab-btn">⚔️ LÊ LỢI</button> -->
@@ -449,6 +454,36 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- MODAL THÀNH TỰU (SUTA-DB-01) — dùng chung khung/bảng của BXH -->
+    <div id="achievement-modal" class="modal-overlay" style="display: none;">
+        <div class="leaderboard-container">
+            <div class="leaderboard-header">
+                <h2 class="leaderboard-title">THÀNH TỰU</h2>
+            </div>
+            <button class="close-btn" onclick="document.getElementById('achievement-modal').style.display='none'">X</button>
+            <div class="table-wrapper">
+                <table class="leaderboard-table achievement-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>THÀNH TỰU</th>
+                            <th>ĐIỀU KIỆN</th>
+                            <th>THƯỞNG</th>
+                            <th>TRẠNG THÁI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="achievement-table-body"></tbody>
+                </table>
+            </div>
+            <div class="my-rank-footer">
+                <div class="my-rank-title">ĐÃ MỞ<br><span id="achievement-count">0/0</span></div>
+                <div class="my-rank-info">
+                    <span id="achievement-hint">Đăng nhập để lưu thành tựu</span>
+                </div>
+            </div>
         </div>
     </div>
 

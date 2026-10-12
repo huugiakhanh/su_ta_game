@@ -7,7 +7,7 @@ import { clearInput, bindInput } from './input.js';
 import { update, endGame } from './physics.js';
 import { draw, fitCanvas } from './render.js';
 import { LEVEL, setLevel } from './config.js';
-import { LEVEL_URLS, requireLevel, clearProgress } from './progress.js';
+import { LEVEL_URLS, requireLevel, clearProgress, syncProgressFromServer } from './progress.js';
 import { initDialogue, closeDialogue } from './dialogue.js';
 import { initAudio, playMusic, playSfx, setAudioSuspended, toggleMuted } from './audio.js';
 import { initSettings, isSettingsOpen, syncSettings, toggleSettings } from './settings.js';
@@ -25,7 +25,9 @@ const params = new URLSearchParams(window.location.search);
 // Màn đang chơi lấy từ `data-level` của trang (route truyền vào) — cùng bộ
 // module cho mọi màn (TT-NPC-01). Chưa hoàn thành màn trước -> requireLevel()
 // chuyển về màn 1 và trả null (`?debug=1` vào thẳng với dữ liệu giả lập).
+// Đã đăng nhập: lấy tiến trình từ server trước (SUTA-DB-01).
 setLevel(Number(document.body.dataset.level) || 1);
+await syncProgressFromServer();
 const progress = requireLevel(LEVEL.id);
 // `?layout=p2`: layout thử 6 vật cản P2 + cầu qua hố (TT-MAP-01), chỉ màn 1.
 // `score`: điểm mang sang từ màn trước (chơi lại màn thì quay về số này — D12).

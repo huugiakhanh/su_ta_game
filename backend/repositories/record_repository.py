@@ -1,45 +1,62 @@
-from backend.db import db_cursor, placeholder
-
-def save_level_clear_time(username, level_id, clear_time_seconds, score=0): # Thêm tham số score
-    mark = placeholder()
-    with db_cursor(commit=True) as (_, cursor):
-        cursor.execute(
-            f"INSERT INTO level_records (username, level_id, clear_time_seconds, score) "
-            f"VALUES ({mark}, {mark}, {mark}, {mark})",
-            (username, level_id, clear_time_seconds, score), # Truyền thêm score vào đây
-        )
+from backend.db import db_cursor
 
 
-def get_top_players(limit=10):
-    # Dùng CTE (WITH) để lấy thành tích tốt nhất của mỗi màn cho từng user
-    query = """
-        WITH BestScores AS (
-            SELECT username, level_id, MAX(score) as best_score, MIN(clear_time_seconds) as best_time
-            FROM level_records
-            GROUP BY username, level_id
-        )
-        SELECT 
-            u.name, 
-            COUNT(bs.level_id) as levels_passed, 
-            SUM(bs.best_score) as total_score, 
-            SUM(bs.best_time) as total_time
+# Xếp hạng trong phạm vi (cả game / 1 chương / 1 màn): tổng điểm tốt nhất mỗi
+# màn giảm dần, hoà thì tổng thời gian tốt nhất tăng dần (SUTA-DB-01).
+# `chapter`/`level` = NULL nghĩa là không lọc.
+LEADERBOARD_QUERY = """
+    WITH scoped AS (
+        SELECT s.user_id, s.best_score, s.best_time
+        FROM user_level_stats s
+        JOIN levels l ON l.id = s.level_id
+        WHERE (%(chapter)s IS NULL OR l.chapter_id = %(chapter)s)
+          AND (%(level)s IS NULL OR s.level_id = %(level)s)
+    ),
+    ranked AS (
+        SELECT u.id, u.display_name,
+               COUNT(*)           AS levels_passed,
+               SUM(s.best_score)  AS total_score,
+               SUM(s.best_time)   AS total_time,
+               ROW_NUMBER() OVER (ORDER BY SUM(s.best_score) DESC, SUM(s.best_time) ASC, u.id) AS rank
         FROM users u
-        JOIN BestScores bs ON u.username = bs.username
-        GROUP BY u.username, u.name
-        ORDER BY total_score DESC, total_time ASC
-        LIMIT %s
-    """
+        JOIN scoped s ON s.user_id = u.id
+        GROUP BY u.id, u.display_name
+    )
+    SELECT r.id, r.rank, r.display_name, r.levels_passed, r.total_score, r.total_time,
+           (SELECT COALESCE(string_agg(a.icon, '' ORDER BY a.sort_order), '')
+            FROM user_achievements ua JOIN achievements a ON a.code = ua.achievement_code
+            WHERE ua.user_id = r.id) AS badges
+    FROM ranked r
+    WHERE r.rank <= %(limit)s OR r.id = %(me)s
+    ORDER BY r.rank
+"""
+
+
+def get_leaderboard(chapter_id=None, level_id=None, limit=10, user_id=None):
+    """Trả về {data: top `limit`, me: hàng của `user_id` (hoặc None), levels_total}."""
+    params = {"chapter": chapter_id, "level": level_id, "limit": limit, "me": user_id}
     with db_cursor() as (_, cursor):
-        cursor.execute(query, (limit,))
+        cursor.execute(LEADERBOARD_QUERY, params)
         rows = cursor.fetchall()
-        
-    leaderboard = []
-    for i, row in enumerate(rows):
-        leaderboard.append({
-            "rank": i + 1,
-            "name": row[0],
-            "levels_passed": row[1],
-            "total_score": row[2] if row[2] else 0,
-            "total_time": row[3] if row[3] else 0
-        })
-    return leaderboard
+        cursor.execute(
+            "SELECT COUNT(*) FROM levels WHERE (%(chapter)s IS NULL OR chapter_id = %(chapter)s) "
+            "AND (%(level)s IS NULL OR id = %(level)s)",
+            params,
+        )
+        levels_total = cursor.fetchone()[0]
+
+    board, me = [], None
+    for row in rows:
+        entry = {
+            "rank": row[1],
+            "name": row[2],
+            "levels_passed": row[3],
+            "total_score": row[4] or 0,
+            "total_time": float(row[5] or 0),
+            "badges": row[6],
+        }
+        if row[1] <= limit:
+            board.append(entry)
+        if user_id is not None and row[0] == user_id:
+            me = entry
+    return {"data": board, "me": me, "levels_total": levels_total}

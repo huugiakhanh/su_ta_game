@@ -525,6 +525,10 @@ kbd {
 }
 .end-time__total { margin-top: 2px; color: var(--gold); font-size: 17px; font-weight: 800; }
 .panel .end-time__status { color: #d5c39e; font-size: 13px; }
+/* Thưởng khi lưu kỷ lục (SUTA-DB-01). */
+.panel .end-time__reward { color: var(--gold); font-size: 15px; font-weight: 800; }
+.end-time__gold { width: 18px; height: 18px; margin-right: 4px; vertical-align: -3px; }
+.panel .end-time__achievement { color: #f4e3c5; font-size: 14px; font-weight: 700; }
 
 /* ---- TT-TIME-01: menu cài đặt — phủ trên hội thoại/panel kết thúc ---- */
 .settings { z-index: 5; background: rgba(9, 7, 5, .8); }

@@ -1,27 +1,18 @@
 from contextlib import contextmanager
+from pathlib import Path
 
 from flask import current_app
 
 
-USERS_SCHEMA = """
-CREATE TABLE IF NOT EXISTS users (
-    username VARCHAR(50) PRIMARY KEY,
-    password VARCHAR(100) NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    level INTEGER DEFAULT 1,
-    gold INTEGER DEFAULT 0,
-    gems INTEGER DEFAULT 0
-)
-"""
+MIGRATIONS_DIR = Path(__file__).resolve().parent / "migrations"
+# Khoá advisory để 2 tiến trình (vd. reloader của Flask debug) không chạy
+# migration cùng lúc. Số tuỳ ý, chỉ cần cố định.
+MIGRATION_LOCK_ID = 7_310_001
 
-LEVEL_RECORDS_SCHEMA = """
-CREATE TABLE IF NOT EXISTS level_records (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(50) REFERENCES users(username),
-    level_id INTEGER NOT NULL,
-    clear_time_seconds FLOAT NOT NULL,
-    score INTEGER DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+SCHEMA_MIGRATIONS = """
+CREATE TABLE IF NOT EXISTS schema_migrations (
+    version     VARCHAR(100) PRIMARY KEY,
+    applied_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 )
 """
 
@@ -44,6 +35,8 @@ def placeholder():
 
 @contextmanager
 def db_cursor(commit=False):
+    """Một kết nối + cursor. `commit=True`: commit khi khối chạy xong không lỗi;
+    có exception thì đóng kết nối không commit (PostgreSQL tự rollback)."""
     connection = get_db_connection()
     cursor = connection.cursor()
     try:
@@ -55,26 +48,37 @@ def db_cursor(commit=False):
         connection.close()
 
 
-def init_db():
-    with db_cursor(commit=True) as (_, cursor):
-        cursor.execute(USERS_SCHEMA)
-        cursor.execute(LEVEL_RECORDS_SCHEMA)
+def migration_files():
+    """File migration `NNN_ten.sql`, theo thứ tự tên."""
+    return sorted(MIGRATIONS_DIR.glob("[0-9][0-9][0-9]_*.sql"))
 
 
-        cursor.execute("""
-            SELECT column_name 
-            FROM information_schema.columns 
-            WHERE table_name='level_records' AND column_name='score'
-        """)
-        if not cursor.fetchone():
-            cursor.execute("ALTER TABLE level_records ADD COLUMN score INTEGER DEFAULT 0")
+def run_migrations():
+    """Chạy các file migration chưa áp dụng (SUTA-DB-01). Mỗi file 1 transaction:
+    lỗi -> rollback file đó và dừng. Trả về danh sách version vừa chạy."""
+    applied_now = []
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT pg_advisory_lock(%s)", (MIGRATION_LOCK_ID,))
+            cursor.execute(SCHEMA_MIGRATIONS)
+            connection.commit()
+            cursor.execute("SELECT version FROM schema_migrations")
+            done = {row[0] for row in cursor.fetchall()}
+            for path in migration_files():
+                if path.stem in done:
+                    continue
+                try:
+                    cursor.execute(path.read_text(encoding="utf-8"))
+                    cursor.execute("INSERT INTO schema_migrations (version) VALUES (%s)", (path.stem,))
+                    connection.commit()
+                except Exception:
+                    connection.rollback()
+                    raise
+                applied_now.append(path.stem)
+            cursor.execute("SELECT pg_advisory_unlock(%s)", (MIGRATION_LOCK_ID,))
+            connection.commit()
+    finally:
+        connection.close()
+    return applied_now
 
-        
-        mark = placeholder()
-        cursor.execute(f"SELECT 1 FROM users WHERE username = {mark}", ("admin",))
-        if not cursor.fetchone():
-            cursor.execute(
-                f"INSERT INTO users (username, password, name, level, gold, gems) "
-                f"VALUES ({mark}, {mark}, {mark}, {mark}, {mark}, {mark})",
-                ("admin", "admin", "QUẢN TRỊ VIÊN", 1, 1000, 50),
-            )
