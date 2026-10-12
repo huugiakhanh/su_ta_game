@@ -1,7 +1,7 @@
 # REPORT TT-HIBIT-01 — Bộ sprite 32-bit (hi-bit) chương Trưng Trắc
 
 Ngày: 01–02/10/2026 • Trạng thái: **HOÀN THÀNH** — 23/23 sprite vẽ trên canvas dùng bản 32-bit, `IN_GAME`.
-Task card: [SUTA_TT_TASK_HIBIT_01.md](SUTA_TT_TASK_HIBIT_01.md) (chi tiết từng đợt, số đo QA). Spec: [SUTA_TT_ART_BRIEF_32.md](../SUTA_TT_ART_BRIEF_32.md).
+Task card: [SUTA_TT_TASK_HIBIT_01.md](SUTA_TT_TASK_HIBIT_01.md) (chi tiết từng đợt, số đo QA). Spec: [SUTA_TT_ART_BRIEF_32.md](../../SUTA_TT_ART_BRIEF_32.md).
 
 ## 1. Kết quả
 

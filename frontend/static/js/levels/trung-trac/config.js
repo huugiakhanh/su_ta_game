@@ -4,7 +4,7 @@
 // Độ phân giải LOGIC của màn (TT-INT-01): mọi thứ vẽ lên canvas cao 270 rồi
 // phóng ra màn hình (xem fitCanvas() trong render.js). Mọi toạ độ/kích
 // thước/tốc độ dưới đây là pixel logic — đã quy đổi từ hệ cũ 896x360 theo hệ
-// số k = 0.6 (khớp tỉ lệ bộ sprite 8-bit mới, xem docs/INTEGRATION_PLAN_TT.md).
+// số k = 0.6 (khớp tỉ lệ bộ sprite 8-bit mới, xem docs/archive/INTEGRATION_PLAN_TT.md).
 // Hằng số tính theo giây KHÔNG nhân k.
 // Chiều CAO logic cố định; chiều RỘNG khung nhìn (VIEW_W) giãn theo tỉ lệ cửa
 // sổ để màn chơi phủ kín chiều ngang (yêu cầu team 26/09): tối thiểu LOGICAL_W
@@ -252,7 +252,7 @@ export const VICTORY_FLAG_ATTACH = null;
 //   id      asset trong manifest_tt.json (mọi strip quay mặt PHẢI; render tự lật
 //           để vật chạy quay theo hướng chạy, lính/boss quay về phía người chơi).
 //   w, h    hitbox (px logic) tính từ pivot bottom-center (tâm ngang, chân) —
-//           KHÔNG lấy từ cỡ ảnh. DESIGN_BASELINE (docs/INTEGRATION_PLAN_TT.md §5).
+//           KHÔNG lấy từ cỡ ảnh. DESIGN_BASELINE (docs/archive/INTEGRATION_PLAN_TT.md §5).
 //   anims   trạng thái gameplay -> animation manifest. Trạng thái: move (roller
 //           đang lao), idle, hurt (hitTimer > 0), throw, alarm, sprung (bẫy
 //           đã bật), death (hết máu — phát 1 lần rồi xoá; vật `corpse` thì

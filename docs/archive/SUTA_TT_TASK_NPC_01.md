@@ -3,7 +3,7 @@
 
 TASK_ID: TT-NPC-01 • Version 2.0 • 25/09/2026 (thay thế hoàn toàn bản 1.0)
 Thư mục code hiện tại: `frontend/static/js/levels/trung-trac/`
-Tài liệu (READ-ONLY): `CLAUDE.md`, `SUTA_TT_SPRITE_BRIEF.md`, `SUTA_TT_MAP_BRIEF.md`, `docs/REPORT_TT-INT-01.md`, `docs/REPORT_TT-MAP-01.md`
+Tài liệu (READ-ONLY): `CLAUDE.md`, `SUTA_TT_SPRITE_BRIEF.md`, `SUTA_TT_MAP_BRIEF.md`, `docs/archive/REPORT_TT-INT-01.md`, `docs/archive/REPORT_TT-MAP-01.md`
 
 ---
 
@@ -53,7 +53,7 @@ Task này:
    - câu hỏi lịch sử đang viết cứng giữa màn và các mốc "nghỉ chân" / "cốt truyện";
    - **mọi đoạn text nói Thi Sách đã chết** (mâu thuẫn với màn 2: người chơi gặp ông khi ông còn sống).
 4. Đề xuất cho các điểm cần team chốt (mục 3.1.4).
-5. Viết `docs/NPC_PLAN_TT.md`: OWNED FILES theo phase, READ-ONLY FILES, cách lưu tiến trình, cách tổ chức level, sơ đồ luồng màn 1 → 2 → 3, quyết định cần chốt, rủi ro.
+5. Viết `docs/archive/NPC_PLAN_TT.md`: OWNED FILES theo phase, READ-ONLY FILES, cách lưu tiến trình, cách tổ chức level, sơ đồ luồng màn 1 → 2 → 3, quyết định cần chốt, rủi ro.
 6. **DỪNG. Chờ duyệt.**
 
 ---
@@ -244,7 +244,7 @@ Hoà cảnh giữa các vùng theo cách đã làm ở TT-MAP-01.
 
 ---
 
-## 6. BÁO CÁO `docs/REPORT_TT-NPC-01.md`
+## 6. BÁO CÁO `docs/archive/REPORT_TT-NPC-01.md`
 
 ```
 ## Phase <A|B> — <ngày>

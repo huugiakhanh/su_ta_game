@@ -1,6 +1,6 @@
 # TT-MAP-01 — KẾ HOẠCH TÍCH HỢP (BƯỚC 0)
 
-Ngày: 25/09/2026 • Task card: `docs/SUTA_TT_TASK_MAP_01.md` • Trạng thái: **CHỜ DUYỆT** (chưa sửa code, chưa chép asset)
+Ngày: 25/09/2026 • Task card: `docs/archive/SUTA_TT_TASK_MAP_01.md` • Trạng thái: **CHỜ DUYỆT** (chưa sửa code, chưa chép asset)
 
 ---
 
@@ -103,7 +103,7 @@ Bước chép sẽ chia theo phase: Phase B chép `bg/`, `tiles/`, `maps_tt.json
 | `frontend/static/assets/images/sprites-8bit/manifest_tt.json` | Chép đè từ `assets/sprites/` (chỉ `qa_notes` thay đổi, D3). |
 | `frontend/static/js/levels/trung-trac/config.js` | Xoá `drawScale: 1.5` và khối comment bù tạm trong `PLAYER_ANIMATIONS`. |
 | `frontend/static/js/levels/trung-trac/render.js` | Bỏ tham số `scale` trong `drawSprite8` và đối số `config.drawScale || 1` trong `drawPlayer`. |
-| `docs/REPORT_TT-MAP-01.md` | Tạo mới, mục Phase A. |
+| `docs/archive/REPORT_TT-MAP-01.md` | Tạo mới, mục Phase A. |
 
 `attack_01` không cần chép (D1). Các file khác chỉ đọc.
 
@@ -115,7 +115,7 @@ Bước chép sẽ chia theo phase: Phase B chép `bg/`, `tiles/`, `maps_tt.json
 | `assets.js` | Nạp `maps_tt.json`, `tileset_tt_ground.json` và ảnh nền/tile theo ID. Thêm `images.maps`. |
 | `render.js` | Viết lại `drawBackdrops` (×1, không smoothing, offset làm tròn, hoà vùng qua canvas phụ), thêm `drawGroundTiles` và `drawGroundDecor`. Bỏ nhánh bật smoothing. `drawHoles` giữ lại làm hình hố. |
 | `main.js` | Cập nhật thông báo thiếu asset (`missingBackdrops` → lớp nền 8-bit / tileset). |
-| `docs/REPORT_TT-MAP-01.md` | Mục Phase B. |
+| `docs/archive/REPORT_TT-MAP-01.md` | Mục Phase B. |
 
 ### Phase C — Vật cản, bình thư, cổng, P2
 | File | Việc |
@@ -130,11 +130,11 @@ Bước chép sẽ chia theo phase: Phase B chép `bg/`, `tiles/`, `maps_tt.json
 | `viewer.js` | Thêm mục xem asset trong `maps_tt.json` (tối thiểu `PROP_STONE_PILLAR` 2 ô, cổng, bình thư, vật cản) ×1/×3/×4, có pivot và baseline. |
 | `assets/maps/trung-trac/maps_tt.json` + bản `maps-8bit/` | Chỉ sửa `status` → `IN_GAME` cho asset đang vẽ trong màn thường. P2 và cột đá giữ nguyên. |
 | `CLAUDE.md` | Cập nhật mục Map, Chướng ngại vật tĩnh, Vật phẩm, Tài liệu asset; xoá mô tả lỗi thời; ghi `map-v2-manifest.json` là lỗi thời. |
-| `docs/REPORT_TT-MAP-01.md` | Mục Phase C. |
+| `docs/archive/REPORT_TT-MAP-01.md` | Mục Phase C. |
 | `physics.js` | **Chỉ sửa nếu team chọn phương án khác ở G2.** Mặc định: READ-ONLY. |
 
 ### READ-ONLY (mọi phase)
-`physics.js` (trừ G2), `animation.js`, `input.js`, `ui.js`, `frontend/templates/**`, `frontend/static/css/**`, `backend/**`, `app.py`, `tests/**`, mọi PNG/GIF (chỉ chép), `assets/sprites/**`, `assets/maps/**` (trừ trường `status` trong `maps_tt.json`), `sprites-8bit/manifest_tt.json` (Phase A chép đè, không sửa tay), `backdrops/chapter1/map-v2-manifest.json`, `SUTA_TT_MAP_BRIEF.md`, `SUTA_TT_SPRITE_BRIEF.md`, `docs/SUTA_TT_TASK_MAP_01.md`.
+`physics.js` (trừ G2), `animation.js`, `input.js`, `ui.js`, `frontend/templates/**`, `frontend/static/css/**`, `backend/**`, `app.py`, `tests/**`, mọi PNG/GIF (chỉ chép), `assets/sprites/**`, `assets/maps/**` (trừ trường `status` trong `maps_tt.json`), `sprites-8bit/manifest_tt.json` (Phase A chép đè, không sửa tay), `backdrops/chapter1/map-v2-manifest.json`, `SUTA_TT_MAP_BRIEF.md`, `SUTA_TT_SPRITE_BRIEF.md`, `docs/archive/SUTA_TT_TASK_MAP_01.md`.
 
 ---
 
@@ -210,7 +210,7 @@ Bước chép sẽ chia theo phase: Phase B chép `bg/`, `tiles/`, `maps_tt.json
 
 ## 9. Kế hoạch test (tóm tắt, chi tiết theo task card §3)
 
-Mọi test chạy trên `/gameplay/levels/trung-trac` qua dev server (preview) ở 1280×720, mobile ngang/dọc (`resize_window`), F2 bật/tắt, `?viewer=1`, `?layout=p2`. Đọc console, chụp ảnh làm bằng chứng. Mỗi phase ghi PASS/FAIL vào `docs/REPORT_TT-MAP-01.md` rồi **dừng chờ người chơi thử duyệt**.
+Mọi test chạy trên `/gameplay/levels/trung-trac` qua dev server (preview) ở 1280×720, mobile ngang/dọc (`resize_window`), F2 bật/tắt, `?viewer=1`, `?layout=p2`. Đọc console, chụp ảnh làm bằng chứng. Mỗi phase ghi PASS/FAIL vào `docs/archive/REPORT_TT-MAP-01.md` rồi **dừng chờ người chơi thử duyệt**.
 
 ---
 

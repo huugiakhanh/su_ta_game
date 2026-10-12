@@ -42,7 +42,7 @@ Kết quả cuối cùng:
 4. Lập bảng **mọi hằng số chịu ảnh hưởng** (vị trí, kích thước, tốc độ, gia tốc, trọng lực, lực nhảy, dash, hitbox, `triggerX`, `fireRange`, `triggerDistance`, `PROJECTILE_MAX_RANGE`, `HAZARD_SPRITE_SIZES`, `PROJECTILE_SIZES`, `LANDMARKS`, `OBSTACLE_GROUPS`…) với giá trị hiện tại và giá trị dự kiến sau quy đổi. Hằng số tính theo thời gian (giây, cooldown) **không** nhân `k`.
 5. Tìm vị trí thực tế của bộ sprite mới và `manifest_tt.json`. Nếu nằm ngoài `frontend/static/`, đề xuất nơi sao chép (vd. `frontend/static/assets/images/sprites-8bit/`) để Flask phục vụ được.
 6. Lập **bảng ánh xạ** asset cũ → asset mới theo mục 3.3–3.5, đánh dấu chỗ nào thiếu.
-7. Viết `docs/INTEGRATION_PLAN_TT.md`: sơ đồ module, OWNED FILES theo từng phase, READ-ONLY FILES, bảng quy đổi, bảng ánh xạ, rủi ro, câu hỏi cho team.
+7. Viết `docs/archive/INTEGRATION_PLAN_TT.md`: sơ đồ module, OWNED FILES theo từng phase, READ-ONLY FILES, bảng quy đổi, bảng ánh xạ, rủi ro, câu hỏi cho team.
 8. **DỪNG. Chờ duyệt.**
 
 ---
@@ -144,7 +144,7 @@ Cập nhật `PROJECTILE_SIZES` theo cỡ sprite mới (pixel logic).
 
 ---
 
-## 5. BÁO CÁO `docs/REPORT_TT-INT-01.md`
+## 5. BÁO CÁO `docs/archive/REPORT_TT-INT-01.md`
 
 ```
 ## Phase <n> — <ngày>

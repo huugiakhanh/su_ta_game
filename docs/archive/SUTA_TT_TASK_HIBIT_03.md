@@ -1,6 +1,6 @@
 # TT-HIBIT-03 — Map 32-bit (hi-bit) chương Trưng Trắc
 
-Ngày: 02/10/2026 • Trạng thái: **HOÀN THÀNH 06/10** — 25/25 asset map `IN_GAME`, test chạy lại với asset thật PASS — report [REPORT_TT-HIBIT-03.md](REPORT_TT-HIBIT-03.md) — brief [SUTA_TT_ART_BRIEF_32.md](../SUTA_TT_ART_BRIEF_32.md), prompt `CODEX_PROMPT_32BIT_MAP_C1.md` (đã xoá)
+Ngày: 02/10/2026 • Trạng thái: **HOÀN THÀNH 06/10** — 25/25 asset map `IN_GAME`, test chạy lại với asset thật PASS — report [REPORT_TT-HIBIT-03.md](REPORT_TT-HIBIT-03.md) — brief [SUTA_TT_ART_BRIEF_32.md](../../SUTA_TT_ART_BRIEF_32.md), prompt `CODEX_PROMPT_32BIT_MAP_C1.md` (đã xoá)
 Lộ trình 32-bit: sprite (TT-HIBIT-01, xong) → chân dung/icon (TT-HIBIT-02, xong) → **map (task này)**.
 
 ## 1. Mục tiêu

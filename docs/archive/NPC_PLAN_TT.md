@@ -182,7 +182,7 @@ Thư mục gốc JS: `frontend/static/js/levels/trung-trac/` (viết tắt `tt/`
 | `frontend/static/css/levels/trung-trac.css` | sửa (nhỏ) | Style trang giữ chỗ nếu cần. |
 | `backend/routes/pages.py` | sửa | Route `/gameplay/levels/trung-trac/2`, `/3`. |
 | `tests/test_app.py` | sửa | Thêm assert 200 cho 2 route mới trong `test_pages_render`. |
-| `docs/REPORT_TT-NPC-01.md` | **mới** | Report Phase A. |
+| `docs/archive/REPORT_TT-NPC-01.md` | **mới** | Report Phase A. |
 
 ### Phase B — Màn 2 “Chiêu mộ hiền tài”
 
@@ -203,11 +203,11 @@ Thư mục gốc JS: `frontend/static/js/levels/trung-trac/` (viết tắt `tt/`
 | `assets/sprites/manifest_tt.json` → chép sang `frontend/static/assets/images/sprites-8bit/manifest_tt.json` | sửa `status` | NPC, portrait, `PJ_THROWING_KNIFE` → `IN_GAME` (chỉ trường `status`). |
 | `assets/maps/trung-trac/maps_tt.json` → chép sang `maps-8bit/maps_tt.json` | sửa `status` | Vật cản P2 đưa vào màn 2 → `IN_GAME`. |
 | `CLAUDE.md` | sửa | Cấu trúc 3 màn, tổ chức level, tiến trình, mini-boss, NPC/câu hỏi; boss Tô Định tạm không dùng. |
-| `docs/REPORT_TT-NPC-01.md` | sửa | Report Phase B. |
+| `docs/archive/REPORT_TT-NPC-01.md` | sửa | Report Phase B. |
 
 ### READ-ONLY
 
-`SUTA_TT_SPRITE_BRIEF.md`, `SUTA_TT_MAP_BRIEF.md`, `docs/REPORT_TT-INT-01.md`, `docs/REPORT_TT-MAP-01.md`, `docs/SUTA_TT_TASK_NPC_01.md`, mọi PNG/GIF (không vẽ/sửa ảnh), `tt/animation.js`, `tt/input.js`, `tt/viewer.js`, `backend/db.py`, `backend/repositories/*`, `backend/routes/api.py`, `frontend/static/js/home.js`, `frontend/static/js/levels/level-test.js`.
+`SUTA_TT_SPRITE_BRIEF.md`, `SUTA_TT_MAP_BRIEF.md`, `docs/archive/REPORT_TT-INT-01.md`, `docs/archive/REPORT_TT-MAP-01.md`, `docs/archive/SUTA_TT_TASK_NPC_01.md`, mọi PNG/GIF (không vẽ/sửa ảnh), `tt/animation.js`, `tt/input.js`, `tt/viewer.js`, `backend/db.py`, `backend/repositories/*`, `backend/routes/api.py`, `frontend/static/js/home.js`, `frontend/static/js/levels/level-test.js`.
 
 Không đụng code/asset boss Tô Định (`ENEMY_SPRITES.boss`, `BOSS_TO_DINH_*`) — chỉ không tạo trong màn 1.
 

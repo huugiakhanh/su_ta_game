@@ -24,9 +24,9 @@ frame_h như 8-bit, thêm `density`. Engine thay **từng asset**:
 - Vẽ: ô ảnh dày ép vào khung logic; bộ đệm N < density → bật nội suy khi thu nhỏ.
 - Viewer `?viewer=1`: mục `ID [32-bit]` ngay sau bản 8-bit, báo cỡ strip cần có.
 
-Spec cho Codex: [SUTA_TT_ART_BRIEF_32.md](../SUTA_TT_ART_BRIEF_32.md); prompt GATE 1:
+Spec cho Codex: [SUTA_TT_ART_BRIEF_32.md](../../SUTA_TT_ART_BRIEF_32.md); prompt GATE 1:
 `CODEX_PROMPT_32BIT_PILOT.md` (đã xoá); mẫu phong cách:
-[docs/references/hibit_style_ref_trung_trac.gif](references/hibit_style_ref_trung_trac.gif).
+[docs/references/hibit_style_ref_trung_trac.gif](../references/hibit_style_ref_trung_trac.gif).
 
 ## 3. File
 

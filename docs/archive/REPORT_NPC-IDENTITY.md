@@ -29,7 +29,7 @@ Prompt giao Codex `docs/CODEX_PROMPT_NPC_IDENTITY.md` — đã xoá sau khi xong
 | `frontend/static/assets/images/trung-trac/sprites-32bit/npc/NPC_TRUNG_NHI/npc_trung_nhi_talk.png` | thay bằng bản vẽ lại (Codex) |
 | `frontend/static/assets/images/trung-trac/sprites-32bit/npc/NPC_TRUNG_NHI/npc_trung_nhi_attack_01.png` | thay bằng bản vẽ lại đợt 2 (Codex) |
 | `frontend/static/assets/images/trung-trac/sprites-32bit/npc/NPC_THI_SACH/npc_thi_sach_talk.png` | thay bằng bản vẽ lại (Codex) |
-| `docs/REPORT_NPC-IDENTITY.md` | report này |
+| `docs/archive/REPORT_NPC-IDENTITY.md` | report này |
 
 Không sửa code, không sửa `manifest_tt.json` của game (số frame/fps/`hit_frame`/`frame_w`/`status` không đổi). Ảnh chép nguyên từ
 `assets/sprites-32bit/` (md5 trùng), Claude không chỉnh pixel.

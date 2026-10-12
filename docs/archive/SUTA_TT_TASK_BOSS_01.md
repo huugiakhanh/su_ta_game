@@ -7,7 +7,7 @@ Thư mục code: `frontend/static/js/levels/trung-trac/`
 Tài liệu (READ-ONLY):
 - `CLAUDE.md`
 - `SUTA_TT_SPRITE_BRIEF.md`, `SUTA_TT_MAP_BRIEF.md`
-- `docs/REPORT_TT-NPC-01.md`
+- `docs/archive/REPORT_TT-NPC-01.md`
 - `SUTA_TT_BOSS_ASSET_BRIEF.md` (asset bổ sung, Codex vẽ song song)
 
 ---
@@ -59,7 +59,7 @@ Biến màn 3 từ trang giữ chỗ thành màn chơi được: **đấu trư�
    - **Cột đá chặn đường nhưng không gây sát thương khi va ngang?** Theo luật hiện tại, vật cản thường va ngang là mất máu, nên người chơi sẽ bị trừ máu mỗi lần chạm cột trong lúc né xe. Đề xuất: thêm cờ riêng cho cột đá (ví dụ `blocking`) để chặn/đẩy người chơi ra, không trừ máu, chỉ áp dụng cho cột đá, không đổi luật chung.
    - Quân địch có bị cột đá chặn không. Đề xuất: đi xuyên như hiện tại nếu code chưa xét va chạm vật cản cho địch.
 4. Đề xuất cách đặt camera khi `VIEW_W` (480–640) nhỏ hơn đấu trường 768 px.
-5. Viết `docs/BOSS_PLAN_TT.md`: OWNED FILES theo phase, sơ đồ máy trạng thái boss, luồng màn 3, quyết định cần chốt, rủi ro.
+5. Viết `docs/archive/BOSS_PLAN_TT.md`: OWNED FILES theo phase, sơ đồ máy trạng thái boss, luồng màn 3, quyết định cần chốt, rủi ro.
 6. **DỪNG. Chờ duyệt.**
 
 ---
@@ -261,7 +261,7 @@ Xe bắt đầu ở x = 600, quay về phía người chơi. Vòng hành vi lặ
 
 ---
 
-## 6. BÁO CÁO `docs/REPORT_TT-BOSS-01.md`
+## 6. BÁO CÁO `docs/archive/REPORT_TT-BOSS-01.md`
 
 ```
 ## Phase <A|B|C> — <ngày>

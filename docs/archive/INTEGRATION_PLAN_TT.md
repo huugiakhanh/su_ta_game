@@ -1,7 +1,7 @@
 # TT-INT-01 — INTEGRATION PLAN (Bước 0: khảo sát, đo đạc, lập kế hoạch)
 
 ## Context
-Task card `docs/SUTA_TT_TASK_INTEGRATE_P0.md` (v2.0) yêu cầu chuyển màn Trưng Trắc sang canvas logic 480×270 phóng bội số nguyên và thay asset bằng bộ sprite 8-bit mới, giữ nguyên cảm giác chơi. Tài liệu này là kết quả Bước 0 (chỉ đọc). Trạng thái: **CHỜ DUYỆT** — Phase 1 chỉ bắt đầu khi team duyệt tài liệu này và trả lời mục 8.
+Task card `docs/archive/SUTA_TT_TASK_INTEGRATE_P0.md` (v2.0) yêu cầu chuyển màn Trưng Trắc sang canvas logic 480×270 phóng bội số nguyên và thay asset bằng bộ sprite 8-bit mới, giữ nguyên cảm giác chơi. Tài liệu này là kết quả Bước 0 (chỉ đọc). Trạng thái: **CHỜ DUYỆT** — Phase 1 chỉ bắt đầu khi team duyệt tài liệu này và trả lời mục 8.
 
 **Quyết định đã chốt với người dùng:** dùng **k = 0.6** thay vì công thức của task card `k = 270/360 = 0.75` (lệch task card, đã được xác nhận — xem mục 3).
 
@@ -143,12 +143,12 @@ viewer (chỉ nạp động từ main khi ?viewer=1; import config, assets)
 ## 7. OWNED / READ-ONLY FILES
 | Phase | OWNED |
 |---|---|
-| Bước 0 | `docs/INTEGRATION_PLAN_TT.md` |
-| 1 | `trung-trac/{config,geometry,state,physics,render,main,input,assets}.js`, **mới** `trung-trac/viewer.js`, `templates/gameplay/levels/trung-trac.html`, `css/levels/trung-trac.css`, **chép vào** `static/assets/images/sprites-8bit/**`, `docs/REPORT_TT-INT-01.md` |
+| Bước 0 | `docs/archive/INTEGRATION_PLAN_TT.md` |
+| 1 | `trung-trac/{config,geometry,state,physics,render,main,input,assets}.js`, **mới** `trung-trac/viewer.js`, `templates/gameplay/levels/trung-trac.html`, `css/levels/trung-trac.css`, **chép vào** `static/assets/images/sprites-8bit/**`, `docs/archive/REPORT_TT-INT-01.md` |
 | 2 | `config,assets,state,physics,render.js`, **mới** `animation.js`, template + CSS (bỏ div GIF), report |
 | 3 | `config,geometry,state,physics,render,assets,animation.js`, `sprites-8bit/manifest_tt.json` + `assets/sprites/manifest_tt.json` (chỉ `status`), `CLAUDE.md`, report |
 
-READ-ONLY: `assets/sprites/**` (trừ `status`), `SUTA_TT_SPRITE_BRIEF.md`, mọi PNG/GIF, `tools/*.py`, `backend/**`, `app.py`, level khác (`level-test.*`), `docs/SUTA_TT_TASK_INTEGRATE_P0.md`.
+READ-ONLY: `assets/sprites/**` (trừ `status`), `SUTA_TT_SPRITE_BRIEF.md`, mọi PNG/GIF, `tools/*.py`, `backend/**`, `app.py`, level khác (`level-test.*`), `docs/archive/SUTA_TT_TASK_INTEGRATE_P0.md`.
 
 ## 8. Rủi ro & câu hỏi cho team
 1. **k = 0.6 lệch công thức task card** — đã được người dùng duyệt; cần cập nhật task card hoặc ghi nhận trong report.

@@ -8,7 +8,7 @@ Tài liệu (READ-ONLY):
 - `CLAUDE.md`
 - `SUTA_TT_MAP_BRIEF.md`
 - `assets/maps/trung-trac/maps_tt.json`, `MAP_INVENTORY_TT.md`, `MAP_REPORT_TT.md`
-- `SUTA_TT_SPRITE_BRIEF.md`, `docs/REPORT_TT-INT-01.md`
+- `SUTA_TT_SPRITE_BRIEF.md`, `docs/archive/REPORT_TT-INT-01.md`
 
 ---
 
@@ -53,7 +53,7 @@ Kết quả cuối:
 1. Đọc `render.js` (`drawBackdrops`, vẽ obstacle, sách, landmark), `config.js` (`BACKDROP_LAYERS`, `LANDMARKS`, `OBSTACLE_SPRITE_FILES`, `ITEM_FILES`), `geometry.js` (`makeObstacle`, `groundYAt`), `state.js`, `physics.js` (va chạm obstacle, holes, finish).
 2. Đọc `maps_tt.json` và `tileset_tt_ground.json`; liệt kê trường nào code sẽ dùng.
 3. Đề xuất nơi chép asset (gợi ý `frontend/static/assets/images/maps-8bit/`, giữ cấu trúc thư mục của `assets/maps/trung-trac/`).
-4. Viết `docs/MAP_PLAN_TT.md`: OWNED FILES theo phase, READ-ONLY FILES, bảng ánh xạ asset cũ → mới, các quyết định cần team chốt (mục 3.3.3, 3.3.4), rủi ro.
+4. Viết `docs/archive/MAP_PLAN_TT.md`: OWNED FILES theo phase, READ-ONLY FILES, bảng ánh xạ asset cũ → mới, các quyết định cần team chốt (mục 3.3.3, 3.3.4), rủi ro.
 5. **DỪNG. Chờ duyệt.**
 
 ---
@@ -188,7 +188,7 @@ Yêu cầu:
 
 ---
 
-## 5. BÁO CÁO `docs/REPORT_TT-MAP-01.md`
+## 5. BÁO CÁO `docs/archive/REPORT_TT-MAP-01.md`
 
 ```
 ## Phase <A|B|C> — <ngày>

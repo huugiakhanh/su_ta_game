@@ -1,6 +1,6 @@
 # REPORT — TT-MAP-01
 
-Task card: `docs/SUTA_TT_TASK_MAP_01.md` • Kế hoạch: `docs/MAP_PLAN_TT.md` (team duyệt toàn bộ đề xuất, G1–G9, ngày 25/09/2026)
+Task card: `docs/archive/SUTA_TT_TASK_MAP_01.md` • Kế hoạch: `docs/archive/MAP_PLAN_TT.md` (team duyệt toàn bộ đề xuất, G1–G9, ngày 25/09/2026)
 
 ---
 
@@ -16,7 +16,7 @@ Task card: `docs/SUTA_TT_TASK_MAP_01.md` • Kế hoạch: `docs/MAP_PLAN_TT.md`
 | `frontend/static/assets/images/sprites-8bit/manifest_tt.json` | Chép đè từ `assets/sprites/manifest_tt.json` (md5 `415c81f6…`, trùng bản nguồn). Chỉ khác bản cũ ở `qa_notes` của `PLAYER_TRUNG_TRAC` và `EN_HAN_WATCHTOWER`. |
 | `frontend/static/js/levels/trung-trac/config.js` | Xoá comment mô tả hệ số bù `drawScale 1.5` cho `attack_01`, ghi rằng mọi strip vẽ ×1. |
 | `frontend/static/js/levels/trung-trac/render.js` | Bỏ tham số `scale` của `drawSprite8` và đối số `config.drawScale \|\| 1` trong `drawPlayer`, nên mọi strip vẽ ×1. |
-| `docs/MAP_PLAN_TT.md` | Đính chính D1 (xem ghi chú bên dưới). |
+| `docs/archive/MAP_PLAN_TT.md` | Đính chính D1 (xem ghi chú bên dưới). |
 
 Không cần chép `player_trung_trac_attack_01.png` vì strip Batch R đã nằm sẵn trong `sprites-8bit/` (md5 trùng `267da5d7…`, commit `16e643d`).
 

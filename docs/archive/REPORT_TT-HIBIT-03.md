@@ -1,7 +1,7 @@
 # REPORT TT-HIBIT-03 — Map 32-bit (hi-bit) chương Trưng Trắc
 
 Ngày: 06/10/2026 • Trạng thái: **HOÀN THÀNH** — 25/25 asset map `IN_GAME`, test PASS. Task card:
-[SUTA_TT_TASK_HIBIT_03.md](SUTA_TT_TASK_HIBIT_03.md) (nhật ký từng đợt mục 4b–4f), brief: [SUTA_TT_ART_BRIEF_32.md](../SUTA_TT_ART_BRIEF_32.md).
+[SUTA_TT_TASK_HIBIT_03.md](SUTA_TT_TASK_HIBIT_03.md) (nhật ký từng đợt mục 4b–4f), brief: [SUTA_TT_ART_BRIEF_32.md](../../SUTA_TT_ART_BRIEF_32.md).
 
 Cùng với TT-HIBIT-01 (sprite) và TT-HIBIT-02 (chân dung/icon): **mọi ảnh trong 3 màn chương Trưng Trắc đã là 32-bit ×4**, trừ
 `EN_HAN_BOAT`, `EN_HAN_BASE` (không dùng trong màn).
