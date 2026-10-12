@@ -34,7 +34,7 @@ paths:
 - `/history_library/<slug>`: 1 template `library/hero.html` + dữ liệu `backend/data/library_heroes.json` (`title`, `person`, `image` — cùng tên file trong `characters/avatar/` và `characters/library/`, `badge`, `name`, `subtitle`, `cards[{heading, body}]` — chuỗi HTML in bằng `|safe`). Thẻ trái/phải xen kẽ, thẻ cuối ở giữa, số thứ tự tự sinh.
 - Thêm nhân vật = 1 mục JSON + liên kết trong `history.html`. **Không** tạo HTML/CSS/JS riêng cho từng nhân vật.
 - Mục `nguyen-hue` đang tạm dùng nội dung Trưng Trắc — chờ team soạn (không tự viết).
-- Trang `history.html` vẫn tải ảnh avatar gốc (~1 MB/ảnh); có thể đổi sang `thumb/*.webp` như trang chủ.
+- Ảnh dùng bản WebP (không dùng PNG gốc): thẻ `/history` và ảnh tròn đầu trang nhân vật → `characters/avatar/thumb/*.webp`; ảnh minh hoạ lớn → `characters/library/web/*.webp` (1024×1536, có `width`/`height` để giữ chỗ, `loading="lazy"`). Thêm/đổi ảnh gốc thì chạy `python tools/make_home_images.py`.
 
 ## Trắc nghiệm `/quiz`
 

@@ -257,8 +257,12 @@ def test_library_hero_pages_render(client):
         page = response.get_data(as_text=True)
         assert page.count("<article class=\"epic-card") == len(hero["cards"])
         assert "/static/css/library.css" in page and "/static/js/library.js" in page
-        for folder in ("avatar", "library"):
-            assert (static / "assets" / "images" / "characters" / folder / hero["image"]).is_file(), (slug, folder)
+        characters = static / "assets" / "images" / "characters"
+        webp = hero["image"].replace(".png", ".webp")
+        for path in (characters / "avatar" / hero["image"], characters / "library" / hero["image"],
+                     characters / "avatar" / "thumb" / webp, characters / "library" / "web" / webp):
+            assert path.is_file(), (slug, path)
+            assert path.name.split(".")[0] in page or path.suffix == ".png", (slug, path)
 
 
 def test_library_unknown_hero_404(client):
