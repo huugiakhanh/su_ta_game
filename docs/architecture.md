@@ -28,13 +28,14 @@ su_ta_game/
 │   ├── templates/
 │   │   ├── home.html
 │   │   ├── history.html
-│   │   ├── components/chapter-modal.html
+│   │   ├── components/home/*.html   # cửa sổ trang chủ, tải khi bấm (HOME-LAZY-01)
 │   │   └── gameplay/levels/*.html
 │   └── static/
 │       ├── css/{main,history}.css
-│       ├── css/components/chapter-modal.css
+│       ├── css/home/*.css           # CSS riêng từng cửa sổ trang chủ
 │       ├── css/levels/*.css
-│       ├── js/{home,history}.js
+│       ├── js/history.js
+│       ├── js/home/                 # ES modules trang chủ: main/loader/shared + 1 file/cửa sổ
 │       ├── js/levels/trung-trac/     # ES modules: config/state/physics/render/main...
 │       └── assets/images/...
 ├── docs/

@@ -263,3 +263,34 @@ def test_library_hero_pages_render(client):
 
 def test_library_unknown_hero_404(client):
     assert client.get("/history_library/khong-co").status_code == 404
+
+
+# ---- Trang chủ nạp cửa sổ khi cần (HOME-LAZY-01) ----
+
+def test_home_page_has_no_modals(client):
+    page = client.get("/").get_data(as_text=True)
+    assert "js/home/main.js" in page
+    for marker in ("timeline-modal", "leaderboard-modal", "achievement-modal", "loginModal",
+                   "chapterModalOverlay", "characters/avatar/"):
+        assert marker not in page, marker
+
+
+@pytest.mark.parametrize("name, marker", [
+    ("timeline", 'id="timeline-modal"'),
+    ("leaderboard", 'id="leaderboard-modal"'),
+    ("achievements", 'id="achievement-modal"'),
+    ("login", 'id="profileModal"'),
+    ("chapter", 'id="heroSelectModal"'),
+])
+def test_home_component(client, name, marker):
+    from pathlib import Path
+
+    response = client.get(f"/components/home/{name}")
+    assert response.status_code == 200 and marker in response.get_data(as_text=True)
+    static = Path(__file__).resolve().parent.parent / "frontend" / "static"
+    assert (static / "js" / "home" / f"{name}.js").is_file()
+
+
+@pytest.mark.parametrize("name", ["khong-co", "..%2Fhome", "home"])
+def test_home_component_unknown(client, name):
+    assert client.get(f"/components/home/{name}").status_code == 404

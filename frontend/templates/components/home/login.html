@@ -1,4 +1,4 @@
-<!-- Component xác thực tài khoản của trang chủ. -->
+<!-- Đăng nhập/đăng ký + hồ sơ của trang chủ (HOME-LAZY-01: tải khi bấm ô người chơi — js/home/login.js). -->
 <div id="loginModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#3e2723; padding:25px; border:3px solid #f1c40f; z-index:100; text-align:center; border-radius:8px; width:min(320px, 92vw); max-height:92vh; max-height:92dvh; overflow-y:auto; box-shadow:0 0 20px rgba(0,0,0,0.8);">
     <div style="display:flex; margin-bottom:15px; border-bottom:2px solid #5d4037;">
         <button id="tabLoginBtn" style="flex:1; background:#5d4037; color:#f1c40f; border:none; padding:8px; font-weight:bold; cursor:pointer;" onclick="doiTab('login')">ĐĂNG NHẬP</button>
@@ -15,7 +15,7 @@
         <input type="text" id="regName" placeholder="Tên nhân vật trong game" style="padding:8px; margin-bottom:10px; width:100%;"><br>
         <input type="text" id="regUser" placeholder="Tài khoản mới" style="padding:8px; margin-bottom:10px; width:100%;"><br>
         <input type="password" id="regPass" placeholder="Mật khẩu mới" style="padding:8px; margin-bottom:10px; width:100%;"><br>
-        <!-- Avatar (SUTA-DB-01): home.js vẽ ảnh vào [data-avatar]. -->
+        <!-- Avatar (SUTA-DB-01): js/home/login.js vẽ ảnh vào [data-avatar]. -->
         <div class="avatar-picker" role="radiogroup" aria-label="Chọn avatar">
             <label class="avatar-option">
                 <input type="radio" name="regAvatar" value="male" checked>

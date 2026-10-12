@@ -21,6 +21,18 @@ def home():
     return render_template("home.html")
 
 
+# Cửa sổ của trang chủ, tải khi người chơi bấm lần đầu (HOME-LAZY-01) — khớp
+# COMPONENTS ở frontend/static/js/home/loader.js.
+HOME_COMPONENTS = {"timeline", "leaderboard", "achievements", "login", "chapter"}
+
+
+@pages_bp.get("/components/home/<name>")
+def home_component(name):
+    if name not in HOME_COMPONENTS:
+        return "Không có thành phần này.", 404
+    return render_template(f"components/home/{name}.html")
+
+
 
 # LIBRARY
 @pages_bp.get("/history")

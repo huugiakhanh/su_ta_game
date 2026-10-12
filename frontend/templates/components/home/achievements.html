@@ -1,0 +1,29 @@
+<!-- Thành tựu (HOME-LAZY-01 — js/home/achievements.js). -->
+<div id="achievement-modal" class="modal-overlay" style="display: none;">
+    <div class="leaderboard-container">
+        <div class="leaderboard-header">
+            <h2 class="leaderboard-title">THÀNH TỰU</h2>
+        </div>
+        <button class="close-btn" onclick="document.getElementById('achievement-modal').style.display='none'">X</button>
+        <div class="table-wrapper">
+            <table class="leaderboard-table achievement-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>THÀNH TỰU</th>
+                        <th>ĐIỀU KIỆN</th>
+                        <th>THƯỞNG</th>
+                        <th>TRẠNG THÁI</th>
+                    </tr>
+                </thead>
+                <tbody id="achievement-table-body"></tbody>
+            </table>
+        </div>
+        <div class="my-rank-footer">
+            <div class="my-rank-title">ĐÃ MỞ<br><span id="achievement-count">0/0</span></div>
+            <div class="my-rank-info">
+                <span id="achievement-hint">Đăng nhập để lưu thành tựu</span>
+            </div>
+        </div>
+    </div>
+</div>

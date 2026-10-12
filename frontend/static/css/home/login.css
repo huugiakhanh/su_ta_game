@@ -1,0 +1,34 @@
+/* Đăng nhập/đăng ký + hồ sơ của trang chủ (HOME-LAZY-01): js/home/loader.js nạp
+   cùng components/home/login.html khi bấm ô người chơi lần đầu. Tách từ main.css. */
+/* Chọn avatar: form đăng ký + hồ sơ. */
+.avatar-picker { display: flex; justify-content: center; gap: 14px; margin-bottom: 12px; }
+.avatar-option {
+    position: relative;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 6px; border: 2px solid transparent; border-radius: 6px;
+    background: transparent; color: #f1c40f; font-weight: bold; cursor: pointer;
+}
+.avatar-option input { position: absolute; opacity: 0; pointer-events: none; }
+.avatar-option:has(input:checked), .avatar-option.is-selected { border-color: #f1c40f; background: rgba(241, 196, 15, 0.15); }
+.avatar-option:has(input:focus-visible), .avatar-option:focus-visible { outline: 2px solid #fff; }
+.avatar-picker .avatar-option__img { width: 64px; height: 64px; }
+
+.profile-modal {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100;
+    width: min(320px, 92vw); padding: 25px; text-align: center;
+    background: #3e2723; border: 3px solid #f1c40f; border-radius: 8px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+}
+.profile-modal[hidden] { display: none; }
+.profile-modal__name { color: #f1c40f; font-size: 18px; margin-bottom: 6px; }
+.profile-modal__hint { color: #d7ccc8; font-size: 13px; margin-bottom: 8px; }
+.profile-modal__message { color: #ffcc00; font-size: 12px; min-height: 16px; margin-bottom: 8px; }
+
+@media (max-width: 600px), (max-height: 500px) and (orientation: landscape) {
+    /* --- POPUP ĐĂNG NHẬP --- */
+    #loginModal {
+        padding: 18px !important;
+    }
+    #loginModal input {
+        font-size: 16px; /* < 16px thì iOS tự phóng to khi gõ */
+    }
+}

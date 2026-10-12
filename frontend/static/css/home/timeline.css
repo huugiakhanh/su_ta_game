@@ -1,0 +1,344 @@
+/* Dòng thời gian chọn nhân vật (HOME-LAZY-01): nạp cùng components/home/timeline.html
+   khi bấm "CHỌN CHƯƠNG" lần đầu. Lớp nền .modal-overlay ở main.css.
+   Giao diện gỗ + vàng + giấy cổ đồng bộ Bảng xếp hạng (css/home/board.css) — 12/10.
+
+   Bố cục: trục = .timeline-items::before ở 50% chiều cao; trong mỗi .t-item, chấm đặt
+   tuyệt đối tại 50% còn thẻ/năm đặt theo khoảng cách tới tâm → chấm luôn nằm đúng trục.
+   .t-top: thẻ phía trên trục, năm phía dưới; .t-bottom ngược lại. */
+
+#timeline-modal {
+    --card-w: clamp(190px, 28vh, 320px);   /* thẻ to theo chiều cao màn hình, vừa khung không cuộn dọc */
+    --img-h: calc(var(--card-w) * 707 / 1024); /* tỉ lệ ảnh avatar/thumb (440×304) → không cắt ảnh */
+    --info-h: 72px;    /* chiều cao phần chữ dưới ảnh (ước lượng, để tính chiều cao tối thiểu) */
+    --stem: 16px;      /* đoạn nối thẻ → chấm */
+    --dot: 20px;
+    --item-gap: 34px;
+}
+
+
+/* --- KHUNG GỖ --- */
+.timeline-container {
+    width: 95%;
+    max-width: 1700px;
+    height: 90vh;
+    height: 90dvh;
+    background: #8b4513;
+    border: 4px solid #3e1f0b;
+    border-radius: 15px;
+    position: relative;
+    padding: 18px 20px 20px;
+    color: #4a2511;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 0 2px rgba(255, 219, 88, 0.35);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Nút đóng — cùng kiểu .close-btn của Bảng xếp hạng */
+.btn-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    width: 35px;
+    height: 35px;
+    background: #d9381e;
+    color: #fff;
+    border: 2px solid #ffdb58;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    z-index: 20;
+}
+.btn-close:hover { background: #ff4500; transform: scale(1.1); }
+
+/* --- TIÊU ĐỀ --- */
+.timeline-header {
+    text-align: center;
+    margin-bottom: 14px;
+    padding: 0 50px;
+}
+.timeline-header h2 {
+    font-size: 30px;
+    color: #ffdb58;
+    text-shadow: 2px 2px 4px #000;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+}
+.timeline-header p {
+    color: #f4e3c5;
+    font-size: 14px;
+    text-shadow: 1px 1px 2px #000;
+}
+
+/* --- VÙNG GIẤY CỔ, CUỘN NGANG --- */
+.timeline-scroll-area {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: auto;
+    background:
+        radial-gradient(ellipse at center, rgba(255, 255, 255, 0.35), transparent 70%),
+        #f4e3c5;
+    border: 3px solid #6b3e1b;
+    border-radius: 8px;
+    box-shadow: inset 0 0 24px rgba(107, 62, 27, 0.35);
+    scrollbar-color: #8b4513 #e3c498;
+}
+.timeline-scroll-area::-webkit-scrollbar { height: 12px; width: 12px; }
+.timeline-scroll-area::-webkit-scrollbar-track { background: #e3c498; }
+.timeline-scroll-area::-webkit-scrollbar-thumb {
+    background: #8b4513;
+    border: 2px solid #e3c498;
+    border-radius: 6px;
+}
+
+.timeline-items {
+    position: relative;
+    flex: none;
+    display: flex;
+    gap: var(--item-gap);
+    min-width: max-content;
+    min-height: calc(2 * (var(--img-h) + var(--info-h) + var(--stem) + var(--dot) / 2) + 32px);
+    padding: 16px 40px;
+}
+
+/* Trục thời gian: dây đồng vàng, dài đúng bằng dãy thẻ */
+.timeline-items::before {
+    content: "";
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    top: 50%;
+    height: 6px;
+    transform: translateY(-50%);
+    background: linear-gradient(to bottom, #b8860b, #ffdb58 45%, #b8860b);
+    border-top: 1px solid #6b3e1b;
+    border-bottom: 1px solid #6b3e1b;
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(62, 31, 11, 0.4);
+}
+
+/* --- TỪNG MỐC --- */
+.t-item {
+    position: relative;
+    z-index: 1;
+    flex: none;
+    width: var(--card-w);
+    cursor: pointer;
+}
+
+/* Chấm trên trục */
+.t-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--dot);
+    height: var(--dot);
+    background: #ffdb58;
+    border: 4px solid #8b0000;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px #ffdb58, 0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+/* Năm: con dấu đỏ */
+.t-year {
+    background: linear-gradient(to bottom, #c0392b, #8b0000);
+    color: #ffdb58;
+    border: 2px solid #ffdb58;
+    border-radius: 6px;
+    padding: 3px 12px;
+    font-weight: bold;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+.t-year {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.t-top .t-year { top: calc(50% + var(--dot) / 2 + 10px); }
+.t-bottom .t-year { bottom: calc(50% + var(--dot) / 2 + 10px); }
+
+/* --- THẺ NHÂN VẬT --- */
+.t-card {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background: #fdf3dc;
+    border: 3px solid #6b3e1b;
+    border-radius: 10px;
+    box-shadow: 0 6px 14px rgba(62, 31, 11, 0.45);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.t-top .t-card { bottom: calc(50% + var(--dot) / 2 + var(--stem)); }
+.t-bottom .t-card { top: calc(50% + var(--dot) / 2 + var(--stem)); }
+
+/* Đoạn nối thẻ → chấm */
+.t-card::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 4px;
+    height: var(--stem);
+    transform: translateX(-50%);
+    background: #6b3e1b;
+}
+.t-top .t-card::after { top: 100%; margin-top: 3px; }
+.t-bottom .t-card::after { bottom: 100%; margin-bottom: 3px; }
+
+.t-card img {
+    display: block;
+    width: 100%;
+    height: var(--img-h);
+    object-fit: cover;
+    object-position: top;
+    border-radius: 7px 7px 0 0;
+    border-bottom: 3px solid #6b3e1b;
+    background: #e3c498;
+}
+.t-info {
+    padding: 10px 12px 12px;
+    text-align: left;
+}
+.t-info h4 {
+    color: #4a2511;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+.t-info p {
+    color: #7a5230;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* Thẻ chơi được: viền vàng, nhãn "CHƠI NGAY", nổi lên khi rê chuột */
+.t-card:not(.locked) {
+    border-color: #d4a017;
+    box-shadow: 0 0 0 2px #ffdb58, 0 8px 18px rgba(62, 31, 11, 0.55);
+}
+.t-card:not(.locked)::before {
+    content: "▶ CHƠI NGAY";
+    position: absolute;
+    top: var(--img-h);   /* góc dưới ảnh — không che tên trên poster */
+    right: 8px;
+    transform: translateY(calc(-100% - 6px));
+    z-index: 2;
+    padding: 3px 9px;
+    background: linear-gradient(to bottom, #ff4500, #b22222);
+    color: #fff;
+    border: 2px solid #ffdb58;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+.t-item:hover .t-card:not(.locked) {
+    transform: translateY(-4px);
+    box-shadow: 0 0 0 3px #ffdb58, 0 0 18px rgba(255, 219, 88, 0.8), 0 10px 20px rgba(62, 31, 11, 0.55);
+}
+
+/* Thẻ chưa mở: ảnh xám mờ + ổ khoá giữa ảnh, không nổi lên, con trỏ thường */
+.t-item:has(.t-card.locked) { cursor: default; }
+.t-card.locked { background: #eadcc0; border-color: #8a7458; }
+.t-card.locked img { filter: grayscale(1) brightness(0.6) contrast(0.9); }
+.t-card.locked .t-info h4 { color: #6d5a45; }
+.t-card.locked .t-info p { color: #8a7458; }
+.lock-overlay {
+    position: absolute;
+    top: calc(var(--img-h) / 2);
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    padding: 5px 14px;
+    background: rgba(62, 31, 11, 0.88);
+    color: #ffdb58;
+    border: 2px solid #ffdb58;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* ========================================== */
+/* ĐIỆN THOẠI (dọc ≤ 600px rộng, ngang ≤ 500px cao) */
+/* ========================================== */
+@media (max-width: 600px), (max-height: 500px) and (orientation: landscape) {
+    #timeline-modal {
+        --card-w: 160px;
+        --info-h: 56px;
+        --stem: 12px;
+        --dot: 16px;
+        --item-gap: 22px;
+    }
+    .timeline-container {
+        width: 96%;
+        height: 92vh;
+        height: 92dvh;
+        padding: 12px;
+        border-width: 3px;
+    }
+    .btn-close {
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+    .timeline-header {
+        margin-bottom: 8px;
+        padding: 0 40px;
+    }
+    .timeline-header h2 {
+        font-size: 18px;
+        letter-spacing: 1px;
+    }
+    .timeline-header p { font-size: 12px; }
+    .timeline-scroll-area { -webkit-overflow-scrolling: touch; }
+    .timeline-scroll-area::-webkit-scrollbar { height: 6px; width: 6px; }
+    .timeline-items { padding: 10px 20px; }
+    .t-item:hover .t-card:not(.locked) { transform: none; }
+    .t-dot { border-width: 3px; }
+    .t-year { font-size: 13px; padding: 2px 8px; }
+    .t-info { padding: 7px 8px 8px; }
+    .t-info h4 { font-size: 14px; margin-bottom: 2px; }
+    .t-info p { font-size: 11px; }
+    .t-card:not(.locked)::before { font-size: 9px; padding: 2px 6px; right: 5px; }
+    .lock-overlay { font-size: 11px; padding: 3px 9px; }
+}
+
+/* Điện thoại ngang (≤ 500px cao): thẻ thấp hơn, bỏ dòng mô tả */
+@media (max-height: 500px) and (orientation: landscape) {
+    #timeline-modal {
+        --card-w: 100px;
+        --info-h: 26px;
+        --stem: 8px;
+        --dot: 14px;
+        --item-gap: 16px;
+    }
+    .timeline-header { margin-bottom: 4px; }
+    .timeline-header p { display: none; }
+    .timeline-items { padding: 4px 16px; }
+    .t-info { padding: 4px 6px; }
+    .t-info h4 {
+        font-size: 12px;
+        margin-bottom: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .t-info p { display: none; }
+    .t-year { font-size: 11px; padding: 1px 6px; }
+    .t-card:not(.locked)::before { content: "▶ CHƠI"; }
+    .lock-overlay { font-size: 10px; padding: 2px 7px; }
+}

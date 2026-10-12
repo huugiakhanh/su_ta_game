@@ -1,0 +1,225 @@
+<!-- Dòng thời gian chọn nhân vật (HOME-LAZY-01: tải khi bấm "CHỌN CHƯƠNG" — js/home/timeline.js).
+     Ảnh thẻ là bản thu nhỏ avatar/thumb/*.webp (tools/make_home_images.py), ảnh gốc giữ nguyên. -->
+<div id="timeline-modal" class="modal-overlay hidden">
+    <div class="timeline-container">
+        <button class="btn-close" onclick="closeTimeline()" aria-label="Đóng dòng thời gian">X</button>
+        
+        <div class="timeline-header">
+            <h2>DÒNG THỜI GIAN LỊCH SỬ VIỆT NAM</h2>
+            <p>Khởi nghĩa Hai Bà Trưng đến thời Tây Sơn</p>
+        </div>
+
+        <div class="timeline-scroll-area">
+            <div class="timeline-items">
+                
+                <div class="t-item t-top" onclick="selectHero('Trưng Trắc', '/gameplay/levels/trung-trac')">
+                    <div class="t-card">
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/trung_trac.webp') }}" alt="Trưng Trắc" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Trưng Trắc</h4>
+                            <p>Khởi nghĩa Hai Bà Trưng</p>
+                        </div>
+                    </div>
+                    <div class="t-dot"></div>
+                    <div class="t-year">Năm 40</div>
+                </div>
+
+                <div class="t-item t-bottom">
+                    <div class="t-year">Năm 248</div>
+                    <div class="t-dot"></div>
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/ba_trieu.webp') }}" alt="Bà Triệu" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Bà Triệu</h4>
+                            <p>Khởi nghĩa chống quân Ngô</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="t-item t-top">
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/ly_bi.webp') }}" alt="Lý Bí" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Lý Bí</h4>
+                            <p>Khởi nghĩa lập nước Vạn Xuân</p>
+                        </div>
+                    </div>
+                    <div class="t-dot"></div>
+                    <div class="t-year">Năm 542</div>
+                </div>
+
+                <div class="t-item t-bottom">
+                    <div class="t-year">Năm 550</div>
+                    <div class="t-dot"></div>
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/trieu_quang_phuc.webp') }}" alt="Triệu Quang Phục" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Triệu Quang Phục</h4>
+                            <p>Đánh bại quân Lương</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="t-item t-top">
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/mai_hac_de.webp') }}" alt="Mai Hắc Đế" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Mai Hắc Đế</h4>
+                            <p>Khởi nghĩa chống nhà Đường</p>
+                        </div>
+                    </div>
+                    <div class="t-dot"></div>
+                    <div class="t-year">Năm 713</div>
+                </div>
+
+                <div class="t-item t-bottom">
+                    <div class="t-year">Năm 791</div>
+                    <div class="t-dot"></div>
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/phung_hung.webp') }}" alt="Phùng Hưng" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Phùng Hưng</h4>
+                            <p>Khởi nghĩa Bố Cái Đại Vương</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="t-item t-top">
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/khuc_thua_du.webp') }}" alt="Khúc Thừa Dụ" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Khúc Thừa Dụ</h4>
+                            <p>Giành quyền tự chủ</p>
+                        </div>
+                    </div>
+                    <div class="t-dot"></div>
+                    <div class="t-year">Năm 905</div>
+                </div>
+
+                <div class="t-item t-bottom">
+                    <div class="t-year">Năm 938</div>
+                    <div class="t-dot"></div>
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/ngo_quyen.webp') }}" alt="Ngô Quyền" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Ngô Quyền</h4>
+                            <p>Chiến thắng Bạch Đằng</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="t-item t-top">
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/dinh_bo_linh.webp') }}" alt="Đinh Bộ Lĩnh" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Đinh Bộ Lĩnh</h4>
+                            <p>Dẹp loạn 12 sứ quân</p>
+                        </div>
+                    </div>
+                    <div class="t-dot"></div>
+                    <div class="t-year">Năm 968</div>
+                </div>
+
+                <div class="t-item t-bottom">
+                    <div class="t-year">Năm 980</div>
+                    <div class="t-dot"></div>
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/le_hoan.webp') }}" alt="Lê Hoàn" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Lê Hoàn</h4>
+                            <p>Kháng chiến chống Tống</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="t-item t-top">
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/ly_cong_uan.webp') }}" alt="Lý Công Uẩn" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Lý Công Uẩn</h4>
+                            <p>Dời đô về Thăng Long</p>
+                        </div>
+                    </div>
+                    <div class="t-dot"></div>
+                    <div class="t-year">Năm 1009</div>
+                </div>
+
+                <div class="t-item t-bottom">
+                    <div class="t-year">Năm 1226</div>
+                    <div class="t-dot"></div>
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/tran_thu_do.webp') }}" alt="Trần Thủ Độ" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Trần Thủ Độ</h4>
+                            <p>Sáng lập triều Trần</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="t-item t-top">
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/tran_hung_dao.webp') }}" alt="Trần Hưng Đạo" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Trần Hưng Đạo</h4>
+                            <p>Ba lần đại thắng Mông-Nguyên</p>
+                        </div>
+                    </div>
+                    <div class="t-dot"></div>
+                    <div class="t-year">Năm 1258</div>
+                </div>
+
+                <div class="t-item t-bottom">
+                    <div class="t-year">Năm 1400</div>
+                    <div class="t-dot"></div>
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/ho_quy_ly.webp') }}" alt="Hồ Quý Ly" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Hồ Quý Ly</h4>
+                            <p>Thành lập nhà Hồ</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="t-item t-top">
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/le_loi.webp') }}" alt="Lê Lợi" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Lê Lợi</h4>
+                            <p>Khởi nghĩa Lam Sơn</p>
+                        </div>
+                    </div>
+                    <div class="t-dot"></div>
+                    <div class="t-year">Năm 1418</div>
+                </div>
+
+                <div class="t-item t-bottom">
+                    <div class="t-year">Năm 1789</div>
+                    <div class="t-dot"></div>
+                    <div class="t-card locked">
+                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/nguyen_hue.webp') }}" alt="Nguyễn Huệ" loading="lazy" decoding="async">
+                        <div class="t-info">
+                            <h4>Quang Trung</h4>
+                            <p>Đại phá quân Thanh</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
