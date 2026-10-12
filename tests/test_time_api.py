@@ -240,3 +240,26 @@ def test_register_avatar(client, monkeypatch, avatar, ok):
     result = client.post("/api/auth/register", json=payload).json
     assert (result["status"] == "success") is ok
     assert created == ([("moi", "x", "Mới", avatar or "male")] if ok else [])
+
+
+# ---- Thư viện lịch sử: 1 template + backend/data/library_heroes.json ----
+
+def test_library_hero_pages_render(client):
+    from pathlib import Path
+    from backend.routes.pages import load_library_heroes
+
+    static = Path(__file__).resolve().parent.parent / "frontend" / "static"
+    heroes = load_library_heroes()
+    assert len(heroes) == 16
+    for slug, hero in heroes.items():
+        response = client.get(f"/history_library/{slug}")
+        assert response.status_code == 200, slug
+        page = response.get_data(as_text=True)
+        assert page.count("<article class=\"epic-card") == len(hero["cards"])
+        assert "/static/css/library.css" in page and "/static/js/library.js" in page
+        for folder in ("avatar", "library"):
+            assert (static / "assets" / "images" / "characters" / folder / hero["image"]).is_file(), (slug, folder)
+
+
+def test_library_unknown_hero_404(client):
+    assert client.get("/history_library/khong-co").status_code == 404

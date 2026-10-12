@@ -34,6 +34,7 @@ Flask server-rendered app, chưa dùng bundler JS (giai đoạn prototype). Game
 su_ta_game/
 ├── app.py                    # entry point duy nhất — không tạo thêm app.py phụ
 ├── backend/
+│   ├── data/library_heroes.json  # nội dung trang nhân vật Thư viện lịch sử (slug URL → tiêu đề, ảnh, các thẻ)
 │   ├── __init__.py           # application factory (create_app)
 │   ├── config.py             # biến môi trường (.env qua python-dotenv)
 │   ├── db.py                 # kết nối PostgreSQL (psycopg2) + run_migrations()
@@ -45,10 +46,10 @@ su_ta_game/
 │       ├── pages.py          # route trả HTML (Jinja templates)
 │       └── api.py            # /login, /register, /api/auth/*
 ├── frontend/
-│   ├── templates/            # Jinja: home, history, gameplay/levels/*.html (trung-trac.html dùng chung cả 3 màn)
+│   ├── templates/            # Jinja: home, history, library/hero.html (trang nhân vật thư viện — dùng chung), gameplay/levels/*.html (trung-trac.html dùng chung cả 3 màn)
 │   └── static/
-│       ├── css/{main,history}.css, css/levels/*.css
-│       ├── js/{home,history}.js
+│       ├── css/{main,history,library}.css, css/levels/*.css
+│       ├── js/{home,history,library}.js
 │       ├── js/levels/trung-trac/    # ES modules — logic gameplay màn Trưng Trắc (xem bên dưới)
 │       └── assets/images/... # backdrop, sprite nhân vật, obstacle, item
 ├── docs/
@@ -157,6 +158,7 @@ Thêm nội dung mới (obstacle/hazard/item/level data) thường chỉ cần s
 - **Thêm màn trong chương Trưng Trắc**: dùng chung bộ module `trung-trac/` và template `trung-trac.html` — thêm mục vào `LEVELS` (`config.js`), hàm nội dung `levelNContent()` trong `state.js` (rẽ nhánh theo `LEVEL.id`), sự kiện riêng của màn trong `physics.js`, route truyền `level_id`/`title`, URL vào `LEVEL_URLS` và điều kiện vào `requireLevel()` (`progress.js`).
 - **Thêm level/phần mới** (chương khác): tạo 1 template (`frontend/templates/gameplay/levels/`), 1 CSS (`frontend/static/css/levels/`), 1 JS (`frontend/static/js/levels/`), rồi thêm route trong `backend/routes/pages.py`. Theo mẫu module hoá của `trung-trac/` (prototype 1 file `level-test` đã xoá 29/09) (xem "Cấu trúc module" ở trên) — dùng `<script type="module">` trỏ tới `main.js` của thư mục đó.
 - **Thêm chương mới**: đặt tên file/level theo nhân vật-giai đoạn lịch sử tương ứng (nhất quán với `trung-trac`), giữ cấu trúc 3-phần nếu áp dụng thiết kế roadmap.
+- **Thêm nhân vật Thư viện lịch sử** (`/history_library/<slug>`): thêm 1 mục vào `backend/data/library_heroes.json` (`title`, `person`, `image` — cùng tên file trong `assets/images/characters/avatar/` và `library/`, `badge`, `name`, `subtitle`, `cards[{heading, body}]` — chuỗi HTML, thẻ trái/phải xen kẽ, thẻ cuối ở giữa) + liên kết trong `history.html`. **Không** tạo HTML/CSS/JS riêng cho từng nhân vật (16 bản sao đã gộp 12/10). Lưu ý: mục `nguyen-hue` đang tạm dùng nội dung Trưng Trắc — chờ team soạn.
 - **Thêm API**: thêm endpoint trong `backend/routes/api.py`; nghiệp vụ dữ liệu đặt trong `backend/repositories/`, không viết SQL trong route hay template.
 - **Thêm asset**: đặt trong `frontend/static/assets/images/` — asset riêng chương vào `images/<chương>/`, asset dùng chung toàn web (avatar, icon tiền tệ, nền trang chủ…) vào thư mục chung ngoài thư mục chương (vd. `images/avatar/`, `images/icon/`), trỏ thẳng đường dẫn, không khai báo trong manifest chương; dùng `url_for('static', ...)` trong template, dùng URL bắt đầu `/static/assets/...` trong JS.
 - **Không** tạo thêm `app.py` phụ để thử nghiệm — nếu cần prototype, đặt trong `tests/` hoặc `docs/archive/`.

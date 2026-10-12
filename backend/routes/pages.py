@@ -1,4 +1,17 @@
+import json
+from pathlib import Path
+
 from flask import Blueprint, render_template
+
+
+# Nội dung trang nhân vật Thư viện lịch sử (slug trong URL -> dữ liệu), dùng chung
+# template library/hero.html. Đọc lại mỗi request để sửa JSON là thấy ngay.
+LIBRARY_HEROES_FILE = Path(__file__).resolve().parent.parent / "data" / "library_heroes.json"
+
+
+def load_library_heroes():
+    with LIBRARY_HEROES_FILE.open(encoding="utf-8") as file:
+        return json.load(file)
 
 
 pages_bp = Blueprint("pages", __name__)
@@ -16,10 +29,10 @@ def history_library_timeline():
 
 @pages_bp.get("/history_library/<hero_name>")
 def history_hero_detail(hero_name):
-    try:
-        return render_template(f"gameplay/library/{hero_name}.html")
-    except:
+    hero = load_library_heroes().get(hero_name)
+    if hero is None:
         return "Trang nhân vật này chưa được tạo hoặc đang cập nhật!", 404
+    return render_template("library/hero.html", hero=hero)
 
 
 # QUIZ
