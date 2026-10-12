@@ -3,6 +3,27 @@ let activeQuestions = [];   // Chứa các câu hỏi đã được random cho l
 let currentIndex = 0;
 let score = 0;
 let canAnswer = true;
+let correctCount = 0;
+
+// Đồng hồ (SUTA-QUIZ-LB): chỉ tính thời gian suy nghĩ — từ lúc hiện câu hỏi tới lúc
+// chọn đáp án, không tính 3,5 s xem giải thích. Dùng xếp hạng khi hoà số câu đúng.
+let quizTime = 0;          // giây đã cộng dồn của các câu đã trả lời
+let questionShownAt = 0;   // performance.now() lúc hiện câu đang hỏi
+let clockTimer = null;
+
+function elapsedSeconds() {
+    return quizTime + (canAnswer ? (performance.now() - questionShownAt) / 1000 : 0);
+}
+
+function formatClock(seconds) {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+}
+
+function updateClock() {
+    document.getElementById("time-display").innerText = `⏱ ${formatClock(elapsedSeconds())}`;
+}
 
 // 1. Tải toàn bộ dữ liệu ngay khi mở trang
 async function loadQuestions() {
@@ -66,6 +87,10 @@ function startQuiz() {
     // Reset điểm và index
     currentIndex = 0;
     score = 0;
+    correctCount = 0;
+    quizTime = 0;
+    clearInterval(clockTimer);
+    clockTimer = setInterval(updateClock, 250);
     
     // Đổi giao diện
     document.getElementById("setup-screen").classList.add("hidden");
@@ -78,6 +103,8 @@ function startQuiz() {
 function showQuestion() {
     canAnswer = true;
     const currentQ = activeQuestions[currentIndex];
+    questionShownAt = performance.now();
+    updateClock();
 
     document.getElementById("question-progress").innerText = `Câu ${currentIndex + 1} / ${activeQuestions.length}`;
     document.getElementById("score-display").innerText = `Điểm: ${score}`;
@@ -117,7 +144,9 @@ function showQuestion() {
 // 5. Xử lý khi chọn đáp án
 function selectAnswer(selectedIndex) {
     if (!canAnswer) return;
+    quizTime += (performance.now() - questionShownAt) / 1000;
     canAnswer = false; 
+    updateClock();
 
     const currentQ = activeQuestions[currentIndex];
     const buttons = document.querySelectorAll(".option-btn");
@@ -151,6 +180,7 @@ function selectAnswer(selectedIndex) {
     // Xử lý thông báo và điểm
     if (isCorrect) {
         score += 10;
+        correctCount++;
         explanationBox.classList.add("explain-correct");
         explanationBox.innerHTML = `<strong>🎉 CHÍNH XÁC!</strong><br>${expText}`;
     } else {
@@ -179,6 +209,37 @@ function finishQuiz() {
     
     const maxScore = activeQuestions.length * 10;
     document.getElementById("final-score").innerText = `Bạn đạt được: ${score} / ${maxScore} điểm!`;
+    clearInterval(clockTimer);
+    document.getElementById("final-time").innerText =
+        `Đúng ${correctCount} / ${activeQuestions.length} câu · Thời gian: ${formatClock(quizTime)}`;
+    submitQuizResult(activeQuestions.length, correctCount, quizTime);
+}
+
+// Gửi kết quả lên bảng xếp hạng Quiz (SUTA-QUIZ-LB). Khách (401) -> nhắc đăng nhập.
+async function submitQuizResult(questionCount, correct, seconds) {
+    const status = document.getElementById("save-status");
+    status.innerText = "Đang lưu kết quả...";
+    try {
+        const response = await fetch('/api/quiz/result', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                question_count: questionCount,
+                correct_count: correct,
+                time_seconds: Math.max(seconds, 0.01),
+            }),
+        });
+        if (response.status === 401) {
+            status.innerText = "Đăng nhập ở trang chủ để kết quả được tính vào bảng xếp hạng.";
+        } else if (response.ok) {
+            status.innerText = "Đã lưu vào bảng xếp hạng Quiz!";
+        } else {
+            throw new Error(`HTTP ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Lỗi lưu kết quả quiz:", error);
+        status.innerText = "Không lưu được kết quả, vui lòng thử lại sau.";
+    }
 }
 
 // Chạy hàm khi trang web tải xong

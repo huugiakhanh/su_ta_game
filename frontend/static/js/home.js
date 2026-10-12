@@ -128,29 +128,64 @@
 
   const MEDALS = { 1: '🥇 1', 2: '🥈 2', 3: '🥉 3' };
 
-  function renderLeaderboardUI({ data, me, levels_total: levelsTotal }) {
+  // Tiêu đề cột theo loại bảng: `game` (toàn game / chương) hoặc `quiz` (SUTA-QUIZ-LB).
+  const LEADERBOARD_COLUMNS = {
+      game: ['HẠNG', 'NGƯỜI CHƠI', 'ĐÃ QUA MÀN', 'TỔNG ĐIỂM', 'THỜI GIAN', 'THÀNH TÍCH'],
+      quiz: ['HẠNG', 'NGƯỜI CHƠI', 'CÂU ĐÚNG', 'TỈ LỆ ĐÚNG', 'THỜI GIAN', 'SỐ LƯỢT'],
+  };
+
+  function percent(correct, total) {
+      return total ? `${Math.round((correct / total) * 100)}%` : '—';
+  }
+
+  function leaderboardCells(kind, player, levelsTotal) {
+      if (kind === 'quiz') {
+          return [
+              { text: `✅ ${player.total_correct.toLocaleString()}/${player.total_questions.toLocaleString()}`, style: 'color: #b22222;' },
+              { text: percent(player.total_correct, player.total_questions) },
+              { text: `🕒 ${formatTime(player.total_time)}` },
+              { text: player.runs },
+          ];
+      }
+      return [
+          { text: `${player.levels_passed}/${levelsTotal}` },
+          { text: `⭐ ${player.total_score.toLocaleString()}`, style: 'color: #b22222;' },
+          { text: `🕒 ${formatTime(player.total_time)}` },
+          { text: player.badges || '—' },
+      ];
+  }
+
+  function renderLeaderboardUI({ kind = 'game', data, me, levels_total: levelsTotal }) {
       const tbody = document.getElementById('leaderboard-table-body');
       if (!tbody) return;
+      const columns = LEADERBOARD_COLUMNS[kind] || LEADERBOARD_COLUMNS.game;
+      const head = document.getElementById('leaderboard-table-head');
+      if (head) {
+          head.replaceChildren(...columns.map((title) => {
+              const th = document.createElement('th');
+              th.textContent = title;
+              return th;
+          }));
+      }
       tbody.innerHTML = '';
       if (!data || data.length === 0) {
-          messageRow(tbody, 6, 'Chưa có dữ liệu xếp hạng');
+          messageRow(tbody, columns.length, 'Chưa có dữ liệu xếp hạng');
       } else {
           data.forEach((player) => {
               const top = player.rank <= 3;
               tbody.appendChild(tableRow([
                   { text: MEDALS[player.rank] || player.rank, style: top ? 'color: #d32f2f; font-size: 18px;' : '' },
                   { text: player.name },
-                  { text: `${player.levels_passed}/${levelsTotal}` },
-                  { text: `⭐ ${player.total_score.toLocaleString()}`, style: 'color: #b22222;' },
-                  { text: `🕒 ${formatTime(player.total_time)}` },
-                  { text: player.badges || '—' },
+                  ...leaderboardCells(kind, player, levelsTotal),
               ]));
           });
       }
       // Hạng của mình do server tính (kể cả ngoài top 10).
       document.getElementById('my-current-rank').textContent = me ? me.rank : 'NO';
       document.getElementById('my-current-name').textContent = currentUser ? currentUser.name : 'Khách';
-      document.getElementById('my-current-score').textContent = `⭐ ${(me ? me.total_score : 0).toLocaleString()}`;
+      document.getElementById('my-current-score').textContent = kind === 'quiz'
+          ? `✅ ${(me ? me.total_correct : 0).toLocaleString()} câu đúng`
+          : `⭐ ${(me ? me.total_score : 0).toLocaleString()}`;
   }
 
   // --- THÀNH TỰU (SUTA-DB-01) ---

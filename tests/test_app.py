@@ -13,7 +13,7 @@ from backend.db import db_cursor, run_migrations  # noqa: E402
 
 # Bảng dữ liệu người chơi — xoá sạch trước mỗi test (danh mục seed giữ nguyên).
 PLAYER_TABLES = "users, chapter_progress, chapter_progress_rewards, level_records, " \
-                "user_level_stats, user_achievements, currency_transactions"
+                "user_level_stats, user_achievements, currency_transactions, quiz_results"
 
 
 @pytest.fixture()
@@ -147,6 +147,29 @@ def test_leaderboard_scopes_and_me_outside_top(client):
     chapter = client.get("/api/game/leaderboard?scope=chapter-1").json
     assert chapter["me"]["levels_passed"] == 2 and chapter["levels_total"] == 3
     assert chapter["me"]["badges"] == "⚔️🤝"
+
+
+def test_quiz_leaderboard_total_correct_then_time(client):
+    # SUTA-QUIZ-LB: tổng câu đúng giảm dần, hoà thì tổng thời gian tăng dần.
+    def quiz(count, correct, seconds):
+        response = client.post("/api/quiz/result",
+                               json={"question_count": count, "correct_count": correct, "time_seconds": seconds})
+        assert response.status_code == 200
+
+    register_and_login(client, "a")
+    quiz(10, 6, 50)
+    quiz(5, 4, 20)
+    client.post("/api/auth/logout")
+    register_and_login(client, "b")
+    quiz(20, 10, 60)
+    client.post("/api/auth/logout")
+    register_and_login(client, "c")
+    quiz(10, 9, 30)
+    result = client.get("/api/game/leaderboard?scope=quiz").json
+    assert result["kind"] == "quiz"
+    assert [(row["rank"], row["total_correct"], row["total_time"], row["runs"]) for row in result["data"]] == [
+        (1, 10, 60.0, 1), (2, 10, 70.0, 2), (3, 9, 30.0, 1)]
+    assert result["me"]["rank"] == 3 and result["me"]["total_questions"] == 10
 
 
 def test_achievements_list(client):

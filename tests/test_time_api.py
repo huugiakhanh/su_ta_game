@@ -165,6 +165,56 @@ def test_leaderboard_bad_scope(client, scope):
     assert client.get(f"/api/game/leaderboard?scope={scope}").status_code == 400
 
 
+# ---- Trắc nghiệm /quiz (SUTA-QUIZ-LB) ----
+
+def test_quiz_leaderboard_scope(client, monkeypatch):
+    calls = []
+    monkeypatch.setattr(api, "get_quiz_leaderboard", lambda limit, user_id: calls.append(
+        (limit, user_id)) or {"data": [], "me": None})
+    login(client)
+    response = client.get("/api/game/leaderboard?scope=quiz")
+    assert response.status_code == 200 and response.json["kind"] == "quiz"
+    assert calls == [(api.LEADERBOARD_LIMIT, USER["id"])]
+
+
+def test_quiz_result_requires_session(client, monkeypatch):
+    saved = []
+    monkeypatch.setattr(api, "save_quiz_result", lambda *args: saved.append(args))
+    response = client.post("/api/quiz/result", json={"question_count": 10, "correct_count": 7, "time_seconds": 42})
+    assert response.status_code == 401 and saved == []
+
+
+def test_quiz_result_saved_for_session_user(client, monkeypatch):
+    saved = []
+    monkeypatch.setattr(api, "save_quiz_result", lambda *args: saved.append(args))
+    login(client)
+    response = client.post("/api/quiz/result",
+                           json={"question_count": 10, "correct_count": 7, "time_seconds": 42.256})
+    assert response.status_code == 200
+    assert saved == [(USER["id"], 10, 7, 42.26)]
+
+
+@pytest.mark.parametrize("patch", [
+    {"question_count": 0},
+    {"question_count": 201},
+    {"question_count": "10"},
+    {"correct_count": 11},
+    {"correct_count": -1},
+    {"correct_count": True},
+    {"time_seconds": 0},
+    {"time_seconds": -5},
+    {"time_seconds": 24 * 3600 + 1},
+    {"time_seconds": "42"},
+])
+def test_quiz_result_rejects_bad_payload(client, monkeypatch, patch):
+    saved = []
+    monkeypatch.setattr(api, "save_quiz_result", lambda *args: saved.append(args))
+    login(client)
+    payload = {"question_count": 10, "correct_count": 7, "time_seconds": 42, **patch}
+    assert client.post("/api/quiz/result", json=payload).status_code == 400
+    assert saved == []
+
+
 # ---- Avatar (SUTA-DB-01, migration 002) ----
 
 def test_change_avatar(client, monkeypatch):

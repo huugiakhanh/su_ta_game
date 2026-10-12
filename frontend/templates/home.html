@@ -364,12 +364,11 @@
             <button class="close-btn" onclick="document.getElementById('leaderboard-modal').style.display='none'">X</button>
 
             <div class="leaderboard-tabs">
-                <!-- data-scope: phạm vi gửi /api/game/leaderboard?scope= (SUTA-DB-01). -->
+                <!-- data-scope: phạm vi gửi /api/game/leaderboard?scope= (SUTA-DB-01;
+                     quiz — SUTA-QUIZ-LB). Thêm chương mới: thêm 1 nút chapter-N. -->
                 <button class="tab-btn active" data-scope="all">🏆 TOÀN GAME</button>
                 <button class="tab-btn" data-scope="chapter-1">👩 TRƯNG TRẮC</button>
-                <button class="tab-btn" data-scope="level-101">MÀN 1</button>
-                <button class="tab-btn" data-scope="level-102">MÀN 2</button>
-                <button class="tab-btn" data-scope="level-103">MÀN 3</button>
+                <button class="tab-btn" data-scope="quiz">📜 QUIZ</button>
                 <!-- <button class="tab-btn">🧔 ĐINH BỘ LĨNH</button> -->
                 <!-- <button class="tab-btn">📜 LÝ CÔNG UẨN</button> -->
                 <!-- <button class="tab-btn">⚔️ LÊ LỢI</button> -->
@@ -378,7 +377,8 @@
             <div class="table-wrapper">
                 <table class="leaderboard-table">
                     <thead>
-                        <tr>
+                        <!-- Tiêu đề cột đổi theo tab (home.js — LEADERBOARD_COLUMNS). -->
+                        <tr id="leaderboard-table-head">
                             <th>HẠNG</th>
                             <th>NGƯỜI CHƠI</th>
                             <th>ĐÃ QUA MÀN</th>

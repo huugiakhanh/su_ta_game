@@ -5,6 +5,7 @@ from flask import Blueprint, jsonify, request, session
 from backend.repositories.user_repository import create, exists, find_by_credentials, find_by_id, set_avatar
 from backend.repositories.achievement_repository import list_achievements
 from backend.repositories.record_repository import get_leaderboard
+from backend.repositories.quiz_repository import get_quiz_leaderboard, save_quiz_result
 from backend.repositories.progress_repository import (
     LEVELS_PER_CHAPTER, clear_progress, get_progress, known_reward_ids, save_progress,
 )
@@ -24,6 +25,8 @@ LEADERBOARD_LIMIT = 10
 # Avatar người chơi (cột users.avatar, migration 002). Mặc định "male".
 VALID_AVATARS = {"male", "female"}
 MAX_BOOKS = 99
+# Số câu tối đa 1 lượt trắc nghiệm ở /quiz (ngân hàng câu hiện có 50 câu) — SUTA-QUIZ-LB.
+MAX_QUIZ_QUESTIONS = 200
 
 
 def payload_error(message):
@@ -181,7 +184,8 @@ def save_time():
 
 
 def parse_scope(scope):
-    """`all` | `chapter-<id>` | `level-<id>` -> (chapter_id, level_id); sai -> None."""
+    """`all` | `chapter-<id>` | `level-<id>` -> (chapter_id, level_id); sai -> None.
+    `quiz` xử lý riêng trong leaderboard()."""
     if scope == "all":
         return None, None
     kind, _, value = scope.partition("-")
@@ -197,16 +201,49 @@ def parse_scope(scope):
 @api_bp.get("/leaderboard")
 @api_bp.get("/api/game/leaderboard")
 def leaderboard():
-    # scope: all (mặc định) | chapter-1 | level-101… (SUTA-DB-01). `me` = hàng
-    # của người đang đăng nhập (kể cả ngoài top).
+    # scope: all (mặc định) | chapter-1 | level-101… (SUTA-DB-01) | quiz (SUTA-QUIZ-LB).
+    # `me` = hàng của người đang đăng nhập (kể cả ngoài top). Trang chủ chỉ hiện
+    # tab all / chapter-N / quiz; level-N vẫn nhận cho tương thích.
+    if request.args.get("scope") == "quiz":
+        try:
+            board = get_quiz_leaderboard(limit=LEADERBOARD_LIMIT, user_id=session.get("user_id"))
+            return jsonify({"status": "success", "kind": "quiz", **board})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
     scope = parse_scope(request.args.get("scope", "all"))
     if scope is None:
         return payload_error("scope không hợp lệ."), 400
     try:
         board = get_leaderboard(*scope, limit=LEADERBOARD_LIMIT, user_id=session.get("user_id"))
-        return jsonify({"status": "success", **board})
+        return jsonify({"status": "success", "kind": "game", **board})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@api_bp.post("/api/quiz/result")
+def quiz_result():
+    # Kết quả 1 lượt trắc nghiệm ở /quiz (SUTA-QUIZ-LB). Người chơi lấy từ session;
+    # khách -> 401 (trang quiz nhắc đăng nhập). Không thưởng vàng/KC.
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"status": "guest", "message": "Hãy đăng nhập để lưu kết quả."}), 401
+
+    data = request.get_json(silent=True) or {}
+    question_count = data.get("question_count")
+    correct_count = data.get("correct_count")
+    time_seconds = data.get("time_seconds")
+    if not is_int(question_count, low=1, high=MAX_QUIZ_QUESTIONS):
+        return payload_error("question_count không hợp lệ."), 400
+    if not is_int(correct_count, high=question_count):
+        return payload_error("correct_count không hợp lệ."), 400
+    if not is_clear_time(time_seconds):
+        return payload_error("time_seconds không hợp lệ."), 400
+
+    try:
+        save_quiz_result(user_id, question_count, correct_count, max(round(float(time_seconds), 2), 0.01))
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return payload_error(f"Có lỗi xảy ra: {str(e)}"), 500
 
 
 @api_bp.get("/api/game/achievements")
