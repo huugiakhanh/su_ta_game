@@ -12,7 +12,7 @@ STARTING_GEMS = 0
 USER_FIELDS = """
     u.id, u.display_name, u.gold, u.gems,
     (SELECT COUNT(*) FROM user_level_stats s WHERE s.user_id = u.id),
-    u.avatar
+    u.avatar, u.gender
 """
 
 
@@ -26,6 +26,7 @@ def _user(row):
         "gems": row[3],
         "levels_cleared": row[4],
         "avatar": row[5],
+        "gender": row[6],
     }
 
 
@@ -48,13 +49,13 @@ def exists(username):
         return cursor.fetchone() is not None
 
 
-def create(username, password, name, avatar="male"):
+def create(username, password, name, avatar="male", gender=None):
     mark = placeholder()
     with db_cursor(commit=True) as (_, cursor):
         cursor.execute(
-            f"INSERT INTO users (username, password_hash, display_name, gold, gems, avatar) "
-            f"VALUES ({mark}, {mark}, {mark}, {mark}, {mark}, {mark})",
-            (username, generate_password_hash(password), name, STARTING_GOLD, STARTING_GEMS, avatar),
+            f"INSERT INTO users (username, password_hash, display_name, gold, gems, avatar, gender) "
+            f"VALUES ({mark}, {mark}, {mark}, {mark}, {mark}, {mark}, {mark})",
+            (username, generate_password_hash(password), name, STARTING_GOLD, STARTING_GEMS, avatar, gender),
         )
 
 
@@ -62,6 +63,12 @@ def set_avatar(user_id, avatar):
     mark = placeholder()
     with db_cursor(commit=True) as (_, cursor):
         cursor.execute(f"UPDATE users SET avatar = {mark} WHERE id = {mark}", (avatar, user_id))
+
+
+def set_gender(user_id, gender):
+    mark = placeholder()
+    with db_cursor(commit=True) as (_, cursor):
+        cursor.execute(f"UPDATE users SET gender = {mark} WHERE id = {mark}", (gender, user_id))
 
 
 def find_by_id(user_id):

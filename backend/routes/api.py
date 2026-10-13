@@ -2,7 +2,7 @@ import math
 
 from flask import Blueprint, jsonify, request, session
 
-from backend.repositories.user_repository import create, exists, find_by_credentials, find_by_id, set_avatar
+from backend.repositories.user_repository import create, exists, find_by_credentials, find_by_id, set_avatar, set_gender
 from backend.repositories.achievement_repository import list_achievements
 from backend.repositories.record_repository import get_leaderboard
 from backend.repositories.quiz_repository import get_quiz_leaderboard, save_quiz_result
@@ -24,6 +24,8 @@ VALID_CHAPTER_IDS = {1}
 LEADERBOARD_LIMIT = 10
 # Avatar người chơi (cột users.avatar, migration 002). Mặc định "male".
 VALID_AVATARS = {"male", "female"}
+# Giới tính -> nhân vật nam/nữ trong màn chơi (users.gender, migration 004 — TT-HERO-01).
+VALID_GENDERS = {"male", "female"}
 MAX_BOOKS = 99
 # Số câu tối đa 1 lượt trắc nghiệm ở /quiz (ngân hàng câu hiện có 50 câu) — SUTA-QUIZ-LB.
 MAX_QUIZ_QUESTIONS = 200
@@ -73,6 +75,10 @@ def parse_progress(data, reward_ids):
 
 def is_avatar(value):
     return isinstance(value, str) and value in VALID_AVATARS
+
+
+def is_gender(value):
+    return isinstance(value, str) and value in VALID_GENDERS
 
 
 def parse_stats(stats):
@@ -128,6 +134,18 @@ def change_avatar():
     return jsonify({"status": "success", "avatar": avatar})
 
 
+@api_bp.post("/api/auth/gender")
+def change_gender():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"status": "guest"}), 401
+    gender = (request.get_json(silent=True) or {}).get("gender")
+    if not is_gender(gender):
+        return payload_error("Giới tính không hợp lệ!"), 400
+    set_gender(user_id, gender)
+    return jsonify({"status": "success", "gender": gender})
+
+
 @api_bp.post("/api/auth/logout")
 def logout():
     session.clear()
@@ -142,14 +160,17 @@ def register():
     password = data.get("password", "")
     name = str(data.get("name", "TÂN THỦ")).strip() or "TÂN THỦ"
     avatar = data.get("avatar", "male")
+    gender = data.get("gender")
     if not username or not password:
         return payload_error("Vui lòng nhập đầy đủ tài khoản và mật khẩu!")
     if not is_avatar(avatar):
         return payload_error("Avatar không hợp lệ!")
+    if not is_gender(gender):
+        return payload_error("Vui lòng chọn giới tính!")
     if exists(username):
         return payload_error("Tài khoản này đã tồn tại!")
 
-    create(username, password, name, avatar)
+    create(username, password, name, avatar, gender)
     return jsonify({"status": "success", "message": "Đăng ký thành công! Hãy đăng nhập lại."})
 
 

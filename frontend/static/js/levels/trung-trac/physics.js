@@ -13,14 +13,15 @@ import {
   HURT_ANIMATION_TIME, PROJECTILE_SPEED, PROJECTILE_MAX_RANGE, HAZARD_DESPAWN_MARGIN,
   ATTACK_COOLDOWN, ATTACK_ACTIVE_TIME, PLAYER_SPRITE_ID, PLAYER_ANIMATIONS,
   HAZARD_SPRITES, ENEMY_SPRITES, MINIBOSS, GUARD, GROUND_Y,
-  ARENA, RUSHER, SKILLS, ARROW_RAIN_SPRITE, BOSS_TD, WAVES, BOSS_TEXT, WALL_ARROWS, GOLD_ICON_URL
+  ARENA, RUSHER, SKILLS, ARROW_RAIN_SPRITE, BOSS_TD, WAVES, BOSS_TEXT, WALL_ARROWS, GOLD_ICON_URL, INTRO
 } from './config.js';
 import { setAnim, tickAnim, getAnimMeta, hitTime, animLength, createAnim } from './animation.js';
 import { readProgress, saveProgress, submitLevelRecord, REWARD_NAMES } from './progress.js';
 import { formatTime, levelTime } from './timer.js';
 import { openNpcDialogue, openStory, openQuiz } from './dialogue.js';
 import {
-  STORY_THI_SACH, STORY_TO_DINH_FLEES, STORY_LUY_LAU_VICTORY, CHAPTER_END, NPC_DIALOGUES
+  STORY_THI_SACH, STORY_TO_DINH_FLEES, STORY_LUY_LAU_VICTORY, CHAPTER_END, NPC_DIALOGUES,
+  STORY_TRUNG_TRAC_INTRO
 } from './dialogue-data.js';
 import { QUESTIONS } from './questions-data.js';
 import { playSfx, playMusic, stopMusic } from './audio.js';
@@ -1283,6 +1284,50 @@ function updateCutscene(dt) {
   updateHud();
 }
 
+// Cảnh vào màn (TT-HERO-01), người chơi không điều khiển: tự chạy từ ngoài mép
+// trái tới intro.targetX (bỏ qua kẹp x ≥ 12 / tường đấu trường). Màn 1 có
+// Trưng Trắc (state.guide) -> mở cốt truyện, đóng xong mới vào chơi. Kết thúc
+// thì gọi intro.onDone (main.js: thông báo nhiệm vụ + nhạc); đồng hồ màn chỉ
+// chạy khi state.intro = null (countsLevelTime ở main.js).
+function updateIntro(dt) {
+  const intro = state.intro;
+  const p = state.player;
+  tickMessage(dt);
+  // Bỏ phím bấm trong lúc chạy vào — không để dồn 1 cú nhảy/đánh sau intro.
+  pressed.jump = pressed.attack = pressed.dash = false;
+  let playerAnim = 'idle';
+
+  if (intro.phase === 'walk') {
+    p.facing = 1;
+    p.x = Math.min(intro.targetX, p.x + INTRO.walkSpeed * dt);
+    playerAnim = 'run';
+    if (p.x >= intro.targetX) {
+      // Tới nơi thì đứng yên (hội thoại dừng game ngay frame này).
+      playerAnim = 'idle';
+      const guide = state.guide;
+      if (guide) {
+        intro.phase = 'talk';
+        guide.talking = true;
+        openStory(STORY_TRUNG_TRAC_INTRO, () => {
+          guide.talking = false;
+          guide.met = true;
+          intro.phase = 'done';
+        });
+      } else {
+        intro.phase = 'done';
+      }
+    }
+  } else if (intro.phase === 'done') {
+    state.intro = null;
+    intro.onDone?.();
+  }
+
+  setAnim(p, playerAnim);
+  tickAnim(p, dt);
+  updateCamera(dt);
+  updateHud();
+}
+
 function updateCamera(dt) {
   const p = state.player;
   // Đấu trường: neo tâm người chơi (địch đến từ cả 2 phía); màn thường nhìn
@@ -1310,10 +1355,17 @@ export function update(dt) {
     updateCutscene(dt);
     return;
   }
+  if (state.intro) {
+    updateIntro(dt);
+    return;
+  }
   const p = state.player;
   const previousBottom = p.y + p.h;
 
   tickMessage(dt);
+  // Trưng Trắc (màn 1) nói xong thì mờ dần như NPC màn 2.
+  const guide = state.guide;
+  if (guide?.met && guide.fade > 0) guide.fade = Math.max(0, guide.fade - dt / NPC_RULES.fadeTime);
 
   p.invulnerable = Math.max(0, p.invulnerable - dt);
   p.hurtTimer = Math.max(0, p.hurtTimer - dt);

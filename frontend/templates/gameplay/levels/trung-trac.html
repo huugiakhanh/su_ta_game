@@ -6,7 +6,8 @@
   <title>SUTA – Trưng Trắc · {{ title }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/levels/trung-trac.css') }}">
 </head>
-<body data-level="{{ level_id }}">
+<!-- data-gender: giới tính tài khoản (rỗng = khách hoặc tài khoản cũ chưa chọn) — hero.js, TT-HERO-01. -->
+<body data-level="{{ level_id }}" data-gender="{{ player_gender or '' }}" data-logged-in="{{ '1' if logged_in else '0' }}">
   <main class="game-shell">
     <section class="hud" aria-label="Thông tin màn chơi">
       <div class="hud__brand">SUTA · TRƯNG TRẮC
@@ -21,10 +22,28 @@
 
     <section class="stage-wrap">
       <canvas id="gameCanvas" width="480" height="270" aria-label="Màn chơi Trưng Trắc"></canvas>
-      <div id="loadingPanel" class="panel panel--visible">
-        <h1>{{ title }}</h1>
+      <!-- Dòng báo tải asset (TT-HERO-01: bỏ màn phủ + nút Bắt đầu — vào màn là
+           nhân vật tự chạy vào). Tải xong thì ẩn; thiếu asset thì giữ lời báo. -->
+      <div id="loadingPanel" class="loading-note" role="status" hidden>
         <p id="loadingText">Đang tải bản đồ...</p>
-        <button id="startButton" type="button" disabled>Bắt đầu</button>
+      </div>
+
+      <!-- Chọn nhân vật (hero.js): khách lần đầu / tài khoản cũ chưa có giới tính /
+           "Đổi nhân vật" trong menu cài đặt. Ảnh = avatar trang chủ (cùng người
+           với PLAYER_MALE / PLAYER_FEMALE). -->
+      <div id="heroPicker" class="panel hero-picker" role="dialog" aria-modal="true" aria-labelledby="heroPickerTitle">
+        <h1>{{ title }}</h1>
+        <p id="heroPickerTitle">Chọn nhân vật của bạn</p>
+        <div class="hero-picker__options">
+          <button type="button" class="hero-picker__option" data-gender-choice="male">
+            <img src="{{ url_for('static', filename='assets/images/avatar/avatar_male.png') }}" alt="" width="96" height="96">
+            <span>Nam</span>
+          </button>
+          <button type="button" class="hero-picker__option" data-gender-choice="female">
+            <img src="{{ url_for('static', filename='assets/images/avatar/avatar_female.png') }}" alt="" width="96" height="96">
+            <span>Nữ</span>
+          </button>
+        </div>
       </div>
 
       <div id="messageBox" class="message" aria-live="polite"></div>
@@ -132,6 +151,9 @@
               </label>
               <label class="settings__check"><input id="muteToggle" type="checkbox"> Tắt tiếng (M)</label>
             </fieldset>
+            <!-- TT-HERO-01: chọn lại nhân vật nam/nữ, áp dụng từ lần vào màn sau. -->
+            <button id="settingsHero" type="button">Đổi nhân vật</button>
+            <p id="settingsHeroNote" class="settings__note" hidden></p>
             <button id="settingsExit" class="settings__exit" type="button">Thoát khỏi màn chơi</button>
           </div>
           <div id="settingsConfirm" class="settings__confirm" hidden>

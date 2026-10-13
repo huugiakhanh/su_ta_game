@@ -1,4 +1,4 @@
-// Đăng nhập/đăng ký + hồ sơ (đổi avatar, đăng xuất) — SUTA-DB-01; tải khi bấm ô người
+// Đăng nhập/đăng ký + hồ sơ (đổi avatar, nhân vật nam/nữ — TT-HERO-01, đăng xuất) — SUTA-DB-01; tải khi bấm ô người
 // chơi lần đầu (HOME-LAZY-01). HTML: components/home/login.html, CSS: css/home/login.css.
 import { home, postJson, renderAvatar, showGuest, showUser } from './shared.js';
 
@@ -32,6 +32,24 @@ export function init() {
       }
     });
   });
+
+  document.querySelectorAll('[data-gender-choice]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const key = button.dataset.genderChoice;
+      if (!home.user || key === home.user.gender) return;
+      const message = document.getElementById('profileMessage');
+      message.textContent = 'Đang lưu...';
+      try {
+        const data = await postJson('/api/auth/gender', { gender: key });
+        if (data.status !== 'success') throw new Error(data.message);
+        home.user.gender = key;
+        markGenderChoice(key);
+        message.textContent = 'Đã đổi nhân vật.';
+      } catch (_) {
+        message.textContent = 'Không đổi được nhân vật, thử lại sau.';
+      }
+    });
+  });
 }
 
 export function openLogin() {
@@ -48,10 +66,19 @@ function markAvatarChoice(key) {
   });
 }
 
+function markGenderChoice(key) {
+  document.querySelectorAll('[data-gender-choice]').forEach((button) => {
+    const selected = button.dataset.genderChoice === key;
+    button.classList.toggle('is-selected', selected);
+    button.setAttribute('aria-pressed', String(selected));
+  });
+}
+
 export function openProfile() {
   document.getElementById('profileName').textContent = home.user.name;
   document.getElementById('profileMessage').textContent = '';
   markAvatarChoice(home.user.avatar);
+  markGenderChoice(home.user.gender);
   document.getElementById('profileModal').hidden = false;
 }
 
@@ -112,11 +139,16 @@ window.xacNhanDangKy = async function xacNhanDangKy() {
     setAuthMessage('Vui lòng điền đủ thông tin!', '#ff6b6b');
     return;
   }
+  const gender = document.querySelector('input[name="regGender"]:checked')?.value;
+  if (!gender) {
+    setAuthMessage('Hãy chọn nhân vật Nam hoặc Nữ!', '#ff6b6b');
+    return;
+  }
 
   setAuthMessage('Đang tạo tài khoản mới...');
   try {
     const avatar = document.querySelector('input[name="regAvatar"]:checked')?.value || 'male';
-    const data = await postJson('/register', { name, username, password, avatar });
+    const data = await postJson('/register', { name, username, password, avatar, gender });
     if (data.status === 'success') {
       setAuthMessage(data.message, '#51cf66');
       setTimeout(() => window.doiTab('login'), 1500);

@@ -82,6 +82,164 @@
       "qa_notes": "GATE 2 — đủ animation; người dùng duyệt 02/10/2026; chờ chơi thử trong game"
     },
     {
+      "id": "PLAYER_MALE",
+      "category": "player",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "player/PLAYER_MALE/player_male_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "run",
+          "file": "player/PLAYER_MALE/player_male_run.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "jump",
+          "file": "player/PLAYER_MALE/player_male_jump.png",
+          "frames": 3,
+          "fps": 8,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "player/PLAYER_MALE/player_male_attack_01.png",
+          "frames": 9,
+          "fps": 21,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "hurt",
+          "file": "player/PLAYER_MALE/player_male_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "player/PLAYER_MALE/player_male_death.png",
+          "frames": 5,
+          "fps": 8,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "victory",
+          "file": "player/PLAYER_MALE/player_male_victory.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "dash",
+          "file": "player/PLAYER_MALE/player_male_dash.png",
+          "frames": 6,
+          "fps": 24,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TT-HERO-01 Gate H2: 8 animations complete; alpha 0/255; <=32 chapter-palette colors; frame sizes and hit_frame validated; pending /asset-review and game integration"
+    },
+    {
+      "id": "PLAYER_FEMALE",
+      "category": "player",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "player/PLAYER_FEMALE/player_female_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "run",
+          "file": "player/PLAYER_FEMALE/player_female_run.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "jump",
+          "file": "player/PLAYER_FEMALE/player_female_jump.png",
+          "frames": 3,
+          "fps": 8,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "player/PLAYER_FEMALE/player_female_attack_01.png",
+          "frames": 9,
+          "fps": 21,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "hurt",
+          "file": "player/PLAYER_FEMALE/player_female_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "player/PLAYER_FEMALE/player_female_death.png",
+          "frames": 5,
+          "fps": 8,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "victory",
+          "file": "player/PLAYER_FEMALE/player_female_victory.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "dash",
+          "file": "player/PLAYER_FEMALE/player_female_dash.png",
+          "frames": 6,
+          "fps": 24,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TT-HERO-01 Gate H2: 8 animations complete; alpha 0/255; <=32 chapter-palette colors; frame sizes and hit_frame validated; pending /asset-review and game integration"
+    },
+    {
       "id": "EN_HAN_GUARD",
       "category": "enemy",
       "priority": "P0",

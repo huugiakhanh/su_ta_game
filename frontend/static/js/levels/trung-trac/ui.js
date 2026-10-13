@@ -16,7 +16,6 @@ export const ui = {
   progress: document.getElementById('progressBar'),
   loading: document.getElementById('loadingPanel'),
   loadingText: document.getElementById('loadingText'),
-  start: document.getElementById('startButton'),
   end: document.getElementById('endPanel'),
   endTitle: document.getElementById('endTitle'),
   endText: document.getElementById('endText'),

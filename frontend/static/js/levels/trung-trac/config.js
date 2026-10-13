@@ -522,6 +522,8 @@ export const SPRITE_MANIFEST_FILE = 'manifest_tt.json';
 // ×4 nặng ~2–14 MB/asset khi giải nén). Thêm thực thể dùng sprite mới vào màn
 // thì thêm ID vào đây — thiếu thì render cảnh báo 1 lần "chưa nạp" và vẽ hộp
 // tạm. Màn 1 cả layout thử ?layout=p2; màn 3 cả ?layout=skills.
+// Sprite người chơi KHÔNG nằm ở đây — assets.js nạp thêm PLAYER_SPRITE_ID theo
+// giới tính (TT-HERO-01). PLAYER_TRUNG_TRAC ở màn 1 là Trưng Trắc đứng chờ (NPC).
 // (PJ_FIRE_ARROW có trong manifest/PROJECTILE_SPRITES nhưng chưa màn nào dùng.)
 const SPRITES_TOWER = ['EN_HAN_WATCHTOWER', 'PROP_WATCHTOWER', 'EN_HAN_CAVALRY', 'PJ_SPEAR'];
 export const LEVEL_SPRITES = {
@@ -530,11 +532,11 @@ export const LEVEL_SPRITES = {
     'EN_HAN_TAXMAN', 'PJ_COIN_POUCH', ...SPRITES_TOWER, 'EN_HAN_PALANQUIN', 'PJ_THROWING_KNIFE'
   ],
   2: [
-    'PLAYER_TRUNG_TRAC', 'EN_HAN_GUARD', 'TR_SPIKE_PIT', 'EN_TIGER', 'OB_TRIBUTE_CART',
+    'EN_HAN_GUARD', 'TR_SPIKE_PIT', 'EN_TIGER', 'OB_TRIBUTE_CART',
     'EN_HAN_TAXMAN', 'PJ_COIN_POUCH', ...SPRITES_TOWER, 'NPC_THI_SACH', 'NPC_LE_CHAN', 'NPC_TRUNG_NHI'
   ],
   3: [
-    'PLAYER_TRUNG_TRAC', 'EN_HAN_GUARD', 'EN_HAN_RUSHER', 'BOSS_TO_DINH_CHARIOT', 'BOSS_TO_DINH_FOOT',
+    'EN_HAN_GUARD', 'EN_HAN_RUSHER', 'BOSS_TO_DINH_CHARIOT', 'BOSS_TO_DINH_FOOT',
     'PJ_OIL_JAR', 'FX_OIL_FIRE', 'PJ_ARROW_RAIN', 'NPC_TRUNG_NHI'
   ]
 };
@@ -546,7 +548,10 @@ export const LEVEL_SPRITES = {
 export const NPC_SPRITES = {
   thiSach: { id: 'NPC_THI_SACH', portrait: 'PORTRAIT_THI_SACH', anims: { idle: 'idle', talk: 'talk' } },
   leChan: { id: 'NPC_LE_CHAN', portrait: 'PORTRAIT_LE_CHAN', anims: { idle: 'idle', talk: 'talk' } },
-  trungNhi: { id: 'NPC_TRUNG_NHI', portrait: 'PORTRAIT_TRUNG_NHI', anims: { idle: 'idle', talk: 'talk' } }
+  trungNhi: { id: 'NPC_TRUNG_NHI', portrait: 'PORTRAIT_TRUNG_NHI', anims: { idle: 'idle', talk: 'talk' } },
+  // Màn 1 (TT-HERO-01): Trưng Trắc chờ người chơi ở đầu màn — chưa có NPC_TRUNG_TRAC,
+  // dùng lại strip idle của sprite người chơi cũ (không có `talk`).
+  trungTrac: { id: 'PLAYER_TRUNG_TRAC', portrait: 'PORTRAIT_TRUNG_TRAC', anims: { idle: 'idle', talk: 'idle' } }
 };
 // DESIGN_BASELINE:
 //   talkDistance  khoảng trống từ mép phải người chơi tới tâm NPC để mở hội thoại.
@@ -587,8 +592,24 @@ export const QUIZ = {
 export const ATTACK_COOLDOWN = 0.36;
 export const ATTACK_ACTIVE_TIME = 0.18;
 
+// Nhân vật người chơi nam/nữ (TT-HERO-01): nghĩa sĩ dùng chung mọi chương, giới
+// tính tài khoản, khách tự chọn (hero.js). Cùng hợp đồng với PLAYER_TRUNG_TRAC
+// (ô 48x48, pivot bottom-center, quay phải, cùng tên + số ô animation) để dùng
+// chung PLAYER_ANIMATIONS. PLAYER_TRUNG_TRAC giờ chỉ là Trưng Trắc NPC màn 1.
+export const PLAYER_SPRITES = { male: 'PLAYER_MALE', female: 'PLAYER_FEMALE' };
+export let PLAYER_SPRITE_ID = PLAYER_SPRITES.female;
+// main.js gọi khi biết giới tính, rồi đưa PLAYER_SPRITE_ID cho loadAssets().
+export function setPlayerGender(gender) {
+  PLAYER_SPRITE_ID = PLAYER_SPRITES[gender] || PLAYER_SPRITES.female;
+}
+// Cảnh vào màn (TT-HERO-01, DESIGN_BASELINE): người chơi tự chạy từ startX
+// (ngoài mép trái) tới điểm xuất phát của màn với tốc độ walkSpeed (px/s), không
+// nhận phím, không tính giờ. Màn 1: Trưng Trắc đứng ở guideLocalX (chunk 1) chờ
+// nói chuyện. Chỉ lần vào màn đầu tiên — chơi lại (R) vào thẳng.
+export const INTRO = { startX: -40, walkSpeed: 120, guideLocalX: 190 };
+
 // Nhân vật chính: trạng thái gameplay -> animation trong manifest
-// (PLAYER_TRUNG_TRAC). Thứ tự ưu tiên hurt > dash > attack > jump > run > idle
+// (PLAYER_SPRITE_ID). Thứ tự ưu tiên hurt > dash > attack > jump > run > idle
 // nằm ở playerAnimationState() (physics.js).
 //   duration: trải strip trên đúng số giây này thay vì fps của manifest.
 //   byVelocity: chọn ô theo vận tốc dọc (lên / gần đỉnh / rơi), không theo giờ.
@@ -596,7 +617,6 @@ export const ATTACK_ACTIVE_TIME = 0.18;
 // Mọi strip vẽ x1 — attack_01 đã được vẽ lại đúng tỉ lệ ở Batch R (TT-MAP-01).
 // dash: 4 ô, không lặp (16fps = .25s < DASH_TIME .30s) -> đứng ở ô cuối tới hết cú lướt.
 // death chỉ phát khi thua (endGame(false) ghi player.deathTime).
-export const PLAYER_SPRITE_ID = 'PLAYER_TRUNG_TRAC';
 export const PLAYER_ANIMATIONS = {
   idle: { anim: 'idle' },
   run: { anim: 'run' },

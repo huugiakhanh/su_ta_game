@@ -30,7 +30,7 @@ def client():
 
 
 def register_and_login(client, username="thu", password="matkhau"):
-    response = client.post("/api/auth/register", json={"username": username, "password": password, "name": "Người Thử"})
+    response = client.post("/api/auth/register", json={"username": username, "password": password, "name": "Người Thử", "gender": "male"})
     assert response.json["status"] == "success"
     response = client.post("/api/auth/login", json={"username": username, "password": password})
     assert response.json["status"] == "success"
@@ -64,7 +64,8 @@ def test_migrations_are_idempotent(client):
     # T1: fixture đã chạy 1 lần; lần nữa không còn gì để chạy.
     with app.app_context():
         assert run_migrations() == []
-    assert query("SELECT version FROM schema_migrations ORDER BY version") == [("001_baseline",), ("002_user_avatar",)]
+    assert query("SELECT version FROM schema_migrations ORDER BY version") == [
+        ("001_baseline",), ("002_user_avatar",), ("003_quiz_results",), ("004_user_gender",)]
 
 
 def test_password_is_hashed_and_login_works(client):
@@ -203,9 +204,23 @@ def test_progress_roundtrip(client):
 
 
 def test_avatar_register_and_change(client):
-    client.post("/api/auth/register", json={"username": "nu", "password": "matkhau", "name": "Nữ", "avatar": "female"})
+    client.post("/api/auth/register", json={"username": "nu", "password": "matkhau", "name": "Nữ", "avatar": "female", "gender": "female"})
     assert client.post("/api/auth/login", json={"username": "nu", "password": "matkhau"}).json["avatar"] == "female"
     assert client.post("/api/auth/avatar", json={"avatar": "male"}).status_code == 200
     assert client.get("/api/auth/me").json["avatar"] == "male"
     register_and_login(client, "macdinh")
     assert client.get("/api/auth/me").json["avatar"] == "male"
+
+
+def test_gender_register_and_change(client):
+    # TT-HERO-01: giới tính lưu riêng; tài khoản cũ (NULL) đặt qua /api/auth/gender.
+    register_and_login(client)
+    assert client.get("/api/auth/me").json["gender"] == "male"
+    assert client.post("/api/auth/gender", json={"gender": "female"}).status_code == 200
+    assert client.get("/api/auth/me").json["gender"] == "female"
+    query_commit = "UPDATE users SET gender = NULL WHERE username = 'thu'"
+    with app.app_context(), db_cursor(commit=True) as (_, cursor):
+        cursor.execute(query_commit)
+    assert client.get("/api/auth/me").json["gender"] is None
+    page = client.get("/gameplay/levels/trung-trac").get_data(as_text=True)
+    assert 'data-gender=""' in page and 'data-logged-in="1"' in page

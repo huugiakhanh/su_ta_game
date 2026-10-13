@@ -530,6 +530,45 @@ kbd {
 .end-time__gold { width: 18px; height: 18px; margin-right: 4px; vertical-align: -3px; }
 .panel .end-time__achievement { color: #f4e3c5; font-size: 14px; font-weight: 700; }
 
+/* ---- TT-HERO-01: dòng báo tải asset + bảng chọn nhân vật ---- */
+.loading-note {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 24px);
+  padding: 4px 12px;
+  border-radius: 4px;
+  background: rgba(9, 7, 5, .7);
+  color: #f4e3c5;
+  font-size: 13px;
+  text-align: center;
+  z-index: 2;
+  pointer-events: none;
+}
+.loading-note[hidden] { display: none; }
+.loading-note p { margin: 0; }
+/* Trên menu cài đặt (z 5) vì "Đổi nhân vật" mở từ đó. */
+.hero-picker { z-index: 6; background: rgba(9, 7, 5, .55); backdrop-filter: none; }
+.hero-picker__options { display: flex; gap: 16px; justify-content: center; }
+.panel button.hero-picker__option {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: 120px;
+  padding: 10px 14px;
+  background: #1a110b;
+  font-size: 16px;
+}
+.panel button.hero-picker__option:hover, .panel button.hero-picker__option:focus-visible { background: #69231f; }
+.hero-picker__option img { width: 96px; height: 96px; object-fit: contain; image-rendering: pixelated; }
+@media (max-height: 520px) {
+  .hero-picker { gap: 8px; padding: 8px; }
+  .hero-picker h1 { font-size: 20px; }
+  .hero-picker__option img { width: 64px; height: 64px; }
+  .panel button.hero-picker__option { min-width: 96px; padding: 6px 10px; }
+}
+
 /* ---- TT-TIME-01: menu cài đặt — phủ trên hội thoại/panel kết thúc ---- */
 .settings { z-index: 5; background: rgba(9, 7, 5, .8); }
 .settings__box {
@@ -564,6 +603,7 @@ kbd {
 .panel button.settings__exit { background: #3a2417; border-color: #8a6a44; }
 .panel button.settings__exit:hover { background: #69231f; }
 .settings__actions { display: flex; gap: 10px; justify-content: center; }
+.settings__note { color: #d5c39e; font-size: 13px; }
 .settings__actions button { flex: 1; }
 
 /* Canvas thấp (điện thoại ngang): menu gọn lại. */

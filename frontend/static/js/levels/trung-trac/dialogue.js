@@ -134,7 +134,8 @@ function render() {
   const { kind, data, step, npc } = current;
   const isNpc = kind === 'npc';
   const isQuiz = kind === 'quiz';
-  el.name.hidden = !isNpc && !isQuiz;
+  // Cốt truyện có `name` (Trưng Trắc đầu màn 1) thì hiện tên người nói.
+  el.name.hidden = !isNpc && !isQuiz && !data.name;
   el.title.hidden = !isNpc;
   if (isNpc) {
     el.name.textContent = data.name;
@@ -143,6 +144,8 @@ function render() {
     npc.talking = step === 'line';
   } else if (isQuiz) {
     el.name.textContent = data.title;
+  } else if (data.name) {
+    el.name.textContent = data.name;
   }
   el.answers.hidden = step !== 'question';
   el.hint.hidden = true;

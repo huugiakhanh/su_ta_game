@@ -7,7 +7,8 @@ from backend import create_app
 from backend.routes import api
 
 
-USER = {"id": 7, "name": "Người Thử", "gold": 0, "gems": 0, "levels_cleared": 0, "avatar": "male"}
+USER = {"id": 7, "name": "Người Thử", "gold": 0, "gems": 0, "levels_cleared": 0, "avatar": "male",
+        "gender": "female"}
 
 
 @pytest.fixture()
@@ -234,12 +235,41 @@ def test_register_avatar(client, monkeypatch, avatar, ok):
     created = []
     monkeypatch.setattr(api, "exists", lambda username: False)
     monkeypatch.setattr(api, "create", lambda *args: created.append(args))
-    payload = {"username": "moi", "password": "x", "name": "Mới"}
+    payload = {"username": "moi", "password": "x", "name": "Mới", "gender": "male"}
     if avatar is not None:
         payload["avatar"] = avatar
     result = client.post("/api/auth/register", json=payload).json
     assert (result["status"] == "success") is ok
-    assert created == ([("moi", "x", "Mới", avatar or "male")] if ok else [])
+    assert created == ([("moi", "x", "Mới", avatar or "male", "male")] if ok else [])
+
+
+# ---- Giới tính -> nhân vật nam/nữ trong màn chơi (TT-HERO-01, migration 004) ----
+
+@pytest.mark.parametrize("gender, ok", [("female", True), ("male", True), (None, False),
+                                        ("robot", False), ("", False), (["male"], False)])
+def test_register_requires_gender(client, monkeypatch, gender, ok):
+    created = []
+    monkeypatch.setattr(api, "exists", lambda username: False)
+    monkeypatch.setattr(api, "create", lambda *args: created.append(args))
+    payload = {"username": "moi", "password": "x", "name": "Mới"}
+    if gender is not None:
+        payload["gender"] = gender
+    result = client.post("/api/auth/register", json=payload).json
+    assert (result["status"] == "success") is ok
+    assert created == ([("moi", "x", "Mới", "male", gender)] if ok else [])
+
+
+def test_change_gender(client, monkeypatch):
+    changed = []
+    monkeypatch.setattr(api, "set_gender", lambda user_id, gender: changed.append((user_id, gender)))
+    assert client.post("/api/auth/gender", json={"gender": "male"}).status_code == 401
+    login(client)
+    for bad in ["robot", "", None, ["male"], {"a": 1}]:
+        assert client.post("/api/auth/gender", json={"gender": bad}).status_code == 400
+    response = client.post("/api/auth/gender", json={"gender": "male"})
+    assert response.json == {"status": "success", "gender": "male"}
+    assert changed == [(USER["id"], "male")]
+    assert client.get("/api/auth/me").json["gender"] == "female"
 
 
 # ---- Thư viện lịch sử: 1 template + backend/data/library_heroes.json ----

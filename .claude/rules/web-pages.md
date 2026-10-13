@@ -44,5 +44,5 @@ paths:
 ## Chung
 
 - Ô bảng/tên người chơi gán bằng `textContent`, không đưa dữ liệu người dùng vào `innerHTML`.
-- **Icon vàng**: ảnh `assets/images/icon/icon_gold.png` (CSS `.res-icon--gold`); **không dùng emoji 🪙** (Windows 10 không hiện). **Avatar người chơi**: `assets/images/avatar/avatar_male.png`/`avatar_female.png` (thanh niên Lạc Việt chung chung, không phải nhân vật lịch sử), lỗi tải thì hiện chữ "Nam"/"Nữ".
+- **Icon vàng**: ảnh `assets/images/icon/icon_gold.png` (CSS `.res-icon--gold`); **không dùng emoji 🪙** (Windows 10 không hiện). **Avatar người chơi**: `assets/images/avatar/avatar_male.png`/`avatar_female.png` (nghĩa sĩ "phi thời đại" — cùng người với sprite PLAYER_MALE / PLAYER_FEMALE trong màn chơi, TT-HERO-01; không phải nhân vật lịch sử), lỗi tải thì hiện chữ "Nam"/"Nữ".
 - Responsive: kiểm tra ở desktop + điện thoại dọc (≤ 600px rộng) + điện thoại ngang (≤ 500px cao) — skill `/verify-ui`.

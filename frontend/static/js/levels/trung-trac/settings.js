@@ -6,6 +6,7 @@
 
 import { getVolume, setVolume, isMuted, setMuted, playSfx } from './audio.js';
 import { clearInput } from './input.js';
+import { changeGender } from './hero.js';
 
 const el = {
   button: document.getElementById('settingsButton'),
@@ -20,7 +21,9 @@ const el = {
   mute: document.getElementById('muteToggle'),
   exit: document.getElementById('settingsExit'),
   exitCancel: document.getElementById('exitCancel'),
-  exitConfirm: document.getElementById('exitConfirm')
+  exitConfirm: document.getElementById('exitConfirm'),
+  hero: document.getElementById('settingsHero'),
+  heroNote: document.getElementById('settingsHeroNote')
 };
 
 let open = false;
@@ -96,6 +99,15 @@ export function initSettings() {
   el.mute.addEventListener('change', () => {
     setMuted(el.mute.checked);
     syncSettings();
+  });
+  // Đổi nhân vật (TT-HERO-01): bảng chọn phủ trên menu; sprite đã nạp theo
+  // nhân vật cũ nên chỉ áp dụng từ lần vào màn sau.
+  el.hero.addEventListener('click', async () => {
+    playSfx('click');
+    await changeGender();
+    el.heroNote.textContent = 'Đã lưu. Nhân vật mới xuất hiện từ lần vào màn tiếp theo.';
+    el.heroNote.hidden = false;
+    el.resume.focus();
   });
   el.exit.addEventListener('click', () => {
     playSfx('click');

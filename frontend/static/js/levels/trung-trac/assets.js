@@ -212,15 +212,17 @@ export function spriteUrl(id) {
 }
 
 // Tải strip các sprite màn đang chơi cần (LEVEL_SPRITES) + ảnh DOM (chân dung,
-// icon — mọi màn). Trả về danh sách "ID.animation" thiếu ảnh/sai cỡ hoặc ID
-// thiếu hẳn trong manifest.
-async function loadSprites() {
+// icon — mọi màn) + sprite người chơi. Trả về danh sách "ID.animation" thiếu
+// ảnh/sai cỡ hoặc ID thiếu hẳn trong manifest.
+// `playerSprite` (Promise<id>): sprite người chơi chỉ biết sau khi chọn giới tính
+// (TT-HERO-01) — các sprite khác tải luôn, không chờ.
+async function loadSprites(playerSprite) {
   const manifest = await loadSpriteManifest();
   registerManifest(manifest);
-  const sprites = {};
+  // Ghi thẳng vào images.sprites: sprite nào xong thì vẽ được ngay (đang chờ chọn nhân vật).
+  const sprites = images.sprites;
   const missing = [];
-  const ids = [...new Set([...(LEVEL_SPRITES[LEVEL.id] || []), ...SPRITE_DOM_IN_GAME])];
-  await Promise.all(ids.map(async id => {
+  const loadIds = ids => Promise.all(ids.map(async id => {
     const asset = getAsset(id);
     if (!asset) {
       missing.push(id);
@@ -230,15 +232,23 @@ async function loadSprites() {
     sprites[id] = loaded.strips;
     missing.push(...loaded.missing);
   }));
+  const levelIds = [...new Set([...(LEVEL_SPRITES[LEVEL.id] || []), ...SPRITE_DOM_IN_GAME])];
+  await Promise.all([
+    loadIds(levelIds),
+    Promise.resolve(playerSprite).then(id => loadIds(levelIds.includes(id) ? [] : [id]))
+  ]);
   return { sprites, missing, manifestLoaded: Boolean(manifest) };
 }
 
 // Tải toàn bộ asset màn đang chơi, ghi vào `images`, và trả về danh sách thiếu
-// để caller (main.js) tự quyết định hiển thị thông báo/log thế nào.
-export async function loadAssets() {
-  const [mapSet, spriteSet] = await Promise.all([loadMapAssets(), loadSprites()]);
-  images.maps = { layers: mapSet.layers, tileset: mapSet.tileset, terrain: mapSet.terrain, props: mapSet.props };
-  images.sprites = spriteSet.sprites;
+// để caller (main.js) tự quyết định hiển thị thông báo/log thế nào. Nền gán vào
+// `images.maps` ngay khi xong (vẽ được sau bảng chọn nhân vật — TT-HERO-01).
+export async function loadAssets(playerSprite) {
+  const mapsReady = loadMapAssets().then(mapSet => {
+    images.maps = { layers: mapSet.layers, tileset: mapSet.tileset, terrain: mapSet.terrain, props: mapSet.props };
+    return mapSet;
+  });
+  const [mapSet, spriteSet] = await Promise.all([mapsReady, loadSprites(playerSprite)]);
   images.loaded = true;
   return {
     missingMaps: mapSet.missing,

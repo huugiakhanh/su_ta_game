@@ -7,7 +7,7 @@ import {
   worldX, makeObstacle, makeHazard, setTerrain, buildTerrain, terrainHoles, terrainLevelAt, flatSpan, groundYAt
 } from './geometry.js';
 import {
-  GROUND_Y, TERRAIN_CELL, MINIBOSS, GUARD, LEVEL, NPC_RULES, NPC_RESCUE, OBSTACLE_TYPES, ARENA, RUSHER, SKILLS, SKILL_TEST,
+  GROUND_Y, TERRAIN_CELL, INTRO, MINIBOSS, GUARD, LEVEL, NPC_RULES, NPC_RESCUE, OBSTACLE_TYPES, ARENA, RUSHER, SKILLS, SKILL_TEST,
   BOSS_TD, WALL_ARROWS, QUIZ
 } from './config.js';
 import { LEVEL1_QUESTION_POOL, NPC_QUESTION_POOLS } from './questions-data.js';
@@ -578,12 +578,18 @@ function createSkillState(rewards) {
 
 // State của 1 lượt chơi màn đang chọn (LEVEL, config.js). `options.score` =
 // điểm mang sang từ màn trước; máu luôn đầy khi bắt đầu màn (DESIGN_BASELINE).
+// `options.intro` = cảnh vào màn (TT-HERO-01): người chơi đứng ngoài mép trái,
+// physics.js cho tự chạy tới `intro.targetX`; màn 1 thêm Trưng Trắc (`guide`).
 export function createLevelState(options = {}) {
   // Mặc định phẳng; level1Content/level2Content đặt địa hình của màn.
   setTerrain(null);
   const content = LEVEL.id === 3 ? level3Content(options)
     : LEVEL.id === 2 ? level2Content() : level1Content(options);
+  const startX = LEVEL.arena ? ARENA.playerStartX : 84;
   return {
+    // phase: walk -> talk (màn 1, đang hội thoại) -> done; onDone do main.js gán.
+    intro: options.intro ? { phase: 'walk', targetX: startX, onDone: null } : null,
+    guide: options.intro && LEVEL.id === 1 ? makeNpc('trungTrac', 1, INTRO.guideLocalX) : null,
     running: false,
     paused: false,
     won: false,
@@ -615,7 +621,7 @@ export function createLevelState(options = {}) {
     spawner: null,
     battle: null,
     player: {
-      x: LEVEL.arena ? ARENA.playerStartX : 84,
+      x: options.intro ? INTRO.startX : startX,
       y: GROUND_Y - 42,
       w: 25,
       h: 42,

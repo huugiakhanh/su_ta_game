@@ -1,7 +1,9 @@
 import json
 from pathlib import Path
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session
+
+from backend.repositories.user_repository import find_by_id
 
 
 # Nội dung trang nhân vật Thư viện lịch sử (slug trong URL -> dữ liệu), dùng chung
@@ -54,12 +56,24 @@ def quiz_view():
 
 
 # GAME PLAY
+def render_trung_trac(level_id, title):
+    """Template dùng chung 3 màn. Đã đăng nhập thì truyền giới tính tài khoản
+    (None nếu tài khoản cũ chưa chọn) để màn chơi biết nhân vật ngay — TT-HERO-01."""
+    user_id = session.get("user_id")
+    user = find_by_id(user_id) if user_id else None
+    return render_template(
+        "gameplay/levels/trung-trac.html",
+        level_id=level_id,
+        title=title,
+        logged_in=user is not None,
+        player_gender=user["gender"] if user else None,
+    )
+
+
 @pages_bp.get("/gameplay/level/Trung_Trac/trung-trac.html")
 @pages_bp.get("/gameplay/levels/trung-trac")
 def trung_trac():
-    return render_template(
-        "gameplay/levels/trung-trac.html", level_id=1, title="Màn 1: Vượt ải"
-    )
+    return render_trung_trac(1, "Màn 1: Vượt ải")
 
 @pages_bp.get("/gameplay/level/level%20test/level-test-inline.html")
 @pages_bp.get("/gameplay/level/level test/level-test-inline.html")
@@ -69,17 +83,9 @@ def level_test():
 
 @pages_bp.get("/gameplay/levels/trung-trac/2")
 def trung_trac_level_2():
-    return render_template(
-        "gameplay/levels/trung-trac.html",
-        level_id=2,
-        title="Màn 2: Chiêu mộ hiền tài",
-    )
+    return render_trung_trac(2, "Màn 2: Chiêu mộ hiền tài")
 
 
 @pages_bp.get("/gameplay/levels/trung-trac/3")
 def trung_trac_level_3():
-    return render_template(
-        "gameplay/levels/trung-trac.html",
-        level_id=3,
-        title="Màn 3: Trận Luy Lâu",
-    )
+    return render_trung_trac(3, "Màn 3: Trận Luy Lâu")

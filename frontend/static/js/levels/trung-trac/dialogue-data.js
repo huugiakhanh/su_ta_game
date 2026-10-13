@@ -1,11 +1,15 @@
+// TT-HERO-01 (13/10/2026): người chơi là nghĩa sĩ nam/nữ do Trưng Trắc phái đi,
+// không còn là Trưng Trắc. Chỉ đổi lời xưng hô trong `lines` (và `title` Trưng
+// Nhị) theo yêu cầu người dùng; câu hỏi, đáp án, gợi ý, giải thích giữ nguyên
+// TT-NPC-01. Xưng "ngươi" / "nghĩa sĩ" để dùng chung cho nam và nữ.
 export const NPC_DIALOGUES = {
   // 5.1 Thi Sách — Hào trưởng Chu Diên
   thiSach: {
     name: 'Thi Sách',
     title: 'Hào trưởng Chu Diên',
     lines: [
-      'Trắc, Tô Định vừa sai người tới dụ ta quy hàng.',
-      'Chúng dọa nếu ta cùng nàng chống lại, sẽ giết cả họ ta và bá tánh Chu Diên.'
+      'Ngươi là nghĩa sĩ Trưng Trắc sai tới? Tô Định vừa sai người tới dụ ta quy hàng.',
+      'Chúng dọa nếu ta cùng Trắc chống lại, sẽ giết cả họ ta và bá tánh Chu Diên.'
     ],
     question: 'Trước lời đe dọa của giặc, người làm tướng nên chọn con đường nào?',
     answers: [
@@ -26,7 +30,7 @@ export const NPC_DIALOGUES = {
     title: 'Nữ tướng vùng biển An Biên',
     lines: [
       'Quân Hán đông, giáp trụ tốt. Đánh nhau trên đất bằng, ta khó thắng.',
-      'Nhưng người vùng ta giỏi sông nước. Nàng muốn ta chuẩn bị lực lượng thế nào?'
+      'Nhưng người vùng ta giỏi sông nước. Nghĩa sĩ, theo ngươi ta nên chuẩn bị lực lượng thế nào?'
     ],
     question: 'Lê Chân nên chuẩn bị lực lượng ra sao để hưởng ứng Hai Bà?',
     answers: [
@@ -44,10 +48,10 @@ export const NPC_DIALOGUES = {
   // 5.3 Trưng Nhị — Em gái, cánh tay phải
   trungNhi: {
     name: 'Trưng Nhị',
-    title: 'Em gái, cánh tay phải',
+    title: 'Em gái Trưng Trắc, cánh tay phải',
     lines: [
-      'Chị ơi, các Lạc tướng đã tụ về cửa sông Hát.',
-      'Họ đang chờ xem chị nói gì trước khi vác giáo theo.'
+      'Nghĩa sĩ, ngươi về kịp lúc! Các Lạc tướng đã tụ về cửa sông Hát.',
+      'Họ đang chờ xem chị ta nói gì trước khi vác giáo theo.'
     ],
     question: 'Điều gì quan trọng nhất để các Lạc tướng một lòng đi theo?',
     answers: [
@@ -62,6 +66,24 @@ export const NPC_DIALOGUES = {
       text: 'Bóng Trưng Nhị. Trong trận đánh, bấm L để Trưng Nhị cùng xuất trận, sát thương tăng gấp đôi.'
     }
   }
+};
+
+// ---- Màn 1: Trưng Trắc gặp người chơi ở đầu màn (TT-HERO-01) ----
+// `name` hiện trên khung hội thoại. Claude soạn 13/10/2026 theo yêu cầu người
+// dùng, dựa trên tư liệu (Toàn thư / Việt sử lược: Tô Định tàn bạo, hãm hại
+// Lạc tướng; Mê Linh; Luy Lâu là trị sở). Chi tiết nhiệm vụ (binh thư, kiệu
+// quan, cổng Luy Lâu) là cốt truyện game, không phải sử liệu.
+export const STORY_TRUNG_TRAC_INTRO = {
+  portrait: 'PORTRAIT_TRUNG_TRAC',
+  memorial: false,
+  name: 'Trưng Trắc',
+  lines: [
+    'Ngươi là người làng bên tìm về Mê Linh, xin theo nghĩa quân phải không?',
+    'Thái thú Tô Định tham lam, tàn bạo. Dân phải nộp cống nặng nề, Lạc tướng nào trái ý đều bị hắn hãm hại.',
+    'Chị em ta đang tụ nghĩa binh. Nhưng muốn đánh thành giặc, nghĩa quân phải có binh thư.',
+    'Hãy vượt các ải canh của quân Hán, tìm lại 5 bó thẻ tre binh thư, rồi hạ tên quan ngồi kiệu trấn giữ đường tới Luy Lâu.',
+    'Đi đi, nghĩa sĩ. Non sông họ Hùng đang chờ ngươi!'
+  ]
 };
 
 // ---- Màn 3 "Trận Luy Lâu" (task card TT-BOSS-01 mục 5.3–5.4, nguyên văn) ----

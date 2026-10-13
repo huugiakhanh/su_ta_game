@@ -6,14 +6,17 @@ import { ui, showMessage, updateHud, updateTimeHud } from './ui.js';
 import { clearInput, bindInput } from './input.js';
 import { update, endGame } from './physics.js';
 import { draw, fitCanvas } from './render.js';
-import { LEVEL, setLevel } from './config.js';
+import { LEVEL, setLevel, setPlayerGender, PLAYER_SPRITE_ID } from './config.js';
 import { LEVEL_URLS, requireLevel, clearProgress, syncProgressFromServer } from './progress.js';
 import { initDialogue, closeDialogue } from './dialogue.js';
 import { initAudio, playMusic, playSfx, setAudioSuspended, toggleMuted } from './audio.js';
 import { initSettings, isSettingsOpen, syncSettings, toggleSettings } from './settings.js';
 import { levelTime, resetLevelTime, tickLevelTime } from './timer.js';
+import { resolveGender } from './hero.js';
 
 let lastTime = 0;
+// Đã chọn nhân vật + tải xong asset (TT-HERO-01) — trước đó phím R không làm gì.
+let started = false;
 // Máy cảm ứng cầm dọc (TT-MOBILE-01): CSS hiện #rotateOverlay, frame() ngừng
 // update() tới khi xoay ngang. Cờ riêng, không dùng state.paused (của hội thoại).
 const portraitQuery = window.matchMedia('(pointer: coarse) and (orientation: portrait)');
@@ -46,13 +49,22 @@ const INTRO_MESSAGES = {
   3: 'Tô Định núp sau chiến xa bọc khiên. Hãy dụ xe đâm vào cột đá, hoặc chém trả hũ dầu!'
 };
 
-function resetGame(startImmediately = true) {
+// Vào chơi thật: thông báo nhiệm vụ + nhạc nền của màn (TT-AUDIO-01; chưa mở
+// khoá âm thanh thì phát khi người chơi bấm phím/chạm lần đầu).
+function beginPlay() {
+  showMessage(INTRO_MESSAGES[LEVEL.id], LEVEL.arena ? 4200 : 2600);
+  playMusic(`level${LEVEL.id}`);
+}
+
+// `intro` = cảnh chạy vào màn (+ hội thoại Trưng Trắc ở màn 1) — chỉ lần vào
+// màn đầu tiên (TT-HERO-01); chơi lại (R / nút) vào thẳng.
+function resetGame({ intro = false } = {}) {
   // Đồng hồ màn cộng dồn qua các lượt thua (TT-TIME-01); thắng rồi chơi lại
   // (phím R) là lượt mới -> đếm lại từ 0.
   if (state?.levelCleared) resetLevelTime();
   closeDialogue();
-  setState(createLevelState(levelOptions));
-  state.running = startImmediately;
+  setState(createLevelState({ ...levelOptions, intro }));
+  state.running = true;
   state.paused = false;
   ui.end.classList.remove('panel--visible');
   ui.next.hidden = true;
@@ -60,19 +72,18 @@ function resetGame(startImmediately = true) {
   ui.replayChapter.hidden = true;
   ui.home.hidden = true;
   ui.endTime.hidden = true;
-  ui.loading.classList.toggle('panel--visible', !startImmediately);
   clearInput();
   updateHud();
-  showMessage(INTRO_MESSAGES[LEVEL.id], LEVEL.arena ? 4200 : 2600);
-  // Nhạc nền của màn (TT-AUDIO-01); chưa mở khoá âm thanh thì phát khi mở.
-  if (startImmediately) playMusic(`level${LEVEL.id}`);
+  if (state.intro) state.intro.onDone = beginPlay;
+  else beginPlay();
 }
 
 // Đồng hồ màn (TT-TIME-01) chạy khi đang chơi, kể cả lúc hội thoại/câu hỏi
-// (state.paused) — không chạy ở panel Bắt đầu (running = false), sau khi kết
-// thúc (won), trong cutscene kết chương, khi menu cài đặt mở hoặc cầm dọc.
+// (state.paused) — không chạy lúc chọn nhân vật/tải asset (running = false),
+// trong cảnh vào màn + hội thoại Trưng Trắc (state.intro — TT-HERO-01), sau khi
+// kết thúc (won), trong cutscene kết chương, khi menu cài đặt mở hoặc cầm dọc.
 function countsLevelTime() {
-  return state.running && !state.won && !state.cutscene;
+  return state.running && !state.won && !state.cutscene && !state.intro;
 }
 
 function frame(timestamp) {
@@ -92,18 +103,17 @@ function frame(timestamp) {
   requestAnimationFrame(frame);
 }
 
-async function initAssets() {
-  const missing = await loadAssets();
+async function initAssets(playerSprite) {
+  const missing = await loadAssets(playerSprite);
   const notices = [];
   if (missing.missingMaps.length) notices.push(`thiếu ảnh môi trường: ${missing.missingMaps.join(', ')} (đang dùng màu/hộp tạm)`);
   if (!missing.manifestLoaded) notices.push('không tải được manifest sprite (nhân vật dùng hộp tạm)');
   if (missing.missingSprites.length) notices.push(`thiếu sprite: ${missing.missingSprites.join(', ')}`);
   if (notices.length) console.warn('SUTA thiếu asset:', notices);
-  ui.loadingText.textContent = notices.length
-    ? `Đang chạy với placeholder tạm: ${notices.join('; ')}.`
-    : 'Đã tải đủ lớp nền, chướng ngại vật, vật phẩm và hoạt ảnh nhân vật.';
+  // Thiếu asset thì giữ dòng báo trên khung chơi (không chặn chơi); đủ thì ẩn.
+  ui.loadingText.textContent = notices.length ? `Đang chạy với placeholder tạm: ${notices.join('; ')}.` : '';
+  ui.loading.hidden = !notices.length;
   console.info(`SUTA màn ${LEVEL.id} đã nạp — nền:`, Object.keys(images.maps.layers), 'sprite:', Object.keys(images.sprites));
-  ui.start.disabled = false;
   draw();
 }
 
@@ -119,21 +129,17 @@ setAudioSuspended('portrait', portraitQuery.matches);
 initSettings();
 
 bindInput({
-  onRestart: () => resetGame(true),
+  onRestart: () => { if (started) resetGame(); },
   onToggleMute: toggleSound,
   onToggleSettings: toggleSettings,
   isBlocked: isSettingsOpen
 });
 
 // Tiếng bấm cho các nút panel.
-[ui.start, ui.restart, ui.next, ui.replayChapter, ui.home].forEach(button => {
+[ui.restart, ui.next, ui.replayChapter, ui.home].forEach(button => {
   button.addEventListener('click', () => playSfx('click'));
 });
-ui.start.addEventListener('click', () => {
-  ui.loading.classList.remove('panel--visible');
-  resetGame(true);
-});
-ui.restart.addEventListener('click', () => resetGame(true));
+ui.restart.addEventListener('click', () => resetGame());
 // Hoàn thành màn -> sang màn sau (tiến trình đã ghi trong endGame).
 ui.next.addEventListener('click', () => { window.location.href = LEVEL_URLS[LEVEL.id + 1]; });
 // Hết chương: chơi lại từ màn 1 (xoá tiến trình) hoặc về trang chủ.
@@ -158,8 +164,21 @@ if (!progress) {
   fitCanvas();
   window.addEventListener('resize', fitCanvas);
   window.addEventListener('orientationchange', fitCanvas);
-  setState(createLevelState(levelOptions));
+  // Chưa chạy (running = false) trong lúc chọn nhân vật + tải asset; người chơi
+  // đứng sẵn ngoài mép trái để cảnh vào màn bắt đầu liền mạch (TT-HERO-01).
+  setState(createLevelState({ ...levelOptions, intro: true }));
   updateHud();
-  initAssets();
   requestAnimationFrame(frame);
+  // Nền + sprite khác tải ngay trong lúc chọn nhân vật; sprite người chơi tải
+  // khi biết giới tính (TT-HERO-01).
+  const playerSprite = resolveGender().then(gender => {
+    setPlayerGender(gender);
+    return PLAYER_SPRITE_ID;
+  });
+  const assetsReady = initAssets(playerSprite);
+  await playerSprite;
+  if (!images.loaded) ui.loading.hidden = false;
+  await assetsReady;
+  started = true;
+  resetGame({ intro: true });
 }

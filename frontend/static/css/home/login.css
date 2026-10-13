@@ -13,6 +13,18 @@
 .avatar-option:has(input:focus-visible), .avatar-option:focus-visible { outline: 2px solid #fff; }
 .avatar-picker .avatar-option__img { width: 64px; height: 64px; }
 
+/* Giới tính -> nhân vật nam/nữ trong màn chơi (TT-HERO-01): form đăng ký + hồ sơ. */
+.gender-picker { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.gender-picker__label { color: #d7ccc8; font-size: 13px; width: 100%; }
+.gender-option {
+    position: relative; min-width: 72px; padding: 6px 12px;
+    border: 2px solid #5d4037; border-radius: 6px;
+    background: transparent; color: #f1c40f; font-weight: bold; cursor: pointer;
+}
+.gender-option input { position: absolute; opacity: 0; pointer-events: none; }
+.gender-option:has(input:checked), .gender-option.is-selected { border-color: #f1c40f; background: rgba(241, 196, 15, 0.15); }
+.gender-option:has(input:focus-visible), .gender-option:focus-visible { outline: 2px solid #fff; }
+
 .profile-modal {
     position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100;
     width: min(320px, 92vw); padding: 25px; text-align: center;

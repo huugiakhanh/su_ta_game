@@ -826,7 +826,8 @@ function drawEnemies() {
 // lặp theo đồng hồ chung `time` (game tạm dừng lúc hội thoại nên không dùng
 // đồng hồ riêng tick trong physics). Gặp xong thì mờ dần theo npc.fade.
 function drawNpcs(time) {
-  state.npcs.forEach(npc => {
+  // + Trưng Trắc chờ ở đầu màn 1 (state.guide — TT-HERO-01), vẽ như NPC.
+  [...state.npcs, state.guide].filter(Boolean).forEach(npc => {
     if (npc.fade <= 0) return;
     const sprite = NPC_SPRITES[npc.id];
     const pivotX = Math.round(npc.centerX - state.cameraX);
@@ -1054,6 +1055,7 @@ function drawDebugOverlay() {
     ...state.hazards.filter(item => item.alive && !(item.kind === 'roller' && !item.active)),
     ...state.enemies.filter(item => item.alive),
     ...state.npcs.filter(item => item.fade > 0),
+    ...(state.guide?.fade > 0 ? [state.guide] : []),
     ...state.projectiles,
     ...state.jars.map(jar => ({ x: jar.x - BOSS_TD.jar.w / 2, y: jar.y - BOSS_TD.jar.h / 2, w: BOSS_TD.jar.w, h: BOSS_TD.jar.h })),
     ...state.fires.map(fire => ({ x: fire.x - BOSS_TD.fire.width / 2, y: fire.footY - BOSS_TD.fire.h, w: BOSS_TD.fire.width, h: BOSS_TD.fire.h })),
