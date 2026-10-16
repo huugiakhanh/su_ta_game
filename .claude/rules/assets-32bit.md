@@ -2,7 +2,9 @@
 paths:
   - "assets/**"
   - "frontend/static/assets/**"
-  - "frontend/static/js/levels/**/{config,assets,animation,render,viewer}.js"
+  - "frontend/static/js/levels/**/{config,chapter,render-extras}.js"
+  - "frontend/static/js/engine/{config,assets,animation,viewer}.js"
+  - "frontend/static/js/engine/render/**"
   - "SUTA_TT_ART_BRIEF_32.md"
   - "docs/CODEX_PROMPT_*.md"
   - "tools/**"
@@ -29,9 +31,10 @@ paths:
 - **`manifest_tt.json` là nguồn duy nhất** cho `frames`/`fps`/`loop`/`hit_frame` (đọc lúc chạy, không chép số vào code); `maps_tt.json` là nguồn cho đường dẫn/cỡ/`visible_bbox`/`pivot`. Trong 2 file này chỉ được sửa `status` (sửa bản nguồn rồi chép lại bản chạy).
 - Animation **không lặp** đổi số frame/fps phải giữ nhịp gameplay: thời lượng `frames/fps` và tỉ lệ `(hit_frame−1)/frames`. `hit_frame` đếm từ 1. `jump` của người chơi chọn ô theo vận tốc nên đúng 3 ô. Một animation được có `frame_w` riêng rộng hơn, căn giữa pivot (vd. `PLAYER_TRUNG_TRAC.attack_01` — Trưng Trắc cầm giáo đồng).
 - Mọi strip **pivot bottom-center** (chân ở hàng `frame_h − 2`), ảnh gốc quay **phải**; render lật khi quay trái (vật chạy theo hướng chạy, lính/boss quay về người chơi, bẫy/tháp giữ hướng gốc).
-- Mỗi entity có `anim = { name, time }` với đồng hồ riêng (tick trong `physics.js`); animation không lặp dừng ở ô cuối. Mọi animation vẽ ×1, **không** hệ số bù tỉ lệ.
+- Mỗi entity có `anim = { name, time }` với đồng hồ riêng (tick trong phần mô phỏng của engine); animation không lặp dừng ở ô cuối. Mọi animation vẽ ×1, **không** hệ số bù tỉ lệ.
 - Hitbox theo pixel logic tương đối với pivot, **không lấy từ cỡ ảnh**.
-- **Nạp theo màn**: sprite canvas chỉ các ID trong `LEVEL_SPRITES[LEVEL.id]` — thêm thực thể dùng sprite mới thì thêm ID vào đó (quên thì `spriteImage()` cảnh báo + vẽ hộp tạm). Ảnh DOM (chân dung, icon) qua `SPRITE_DOM_IN_GAME` + `setSpriteImage()`/`spriteUrl()`, class `img--hibit`.
-- **Thêm/đổi sprite**: sau khi soát + người dùng duyệt, chép strip + `manifest_tt.json` sang bản chạy, thêm ID vào `LEVEL_SPRITES`, khai báo ánh xạ trạng thái → animation + hitbox trong `config.js`. Kiểm hướng mặt và tỉ lệ thật bằng `?viewer=1`, đừng tin spec.
-- **Thêm/đổi asset môi trường**: chép PNG + `maps_tt.json` (+ `tileset_tt_*.json`) giữ cấu trúc; khai báo trong `config.js` (`ZONES`, `FAR_HILLS`, `OBSTACLE_TYPES`, `FINISH_GATE`, `BOOK_SPRITE_ID`; prop phải có trong `MAP_PROPS_IN_GAME`). Lệch vị trí thì sửa neo/offset, không co giãn. Soát nền: xem ở cỡ chơi thật + phóng to, đo chỗ nối lặp (không tin "cột đầu = cột cuối"), tìm lỗ/vụn.
+- **Nạp theo màn**: sprite canvas chỉ các ID trong `LEVEL_SPRITES[id]` của chương (`config.js` chương, gắn vào `levels[id].sprites`) — thêm thực thể dùng sprite mới thì thêm ID vào đó (quên thì `spriteImage()` cảnh báo + vẽ hộp tạm). Ảnh DOM: icon chung `SHARED_DOM_SPRITES` (engine) + chân dung chương `PORTRAITS`, hiển thị qua `setSpriteImage()`/`spriteUrl()`, class `img--hibit`.
+- **Asset dùng chung mọi chương (ENGINE-01)**: nhân vật `PLAYER_MALE`/`PLAYER_FEMALE` + icon `ICON_SK_DASH`/`ICON_SK_ATTACK`/`ICON_HUD_HEART` ở `assets/images/shared/sprites-32bit/` với `manifest_shared.json` (cùng định dạng manifest chương, chép nguyên mục từ manifest Trưng Trắc — ngoại lệ người dùng duyệt 13/10). Manifest chương **không** chứa các ID này. Bản nguồn Codex (`assets/sprites-32bit/manifest_tt.json`, ngoài git) vẫn gộp chung — khi chép nguồn sang bản chạy phải tách 5 mục này sang `manifest_shared.json`.
+- **Thêm/đổi sprite**: sau khi soát + người dùng duyệt, chép strip + manifest sang bản chạy, thêm ID vào `LEVEL_SPRITES`, khai báo ánh xạ trạng thái → animation + hitbox trong `config.js` của chương. Kiểm hướng mặt và tỉ lệ thật bằng `?viewer=1` (liệt kê cả manifest chung), đừng tin spec.
+- **Thêm/đổi asset môi trường**: chép PNG + `maps_tt.json` (+ `tileset_tt_*.json`) giữ cấu trúc; khai báo trong `config.js` của chương (`ZONES`, `FAR_HILLS`, `TILES`, `OBSTACLE_TYPES`, `FINISH_GATE`, `ITEM`; prop phải có trong `MAP_PROPS_IN_GAME`). Lệch vị trí thì sửa neo/offset, không co giãn. Soát nền: xem ở cỡ chơi thật + phóng to, đo chỗ nối lặp (không tin "cột đầu = cột cuối"), tìm lỗ/vụn.
 - Chưa dùng: `PJ_FIRE_ARROW` (không nạp). Chưa có asset/cơ chế giáp, tăng dame.

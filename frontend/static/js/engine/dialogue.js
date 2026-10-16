@@ -1,16 +1,17 @@
-// Khung hội thoại: gặp NPC màn 2 (TT-NPC-01 §3.2.3–3.2.4: thoại -> câu hỏi
-// -> vì sao đúng -> phần thưởng), cốt truyện, và câu hỏi lịch sử chặn đường
-// màn 1–2 (`openQuiz`, TT-QUIZ-01: câu hỏi -> kết quả + giải thích). Là DOM phủ lên canvas. Mở panel thì tạm
-// dừng game (state.paused), đóng thì chạy tiếp.
-// Không import physics.js (physics mở panel qua các hàm dưới đây); khi trả lời
-// sai tới hết máu thì gọi `onDefeat` do main.js truyền vào (initDialogue).
+// Khung hội thoại: gặp NPC (TT-NPC-01 §3.2.3–3.2.4: thoại -> câu hỏi -> vì
+// sao đúng -> phần thưởng), cốt truyện, và câu hỏi lịch sử chặn đường
+// (`openQuiz`, TT-QUIZ-01: câu hỏi -> kết quả + giải thích). Là DOM phủ lên
+// canvas. Mở panel thì tạm dừng game (state.paused), đóng thì chạy tiếp.
+// Thoại NPC + chân dung lấy từ chương (CHAPTER.dialogues, CHAPTER.sprites.npcs).
+// Không import vòng mô phỏng (level-flow mở panel qua các hàm dưới đây); khi
+// trả lời sai tới hết máu thì gọi `onDefeat` do main.js truyền vào (initDialogue).
 
 import { state } from './state.js';
 import { ui, updateHud, setSpriteImage } from './ui.js';
 import { clearInput } from './input.js';
 import { addReward } from './progress.js';
-import { NPC_SPRITES, QUESTION_SCORE, QUIZ } from './config.js';
-import { NPC_DIALOGUES } from './dialogue-data.js';
+import { QUESTION_SCORE, QUIZ_SCORE } from './config.js';
+import { CHAPTER } from './chapter.js';
 import { playSfx, duckMusic } from './audio.js';
 import { isSettingsOpen } from './settings.js';
 
@@ -56,9 +57,9 @@ export function dialogueOpen() {
   return current !== null;
 }
 
-// Id asset chân dung: `portraitId` (cutscene màn 3), không có thì lấy theo NPC.
+// Id asset chân dung: `portraitId` (cốt truyện chỉ định), không có thì lấy theo NPC.
 function portraitId(npcId, id = null) {
-  return id || NPC_SPRITES[npcId]?.portrait || null;
+  return id || CHAPTER.sprites.npcs[npcId]?.portrait || null;
 }
 
 function shuffle(list) {
@@ -90,12 +91,12 @@ function open(next) {
 // Gặp NPC: `npc` là entity trong state.npcs (render đọc npc.talking để phát
 // `talk`). `onDone` chạy khi đóng panel sau khi nhận phần thưởng.
 export function openNpcDialogue(npc, onDone) {
-  const data = NPC_DIALOGUES[npc.id];
+  const data = CHAPTER.dialogues[npc.id];
   open({
     kind: 'npc', npc, data, onDone, portraitNpc: npc.id,
     step: 'line', lineIndex: 0,
     // Đáp án xáo mỗi lần câu hỏi hiện; `correct` đánh dấu đáp án đúng (đáp án
-    // đầu tiên trong dialogue-data.js).
+    // đầu tiên trong dữ liệu thoại của chương).
     options: shuffle(data.answers.map((text, index) => ({ text, correct: index === 0 }))),
     wrong: new Set(),
     gained: 0
@@ -110,14 +111,14 @@ export function openStory(story, onDone) {
   });
 }
 
-// Câu hỏi lịch sử chặn đường (TT-QUIZ-01): `question` là 1 mục của QUESTIONS
-// (questions-data.js). Không chân dung, trả lời 1 lần, đáp án xáo mỗi lần hiện.
+// Câu hỏi lịch sử chặn đường (TT-QUIZ-01): `question` là 1 mục của
+// CHAPTER.questions. Không chân dung, trả lời 1 lần, đáp án xáo mỗi lần hiện.
 // `title` = tiêu đề khung; `onDone` chạy khi đóng panel.
 export function openQuiz(question, { title = 'Câu hỏi lịch sử', onDone } = {}) {
   const answer = question.answers[question.correct];
   open({
     kind: 'quiz', onDone, portraitNpc: null,
-    data: { title, question: question.question, explain: question.explain, answer, score: QUIZ.score },
+    data: { title, question: question.question, explain: question.explain, answer, score: QUIZ_SCORE },
     step: 'question',
     options: shuffle(question.answers.map((text, index) => ({ text, correct: index === question.correct }))),
     wrong: new Set(), correct: false
@@ -134,7 +135,7 @@ function render() {
   const { kind, data, step, npc } = current;
   const isNpc = kind === 'npc';
   const isQuiz = kind === 'quiz';
-  // Cốt truyện có `name` (Trưng Trắc đầu màn 1) thì hiện tên người nói.
+  // Cốt truyện có `name` (vd. NPC dẫn đầu màn) thì hiện tên người nói.
   el.name.hidden = !isNpc && !isQuiz && !data.name;
   el.title.hidden = !isNpc;
   if (isNpc) {

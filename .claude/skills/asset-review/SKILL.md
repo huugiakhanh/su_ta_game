@@ -42,6 +42,6 @@ Bảng cho người dùng (và ghi vào report của task):
 ## 5. Sau khi người dùng duyệt
 
 - Chép PNG + manifest (`manifest_tt.json` / `maps_tt.json` / `tileset_tt_*.json`) sang `frontend/static/assets/images/<chương>/{sprites,maps}-32bit/`, **giữ cấu trúc thư mục**; đổi `status` (vd. → `IN_GAME`) ở bản nguồn rồi chép lại bản chạy.
-- Khai báo trong `config.js`: thêm ID vào `LEVEL_SPRITES[màn]` (sprite canvas) hoặc `SPRITE_DOM_IN_GAME` (ảnh DOM) hoặc `MAP_PROPS_IN_GAME` (prop map); ánh xạ trạng thái → animation + **hitbox tự khai báo** (`HAZARD_SPRITES`/`ENEMY_SPRITES`/`PROJECTILE_SPRITES`/`PLAYER_ANIMATIONS`/`OBSTACLE_TYPES`).
+- Khai báo trong `config.js` của chương: thêm ID vào `LEVEL_SPRITES[màn]` (sprite canvas) hoặc `PORTRAITS` (chân dung DOM) hoặc `MAP_PROPS_IN_GAME` (prop map); ánh xạ trạng thái → animation + **hitbox tự khai báo** (`HAZARD_SPRITES`/`ENEMY_SPRITES`/`PROJECTILE_SPRITES`/`OBSTACLE_TYPES`). Asset dùng chung mọi chương (nhân vật nam/nữ, icon HUD) vào `images/shared/sprites-32bit/` + `manifest_shared.json`; ánh xạ nhân vật ở `PLAYER_ANIMATIONS`, icon chung ở `SHARED_DOM_SPRITES` (`engine/config.js`).
 - Lệch vị trí → sửa neo/offset trong code, không co giãn ảnh, không hệ số bù tỉ lệ.
 - Asset dùng chung toàn web (avatar, icon tiền tệ) → thư mục chung `images/avatar/`, `images/icon/`…, không vào manifest chương.

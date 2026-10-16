@@ -1,13 +1,14 @@
 // Input: bàn phím + nút cảm ứng mobile, gộp vào chung 1 state `keys`/`pressed`.
 
 export const keys = {
-  left: false, right: false, jump: false, dash: false, attack: false, arrowRain: false, shadow: false
+  left: false, right: false, jump: false, dash: false, attack: false, skill1: false, skill2: false
 };
-// Hành động kích hoạt 1 lần mỗi lần nhấn (không giữ). arrowRain/shadow = kỹ
-// năng màn 3 (phím K/L — TT-BOSS-01, quyết định team Q3: K không còn là dash).
-const PRESS_ACTIONS = ['jump', 'dash', 'attack', 'arrowRain', 'shadow'];
-export const pressed = { jump: false, dash: false, attack: false, arrowRain: false, shadow: false };
-// Cờ lớp debug (F2): hitbox, pivot, tên animation — render.js đọc mỗi frame.
+// Hành động kích hoạt 1 lần mỗi lần nhấn (không giữ). skill1/skill2 = 2 khe kỹ
+// năng chủ động (phím K/L — TT-BOSS-01, quyết định team Q3: K không còn là
+// dash); chương gán kỹ năng vào khe (CHAPTER.skills.defs[id].slot).
+const PRESS_ACTIONS = ['jump', 'dash', 'attack', 'skill1', 'skill2'];
+export const pressed = { jump: false, dash: false, attack: false, skill1: false, skill2: false };
+// Cờ lớp debug (F2): hitbox, pivot, tên animation — render đọc mỗi frame.
 export const debug = { enabled: false };
 
 export function setKey(code, down) {
@@ -16,7 +17,7 @@ export function setKey(code, down) {
     ArrowRight: 'right', KeyD: 'right',
     ArrowUp: 'jump', KeyW: 'jump', Space: 'jump',
     ArrowDown: 'dash', KeyS: 'dash', ShiftLeft: 'dash', ShiftRight: 'dash',
-    KeyJ: 'attack', KeyK: 'arrowRain', KeyL: 'shadow'
+    KeyJ: 'attack', KeyK: 'skill1', KeyL: 'skill2'
   };
   const action = mapping[code];
   if (!action) return false;

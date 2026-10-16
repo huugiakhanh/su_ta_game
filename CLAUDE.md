@@ -4,7 +4,8 @@ Hướng dẫn cho Claude Code khi làm việc trong repo này. File này nạp 
 
 | Rule | Nạp khi làm việc với |
 |---|---|
-| [trung-trac-gameplay.md](.claude/rules/trung-trac-gameplay.md) | Module màn chơi `js/levels/trung-trac/`, template + CSS màn chơi |
+| [engine.md](.claude/rules/engine.md) | Engine màn chơi dùng chung mọi chương `js/engine/`, `gameplay/base.html`, `css/game/` |
+| [trung-trac-gameplay.md](.claude/rules/trung-trac-gameplay.md) | Phần riêng chương Trưng Trắc `js/levels/trung-trac/`, template + CSS chương |
 | [assets-32bit.md](.claude/rules/assets-32bit.md) | Asset (`assets/`, `static/assets/`), file JS vẽ/nạp asset, brief + prompt Codex, `tools/` |
 | [backend.md](.claude/rules/backend.md) | `backend/`, `tests/`, `app.py` |
 | [web-pages.md](.claude/rules/web-pages.md) | Trang chủ + cửa sổ, Thư viện lịch sử, `/quiz` |
@@ -50,13 +51,15 @@ su_ta_game/
 ├── backend/                  # routes (pages.py, api.py), repositories, services, migrations, data/library_heroes.json
 ├── frontend/
 │   ├── templates/            # home.html, history.html, quiz.html, library/hero.html,
-│   │                         # components/home/*.html (cửa sổ trang chủ), gameplay/levels/trung-trac.html (dùng chung 3 màn)
+│   │                         # components/home/*.html (cửa sổ trang chủ), gameplay/base.html (khung màn chơi chung)
+│   │                         # + gameplay/levels/trung-trac.html (kế thừa base, dùng chung 3 màn)
 │   └── static/
-│       ├── css/              # main.css, home/*.css, history.css, library.css, quiz.css, levels/*.css
+│       ├── css/              # main.css, home/*.css, history.css, library.css, quiz.css, game/game.css (khung màn chơi), levels/*.css
 │       ├── js/home/          # ES modules trang chủ
-│       ├── js/levels/trung-trac/   # ES modules màn chơi
+│       ├── js/engine/        # engine màn chơi dùng chung mọi chương (người chơi, vật lý, quân, HUD, render...)
+│       ├── js/levels/trung-trac/   # phần riêng chương: chapter.js (định nghĩa chương), nội dung màn, boss, kỹ năng
 │       ├── js/{history,library,quiz}.js
-│       └── assets/           # images/<chương>/ (asset riêng chương) + images dùng chung, audio/, question/
+│       └── assets/           # images/<chương>/ (asset riêng chương) + images/shared/ (nhân vật nam/nữ, icon HUD) + images dùng chung, audio/, question/
 ├── tools/make_home_images.py # sinh ảnh thu nhỏ cho web (ảnh gốc giữ nguyên)
 ├── docs/                     # việc đang làm + architecture.md; archive/ = đầu việc đã xong
 ├── tests/                    # test_time_api.py (không cần DB), test_app.py (cần DB test)
@@ -67,7 +70,12 @@ su_ta_game/
 ## Quy ước mở rộng
 
 - **Thêm màn trong chương Trưng Trắc**: rule `trung-trac-gameplay.md` (mục "Thêm màn").
-- **Thêm chương mới**: đặt tên file/level theo nhân vật-giai đoạn (nhất quán với `trung-trac`), giữ cấu trúc 3 màn. Tạo 1 template (`templates/gameplay/levels/`), 1 CSS (`css/levels/`), 1 thư mục module JS (`js/levels/<chương>/`) theo mẫu `trung-trac/` (`<script type="module">` trỏ tới `main.js`), route trong `backend/routes/pages.py`, id level trong migration mới. Thêm `paths` của chương mới vào các rule liên quan.
+- **Thêm chương mới**: đặt tên file/level theo nhân vật-giai đoạn (nhất quán với `trung-trac`), giữ cấu trúc 3 màn. Engine `js/engine/` (rule `engine.md`) đã lo mọi cơ chế chung — chương chỉ cần:
+  - thư mục `js/levels/<chương>/` theo mẫu `trung-trac/`: `chapter.js` (object định nghĩa chương — hợp đồng ở `engine/chapter.js`), `config.js`, `levelN.js`, dữ liệu thoại/câu hỏi/âm thanh, `main.js` gọi `boot(chapter)`;
+  - template `templates/gameplay/levels/<chương>.html` kế thừa `gameplay/base.html`; CSS riêng (`css/levels/`) chỉ khi cần;
+  - asset riêng ở `images/<chương>/` (manifest sprite + map của chương; nhân vật nam/nữ đã có ở `images/shared/`);
+  - route trong `backend/routes/pages.py`, id level trong migration mới.
+  - Thêm `paths` của chương mới vào các rule liên quan. Cơ chế mới dùng được cho nhiều chương thì thêm vào engine, không chép vào chương.
 - **Thêm API**: endpoint trong `backend/routes/api.py`; nghiệp vụ dữ liệu trong `backend/repositories/`, không viết SQL trong route hay template.
 - **Không** tạo `app.py` phụ để thử nghiệm — prototype đặt trong `tests/` hoặc `docs/archive/`.
 - Dữ liệu màn chơi (toạ độ vật cản, câu hỏi, quân địch) **hard-code trong JS** của màn — sửa đúng file đó, không tạo cơ chế cấu hình mới trừ khi được yêu cầu.

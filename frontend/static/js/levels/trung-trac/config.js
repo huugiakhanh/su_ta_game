@@ -1,80 +1,83 @@
-// Hằng số thuần cho màn Trưng Trắc — không chứa logic, chỉ export để các
-// module khác import dùng chung.
+// Hằng số RIÊNG chương Trưng Trắc — không chứa logic. Hằng số chung mọi chương
+// (độ phân giải, vật lý, người chơi, NPC/câu hỏi...) ở engine/config.js.
+// Mọi toạ độ/kích thước/tốc độ là pixel logic (xem engine/config.js).
 
-// Độ phân giải LOGIC của màn (TT-INT-01): mọi thứ vẽ lên canvas cao 270 rồi
-// phóng ra màn hình (xem fitCanvas() trong render.js). Mọi toạ độ/kích
-// thước/tốc độ dưới đây là pixel logic — đã quy đổi từ hệ cũ 896x360 theo hệ
-// số k = 0.6 (khớp tỉ lệ bộ sprite 8-bit mới, xem docs/archive/INTEGRATION_PLAN_TT.md).
-// Hằng số tính theo giây KHÔNG nhân k.
-// Chiều CAO logic cố định; chiều RỘNG khung nhìn (VIEW_W) giãn theo tỉ lệ cửa
-// sổ để màn chơi phủ kín chiều ngang (yêu cầu team 26/09): tối thiểu LOGICAL_W
-// (16:9 — cửa sổ hẹp/dọc giữ như cũ), tối đa MAX_VIEW_W. fitCanvas() đặt lại
-// VIEW_W qua setViewWidth(); `export let` là live-binding nên các module khác
-// import VIEW_W luôn đọc giá trị mới.
-export const LOGICAL_W = 480;
-export const LOGICAL_H = 270;
-export const MAX_VIEW_W = 640; // DESIGN_BASELINE (~2.37:1, màn siêu rộng thì có viền 2 bên)
-export let VIEW_W = LOGICAL_W;
-export const VIEW_H = LOGICAL_H;
-export function setViewWidth(width) {
-  VIEW_W = width;
-}
-export const CHUNK_W = 768;
-export const LEVEL_CHUNKS = 12;
-export const LEVEL_WORLD_WIDTH = CHUNK_W * LEVEL_CHUNKS;
-// Mặt sàn vật lý = mép trên hàng tile `surface` của tileset mặt đất (TT-MAP-01):
-// tile surface 16px (248–264) + 6px tile fill (264–270, bị cắt ở đáy khung).
-// Khớp `stage.ground_y` trong maps_tt.json (assets.js cảnh báo nếu lệch).
-export const GROUND_Y = 248;
-export const FOOT_MARGIN = 5;
-export const MOVE_SPEED = 168;
-export const GRAVITY = 1320;
-export const JUMP_FORCE = 468;
-export const DASH_SPEED = 432;
-export const DASH_TIME = 0.30;
-// Hồi chiêu lướt, tính từ lúc bắt đầu cú lướt (DESIGN_BASELINE — team 27/09).
-export const DASH_COOLDOWN = 2;
-// Icon ô Lướt trên HUD (manifest_tt.json, Codex 27/09 — team duyệt, IN_GAME).
-// Thiếu asset thì ui.js hiện chữ tạm "»".
-export const DASH_ICON = 'ICON_SK_DASH';
-// Icon nút cảm ứng ĐÁNH (TT-MOBILE-01, Codex 29/09, IN_GAME) — chỉ dùng cho nút, thiếu thì chữ tạm.
-export const ATTACK_ICON = 'ICON_SK_ATTACK';
-// Ảnh hiển thị bằng DOM (<img>): chân dung hội thoại/ô kỹ năng + icon nút
-// (TT-HIBIT-02), nạp ở mọi màn (nhỏ). URL lấy qua spriteUrl(id) (assets.js).
-// Icon máu HUD (TT-HIBIT-02, người dùng duyệt 02/10); thiếu thì ui.js hiện chữ ♥.
-export const HEART_ICON = 'ICON_HUD_HEART';
-// Icon vàng (SUTA-DB-01): ảnh chung toàn web (không thuộc manifest chương) — panel qua
-// màn "+N vàng"; trang chủ dùng cùng ảnh qua CSS .res-icon--gold.
-export const GOLD_ICON_URL = '/static/assets/images/icon/icon_gold.png';
-export const SPRITE_DOM_IN_GAME = [
-  'PORTRAIT_TRUNG_TRAC', 'PORTRAIT_TRUNG_NHI', 'PORTRAIT_THI_SACH', 'PORTRAIT_LE_CHAN', 'PORTRAIT_TO_DINH',
-  DASH_ICON, ATTACK_ICON, HEART_ICON
-];
-export const GROUND_SNAP_DISTANCE = 11;
+import { CHUNK_W } from '../../engine/config.js';
+
+// ---- Asset ----
+// Bộ sprite 32-bit (TT-HIBIT-01, Codex — nguồn ở assets/sprites-32bit/, brief
+// SUTA_TT_ART_BRIEF_32.md). Manifest là nguồn DUY NHẤT cho frames/fps/loop/
+// hit_frame — đọc lúc chạy (engine/animation.js), không chép các số đó vào đây.
+// frame_w/frame_h là pixel LOGIC, ảnh vẽ dày gấp `density` (ô 48x48 -> ảnh
+// 192x192 khi density 4); pivot bottom-center: chân ở hàng frame_h - 2 (1px
+// đệm dưới chân), quay mặt PHẢI trong ảnh.
+// Đổi số frame/fps/hit_frame của animation KHÔNG lặp thì phải giữ nhịp
+// gameplay (thời lượng frames/fps và tỉ lệ (hit_frame−1)/frames) vì phần mô
+// phỏng tính thời điểm chạm từ đó.
+// Nhân vật người chơi nam/nữ + icon HUD KHÔNG nằm ở đây — manifest chung
+// (images/shared/, ENGINE-01).
+export const SPRITE_ROOT = '/static/assets/images/trung-trac/sprites-32bit/';
+export const SPRITE_MANIFEST_FILE = 'manifest_tt.json';
 
 // Bộ môi trường 32-bit (TT-HIBIT-03, Codex — nguồn ở assets/maps-32bit/trung-trac/,
 // chép sang đây giữ cấu trúc thư mục). maps_tt.json là nguồn cho đường dẫn +
-// cỡ logic + neo (đọc lúc chạy trong assets.js): mọi số (w/h, frame_w/h,
+// cỡ logic + neo (đọc lúc chạy trong engine/assets.js): mọi số (w/h, frame_w/h,
 // visible_bbox, pivot, rect tile) là pixel LOGIC, ảnh vẽ dày gấp `density`
-// (4). Các số dưới đây là cách VẼ (parallax, vị trí, vùng). Mọi lớp lặp ngang
-// theo đúng chiều rộng logic (mapWidth ở render.js).
+// (4). Các số dưới đây là cách VẼ (vị trí, vùng).
 export const MAP_ROOT = '/static/assets/images/trung-trac/maps-32bit/';
 export const MAP_MANIFEST_FILE = 'maps_tt.json';
-export const TILESET_ID = 'TILESET_TT_GROUND';
+// Mặt đất dùng CHUNG 1 bộ tile (region 'Z1' trong tileset_tt_ground.json) cho
+// mọi vùng và mọi màn, chỉ tile đầu tiên của mỗi vai trò — không đổi theo
+// vùng, không biến thể theo cột (team 30/09, cho đồng bộ). Decor vẫn rải theo cột.
+// Bộ tile ghép địa hình (TT-TERRAIN-01; bản 32-bit TT-HIBIT-03 C2): sheet 64x48
+// logic riêng, 12 vai trò (engine TERRAIN_TILE_ROLES), 1 tile/vai trò; thiếu
+// sheet thì dự phòng bằng tile Z1 của TILESET_TT_GROUND.
+export const TILES = { ground: 'TILESET_TT_GROUND', groundRegion: 'Z1', terrain: 'TILESET_TT_TERRAIN' };
 
-// Lớp nền từ xa đến gần. `bottomY` = đáy ảnh (null = phủ từ y=0).
-// Parallax DESIGN_BASELINE (bản cũ: 0.22 trời / 0.58 lớp giữa / 1.0 đất).
-export const SKY_PARALLAX = 0.05; // DESIGN_BASELINE
 // Đồi xa vẽ tông trời nắng nên lạc tông dưới trời giông: `hiddenUnderSky` =
 // các ảnh trời mà dưới đó đồi xa tắt dần (cùng hệ số hoà với trời) — ảnh trời
 // giông đã có dãy núi xa riêng (quyết định team, phương án (a) sau Phase B).
 export const FAR_HILLS = { id: 'BG_TT_FAR_HILLS', parallax: 0.2, bottomY: 230, hiddenUnderSky: ['BG_TT_SKY_STORM'] }; // DESIGN_BASELINE
-export const MID_PARALLAX = 0.5; // DESIGN_BASELINE — đáy ảnh lớp giữa ở GROUND_Y
-export const SKY_FALLBACK_COLOR = '#43b8e3';
-export const GROUND_FALLBACK_COLOR = '#795238';
 
+// Chân dung (ảnh DOM: hội thoại, ô kỹ năng) — nạp ở mọi màn (nhỏ).
+export const PORTRAITS = [
+  'PORTRAIT_TRUNG_TRAC', 'PORTRAIT_TRUNG_NHI', 'PORTRAIT_THI_SACH', 'PORTRAIT_LE_CHAN', 'PORTRAIT_TO_DINH'
+];
+
+// Sprite canvas mỗi màn cần (Phần D — chỉ nạp ảnh màn đang chơi dùng; sprite
+// ×4 nặng ~2–14 MB/asset khi giải nén). Thêm thực thể dùng sprite mới vào màn
+// thì thêm ID vào đây — thiếu thì render cảnh báo 1 lần "chưa nạp" và vẽ hộp
+// tạm. Màn 1 cả layout thử ?layout=p2; màn 3 cả ?layout=skills.
+// PLAYER_TRUNG_TRAC ở màn 1 là Trưng Trắc đứng chờ (NPC dẫn — TT-HERO-01).
+// (PJ_FIRE_ARROW có trong manifest/PROJECTILE_SPRITES nhưng chưa màn nào dùng.)
+const SPRITES_TOWER = ['EN_HAN_WATCHTOWER', 'PROP_WATCHTOWER', 'EN_HAN_CAVALRY', 'PJ_SPEAR'];
+export const LEVEL_SPRITES = {
+  1: [
+    'PLAYER_TRUNG_TRAC', 'EN_HAN_GUARD', 'TR_SPIKE_PIT', 'EN_TIGER', 'OB_TRIBUTE_CART',
+    'EN_HAN_TAXMAN', 'PJ_COIN_POUCH', ...SPRITES_TOWER, 'EN_HAN_PALANQUIN', 'PJ_THROWING_KNIFE'
+  ],
+  2: [
+    'EN_HAN_GUARD', 'TR_SPIKE_PIT', 'EN_TIGER', 'OB_TRIBUTE_CART',
+    'EN_HAN_TAXMAN', 'PJ_COIN_POUCH', ...SPRITES_TOWER, 'NPC_THI_SACH', 'NPC_LE_CHAN', 'NPC_TRUNG_NHI'
+  ],
+  3: [
+    'EN_HAN_GUARD', 'EN_HAN_RUSHER', 'BOSS_TO_DINH_CHARIOT', 'BOSS_TO_DINH_FOOT',
+    'PJ_OIL_JAR', 'FX_OIL_FIRE', 'PJ_ARROW_RAIN', 'NPC_TRUNG_NHI'
+  ]
+};
+
+// URL trang từng màn (route ở backend/routes/pages.py).
+export const LEVEL_URLS = {
+  1: '/gameplay/levels/trung-trac',
+  2: '/gameplay/levels/trung-trac/2',
+  3: '/gameplay/levels/trung-trac/3'
+};
+
+// ---- Màn 1 "Vượt ải" ----
+export const LEVEL_CHUNKS = 12;
+export const LEVEL_WORLD_WIDTH = CHUNK_W * LEVEL_CHUNKS;
 // Vùng cảnh theo world X (chunk đếm từ 1: Z1 = chunk 1–3 = 0–2304...). Vùng
-// chỉ đổi CẢNH (trời + lớp giữa), vật cản vẫn xáo ngẫu nhiên (state.js).
+// chỉ đổi CẢNH (trời + lớp giữa), vật cản vẫn xáo ngẫu nhiên (level1.js).
 export const ZONES = [
   { id: 'Z1', x0: 0, x1: 2304, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_VILLAGE' },
   { id: 'Z2', x0: 2304, x1: 3840, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_FIELDS' },
@@ -82,44 +85,40 @@ export const ZONES = [
   { id: 'Z4', x0: 6144, x1: 7680, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_RIVER' },
   { id: 'Z5', x0: 7680, x1: 9216, sky: 'BG_TT_SKY_STORM', mid: 'BG_TT_MID_CITADEL' }
 ];
-// Mặt đất dùng CHUNG 1 bộ tile (region trong tileset_tt_ground.json) cho mọi
-// vùng và mọi màn, chỉ tile đầu tiên của mỗi vai trò — không đổi theo vùng,
-// không biến thể theo cột (team 30/09, cho đồng bộ). Decor vẫn rải theo cột.
-export const GROUND_TILE_REGION = 'Z1';
-// Bộ tile ghép địa hình (TT-TERRAIN-01; bản 32-bit TT-HIBIT-03 C2): sheet 64x48 logic riêng, 12 vai trò dưới
-// đây, 1 tile/vai trò. Mặt đất + bậc + mép hố + lòng hố ghép tự động theo độ
-// cao cột (terrainTileRole ở render.js); thiếu sheet thì dự phòng bằng tile Z1
-// của TILESET_TT_GROUND.
-export const TERRAIN_TILESET_ID = 'TILESET_TT_TERRAIN';
-export const TERRAIN_TILE_ROLES = [
-  'corner-left', 'surface', 'corner-right', 'corner-single',
-  'wall-left', 'fill', 'wall-right', 'wall-single',
-  'inner-left', 'inner-right', 'pit-top', 'pit-deep'
-];
-// Lớp giữa + trời hoà dần trong ZONE_BLEND_WIDTH px TRƯỚC mỗi ranh giới, tính
-// theo tâm khung nhìn (cameraX + VIEW_W/2) — hoà xong đúng lúc tâm khung nhìn
-// chạm ranh giới, nên trời đã đổi sang giông trước khi người chơi vào chunk 11
-// (quyết định team G3). Mặt đất dùng 1 bộ tile chung (GROUND_TILE_REGION).
-export const ZONE_BLEND_WIDTH = 192; // DESIGN_BASELINE
-// Tỉ lệ cột tile mặt đất có decor (cỏ, lau...) — chọn tất định theo cột.
-export const GROUND_DECOR_DENSITY = 0.25; // DESIGN_BASELINE
-
-// Trigger về đích (= worldX(12, 618)) — state.js (finishX) và cổng thành dùng
+// Trigger về đích (= worldX(12, 618)) — level1.js (finishX) và cổng thành dùng
 // chung số này. Cổng Luy Lâu đặt TÂM tại đây (quyết định team G1: bỏ độ lệch
 // +24px của ảnh cũ); cổng 192px trải 8970–9162 < 9216.
 export const FINISH_X = CHUNK_W * 11 + 618;
-// Cổng thành Luy Lâu (prop, KHÔNG có hitbox — trigger về đích giữ nguyên ở
-// physics.js). Vẽ x1, pivot bottom-center lấy từ maps_tt.json, đáy ở GROUND_Y
+// Cổng thành Luy Lâu (prop, KHÔNG có hitbox — trigger về đích ở engine
+// level-flow.js). Vẽ x1, pivot bottom-center lấy từ maps_tt.json, đáy ở GROUND_Y
 // (không chìm). Đổi sang ảnh mở khi đã đủ điều kiện NỘI DUNG (mini-boss đã hạ
-// + nhặt đủ sách — `bossAlive()` ở state.js), trước khi người chơi chạm FINISH_X; suy ra mỗi frame nên không
-// đóng lại (G7).
+// + nhặt đủ sách), trước khi người chơi chạm FINISH_X; suy ra mỗi frame nên
+// không đóng lại (G7).
 export const FINISH_GATE = { closed: 'PROP_LUYLAU_GATE', open: 'PROP_LUYLAU_GATE_OPEN', worldX: FINISH_X };
+// Trưng Trắc đứng chờ người chơi ở chunk 1 màn 1 (TT-HERO-01, DESIGN_BASELINE).
+export const GUIDE_LOCAL_X = 190;
 
-// Màn 2 "Chiêu mộ hiền tài" (TT-NPC-01 §3.2.1; tăng độ khó TT-L2-HARD 29/09;
-// kéo dài 9 chunk TT-QUIZ-01 29/09 — DESIGN_BASELINE): trời ngày suốt màn.
-// Chunk 1–2 làng (Z1), chunk 3 đồng lúa (Z2), chunk 4–5 rừng (Z3), chunk 6–9
-// bến sông (Z4) — `id` giữ tên vùng của TT-MAP-01 để dùng đúng lớp giữa. Hoà
-// cảnh giữa vùng theo đúng cách màn 1 (ZONE_BLEND_WIDTH).
+// Mini-boss kiệu quan ở chunk 11 màn 1 (TT-NPC-01 §3.1.2, DESIGN_BASELINE).
+//   localX      tâm (pivot) trong chunk 11 — chỗ boss Tô Định cũ.
+//   hp          số đòn chém để hạ.
+//   patrolRange đi qua lại trong đoạn này (căn giữa tại localX), tốc độ speed.
+//   fireRange   người chơi trong tầm -> dừng lại, quay về phía người chơi, ném.
+//   fireInterval chu kỳ ném tính từ lúc ném xong (giây).
+//   hitScore / defeatScore  điểm mỗi đòn / khi hạ (D9 — như boss cũ).
+export const MINIBOSS = {
+  chunk: 11, localX: 510, hp: 6, patrolRange: 160, speed: 30,
+  fireRange: 240, fireInterval: 2.5, hitScore: 100, defeatScore: 700
+};
+
+// Bình thư (vật phẩm thu thập): strip ITEM_BINH_THU (4 ô 16x16) vẽ x1, lặp
+// fps (manifest để fps null). Hitbox nhặt 22x26 ở engine (ITEM_HITBOX).
+export const ITEM = { sprite: 'ITEM_BINH_THU', fps: 6 }; // DESIGN_BASELINE
+
+// ---- Màn 2 "Chiêu mộ hiền tài" ----
+// (TT-NPC-01 §3.2.1; tăng độ khó TT-L2-HARD 29/09; kéo dài 9 chunk TT-QUIZ-01
+// 29/09 — DESIGN_BASELINE): trời ngày suốt màn. Chunk 1–2 làng (Z1), chunk 3
+// đồng lúa (Z2), chunk 4–5 rừng (Z3), chunk 6–9 bến sông (Z4) — `id` giữ tên
+// vùng của TT-MAP-01 để dùng đúng lớp giữa.
 export const LEVEL2_CHUNKS = 9;
 export const LEVEL2_ZONES = [
   { id: 'Z1', x0: 0, x1: CHUNK_W * 2, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_VILLAGE' },
@@ -130,9 +129,20 @@ export const LEVEL2_ZONES = [
 // Điểm kết thúc màn 2: cuối chunk cuối lùi 96px (D15 — không vẽ cổng).
 export const LEVEL2_FINISH_X = CHUNK_W * LEVEL2_CHUNKS - 96;
 
-// Màn 3 "Trận Luy Lâu" (TT-BOSS-01 §3.1, DESIGN_BASELINE): ĐẤU TRƯỜNG cố định
-// 1 chunk trước cổng Luy Lâu, không có đoạn đi cảnh. Tường vô hình ở x = 0 và
-// x = width (physics.js kẹp người chơi; chiến xa/quân cảm tử quay đầu ở tường).
+// Câu hỏi lịch sử chặn đường (TT-QUIZ-01, DESIGN_BASELINE; điểm + luật ở engine):
+//   level1Count  số câu mỗi lượt màn 1 (rút ngẫu nhiên, không trùng).
+//   level1Spots  [chunk, localX] — chạm x này thì hỏi (theo thứ tự).
+//   level2Spots  câu hỏi trước NPC màn 2: npc id -> [chunk, localX].
+export const QUIZ = {
+  level1Count: 4,
+  level1Spots: [[3, 312], [5, 312], [8, 312], [10, 560]],
+  level2Spots: { thiSach: [2, 600], leChan: [5, 600], trungNhi: [8, 600] }
+};
+
+// ---- Màn 3 "Trận Luy Lâu" ----
+// (TT-BOSS-01 §3.1, DESIGN_BASELINE): ĐẤU TRƯỜNG cố định 1 chunk trước cổng
+// Luy Lâu, không có đoạn đi cảnh. Tường vô hình ở x = 0 và x = width (engine
+// kẹp người chơi; chiến xa/quân cảm tử quay đầu ở tường).
 //   gateX      tâm cổng PROP_LUYLAU_GATE (192px -> trải 576–768), đóng suốt trận.
 //   pillars    tâm 2 cột đá PROP_STONE_PILLAR (hitbox pillarW x pillarH).
 //   playerStartX  mép trái hitbox người chơi lúc vào màn.
@@ -153,51 +163,18 @@ export const WALL_ARROWS = { interval: 3.5, count: 2, spread: 120, warnTime: .6,
 export const LEVEL3_ZONES = [
   { id: 'Z5', x0: 0, x1: ARENA.width, sky: 'BG_TT_SKY_STORM', mid: 'BG_TT_MID_CITADEL' }
 ];
+// Cờ chiến thắng cắm trên cổng mở (cutscene màn 3): strip lặp, pivot
+// bottom-left đặt tại `attach` — null = dùng `flag_attach` của
+// PROP_LUYLAU_GATE_OPEN trong maps_tt.json: (94,10) logic, giữa nóc mái cổng
+// (yêu cầu team 27/09; bản 32-bit C3: chân cán chạm ngói nóc). Đặt { x, y }
+// (toạ độ logic trong ảnh cổng 192x176) để ghi đè. Thiếu ảnh/điểm gắn thì bỏ
+// qua (TODO_MISSING).
+export const VICTORY_FLAG = { id: 'PROP_TT_VICTORY_FLAG', attach: null };
 
-// Các màn của chương dùng CHUNG một bộ engine (TT-NPC-01, phương án A): main.js
-// đọc `data-level` của trang rồi gọi setLevel(); mọi module đọc thông số màn
-// đang chơi qua `LEVEL` (live-binding như VIEW_W). Dữ liệu nội dung (vật cản,
-// NPC, sách) nằm ở state.js theo LEVEL.id.
-//   chunks / worldWidth  độ dài màn.
-//   zones   vùng cảnh (trời, lớp giữa, tile) theo world X.
-//   finishX điểm về đích; gate = cổng vẽ tại finishX (null = không có cổng).
-//   title   tên màn (panel đầu/cuối màn, tiêu đề trang).
-//   arena   true = đấu trường (màn 3): tường 2 đầu, không về đích, camera
-//           neo tâm người chơi, có kỹ năng/buff từ phần thưởng màn 2.
-export const LEVELS = {
-  1: {
-    id: 1, title: 'Màn 1: Vượt ải', chunks: LEVEL_CHUNKS, worldWidth: LEVEL_WORLD_WIDTH,
-    zones: ZONES, finishX: FINISH_X, gate: FINISH_GATE
-  },
-  2: {
-    id: 2, title: 'Màn 2: Chiêu mộ hiền tài', chunks: LEVEL2_CHUNKS, worldWidth: CHUNK_W * LEVEL2_CHUNKS,
-    zones: LEVEL2_ZONES, finishX: LEVEL2_FINISH_X, gate: null
-  },
-  3: {
-    id: 3, title: 'Màn 3: Trận Luy Lâu', chunks: 1, worldWidth: ARENA.width,
-    zones: LEVEL3_ZONES, finishX: ARENA.width, arena: true,
-    gate: { closed: 'PROP_LUYLAU_GATE', open: 'PROP_LUYLAU_GATE_OPEN', worldX: ARENA.gateX }
-  }
-};
-export let LEVEL = LEVELS[1];
-export function setLevel(id) {
-  LEVEL = LEVELS[id] || LEVELS[1];
-  return LEVEL;
-}
-
-// Địa hình ô vuông (TT-TERRAIN-01): mỗi chunk vẽ bằng lưới chữ ('#' đất, '.'
-// trống), mỗi ô TERRAIN_CELL px = đúng 1 tile mặt đất; hàng dưới cùng là mặt
-// đất GROUND_Y, mỗi hàng trên cao thêm 1 ô; '.' ở hàng dưới cùng = hố. Chỉ có
-// bậc cao/thấp (đất liền từ đáy lên, không bục lơ lửng). Dữ liệu ở state.js,
-// đọc qua geometry.js (groundYAt / terrainLevelAt). Nhảy cao tối đa
-// JUMP_FORCE² / (2·GRAVITY) ≈ 83px ≈ 5 ô -> bậc chênh quá TERRAIN_MAX_STEP ô
-// thì cảnh báo (DESIGN_BASELINE).
-export const TERRAIN_CELL = 16;
-export const TERRAIN_MAX_STEP = 3; // DESIGN_BASELINE
-
+// ---- Môi trường ----
 // Vật cản tĩnh (`obstacles`) -> asset trong maps_tt.json + cách neo/cờ.
-// Hitbox (w, h) do state.js truyền vào makeObstacle — KHÔNG lấy từ cỡ ảnh. Vẽ
-// x1 theo cỡ PNG, căn sao cho PHẦN NHÌN THẤY trùng hitbox:
+// Hitbox (w, h) do nội dung màn truyền vào makeObstacle — KHÔNG lấy từ cỡ ảnh.
+// Vẽ x1 theo cỡ PNG, căn sao cho PHẦN NHÌN THẤY trùng hitbox:
 //   - asset có `visible_bbox` (3 loại P0): góc bbox trùng góc trên-trái hitbox;
 //   - còn lại: đáy-giữa canvas trùng đáy-giữa hitbox + groundSink.
 //   anchor     'bottom' (hitbox đứng trên mặt đất), 'overhead' (hitbox 20px ở
@@ -205,9 +182,9 @@ export const TERRAIN_MAX_STEP = 3; // DESIGN_BASELINE
 //              ở GROUND_Y — cầu bắc qua hố).
 //   groundSink số px đáy ảnh chìm dưới đáy hitbox (4 cho 3 loại cũ — khớp
 //              visible_bbox; 0 cho P2).
-//   requiresHole  chỉ được tạo khi có hố tương ứng (state.js kiểm tra).
-// P2 (fenceLow...logDrift): khai báo sẵn, màn thường CHƯA dùng — chỉ có trong
-// layout thử `?layout=p2`. Hitbox P2 là DESIGN_BASELINE (task TT-MAP-01 §3.3.4).
+//   requiresHole  chỉ được tạo khi có hố tương ứng (entities.js kiểm tra).
+// P2 (fenceLow...logDrift): màn 1 chỉ dùng trong layout thử `?layout=p2`;
+// màn 2 dùng. Hitbox P2 là DESIGN_BASELINE (task TT-MAP-01 §3.3.4).
 // spikesTrap: không có asset (màn dùng hazard TR_SPIKE_PIT) — giữ khai
 // báo, thiếu ảnh thì render vẽ hộp tạm (G8).
 export const OBSTACLE_TYPES = {
@@ -228,27 +205,21 @@ export const OBSTACLE_TYPES = {
   stonePillar: { id: 'PROP_STONE_PILLAR', anchor: 'bottom', groundSink: 0, blocking: true }
 };
 
-// Ảnh môi trường cần tải ngoài các lớp nền/tileset (vật cản, sách, cổng) — mọi màn.
-export const MAP_PROPS_IN_GAME = [
-  ...Object.values(OBSTACLE_TYPES).map(type => type.id).filter(Boolean),
-  'ITEM_BINH_THU', FINISH_GATE.closed, FINISH_GATE.open, 'PROP_TT_VICTORY_FLAG', 'PROP_TT_QUIZ_STELE'
-];
 // Bia đá đánh dấu mốc câu hỏi chặn đường (TT-QUIZ-01, Codex 29/09): pivot
 // bottom-center tại `quiz.x`, đáy ở GROUND_Y, KHÔNG hitbox. Trạng thái
 // `active` (strip lặp, chưa hỏi) / `done` (1 ô, đã hỏi) — `state_files` trong
 // maps_tt.json. Thiếu ảnh thì không vẽ.
 export const QUIZ_STELE_ID = 'PROP_TT_QUIZ_STELE';
-// Cờ chiến thắng cắm trên cổng mở (cutscene màn 3): strip lặp, pivot
-// bottom-left đặt tại `flag_attach` của PROP_LUYLAU_GATE_OPEN (maps_tt.json).
-// Thiếu ảnh/điểm gắn thì bỏ qua (TODO_MISSING).
-export const VICTORY_FLAG_ID = 'PROP_TT_VICTORY_FLAG';
-// Điểm gắn cờ: null = dùng `flag_attach` của maps_tt.json — (94,10) logic,
-// giữa nóc mái cổng (yêu cầu team 27/09; bản 32-bit C3: chân cán chạm ngói nóc).
-// Đặt { x, y } (toạ độ logic trong ảnh cổng 192x176) để ghi đè.
-export const VICTORY_FLAG_ATTACH = null;
 
+// Ảnh môi trường cần tải ngoài các lớp nền/tileset (vật cản, sách, cổng) — mọi màn.
+export const MAP_PROPS_IN_GAME = [
+  ...Object.values(OBSTACLE_TYPES).map(type => type.id).filter(Boolean),
+  ITEM.sprite, FINISH_GATE.closed, FINISH_GATE.open, VICTORY_FLAG.id, QUIZ_STELE_ID
+];
+
+// ---- Quân địch, hazard, đạn ----
 // Hazard (vật cản/kẻ địch có trạng thái) -> asset trong manifest sprite. Khoá
-// (jungleTiger, hanTaxSoldier...) là tên `sprite` state.js dùng.
+// (jungleTiger, hanTaxSoldier...) là tên `sprite` nội dung màn dùng.
 //   id      asset trong manifest_tt.json (mọi strip quay mặt PHẢI; render tự lật
 //           để vật chạy quay theo hướng chạy, lính/boss quay về phía người chơi).
 //   w, h    hitbox (px logic) tính từ pivot bottom-center (tâm ngang, chân) —
@@ -268,6 +239,8 @@ export const VICTORY_FLAG_ATTACH = null;
 //   sink    số px chìm xuống dưới mặt đất khi vẽ (bẫy chông nằm lọt vào cỏ).
 //   corpse  hết máu thì phát death 1 lần rồi NẰM LẠI map ở ô cuối, vô hại
 //           (xe cống — quyết định team §9.2).
+//   Câu thông báo (thiếu thì dùng TEXT chung): breakMessage (hạ được),
+//   springMessage (bẫy bật), sprungMessage (giẫm phải bẫy đã bật), alarmMessage.
 export const HAZARD_SPRITES = {
   officialPalanquin: { id: 'EN_HAN_PALANQUIN', w: 76, h: 44, anims: { move: 'walk', idle: 'walk', hurt: 'hurt', death: 'break' } },
   // Mini-boss kiệu quan màn 1 (TT-NPC-01, hành vi `patrol` — xem MINIBOSS).
@@ -279,10 +252,14 @@ export const HAZARD_SPRITES = {
   // 02/10 — trước đây dao sinh ở mép trước kiệu, cách tâm 42). DESIGN_BASELINE.
   palanquinBoss: {
     id: 'EN_HAN_PALANQUIN', w: 76, h: 44, muzzle: 24, muzzleX: 12, idleHold: true,
-    anims: { move: 'walk', idle: 'walk', throw: 'throw', hurt: 'hurt', death: 'break' }
+    anims: { move: 'walk', idle: 'walk', throw: 'throw', hurt: 'hurt', death: 'break' },
+    breakMessage: 'Đã hạ kiệu quan!'
   },
   jungleTiger: { id: 'EN_TIGER', w: 48, h: 24, anims: { move: 'run', idle: 'idle', hurt: 'hurt', death: 'death' } },
-  tributeCart: { id: 'OB_TRIBUTE_CART', w: 48, h: 38, anims: { move: 'roll', idle: 'roll', death: 'break' }, corpse: true },
+  tributeCart: {
+    id: 'OB_TRIBUTE_CART', w: 48, h: 38, anims: { move: 'roll', idle: 'roll', death: 'break' }, corpse: true,
+    breakMessage: 'Xe cống phẩm vỡ tan!'
+  },
   hanCavalry: { id: 'EN_HAN_CAVALRY', w: 56, h: 48, anims: { move: 'gallop', idle: 'gallop', hurt: 'hurt', death: 'death' } },
   hanTaxSoldier: {
     id: 'EN_HAN_TAXMAN', w: 20, h: 40, muzzle: 32,
@@ -290,49 +267,16 @@ export const HAZARD_SPRITES = {
   },
   watchtowerGuard: {
     id: 'EN_HAN_WATCHTOWER', w: 22, h: 36, muzzle: 32, alarmTime: 1.1,
-    anims: { idle: 'idle', alarm: 'alarm', throw: 'throw', hurt: 'hurt', death: 'death' }, durations: { throw: .85 }
+    anims: { idle: 'idle', alarm: 'alarm', throw: 'throw', hurt: 'hurt', death: 'death' }, durations: { throw: .85 },
+    alarmMessage: 'Lính gác thổi tù và báo động — kỵ binh Hán xông tới!'
   },
   watchtower: { id: 'PROP_WATCHTOWER', w: 29, h: 91, anims: { idle: 'idle' } },
   // Hố chông mới là hố NÔNG 48x16 (không còn ảnh mặt cắt): cỏ -> chông trồi
   // lên (reveal 1 lần). Chìm 3px vào dải cỏ; hitbox mỏng sát mặt đất.
-  spikePit: { id: 'TR_SPIKE_PIT', w: 36, h: 6, sink: 3, anims: { idle: 'hidden', sprung: 'reveal' } }
-};
-
-// Enemy (lính canh / boss) -> asset sprite. Hitbox nằm trong state.js (enemy
-// là object phẳng). Boss hiện chỉ đứng + nhận đòn (chưa có cơ chế 3 giai
-// đoạn), nên chỉ dùng idle; hết máu phát shield_break 1 lần rồi xoá.
-// Boss Tô Định TẠM KHÔNG đặt vào màn 1 (TT-NPC-01: thay bằng mini-boss kiệu
-// quan) — giữ khai báo để màn 3 dùng lại.
-export const ENEMY_SPRITES = {
-  normal: { id: 'EN_HAN_GUARD', anims: { idle: 'idle', walk: 'walk', attack: 'attack_01', hurt: 'hurt', death: 'death' } },
-  // Chiến xa Tô Định (màn 3 giai đoạn 1, TT-BOSS-01 §3.5): trạng thái máy
-  // trạng thái -> animation. Không có `hurt` -> trúng đòn nháy mờ. Hết khiên
-  // phát shield_break 1 lần rồi NẰM LẠI ở ô cuối (xác xe, không va chạm).
-  boss: {
-    id: 'BOSS_TO_DINH_CHARIOT',
-    anims: { idle: 'idle', idleCracked: 'idle_cracked', throw: 'throw', charge: 'charge', stun: 'stun', death: 'shield_break' }
-  },
-  // Tô Định đi bộ (giai đoạn 2 đứng sau xác xe, chỉ để vẽ).
-  // Giai đoạn 3: trúng đòn phát `hurt` (Codex bổ sung 26/09), hết máu
-  // `disarmed` 1 lần; cutscene: `flee` (đã cải trang).
-  bossFoot: { id: 'BOSS_TO_DINH_FOOT', anims: { idle: 'idle', hurt: 'hurt', disarmed: 'disarmed', flee: 'flee' } },
-  // Quân cảm tử màn 3 (TT-BOSS-01 §3.3): không có idle/hurt — lúc nghỉ giữa 2
-  // cú đâm thì đứng ở ô 1 của `run` (idleHold, như kiệu quan).
-  rusher: { id: 'EN_HAN_RUSHER', idleHold: true, anims: { idle: 'run', walk: 'run', attack: 'attack_01', death: 'death' } },
-  // "Bao cát" của layout thử ?layout=skills: không có asset — vẽ hộp tạm.
-  dummy: { id: null, anims: {} }
-};
-
-// Đạn -> asset sprite (khoá là tên `projectile` hazard khai báo). Hitbox (w, h)
-// nhỏ hơn hình một chút để đuôi lửa/cán giáo không gây sát thương oan. Mọi
-// strip đạn quay PHẢI, bay sang trái thì lật.
-export const PROJECTILE_SPRITES = {
-  coinPouch: { id: 'PJ_COIN_POUCH', anim: 'loop', w: 10, h: 10 },
-  throwingDart: { id: 'PJ_SPEAR', anim: 'idle', w: 22, h: 4 },
-  fireArrow: { id: 'PJ_FIRE_ARROW', anim: 'loop', w: 16, h: 5 },
-  // Dao ném của mini-boss kiệu quan: hình 16x8, hitbox 12x5 bớt cán (D10,
-  // DESIGN_BASELINE).
-  throwingKnife: { id: 'PJ_THROWING_KNIFE', anim: 'loop', w: 12, h: 5 }
+  spikePit: {
+    id: 'TR_SPIKE_PIT', w: 36, h: 6, sink: 3, anims: { idle: 'hidden', sprung: 'reveal' },
+    springMessage: 'Bẫy hố chông bật lên!', sprungMessage: 'Bạn giẫm phải hố chông!'
+  }
 };
 
 // Lính canh thường (EN_HAN_GUARD, enemy không phải boss) — DESIGN_BASELINE:
@@ -355,13 +299,6 @@ export const GUARD = {
   attackReach: 12, attackBoxY: 13, attackBoxH: 10, attackCooldown: 1.2
 };
 
-// Mini-boss kiệu quan ở chunk 11 màn 1 (TT-NPC-01 §3.1.2, DESIGN_BASELINE).
-//   localX      tâm (pivot) trong chunk 11 — chỗ boss Tô Định cũ.
-//   hp          số đòn chém để hạ.
-//   patrolRange đi qua lại trong đoạn này (căn giữa tại localX), tốc độ speed.
-//   fireRange   người chơi trong tầm -> dừng lại, quay về phía người chơi, ném.
-//   fireInterval chu kỳ ném tính từ lúc ném xong (giây).
-//   hitScore / defeatScore  điểm mỗi đòn / khi hạ (D9 — như boss cũ).
 // Quân cảm tử EN_HAN_RUSHER (TT-BOSS-01 §3.3, DESIGN_BASELINE):
 //   speed         chạy 90px/s; hướng chọn VỀ PHÍA người chơi lúc xuất hiện và
 //                 sau mỗi lần nghỉ, rồi giữ nguyên tới khi chạm tường thì quay đầu.
@@ -375,8 +312,76 @@ export const RUSHER = {
   attackReach: 12, attackBoxY: 20, attackBoxH: 8, rest: 1.0
 };
 
+// Enemy (lính canh / boss) -> asset sprite. Hitbox nằm trong nội dung màn
+// (enemy là object phẳng). `behavior` = hành vi chung của engine (guard |
+// rusher) với thông số `rules`; boss có `kind` riêng (boss.js) nên không cần.
+// Câu thông báo: attackMessage (bị đâm trúng), contactMessage (chạm thân),
+// defeatMessage (hạ được; không có = không thông báo).
+export const ENEMY_SPRITES = {
+  normal: {
+    id: 'EN_HAN_GUARD', behavior: 'guard', rules: GUARD,
+    anims: { idle: 'idle', walk: 'walk', attack: 'attack_01', hurt: 'hurt', death: 'death' },
+    attackMessage: 'Bạn bị lính canh đâm trúng!', contactMessage: 'Bạn bị lính canh đánh trúng!',
+    defeatMessage: 'Đã đánh bại lính canh.'
+  },
+  // Chiến xa Tô Định (màn 3 giai đoạn 1, TT-BOSS-01 §3.5): trạng thái máy
+  // trạng thái -> animation. Không có `hurt` -> trúng đòn nháy mờ. Hết khiên
+  // phát shield_break 1 lần rồi NẰM LẠI ở ô cuối (xác xe, không va chạm).
+  boss: {
+    id: 'BOSS_TO_DINH_CHARIOT',
+    anims: { idle: 'idle', idleCracked: 'idle_cracked', throw: 'throw', charge: 'charge', stun: 'stun', death: 'shield_break' }
+  },
+  // Tô Định đi bộ (giai đoạn 2 đứng sau xác xe, chỉ để vẽ).
+  // Giai đoạn 3: trúng đòn phát `hurt` (Codex bổ sung 26/09), hết máu
+  // `disarmed` 1 lần; cutscene: `flee` (đã cải trang).
+  bossFoot: { id: 'BOSS_TO_DINH_FOOT', anims: { idle: 'idle', hurt: 'hurt', disarmed: 'disarmed', flee: 'flee' } },
+  // Quân cảm tử màn 3 (TT-BOSS-01 §3.3): không có idle/hurt — lúc nghỉ giữa 2
+  // cú đâm thì đứng ở ô 1 của `run` (idleHold, như kiệu quan).
+  rusher: {
+    id: 'EN_HAN_RUSHER', behavior: 'rusher', rules: RUSHER, idleHold: true,
+    anims: { idle: 'run', walk: 'run', attack: 'attack_01', death: 'death' },
+    attackMessage: 'Bạn bị quân cảm tử đâm trúng!', contactMessage: 'Bạn bị quân cảm tử đâm trúng!'
+  },
+  // "Bao cát" của layout thử ?layout=skills: không có asset — vẽ hộp tạm.
+  dummy: { id: null, anims: {} }
+};
+
+// Đạn -> asset sprite (khoá là tên `projectile` hazard khai báo). Hitbox (w, h)
+// nhỏ hơn hình một chút để đuôi lửa/cán giáo không gây sát thương oan. Mọi
+// strip đạn quay PHẢI, bay sang trái thì lật.
+export const PROJECTILE_SPRITES = {
+  coinPouch: { id: 'PJ_COIN_POUCH', anim: 'loop', w: 10, h: 10 },
+  throwingDart: { id: 'PJ_SPEAR', anim: 'idle', w: 22, h: 4 },
+  fireArrow: { id: 'PJ_FIRE_ARROW', anim: 'loop', w: 16, h: 5 },
+  // Dao ném của mini-boss kiệu quan: hình 16x8, hitbox 12x5 bớt cán (D10,
+  // DESIGN_BASELINE).
+  throwingKnife: { id: 'PJ_THROWING_KNIFE', anim: 'loop', w: 12, h: 5 }
+};
+
+// NPC (TT-NPC-01 §3.2.3). Khoá = `npc.id` trong nội dung màn và
+// dialogue-data.js. Sprite 48x48 quay PHẢI, pivot bottom-center; render lật để
+// NPC quay về phía người chơi. Không có va chạm (hitbox chỉ để F2 hiển thị).
+//   portrait  chân dung 64x64 cho khung hội thoại (DOM, image-rendering: pixelated).
+export const NPC_SPRITES = {
+  thiSach: { id: 'NPC_THI_SACH', portrait: 'PORTRAIT_THI_SACH', anims: { idle: 'idle', talk: 'talk' } },
+  leChan: { id: 'NPC_LE_CHAN', portrait: 'PORTRAIT_LE_CHAN', anims: { idle: 'idle', talk: 'talk' } },
+  trungNhi: { id: 'NPC_TRUNG_NHI', portrait: 'PORTRAIT_TRUNG_NHI', anims: { idle: 'idle', talk: 'talk' } },
+  // Màn 1 (TT-HERO-01): Trưng Trắc chờ người chơi ở đầu màn — chưa có NPC_TRUNG_TRAC,
+  // dùng lại strip idle của sprite người chơi cũ (không có `talk`).
+  trungTrac: { id: 'PLAYER_TRUNG_TRAC', portrait: 'PORTRAIT_TRUNG_TRAC', anims: { idle: 'idle', talk: 'idle' } }
+};
+
+// ---- Màn 3: phần thưởng, boss ----
+// Phần thưởng nhận ở màn 2 (id -> tên, nguyên văn task card TT-NPC-01 mục 5).
+export const REWARD_NAMES = {
+  BUFF_Y_CHI_KIEN_CUONG: 'Ý chí kiên cường',
+  SK_LE_CHAN_ARROW_RAIN: 'Mưa tên',
+  SK_TRUNG_NHI_SHADOW: 'Bóng Trưng Nhị'
+};
+
 // Phần thưởng màn 2 thành cơ chế thật ở màn 3 (TT-BOSS-01 §3.2, DESIGN_BASELINE).
-// Khoá = id phần thưởng trong tiến trình (progress.js REWARD_NAMES).
+// Khoá = id phần thưởng trong tiến trình (REWARD_NAMES). `slot` = khe kỹ năng
+// của engine (skill1 = phím K, skill2 = phím L; null = bị động).
 //   buff       BUFF_Y_CHI_KIEN_CUONG: máu còn 1 + calmTime giây không trúng đòn
 //              -> hồi 1 máu; hồi chiêu `cooldown` tính từ lần hồi trước.
 //   arrowRain  SK_LE_CHAN_ARROW_RAIN (phím K): `count` mũi PJ_ARROW_RAIN rơi từ
@@ -389,23 +394,19 @@ export const RUSHER = {
 //              đi sau `gap` px, trễ `delay` giây theo vệt di chuyển.
 //   portrait   chân dung ô HUD.
 export const SKILLS = {
-  BUFF_Y_CHI_KIEN_CUONG: { calmTime: 3, cooldown: 20, portrait: 'PORTRAIT_THI_SACH' },
+  BUFF_Y_CHI_KIEN_CUONG: { slot: null, calmTime: 3, cooldown: 20, portrait: 'PORTRAIT_THI_SACH' },
   SK_LE_CHAN_ARROW_RAIN: {
-    key: 'K', cooldown: 12, width: 160, offset: 24, count: 10, spread: .8,
+    slot: 'skill1', cooldown: 12, width: 160, offset: 24, count: 10, spread: .8,
     jitter: 5, fallSpeed: 420, perEnemy: 2, perBoss: 1, portrait: 'PORTRAIT_LE_CHAN'
   },
   SK_TRUNG_NHI_SHADOW: {
-    key: 'L', duration: 8, cooldown: 20, gap: 20, delay: .15, alpha: .5,
+    slot: 'skill2', duration: 8, cooldown: 20, gap: 20, delay: .15, alpha: .5,
     tint: 'rgba(58, 64, 190, .55)', sprite: 'NPC_TRUNG_NHI', portrait: 'PORTRAIT_TRUNG_NHI'
   }
 };
 // Mũi tên mưa (PJ_ARROW_RAIN 8x24, mũi ở đáy ô): hitbox 4x10 ở đầu mũi.
 export const ARROW_RAIN_SPRITE = { id: 'PJ_ARROW_RAIN', anim: 'idle', w: 4, h: 10 };
 
-// Layout thử `?layout=skills` (chỉ màn 3): không boss; sinh lần lượt các nhóm
-// (đợt sau khi đợt trước chết hết + gap giây), lặp lại; bao cát đứng yên
-// dummyHp máu ở dummyX để đo sát thương. `at` = giây tính từ đầu nhóm, `dx` =
-// lệch so với ARENA.spawnX.
 // Boss Tô Định (TT-BOSS-01 §3.5–3.6, DESIGN_BASELINE).
 //   startX          tâm chiến xa lúc vào trận; w/h hitbox 90x80 (không nhảy qua được).
 //   shield          số nấc khiên. Chỉ mất nấc khi xe ĐÂM CỘT hoặc trúng HŨ DẦU bị
@@ -433,7 +434,7 @@ export const ARROW_RAIN_SPRITE = { id: 'PJ_ARROW_RAIN', anim: 'idle', w: 4, h: 1
 //                   lần mỗi khung); cứ rusherInterval giây 1 quân cảm tử ra từ
 //                   cổng, tối đa rusherMax con cùng lúc; cutscene chạy trốn fleeSpeed.
 //   cutscene        §3.8: disarmHold = đứng thêm sau `disarmed`; fadeTime = tối/
-//                   sáng dần; walkSpeed = Trưng Trắc tự đi tới cổng; victoryHold
+//                   sáng dần; walkSpeed = người chơi tự đi tới cổng; victoryHold
 //                   = thời gian đứng `victory` trước panel cốt truyện cuối.
 //   shieldScore/breakScore/reflectScore  điểm.
 export const BOSS_TD = {
@@ -470,6 +471,10 @@ export const BOSS_TEXT = {
   phase3: 'Tô Định không còn chỗ nấp!'
 };
 
+// Layout thử `?layout=skills` (chỉ màn 3): không boss; sinh lần lượt các nhóm
+// (đợt sau khi đợt trước chết hết + gap giây), lặp lại; bao cát đứng yên
+// dummyHp máu ở dummyX để đo sát thương. `at` = giây tính từ đầu nhóm, `dx` =
+// lệch so với ARENA.spawnX.
 export const SKILL_TEST = {
   gap: 1.5, dummyX: 380, dummyHp: 99,
   // Quân cảm tử ra trước lính canh (yêu cầu người chơi thử 26/09).
@@ -479,155 +484,18 @@ export const SKILL_TEST = {
   ]
 };
 
-export const MINIBOSS = {
-  chunk: 11, localX: 510, hp: 6, patrolRange: 160, speed: 30,
-  fireRange: 240, fireInterval: 2.5, hitScore: 100, defeatScore: 700
+// ---- Câu chữ thông báo dùng trong engine (CHAPTER.text) ----
+export const TEXT = {
+  obstacleHit: 'Hãy nhảy hoặc lướt qua chướng ngại vật.',
+  trapHit: 'Bạn va vào bẫy!',
+  fell: 'Bạn rơi xuống hố và mất 1 máu.',
+  hazardHit: 'Bạn va phải quân Hán!',
+  hazardDefeated: 'Đã hạ chướng ngại vật!',
+  projectileHit: 'Bạn trúng đạn của quân Hán!',
+  bossContact: 'Lính giữ thành phản công!',
+  bossDefeated: 'Đã đánh bại toán lính giữ thành!',
+  bossBlocksFinish: 'Hãy hạ kiệu quan trước khi qua cổng.',
+  itemPicked: (count, total) => `Đã thu thập sách lịch sử ${count}/${total}`,
+  itemsMissing: count => `Bạn còn thiếu ${count} cuốn sách lịch sử.`,
+  rescueHint: name => `Hãy hạ lính canh đang vây ${name}!`
 };
-
-export const PROJECTILE_SPEED = 198;
-// Tầm bay tối đa của đạn (px tính từ điểm bắn). Bay hết tầm thì đạn tan —
-// ≈1.4s ở PROJECTILE_SPEED. Để hơi lớn hơn fireRange (240–258) để đạn vẫn tới
-// được người chơi đứng ở mép tầm bắn. Đoạn cuối PROJECTILE_FADE_RANGE mờ dần
-// thay vì biến mất đột ngột.
-export const PROJECTILE_MAX_RANGE = 276;
-export const PROJECTILE_FADE_RANGE = 54;
-// Hazard chạy khỏi tầm nhìn phía sau người chơi bao nhiêu px thì xoá khỏi
-// state (tránh mảng phình to vô hạn khi chơi lâu).
-export const HAZARD_DESPAWN_MARGIN = 312;
-
-// Bình thư (`books`): strip ITEM_BINH_THU (4 ô 16x16) vẽ x1, tâm tại
-// (book.x, book.y + bob), lặp BOOK_FPS (manifest để fps null). Hitbox nhặt
-// 22x26 ở physics.js giữ nguyên (lớn hơn hình — dễ nhặt).
-export const BOOK_SPRITE_ID = 'ITEM_BINH_THU';
-export const BOOK_FPS = 6; // DESIGN_BASELINE
-export const BOOK_BOB_AMPLITUDE = 3;
-
-// Thời gian giữ animation trúng đòn (giây). Ngắn hơn thời gian bất tử (1.25s)
-// để nhân vật quay lại tư thế thường trong lúc vẫn còn nhấp nháy miễn thương.
-export const HURT_ANIMATION_TIME = 0.45;
-
-// Bộ sprite 32-bit (TT-HIBIT-01, Codex — nguồn ở assets/sprites-32bit/, brief
-// SUTA_TT_ART_BRIEF_32.md). Manifest là nguồn DUY NHẤT cho frames/fps/loop/
-// hit_frame — đọc lúc chạy (animation.js), không chép các số đó vào đây.
-// frame_w/frame_h là pixel LOGIC, ảnh vẽ dày gấp `density` (ô 48x48 -> ảnh
-// 192x192 khi density 4); pivot bottom-center: chân ở hàng frame_h - 2 (1px
-// đệm dưới chân), quay mặt PHẢI trong ảnh.
-// Đổi số frame/fps/hit_frame của animation KHÔNG lặp thì phải giữ nhịp
-// gameplay (thời lượng frames/fps và tỉ lệ (hit_frame−1)/frames) vì physics
-// tính thời điểm chạm từ đó; `jump` người chơi chọn ô theo chỉ số (byVelocity)
-// nên phải đúng 3 ô.
-export const SPRITE_ROOT = '/static/assets/images/trung-trac/sprites-32bit/';
-export const SPRITE_MANIFEST_FILE = 'manifest_tt.json';
-// Sprite canvas mỗi màn cần (Phần D — chỉ nạp ảnh màn đang chơi dùng; sprite
-// ×4 nặng ~2–14 MB/asset khi giải nén). Thêm thực thể dùng sprite mới vào màn
-// thì thêm ID vào đây — thiếu thì render cảnh báo 1 lần "chưa nạp" và vẽ hộp
-// tạm. Màn 1 cả layout thử ?layout=p2; màn 3 cả ?layout=skills.
-// Sprite người chơi KHÔNG nằm ở đây — assets.js nạp thêm PLAYER_SPRITE_ID theo
-// giới tính (TT-HERO-01). PLAYER_TRUNG_TRAC ở màn 1 là Trưng Trắc đứng chờ (NPC).
-// (PJ_FIRE_ARROW có trong manifest/PROJECTILE_SPRITES nhưng chưa màn nào dùng.)
-const SPRITES_TOWER = ['EN_HAN_WATCHTOWER', 'PROP_WATCHTOWER', 'EN_HAN_CAVALRY', 'PJ_SPEAR'];
-export const LEVEL_SPRITES = {
-  1: [
-    'PLAYER_TRUNG_TRAC', 'EN_HAN_GUARD', 'TR_SPIKE_PIT', 'EN_TIGER', 'OB_TRIBUTE_CART',
-    'EN_HAN_TAXMAN', 'PJ_COIN_POUCH', ...SPRITES_TOWER, 'EN_HAN_PALANQUIN', 'PJ_THROWING_KNIFE'
-  ],
-  2: [
-    'EN_HAN_GUARD', 'TR_SPIKE_PIT', 'EN_TIGER', 'OB_TRIBUTE_CART',
-    'EN_HAN_TAXMAN', 'PJ_COIN_POUCH', ...SPRITES_TOWER, 'NPC_THI_SACH', 'NPC_LE_CHAN', 'NPC_TRUNG_NHI'
-  ],
-  3: [
-    'EN_HAN_GUARD', 'EN_HAN_RUSHER', 'BOSS_TO_DINH_CHARIOT', 'BOSS_TO_DINH_FOOT',
-    'PJ_OIL_JAR', 'FX_OIL_FIRE', 'PJ_ARROW_RAIN', 'NPC_TRUNG_NHI'
-  ]
-};
-
-// NPC màn 2 (TT-NPC-01 §3.2.3). Khoá = `npc.id` trong state.js và
-// dialogue-data.js. Sprite 48x48 quay PHẢI, pivot bottom-center; render lật để
-// NPC quay về phía người chơi. Không có va chạm (hitbox chỉ để F2 hiển thị).
-//   portrait  chân dung 64x64 cho khung hội thoại (DOM, image-rendering: pixelated).
-export const NPC_SPRITES = {
-  thiSach: { id: 'NPC_THI_SACH', portrait: 'PORTRAIT_THI_SACH', anims: { idle: 'idle', talk: 'talk' } },
-  leChan: { id: 'NPC_LE_CHAN', portrait: 'PORTRAIT_LE_CHAN', anims: { idle: 'idle', talk: 'talk' } },
-  trungNhi: { id: 'NPC_TRUNG_NHI', portrait: 'PORTRAIT_TRUNG_NHI', anims: { idle: 'idle', talk: 'talk' } },
-  // Màn 1 (TT-HERO-01): Trưng Trắc chờ người chơi ở đầu màn — chưa có NPC_TRUNG_TRAC,
-  // dùng lại strip idle của sprite người chơi cũ (không có `talk`).
-  trungTrac: { id: 'PLAYER_TRUNG_TRAC', portrait: 'PORTRAIT_TRUNG_TRAC', anims: { idle: 'idle', talk: 'idle' } }
-};
-// DESIGN_BASELINE:
-//   talkDistance  khoảng trống từ mép phải người chơi tới tâm NPC để mở hội thoại.
-//   holdGap       NPC chưa gặp xong thì mép phải người chơi bị giữ cách tâm NPC
-//                 chừng này (như cổng đích giữ người chơi).
-//   fadeTime      gặp xong NPC mờ dần trong chừng này giây rồi biến mất.
-//   w, h          hộp F2 của NPC (không va chạm).
-//   clearance     không đặt vật cản trong vòng này quanh tâm NPC (state.js kiểm tra).
-export const NPC_RULES = { talkDistance: 32, holdGap: 12, fadeTime: 0.8, w: 22, h: 42, clearance: 96 };
-// Giải cứu NPC màn 2 (TT-L2-HARD, DESIGN_BASELINE): mỗi NPC bị lính canh vây —
-// còn lính vây sống thì vẫn bị giữ trước NPC nhưng KHÔNG mở hội thoại.
-//   left/right   tâm 2 lính vây so với tâm NPC; patrol = đoạn tuần tra
-//                [min, max] (so với tâm NPC) — đủ với tới chỗ người chơi bị giữ.
-//   hintRange    người chơi cách NPC ≤ khoảng này thì nhắc hạ lính vây;
-//   hintInterval nhắc lại tối đa 1 lần mỗi khoảng này (giây).
-export const NPC_RESCUE = {
-  left: { dx: -100, patrol: [-170, -30] },
-  right: { dx: 48, patrol: [-60, 80] },
-  hintRange: 200, hintInterval: 4
-};
-// Điểm câu hỏi màn 2 (D14): đúng ngay lần đầu / đúng sau khi đã chọn sai.
-export const QUESTION_SCORE = { firstTry: 500, retry: 250 }; // DESIGN_BASELINE
-// Câu hỏi lịch sử chặn đường (TT-QUIZ-01, DESIGN_BASELINE): trả lời 1 lần —
-// đúng +score, sai −1 máu; cả 2 trường hợp hiện đáp án đúng + giải thích.
-//   level1Count  số câu mỗi lượt màn 1 (rút ngẫu nhiên, không trùng).
-//   level1Spots  [chunk, localX] — chạm x này thì hỏi (theo thứ tự).
-//   level2Spots  câu hỏi trước NPC màn 2: npc id -> [chunk, localX].
-export const QUIZ = {
-  score: 500,
-  level1Count: 4,
-  level1Spots: [[3, 312], [5, 312], [8, 312], [10, 560]],
-  level2Spots: { thiSach: [2, 600], leChan: [5, 600], trungNhi: [8, 600] }
-};
-
-// Đòn đánh của người chơi (giây). Animation attack_01 (6 ô) trải trên đúng
-// ATTACK_COOLDOWN; cửa sổ gây sát thương (`attacking`) dài ATTACK_ACTIVE_TIME,
-// BẮT ĐẦU tại ô hit_frame của manifest (ô 3 -> 2/6 x .36 = .12s sau khi bấm).
-export const ATTACK_COOLDOWN = 0.36;
-export const ATTACK_ACTIVE_TIME = 0.18;
-
-// Nhân vật người chơi nam/nữ (TT-HERO-01): nghĩa sĩ dùng chung mọi chương, giới
-// tính tài khoản, khách tự chọn (hero.js). Cùng hợp đồng với PLAYER_TRUNG_TRAC
-// (ô 48x48, pivot bottom-center, quay phải, cùng tên + số ô animation) để dùng
-// chung PLAYER_ANIMATIONS. PLAYER_TRUNG_TRAC giờ chỉ là Trưng Trắc NPC màn 1.
-export const PLAYER_SPRITES = { male: 'PLAYER_MALE', female: 'PLAYER_FEMALE' };
-export let PLAYER_SPRITE_ID = PLAYER_SPRITES.female;
-// main.js gọi khi biết giới tính, rồi đưa PLAYER_SPRITE_ID cho loadAssets().
-export function setPlayerGender(gender) {
-  PLAYER_SPRITE_ID = PLAYER_SPRITES[gender] || PLAYER_SPRITES.female;
-}
-// Cảnh vào màn (TT-HERO-01, DESIGN_BASELINE): người chơi tự chạy từ startX
-// (ngoài mép trái) tới điểm xuất phát của màn với tốc độ walkSpeed (px/s), không
-// nhận phím, không tính giờ. Màn 1: Trưng Trắc đứng ở guideLocalX (chunk 1) chờ
-// nói chuyện. Chỉ lần vào màn đầu tiên — chơi lại (R) vào thẳng.
-export const INTRO = { startX: -40, walkSpeed: 120, guideLocalX: 190 };
-
-// Nhân vật chính: trạng thái gameplay -> animation trong manifest
-// (PLAYER_SPRITE_ID). Thứ tự ưu tiên hurt > dash > attack > jump > run > idle
-// nằm ở playerAnimationState() (physics.js).
-//   duration: trải strip trên đúng số giây này thay vì fps của manifest.
-//   byVelocity: chọn ô theo vận tốc dọc (lên / gần đỉnh / rơi), không theo giờ.
-//   holdFrame: đứng yên ở 1 ô cố định (-1 = ô cuối).
-// Mọi strip vẽ x1 — attack_01 đã được vẽ lại đúng tỉ lệ ở Batch R (TT-MAP-01).
-// dash: 4 ô, không lặp (16fps = .25s < DASH_TIME .30s) -> đứng ở ô cuối tới hết cú lướt.
-// death chỉ phát khi thua (endGame(false) ghi player.deathTime).
-export const PLAYER_ANIMATIONS = {
-  idle: { anim: 'idle' },
-  run: { anim: 'run' },
-  jump: { anim: 'jump', byVelocity: true },
-  attack: { anim: 'attack_01', duration: ATTACK_COOLDOWN},
-  hurt: { anim: 'hurt' },
-  dash: { anim: 'dash' },
-  death: { anim: 'death' },
-  // Cutscene kết chương màn 3: phát 1 lần, giữ ô cuối.
-  victory: { anim: 'victory' }
-};
-// Ngưỡng vận tốc dọc (px logic/s) chọn ô `jump`: vy < -N ô 1 (bật lên),
-// |vy| <= N ô 2 (gần đỉnh), vy > N ô 3 (rơi). DESIGN_BASELINE.
-export const PLAYER_JUMP_APEX_VY = 90;

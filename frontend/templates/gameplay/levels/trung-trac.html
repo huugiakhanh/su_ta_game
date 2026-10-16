@@ -1,0 +1,38 @@
+{% extends "gameplay/base.html" %}
+{# Chương Trưng Trắc — dùng chung 3 màn. Khung chung ở gameplay/base.html (ENGINE-01). #}
+
+{% block chapter_name %}Trưng Trắc{% endblock %}
+{% block brand %}SUTA · TRƯNG TRẮC{% endblock %}
+{% block canvas_label %}Màn chơi Trưng Trắc{% endblock %}
+{% block item_label %}Sách đã thu thập{% endblock %}
+{% block item_glyph %}📖{% endblock %}
+
+{# Khe kỹ năng màn 3 = phần thưởng màn 2 (skills.js) — chỉ hiện phần thưởng đã nhận. #}
+{% block skill_slots %}
+        <div class="skill" data-skill="SK_LE_CHAN_ARROW_RAIN" hidden>
+          <img class="skill__icon" alt="Mưa tên" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">K</kbd>
+        </div>
+        <div class="skill" data-skill="SK_TRUNG_NHI_SHADOW" hidden>
+          <img class="skill__icon" alt="Bóng Trưng Nhị" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">L</kbd>
+        </div>
+        <div class="skill skill--buff" data-skill="BUFF_Y_CHI_KIEN_CUONG" hidden>
+          <img class="skill__icon" alt="Ý chí kiên cường" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span>
+        </div>
+{% endblock %}
+
+{% block skill_controls %}
+          <button class="control control--skill control--skill-1" data-control="skill1" data-skill="SK_LE_CHAN_ARROW_RAIN" aria-label="Mưa tên" hidden><img class="control__icon" alt="" hidden><span class="control__label">TÊN</span></button>
+          <button class="control control--skill control--skill-2" data-control="skill2" data-skill="SK_TRUNG_NHI_SHADOW" aria-label="Bóng Trưng Nhị" hidden><img class="control__icon" alt="" hidden><span class="control__label">BÓNG</span></button>
+{% endblock %}
+
+{% block skill_help %}
+      <span data-skill="SK_LE_CHAN_ARROW_RAIN" hidden><kbd>K</kbd> mưa tên</span>
+      <span data-skill="SK_TRUNG_NHI_SHADOW" hidden><kbd>L</kbd> bóng Trưng Nhị</span>
+{% endblock %}
+
+{% block chapter_script %}
+  <script type="module" src="{{ url_for('static', filename='js/levels/trung-trac/main.js') }}"></script>
+{% endblock %}

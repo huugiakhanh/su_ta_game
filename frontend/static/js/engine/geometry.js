@@ -2,10 +2,8 @@
 // nhất: địa hình của màn đang chơi (`terrain`, đặt bằng setTerrain() lúc tạo
 // state) — giống registry manifest của animation.js.
 
-import {
-  CHUNK_W, GROUND_Y, TERRAIN_CELL, TERRAIN_MAX_STEP, OBSTACLE_TYPES,
-  HAZARD_SPRITES, PROJECTILE_SPRITES
-} from './config.js';
+import { CHUNK_W, GROUND_Y, TERRAIN_CELL, TERRAIN_MAX_STEP } from './config.js';
+import { CHAPTER } from './chapter.js';
 import { createAnim } from './animation.js';
 
 export function worldX(chunkNumber, localX) {
@@ -14,7 +12,7 @@ export function worldX(chunkNumber, localX) {
 
 // ---- Địa hình ô vuông (TT-TERRAIN-01) ----
 // `levels[column]` = số ô đất nhô trên GROUND_Y của cột (0 = mặt đất thường,
-// -1 = hố). null = màn phẳng (màn 3, layout thử).
+// -1 = hố). null = màn phẳng (đấu trường, layout thử).
 let terrain = null;
 
 export function setTerrain(next) {
@@ -99,11 +97,11 @@ export function aabb(a, b) {
 }
 
 // Vật cản tĩnh: `localX` là MÉP TRÁI hitbox; width/height là hitbox (px logic).
-// Neo theo OBSTACLE_TYPES[type].anchor: 'bottom' đứng trên mặt đất, 'overhead'
+// Neo theo CHAPTER.sprites.obstacles[type].anchor: 'bottom' đứng trên mặt đất, 'overhead'
 // là thanh 20px ở groundY - 46 (khe dash 26px), 'top' là mặt trên ở groundY
-// (cầu). Cách vẽ (ảnh x1, căn phần nhìn thấy trùng hitbox) nằm ở render.js.
+// (cầu). Cách vẽ (ảnh x1, căn phần nhìn thấy trùng hitbox) nằm ở render/entities.js.
 export function makeObstacle(type, chunk, localX, width, height, options = {}) {
-  const spec = OBSTACLE_TYPES[type] || {};
+  const spec = CHAPTER.sprites.obstacles[type] || {};
   const anchor = options.overhead ? 'overhead' : (spec.anchor || 'bottom');
   const overhead = anchor === 'overhead';
   const groundY = options.groundY || groundYAt(worldX(chunk, localX) + width / 2);
@@ -128,7 +126,7 @@ export function makeObstacle(type, chunk, localX, width, height, options = {}) {
 // `obstacles` vốn là vật tĩnh thuần. Khác obstacle ở một điểm nữa: `localX` là
 // TÂM vật (= pivot bottom-center của sprite) chứ không phải mép trái.
 export function makeHazard(kind, sprite, chunk, localX, options = {}) {
-  const size = HAZARD_SPRITES[sprite];
+  const size = CHAPTER.sprites.hazards[sprite];
   const centerX = worldX(chunk, localX);
   // floatY > 0: vật nổi trên nước (thuyền) nên đáy nằm DƯỚI mặt đất.
   const baseY = (options.groundY ?? groundYAt(centerX)) + (options.floatY || 0);
@@ -170,13 +168,13 @@ export function makeHazard(kind, sprite, chunk, localX, options = {}) {
     fireTimer: options.fireDelay ?? 0.9,
     // Hành động đang diễn (ném/báo động): { name, time, released } hoặc null.
     action: null,
-    // Animation đang phát { name: trạng thái trong HAZARD_SPRITES.anims, time }.
+    // Animation đang phát { name: trạng thái trong sprites.hazards[sprite].anims, time }.
     anim: createAnim(kind === 'roller' ? 'move' : 'idle')
   };
 }
 
 export function makeProjectile(sprite, x, y, direction) {
-  const size = PROJECTILE_SPRITES[sprite];
+  const size = CHAPTER.sprites.projectiles[sprite];
   return {
     sprite,
     x: x - size.w / 2,

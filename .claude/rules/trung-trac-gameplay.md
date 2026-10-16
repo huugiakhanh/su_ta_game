@@ -1,39 +1,36 @@
 ---
 paths:
   - "frontend/static/js/levels/trung-trac/**"
-  - "frontend/templates/gameplay/**"
+  - "frontend/templates/gameplay/levels/**"
   - "frontend/static/css/levels/**"
 ---
 
 # Màn chơi chương Trưng Trắc
 
-Áp dụng khi làm việc với module `frontend/static/js/levels/trung-trac/`, template `gameplay/levels/trung-trac.html` (dùng chung 3 màn) và CSS màn chơi. Hợp đồng asset (manifest, pivot, density) ở rule `assets-32bit.md`. Lý do quyết định: report trong `docs/archive/` theo mã task ghi trong ngoặc.
+Áp dụng khi làm việc với module `frontend/static/js/levels/trung-trac/` và template `gameplay/levels/trung-trac.html` (dùng chung 3 màn, kế thừa `gameplay/base.html`). Hợp đồng asset (manifest, pivot, density) ở rule `assets-32bit.md`. Lý do quyết định: report trong `docs/archive/` theo mã task ghi trong ngoặc.
 
-## Module (DAG, không phụ thuộc vòng)
+Từ ENGINE-01, mọi cơ chế dùng chung (người chơi nam/nữ, vật lý, hazard, lính canh/quân cảm tử, đạn, câu hỏi, gặp NPC, HUD, hội thoại, âm thanh, tiến trình, render) nằm ở **engine** `js/engine/` — xem rule `engine.md`. Thư mục chương chỉ chứa phần riêng Trưng Trắc. Mô tả cơ chế bên dưới vẫn đúng; tên hàm chung giờ nằm trong engine.
 
-- `config.js` — hằng số thuần: độ phân giải, vật lý, asset path, bảng ánh xạ sprite (`HAZARD_SPRITES`, `ENEMY_SPRITES`, `PROJECTILE_SPRITES`, `PLAYER_ANIMATIONS`, `NPC_SPRITES`), `LEVEL_SPRITES` (sprite mỗi màn nạp), môi trường (`ZONES`, `FAR_HILLS`, `OBSTACLE_TYPES`, `FINISH_GATE`), thông số quân/kỹ năng/màn 3. **`LEVELS`** = thông số từng màn; màn đang chơi là **`LEVEL`** (`export let`, đặt bằng `setLevel(id)`). Engine đọc độ dài màn/vùng/cổng qua `LEVEL.*`, **không** dùng thẳng `ZONES`/`LEVEL_CHUNKS`/`FINISH_GATE` (đó chỉ là số của màn 1). Module khác import từ đây, không định nghĩa lại.
-- `animation.js` — registry manifest (`registerManifest`, `getAnimMeta`) + `setAnim` (không khởi động lại nếu trùng tên), `tickAnim`, `frameIndex`, `hitTime`, `animLength`.
-- `geometry.js` — hàm thuần (`worldX`, `aabb`, `groundYAt`, `makeObstacle`, `makeHazard`, `makeProjectile`) + địa hình màn đang chơi (`setTerrain`, `terrainLevelAt`, `terrainHoles`, `flatSpan`).
-- `assets.js` — `images` + `loadAssets()`: **chỉ nạp ảnh màn đang chơi dùng** — `maps_tt.json` → `images.maps` (nền các vùng, tileset, prop trong `MAP_PROPS_IN_GAME`), `manifest_tt.json` → `images.sprites` (`LEVEL_SPRITES[LEVEL.id]` + ảnh DOM `SPRITE_DOM_IN_GAME`). Ảnh phải đúng cỡ logic × `density`, sai thì cảnh báo + vẽ tạm. Không đụng DOM ngoài `Image()`/`fetch`.
-- `state.js` — `state` (`export let` + `setState()`; bị gán lại toàn bộ mỗi lần chơi lại, named import là live-binding) + `createLevelState(options)` (rẽ nhánh `level1Content()`/`level2Content()`/`level3Content()`; `options.score` = điểm mang sang, `options.rewards` = phần thưởng màn 2) + `bossAlive()` + hàm tạo quân màn 3.
-- `progress.js` — tiến trình giữa các màn (xem "Tiến trình"), `requireLevel`, `LEVEL_URLS`, `REWARD_NAMES`, `submitLevelRecord(level, seconds, score, stats)`; `isTestRun()` (`?debug=1`/`?layout=`) không gửi, không đồng bộ.
-- `timer.js` — đồng hồ màn. Không import gì.
-- `settings.js` — menu cài đặt `#settingsPanel` (Tiếp tục, âm lượng Nhạc/Hiệu ứng + Tắt tiếng, Thoát màn). `isSettingsOpen()` là cờ riêng, **không** dùng `state.paused`. `input.js` không import ngược (nhận callback).
+## Module chương (`js/levels/trung-trac/`)
+
+- `main.js` — 3 dòng: `boot(TRUNG_TRAC)` (engine/main.js).
+- `chapter.js` — object định nghĩa chương `TRUNG_TRAC` (hợp đồng: `engine/chapter.js`): asset, bảng sprite, câu hỏi/thoại, phần thưởng, âm thanh, khe kỹ năng, `enemyKinds`, `hooks`, và **`levels`** = thông số từng màn (độ dài, vùng, đích, cổng, sprite nạp, `content`, `events`, `update`, `cutscene`, `guide`, thông báo đầu màn, layout thử, câu tổng kết). Engine đọc màn đang chơi qua `LEVEL.*`, **không** dùng thẳng `ZONES`/`LEVEL_CHUNKS`/`FINISH_GATE` (đó chỉ là số của màn 1).
+- `config.js` — hằng số thuần RIÊNG chương: asset path (`SPRITE_ROOT`, `MAP_ROOT`, `TILES`, `FAR_HILLS`, `PORTRAITS`), `LEVEL_SPRITES` (sprite mỗi màn nạp), `LEVEL_URLS`, vùng cảnh/đích/cổng từng màn, bảng ánh xạ (`OBSTACLE_TYPES`, `HAZARD_SPRITES`, `ENEMY_SPRITES` + `GUARD`/`RUSHER`, `PROJECTILE_SPRITES`, `NPC_SPRITES`), `MINIBOSS`, `ITEM` (bình thư), `QUIZ` (vị trí mốc), `ARENA`, `BOSS_TD`, `WAVES`, `WALL_ARROWS`, `SKILLS`, `REWARD_NAMES`, `BOSS_TEXT`, `TEXT` (câu thông báo engine dùng). Hằng số chung (vật lý, người chơi, NPC...) ở `engine/config.js`.
+- `level1.js` — `OBSTACLE_GROUPS`, xáo vật cản, mini-boss, layout thử P2, `level1Content()`, `level1Events()` (nghỉ chân, dòng cốt truyện).
+- `level2.js` — `LEVEL2_TERRAIN`, `level2Content()`, `level2Events()` (cốt truyện Thi Sách).
+- `level3.js` — `level3Content()`, dựng quân đấu trường (`makeArenaGuard`, `makeRusher`, `spawnArenaEnemy`, `makeArenaSpawner`), chiến xa, Tô Định đi bộ, cột đá.
+- `boss.js` — trận boss: chiến xa + hũ dầu + lửa + cột đá, `updateBattle()` (= `LEVEL.update`), giai đoạn 2–3, mưa tên trên thành, `updateCutscene()` (= `LEVEL.cutscene`), `ENEMY_KINDS` (chariot, foot), ô boss HUD, hộp F2.
+- `skills.js` — 3 phần thưởng màn 2 thành kỹ năng (`TT_SKILLS` gắn vào khe kỹ năng engine).
+- `render-extras.js` — lớp vẽ riêng (`DRAW_LAYERS`): Tô Định sau xác xe, hũ dầu, bóng Trưng Nhị, lửa, mưa tên.
+- `audio-data.js` — nhạc nền 3 màn (`MUSIC_FILES` mp3 + bản tổng hợp dự phòng) + tiếng boss/kỹ năng.
 - `dialogue-data.js` — thoại/câu hỏi NPC màn 2 + cutscene/panel kết chương màn 3, **chép nguyên văn** task card TT-NPC-01 / TT-BOSS-01 — Source of Truth, không tự sửa. Đáp án đầu tiên là đáp án đúng.
 - `questions-data.js` — bộ câu hỏi chương (`QUESTIONS`, `LEVEL1_QUESTION_POOL`, `NPC_QUESTION_POOLS`), sinh bằng script từ Excel của team — Source of Truth, không tự sửa.
-- `dialogue.js` — `#dialoguePanel`: `openNpcDialogue()`, `openQuiz(question, { title })`, `openStory()`, `closeDialogue()`, `initDialogue({ onDefeat })`. Mở thì `state.paused`. Không import `physics.js` — hết máu khi trả lời sai thì gọi `onDefeat` do `main.js` truyền.
-- `input.js` — `keys`/`pressed`, `bindInput({ onRestart, onToggleMute, onToggleSettings, isBlocked })`; **F2** debug (hitbox, pivot, tên animation + ô, vai trò tile), **M** tắt tiếng, **Esc/P** menu; menu mở thì chặn phím chơi, R và nút cảm ứng.
-- `audio.js` — Web Audio: SFX + nhạc thắng/thua tổng hợp bằng code, nhạc nền 3 màn từ mp3 (`MUSIC_FILES`, lặp có cắt im lặng; lỗi tải thì lùi bản tổng hợp). `playSfx(id)`, `playMusic`/`stopMusic`, `duckMusic`, mute/volume lưu `localStorage` (try/catch). Chỉ import `audio-data.js` nên module nào cũng gọi được.
-- `audio-data.js` — dữ liệu âm thanh (`AUDIO_MIX`, `MUSIC_FILES`, `SFX`, `MUSIC` dạng tracker ngũ cung). Mọi số `DESIGN_BASELINE`. File mp3 là asset của team, **không sửa** — thay nhạc thì chép đè cùng tên.
-- `ui.js` — DOM refs, `updateHud()`, `updateTimeHud()`, `showMessage()`, `setSpriteImage()`, `setControlIcon()`.
-- `physics.js` — `update(dt)` + `hurtPlayer`/`respawnAfterFall`/`startAttack`/`startDash`/`endGame`.
-- `render.js` — `draw()` + mọi hàm vẽ canvas; `fitCanvas()`.
-- `main.js` — entry: `<body data-level>` → `setLevel()` → `syncProgressFromServer()` → `requireLevel()`; `resetGame()`, vòng lặp `frame()`, nút bấm. Tham số URL: `?viewer=1` (xem sprite — `viewer.js`), `?debug=1` (vào thẳng màn, dữ liệu giả, đủ phần thưởng), `?layout=p2` (màn 1: thử 6 vật cản P2 trên nền phẳng), `?layout=skills` (màn 3: thử kỹ năng với bao cát + quân sinh lặp, không boss).
-- `viewer.js` — công cụ soát asset (sprite + prop map, ×1/×3/×4, lưới, pivot, `hit_frame`), không phải gameplay.
 
-Thêm nội dung (vật cản/hazard/item/dữ liệu màn): sửa `state.js` + `config.js`. Cơ chế mới: `physics.js`. Hiệu ứng vẽ: `render.js`.
+Tham số URL (engine): `?viewer=1` (xem sprite), `?debug=1` (vào thẳng màn, dữ liệu giả, đủ phần thưởng), `?layout=p2` (màn 1: thử 6 vật cản P2 trên nền phẳng), `?layout=skills` (màn 3: thử kỹ năng với bao cát + quân sinh lặp, không boss).
 
-**Thêm màn**: mục mới trong `LEVELS`, `levelNContent()` trong `state.js`, sự kiện riêng trong `physics.js`, route truyền `level_id`/`title` (`backend/routes/pages.py`), URL vào `LEVEL_URLS`, điều kiện vào `requireLevel()`, id level mới trong migration + `VALID_LEVEL_IDS`.
+Thêm nội dung (vật cản/hazard/item/dữ liệu màn): sửa `levelN.js` + `config.js` của chương. Hành vi riêng chương (boss, kỹ năng): `boss.js`/`skills.js` gắn qua hook; hành vi dùng được cho chương khác thì đưa vào engine (rule `engine.md`). Hiệu ứng vẽ riêng: `render-extras.js`.
+
+**Thêm màn**: mục mới trong `levels` của `chapter.js` + `levelN.js` (`content`, `events`), route truyền `level_id`/`title` (`backend/routes/pages.py`), URL vào `LEVEL_URLS`, id level mới trong migration + `VALID_LEVEL_IDS`. `requireLevel()` của engine tự đòi qua mọi màn trước.
 
 ## Hiển thị (TT-INT-01)
 
@@ -44,13 +41,13 @@ Thêm nội dung (vật cản/hazard/item/dữ liệu màn): sửa `state.js` + 
 
 ## Map, địa hình, hố
 
-- **Map (TT-MAP-01)**: thứ tự vẽ trời (parallax 0.05) → đồi xa (0.2, tắt dần dưới trời giông — `FAR_HILLS.hiddenUnderSky`) → lớp giữa theo vùng (0.5, đáy ở `GROUND_Y`) → mặt đất → decor → cổng → vật cản/nhân vật. Màn 1 có 5 vùng (`ZONES`: làng → đồng lúa → rừng → bến sông → ngoài thành Luy Lâu); trời + lớp giữa hoà trong `ZONE_BLEND_WIDTH` trước mỗi ranh giới (lớp giữa hoà qua canvas phụ `'lighter'` để không thủng). Lặp ngang theo chiều rộng logic, offset làm tròn trước khi lấy modulo. Mặt đất dùng **chung 1 bộ tile cho mọi vùng và mọi màn** (`GROUND_TILE_REGION` = `'Z1'`), chỉ tile đầu tiên mỗi vai trò; decor chọn tất định theo chỉ số cột. Parallax/vùng/mật độ `DESIGN_BASELINE`.
+- **Map (TT-MAP-01)**: thứ tự vẽ trời (parallax 0.05) → đồi xa (0.2, tắt dần dưới trời giông — `FAR_HILLS.hiddenUnderSky`) → lớp giữa theo vùng (0.5, đáy ở `GROUND_Y`) → mặt đất → decor → cổng → vật cản/nhân vật. Màn 1 có 5 vùng (`ZONES`: làng → đồng lúa → rừng → bến sông → ngoài thành Luy Lâu); trời + lớp giữa hoà trong `ZONE_BLEND_WIDTH` trước mỗi ranh giới (lớp giữa hoà qua canvas phụ `'lighter'` để không thủng). Lặp ngang theo chiều rộng logic, offset làm tròn trước khi lấy modulo. Mặt đất dùng **chung 1 bộ tile cho mọi vùng và mọi màn** (`TILES.groundRegion` = `'Z1'`), chỉ tile đầu tiên mỗi vai trò; decor chọn tất định theo chỉ số cột. Parallax/vùng/mật độ `DESIGN_BASELINE`.
 - **Địa hình (TT-TERRAIN-01)**: soạn bằng **lưới chữ** 48 ô × 16px mỗi chunk — `'#'` đất, `'.'` trống, hàng cuối = `GROUND_Y`, `'.'` ở hàng cuối = hố. Chỉ có bậc (đất liền từ đáy lên), **không bục lơ lửng**. `null` = phẳng (màn 3, layout thử). Màn 1: địa hình đi theo nhóm vật cản (`terrain` trong `OBSTACLE_GROUPS`); màn 2: `LEVEL2_TERRAIN`. Sườn bậc chặn ngang, không mất máu; lính tuần tra trong đoạn phẳng; roller chạy theo bậc; đạn chạm sườn thì tan. Cảnh báo: vật/bia/NPC vắt qua bậc (`checkTerrainFootprints()`), bậc chênh > `TERRAIN_MAX_STEP` (3 ô ≈ tầm nhảy). Vẽ bằng bộ tile ghép `TILESET_TT_TERRAIN` (12 vai trò, `terrainTileRole()` chọn theo cột đó + 2 cột bên; thiếu vai trò lùi `TERRAIN_ROLE_FALLBACK`; không nạp được sheet thì dự phòng `drawRaisedColumn()`).
 - **Hố**: rơi → −1 máu + hồi sinh ở đầu chunk gần nhất (+72). Chỉ màn 2 có hố (sinh từ lưới địa hình). Không đặt hố trong ~130px đầu chunk. Chỉ tiếp đất khi frame trước chân chưa xuống sâu dưới mặt đất (`previousBottom`); đã rơi thì bị kẹp giữa 2 vách. Lòng hố **để trống** (thấy nền, phủ tối dần theo `HOLE_DEPTH_BANDS`) — tile lòng hố khác màu nhìn không ra hố; dự phòng khi thiếu bộ tile: `drawHoles()`.
 
 ## Người chơi, vật cản, quân địch
 
-- **Người chơi** (`PLAYER_TRUNG_TRAC`): chạy, nhảy, lướt (hồi chiêu `DASH_COOLDOWN` tính từ lúc bắt đầu lướt), đánh. Khi lướt **bất tử** với lính, hazard, đạn (`playerImmune()`), xuyên vật cản `requiresDash`; vật cản tĩnh khác vẫn gây sát thương khi va ngang. Animation theo ưu tiên `hurt > dash > attack > jump > run > idle` (`playerAnimationState()`). Sát thương cú đánh tính trong cửa sổ bắt đầu ở ô `hit_frame` (dài `ATTACK_ACTIVE_TIME`), mỗi mục tiêu trúng 1 lần/cú (`attackHits`). Ô **Lướt** luôn hiện đầu `#skillBar`.
+- **Người chơi** (nghĩa sĩ nam/nữ dùng chung mọi chương — `PLAYER_MALE`/`PLAYER_FEMALE`, engine; `PLAYER_TRUNG_TRAC` giờ là Trưng Trắc NPC dẫn màn 1): chạy, nhảy, lướt (hồi chiêu `DASH_COOLDOWN` tính từ lúc bắt đầu lướt), đánh. Khi lướt **bất tử** với lính, hazard, đạn (`playerImmune()`), xuyên vật cản `requiresDash`; vật cản tĩnh khác vẫn gây sát thương khi va ngang. Animation theo ưu tiên `hurt > dash > attack > jump > run > idle` (`playerAnimationState()`). Sát thương cú đánh tính trong cửa sổ bắt đầu ở ô `hit_frame` (dài `ATTACK_ACTIVE_TIME`), mỗi mục tiêu trúng 1 lần/cú (`attackHits`). Ô **Lướt** luôn hiện đầu `#skillBar`.
 - **Vật cản tĩnh** (`makeObstacle(type, chunk, localX, w, h)` — `localX` là **mép trái** hitbox; loại trong `OBSTACLE_TYPES`): vẽ sao cho **phần nhìn thấy trùng hitbox** (`obstacleDrawRect()`: có `visible_bbox` thì góc bbox trùng góc hitbox, không thì đáy-giữa trùng + `groundSink`). Cờ: `harmful` (chạm mất máu); `overhead` + `requiresDash` (phải lướt — `reedCurtain`, `slideBar`; hitbox overhead luôn cao 20px); `blocking` (chặn ngang, không mất máu — cột đá); loại thường = đứng lên được từ trên, va ngang mất máu. `bridge` cần hố (`requiresHole`). `spikesTrap` không có asset.
 - **Hazard có trạng thái** (`makeHazard()`, `localX` là **tâm** = pivot; ánh xạ trong `HAZARD_SPRITES`; animation `death > hurt > throw/alarm > sprung > move/idle`):
   - `roller` — chờ tới khi người chơi vượt `triggerX` (hoặc có báo động) rồi lao sang trái (hổ, xe cống, kỵ binh). `facing` giữ hướng chạy cả khi chết.
@@ -61,13 +58,13 @@ Thêm nội dung (vật cản/hazard/item/dữ liệu màn): sửa `state.js` + 
   - Hết máu: `alive = false` ngay (tắt va chạm/di chuyển/đạn), phát `death`/`break` một lần rồi xoá; `corpse: true` thì nằm lại map vô hại.
 - **Đạn** (`PROJECTILE_SPRITES`): bay ngang về phía người chơi, chạm mất máu, chém trúng thì tan, quá `PROJECTILE_MAX_RANGE` thì mờ rồi tan. Hũ dầu/lửa của chiến xa là danh sách riêng `state.jars`/`state.fires`.
 - **Lính canh** `EN_HAN_GUARD` (`GUARD`, `updateGuard()`): tuần tra, người chơi vào `aggroRange` thì tiến tới (không ra khỏi đoạn tuần tra), đâm `attack_01` — sát thương chỉ ở ô `hit_frame`; bị chém trước ô hit thì huỷ cú đâm; lướt né được. `enemy.patrolMin/patrolMax/aggroRange` ghi đè `GUARD`. Lính canh + quân cảm tử dùng chung `advanceMeleeAttack()`. Mọi sát thương lên địch đi qua `strikeEnemy()`/`strikeHazard()`.
-- **Bình thư** (`books`): strip `ITEM_BINH_THU`, hitbox nhặt 22×26 (cố ý lớn hơn hình), 5 vị trí cố định; đủ số mới qua cổng/kết thúc màn.
+- **Bình thư** (vật phẩm thu thập của engine — `state.items`, `ITEM`): strip `ITEM_BINH_THU`, hitbox nhặt 22×26 (cố ý lớn hơn hình), 5 vị trí cố định; đủ số mới qua cổng/kết thúc màn.
 
 ## Màn 1 — Vượt ải
 
 - Đúng **12 chướng ngại kể cả mini-boss** (~1/chunk): 10 nhóm trong `OBSTACLE_GROUPS` + mini-boss. Thứ tự **xáo mỗi lượt** (`randomizeObstacles()`): chunk 1 chỉ nhóm dễ, tháp canh + lính gác + kỵ binh luôn đi chung, mini-boss cố định chunk 11, mỗi nhóm lệch ±60px. Thêm/bớt vật cản thì giữ con số này trừ khi được yêu cầu khác.
-- **Cổng đích** `PROP_LUYLAU_GATE` tại `FINISH_X`, **không hitbox** (trigger ở `physics.js`), đổi sang `_OPEN` khi mini-boss đã hạ + đủ sách (`bossAlive()`).
-- Câu hỏi chặn đường: 4 câu không trùng rút từ `LEVEL1_QUESTION_POOL` mỗi lượt, ở chunk 3, 5, 8, 10. Mốc nghỉ chân và dòng cốt truyện (`updateLevel1Events()`) đang tạm giữ.
+- **Cổng đích** `PROP_LUYLAU_GATE` tại `FINISH_X`, **không hitbox** (trigger ở engine `level-flow.js`), đổi sang `_OPEN` khi mini-boss đã hạ + đủ sách (`bossAlive()`).
+- Câu hỏi chặn đường: 4 câu không trùng rút từ `LEVEL1_QUESTION_POOL` mỗi lượt, ở chunk 3, 5, 8, 10. Mốc nghỉ chân và dòng cốt truyện (`level1Events()`) đang tạm giữ.
 
 ## Màn 2 — Chiêu mộ hiền tài (TT-NPC-01, TT-L2-HARD)
 
@@ -111,7 +108,7 @@ Mọi số `DESIGN_BASELINE` trong `config.js` (`ARENA`, `BOSS_TD`, `WAVES`, `RU
 
 ## Âm thanh (TT-AUDIO-01)
 
-Nhạc nền `playMusic('level' + id)` trong `resetGame` (bản đang phát/đang tải thì không phát lại; đổi bản thì nhỏ dần). `endGame` → `win`/`lose`; `defeatToDinh` dừng nhạc (cutscene không nhạc). Hội thoại mở → `duckMusic`. SFX: gọi `playSfx('<id>')` ngay tại chỗ sự kiện (cùng id chặn phát dày hơn 40 ms); thêm tiếng = khai báo trong `SFX` rồi gọi. Ẩn tab / cầm dọc → `AudioContext` suspend.
+Nhạc nền `playMusic('level' + id)` trong `resetGame` (bản đang phát/đang tải thì không phát lại; đổi bản thì nhỏ dần). `endGame` → `win`/`lose`; `defeatToDinh` dừng nhạc (cutscene không nhạc). Hội thoại mở → `duckMusic`. SFX: gọi `playSfx('<id>')` ngay tại chỗ sự kiện (cùng id chặn phát dày hơn 40 ms); thêm tiếng = khai báo trong `SFX` (tiếng chung: `engine/sfx-data.js`; tiếng riêng chương: `audio-data.js` của chương) rồi gọi. Ẩn tab / cầm dọc → `AudioContext` suspend.
 
 ## HUD và điều khiển
 

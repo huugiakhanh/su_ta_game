@@ -1,14 +1,27 @@
 // Âm thanh (TT-AUDIO-01): hiệu ứng chiptune tổng hợp bằng Web Audio API;
 // nhạc nền các màn phát từ file mp3 của team (MUSIC_FILES), thiếu/lỗi file
-// thì phát bản tổng hợp. Dữ liệu (công thức tiếng, bản nhạc, đường dẫn, âm
-// lượng) ở audio-data.js. Không import module gameplay nào: physics/dialogue/
-// main chỉ gọi playSfx()/playMusic()...
+// thì phát bản tổng hợp. Dữ liệu chung (công thức tiếng, nhạc thắng/thua, âm
+// lượng) ở sfx-data.js; chương gộp thêm tiếng/nhạc riêng bằng registerAudio()
+// (main.js gọi với CHAPTER.audio). Không import module gameplay nào: mọi module
+// chỉ gọi playSfx()/playMusic()...
 //
 // Trình duyệt chỉ cho phát âm thanh sau thao tác của người dùng: AudioContext
 // tạo lười ở lần bấm phím/chạm đầu tiên (initAudio gắn listener). playMusic()
 // gọi trước lúc đó thì nhớ bản nhạc và phát khi mở khoá.
 
-import { AUDIO_MIX, SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
+import { AUDIO_MIX, SFX as SHARED_SFX, MUSIC as SHARED_MUSIC } from './sfx-data.js';
+
+// Bảng âm thanh đang dùng = phần chung + phần chương (registerAudio).
+const SFX = { ...SHARED_SFX };
+const MUSIC = { ...SHARED_MUSIC };
+const MUSIC_FILES = {};
+
+// Gộp tiếng/nhạc riêng của chương. Trùng id với phần chung thì chương thắng.
+export function registerAudio({ sfx = {}, music = {}, musicFiles = {} } = {}) {
+  Object.assign(SFX, sfx);
+  Object.assign(MUSIC, music);
+  Object.assign(MUSIC_FILES, musicFiles);
+}
 
 const MUTE_KEY = 'suta.audio.muted';
 // Âm lượng người chơi chỉnh trong menu cài đặt (TT-TIME-01), 0–1, nhân thêm

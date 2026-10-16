@@ -1,17 +1,18 @@
 // DOM refs (HUD, panel) + cập nhật hiển thị. Không chứa logic gameplay.
 
 import { images, spriteUrl } from './assets.js';
-import { ATTACK_ICON, BOOK_SPRITE_ID, DASH_COOLDOWN, DASH_ICON, HEART_ICON, LEVEL, SKILLS } from './config.js';
+import { ATTACK_ICON, DASH_COOLDOWN, DASH_ICON, HEART_ICON } from './config.js';
+import { CHAPTER, LEVEL } from './chapter.js';
 import { state } from './state.js';
 import { getAsset } from './animation.js';
 import { formatTime } from './timer.js';
 
 export const ui = {
   health: document.getElementById('healthHearts'),
-  // Máu + sách nằm ở góc trên-trái khung chơi (TT-HUD-02), không còn trên thanh HUD.
-  books: document.getElementById('bookValue'),
-  bookHud: document.getElementById('bookHud'),
-  bookIcon: document.getElementById('bookIcon'),
+  // Máu + vật phẩm thu thập nằm ở góc trên-trái khung chơi (TT-HUD-02), không còn trên thanh HUD.
+  items: document.getElementById('itemValue'),
+  itemHud: document.getElementById('itemHud'),
+  itemIcon: document.getElementById('itemIcon'),
   score: document.getElementById('scoreValue'),
   progress: document.getElementById('progressBar'),
   loading: document.getElementById('loadingPanel'),
@@ -29,16 +30,16 @@ export const ui = {
   message: document.getElementById('messageBox'),
   // Ô thời gian màn trên HUD (TT-TIME-01).
   time: document.getElementById('timeValue'),
-  // Màn 3: ô kỹ năng/buff + mọi phần tử gắn `data-skill` (ô HUD, dòng trợ
-  // giúp, nút cảm ứng) — chỉ hiện với phần thưởng đã nhận.
+  // Khe kỹ năng: ô kỹ năng/buff + mọi phần tử gắn `data-skill` (ô HUD, dòng
+  // trợ giúp, nút cảm ứng) — chỉ hiện với phần thưởng đã nhận.
   skillBar: document.getElementById('skillBar'),
   dashSlot: document.getElementById('dashSlot'),
   skillNodes: [...document.querySelectorAll('[data-skill]')],
   skillSlots: [...document.querySelectorAll('.skill[data-skill]')],
-  // Màn 3: thanh khiên chiến xa (giai đoạn 1) / "Đợt N/3" (giai đoạn 2).
+  // Ô boss góc trên-phải (nhãn + dãy nấc) — chương cập nhật qua CHAPTER.hooks.updateHud.
   bossHud: document.getElementById('bossHud'),
   bossLabel: document.getElementById('bossHudLabel'),
-  shieldPips: [...document.querySelectorAll('#shieldPips i')]
+  bossPips: [...document.querySelectorAll('#bossHudPips i')]
 };
 
 let messageTimer = 0;
@@ -46,10 +47,10 @@ let lastRenderedHealth = -1;
 // Nguồn ảnh tim lúc vẽ lần trước — HUD có thể vẽ trước khi asset tải xong,
 // tải xong icon thì phải vẽ lại dù máu không đổi.
 let lastHeartUrl = null;
-// Hiệu ứng mất/hồi máu, nhặt sách (TT-HUD-02) chỉ chạy khi số đổi TRONG cùng
+// Hiệu ứng mất/hồi máu, nhặt vật phẩm (TT-HUD-02) chỉ chạy khi số đổi TRONG cùng
 // một lượt chơi — state bị thay mỗi lần chơi lại (máu đầy lại) thì không chạy.
 let lastHudState = null;
-let lastBooks = 0;
+let lastItems = 0;
 
 export function showMessage(text, duration = 1900) {
   ui.message.textContent = text;
@@ -57,7 +58,7 @@ export function showMessage(text, duration = 1900) {
   messageTimer = duration / 1000;
 }
 
-// physics.js gọi hàm này mỗi frame để đếm ngược rồi tự ẩn message — giữ
+// level-flow.js gọi hàm này mỗi frame để đếm ngược rồi tự ẩn message — giữ
 // `messageTimer` đóng gói trong ui.js thay vì phải export biến mutable riêng.
 export function tickMessage(dt) {
   if (messageTimer > 0) {
@@ -88,12 +89,12 @@ export function updateHud() {
     ui.health.setAttribute('aria-label', `Máu: ${state.health}`);
     if (state.health < previous) replayAnimation(ui.health, 'is-hurt');
   }
-  // Màn không có sách (màn 2) thì ẩn ô Sách.
-  ui.bookHud.hidden = state.books.length === 0;
-  ui.books.textContent = `${state.booksCollected}/${state.books.length}`;
-  if (sameRun && state.booksCollected > lastBooks) replayAnimation(ui.bookHud, 'is-bumped');
-  lastBooks = state.booksCollected;
-  updateBookIcon();
+  // Màn không có vật phẩm thu thập thì ẩn ô đó.
+  ui.itemHud.hidden = state.items.length === 0;
+  ui.items.textContent = `${state.itemsCollected}/${state.items.length}`;
+  if (sameRun && state.itemsCollected > lastItems) replayAnimation(ui.itemHud, 'is-bumped');
+  lastItems = state.itemsCollected;
+  updateItemIcon();
   ui.score.textContent = state.score;
   const percent = Math.max(0, Math.min(100, state.player.x / state.finishX * 100));
   ui.progress.style.width = `${percent}%`;
@@ -101,7 +102,7 @@ export function updateHud() {
   ui.progress.parentElement.hidden = Boolean(LEVEL.arena);
   updateDashHud();
   updateSkillHud();
-  updateBossHud();
+  CHAPTER.hooks?.updateHud?.();
 }
 
 // Một tim: icon ICON_HUD_HEART; chưa tải xong/thiếu thì chữ ♥ tạm.
@@ -122,55 +123,24 @@ function replayAnimation(node, className) {
   node.classList.add(className);
 }
 
-// Ô sách dùng ô đầu của strip bình thư ITEM_BINH_THU (maps_tt.json, nạp sẵn
-// trong images.maps.props); chưa tải/thiếu thì giữ chữ 📖 tạm.
-function updateBookIcon() {
-  if (ui.bookIcon.dataset.ready) return;
-  const prop = images.maps.props[BOOK_SPRITE_ID];
+// Ô vật phẩm dùng ô đầu của strip vật phẩm (CHAPTER.item.sprite — prop trong
+// manifest map, nạp sẵn trong images.maps.props); chưa tải/thiếu thì giữ chữ tạm.
+function updateItemIcon() {
+  if (ui.itemIcon.dataset.ready) return;
+  const prop = images.maps.props[CHAPTER.item?.sprite];
   if (!prop?.image) return;
   const frames = prop.asset?.frames || 1;
-  ui.bookIcon.style.backgroundImage = `url("${prop.image.src}")`;
-  ui.bookIcon.style.backgroundSize = `${frames * 100}% 100%`;
-  ui.bookIcon.textContent = '';
-  ui.bookIcon.classList.add('status-bar__book-icon--image');
-  ui.bookIcon.dataset.ready = '1';
+  ui.itemIcon.style.backgroundImage = `url("${prop.image.src}")`;
+  ui.itemIcon.style.backgroundSize = `${frames * 100}% 100%`;
+  ui.itemIcon.textContent = '';
+  ui.itemIcon.classList.add('status-bar__item-icon--image');
+  ui.itemIcon.dataset.ready = '1';
 }
 
 // Ô ⏱ trên HUD — main.js gọi mỗi frame; chỉ ghi DOM khi đổi giây.
 export function updateTimeHud(seconds) {
   const text = formatTime(seconds);
   if (ui.time.textContent !== text) ui.time.textContent = text;
-}
-
-function updateBossHud() {
-  const battle = state.battle;
-  const phase = battle?.phase;
-  ui.bossHud.hidden = !(phase === 1 || phase === 2);
-  if (ui.bossHud.hidden) return;
-  const shieldPhase = phase === 1;
-  ui.shieldPips[0].parentElement.hidden = !shieldPhase;
-  if (shieldPhase) {
-    ui.bossLabel.textContent = 'Khiên';
-    ui.shieldPips.forEach((pip, index) => pip.classList.toggle('is-lost', index >= battle.chariot.shield));
-    return;
-  }
-  const spawner = state.spawner;
-  const total = spawner?.groups.length || 3;
-  ui.bossLabel.textContent = `Đợt ${Math.min(total, Math.max(1, spawner?.index || 1))}/${total}`;
-}
-
-// Giây hồi chiêu còn lại / tổng của một ô. Bóng Trưng Nhị đang hiệu lực thì
-// hiện thời gian hiệu lực còn lại (ô sáng xanh).
-function skillTimer(id, skills) {
-  const spec = SKILLS[id];
-  if (id === 'SK_LE_CHAN_ARROW_RAIN') return { left: skills.arrowRain.cooldown, total: spec.cooldown, active: false };
-  if (id === 'SK_TRUNG_NHI_SHADOW') {
-    const shadow = skills.shadow;
-    return shadow.active > 0
-      ? { left: shadow.active, total: spec.duration, active: true }
-      : { left: shadow.cooldown, total: spec.cooldown, active: false };
-  }
-  return { left: skills.buff.cooldown, total: spec.cooldown, active: false };
 }
 
 // Gán ảnh asset `id` cho <img>. Ảnh dày (density > 1) gắn `img--hibit` (CSS
@@ -191,7 +161,6 @@ function setControlIcon(control, id) {
   icon.onload = () => { icon.hidden = false; };
   setSpriteImage(icon, id);
 }
-const SKILL_CONTROLS = { SK_LE_CHAN_ARROW_RAIN: 'arrowRain', SK_TRUNG_NHI_SHADOW: 'shadow' };
 
 // Ô Lướt (mọi màn): lớp phủ + số giây hồi chiêu còn lại của dash.
 function updateDashHud() {
@@ -218,22 +187,27 @@ function updateDashHud() {
   slot.querySelector('.skill__time').textContent = left > 0 ? Math.ceil(left) : '';
 }
 
+// Khe kỹ năng (ENGINE-01): ô HUD + nút cảm ứng theo CHAPTER.skills.defs —
+// chân dung `portrait`, khe `slot` (nút cảm ứng data-control), hồi chiêu /
+// thời gian hiệu lực lấy từ `timer(skills)` của chương.
 function updateSkillHud() {
   const skills = state.skills;
   ui.skillNodes.forEach(node => { node.hidden = !skills?.owned.has(node.dataset.skill); });
   if (!skills) return;
+  const defs = CHAPTER.skills.defs;
   ui.skillSlots.forEach(slot => {
     const id = slot.dataset.skill;
     if (!skills.owned.has(id)) return;
+    const def = defs[id];
     const icon = slot.querySelector('.skill__icon');
     if (!icon.dataset.ready) {
       // Chân dung lấy theo manifest (tải xong manifest mới có) — gán 1 lần.
-      if (setSpriteImage(icon, SKILLS[id].portrait)) {
+      if (setSpriteImage(icon, def.portrait)) {
         icon.dataset.ready = '1';
-        if (SKILL_CONTROLS[id]) setControlIcon(SKILL_CONTROLS[id], SKILLS[id].portrait);
+        if (def.slot) setControlIcon(def.slot, def.portrait);
       }
     }
-    const { left, total, active } = skillTimer(id, skills);
+    const { left, total, active } = def.timer(skills);
     slot.classList.toggle('skill--active', active);
     slot.querySelector('.skill__cd').style.height = `${left > 0 ? left / total * 100 : 0}%`;
     slot.querySelector('.skill__time').textContent = left > 0 ? Math.ceil(left) : '';

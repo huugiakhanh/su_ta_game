@@ -1,17 +1,22 @@
 // Trạng thái animation theo từng entity + tra cứu manifest bộ sprite.
-// Dùng chung bởi physics.js (thời điểm gây sát thương / nhả đạn theo
-// hit_frame) và render.js (chọn ô cần vẽ) — tách riêng để hai module đó không
+// Dùng chung bởi phần mô phỏng (thời điểm gây sát thương / nhả đạn theo
+// hit_frame) và render (chọn ô cần vẽ) — tách riêng để hai phần đó không
 // phụ thuộc vòng nhau. Không đụng DOM, không đụng state.
 //
 // Mỗi entity giữ `anim = { name, time }`: `time` là số giây animation ĐÓ đã
 // chạy (đồng hồ riêng, không theo đồng hồ chung của game).
 
-let manifestById = new Map();
+const manifestById = new Map();
 
-// assets.js gọi sau khi tải manifest_tt.json. Manifest là nguồn DUY NHẤT cho
-// frames/fps/loop/hit_frame — không chép các số này sang config.js.
-export function registerManifest(manifest) {
-  manifestById = new Map((manifest?.assets || []).map(asset => [asset.id, asset]));
+// assets.js gọi sau khi tải từng manifest sprite (manifest chung + manifest
+// chương — gộp chung 1 bảng). `root` = thư mục gốc của manifest, gắn vào mỗi
+// asset (`asset.root`) để tải/hiển thị đúng chỗ. Manifest là nguồn DUY NHẤT cho
+// frames/fps/loop/hit_frame — không chép các số này sang config.
+export function registerManifest(manifest, root) {
+  (manifest?.assets || []).forEach(asset => {
+    if (manifestById.has(asset.id)) console.warn(`manifest: ID ${asset.id} trùng giữa manifest chung và manifest chương`);
+    manifestById.set(asset.id, { ...asset, root });
+  });
 }
 
 export function getAsset(id) {

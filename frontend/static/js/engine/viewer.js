@@ -1,15 +1,17 @@
 // Chế độ xem sprite (?viewer=1 trên trang màn chơi) — công cụ soát asset cho
-// team, KHÔNG phải gameplay. Đọc manifest_tt.json, chọn asset -> animation,
+// team, KHÔNG phải gameplay. Đọc manifest sprite chung + manifest sprite và
+// manifest map của chương đang mở, chọn asset -> animation,
 // phát ở x1/x3/x4 kèm lưới pixel, baseline (hàng chân = frame_h - 2) và pivot
 // bottom-center. Frame chứa hit_frame (đếm từ 1) được đánh dấu đỏ.
 // Lưới/baseline/pivot theo pixel LOGIC (×4 = cỡ gốc của ảnh density 4).
 
-import { loadImage, joinAssetPath, loadSpriteManifest, loadMapManifest } from './assets.js';
-import { SPRITE_ROOT, MAP_ROOT, BOOK_SPRITE_ID, BOOK_FPS } from './config.js';
+import { loadImage, joinAssetPath, loadSpriteManifest, loadMapManifest, loadSharedManifest } from './assets.js';
+import { SHARED_SPRITE_ROOT } from './config.js';
+import { CHAPTER } from './chapter.js';
 
-// Asset môi trường trong maps_tt.json (vật cản, bình thư, cổng, cột đá) đổi
+// Asset môi trường trong manifest map (vật cản, vật phẩm, cổng, cột đá) đổi
 // sang dạng mục manifest sprite để viewer dùng chung một đường xem. Nền
-// parallax/tileset không có ô nên bỏ qua. fps null: bình thư dùng BOOK_FPS,
+// parallax/tileset không có ô nên bỏ qua. fps null: vật phẩm dùng CHAPTER.item.fps,
 // ảnh nhiều trạng thái (cột đá) lật 2 ô/giây để soát.
 function mapAssetEntries(mapManifest) {
   return (mapManifest?.assets || [])
@@ -23,7 +25,7 @@ function mapAssetEntries(mapManifest) {
         status: asset.status,
         facing: '—',
         pivot: asset.anchor,
-        root: MAP_ROOT,
+        root: CHAPTER.mapRoot,
         density: asset.density,
         frame_w: asset.frame_w || asset.w,
         frame_h: asset.frame_h || asset.h,
@@ -31,7 +33,7 @@ function mapAssetEntries(mapManifest) {
           name: asset.frame_states ? asset.frame_states.join('|') : 'idle',
           file: asset.file,
           frames,
-          fps: asset.fps ?? (asset.id === BOOK_SPRITE_ID ? BOOK_FPS : 2),
+          fps: asset.fps ?? (asset.id === CHAPTER.item?.sprite ? CHAPTER.item.fps : 2),
           loop: asset.loop ?? true,
           hit_frame: null
         }]
@@ -70,12 +72,17 @@ export async function startViewer() {
   const root = el('main', { className: 'viewer' });
   document.body.append(root);
 
-  const [spriteManifest, mapManifest] = await Promise.all([loadSpriteManifest(), loadMapManifest()]);
+  const [sharedManifest, spriteManifest, mapManifest] = await Promise.all([
+    loadSharedManifest(), loadSpriteManifest(), loadMapManifest()
+  ]);
   if (!spriteManifest) {
-    root.append(el('p', { textContent: 'Không tải được manifest_tt.json (xem console / đường dẫn trung-trac/sprites-32bit).' }));
+    root.append(el('p', { textContent: `Không tải được ${CHAPTER.spriteManifest} (xem console / đường dẫn ${CHAPTER.spriteRoot}).` }));
     return;
   }
-  const spriteAssets = spriteManifest.assets.map(asset => ({ ...asset, root: SPRITE_ROOT }));
+  const spriteAssets = [
+    ...(sharedManifest?.assets || []).map(asset => ({ ...asset, root: SHARED_SPRITE_ROOT })),
+    ...spriteManifest.assets.map(asset => ({ ...asset, root: CHAPTER.spriteRoot }))
+  ];
   const manifest = { ...spriteManifest, assets: [...spriteAssets, ...mapAssetEntries(mapManifest)] };
 
   const assetSelect = el('select', { ariaLabel: 'Asset' });
@@ -138,7 +145,7 @@ export async function startViewer() {
     const fw = view.anim.frame_w || view.asset.frame_w;
     const fh = view.asset.frame_h;
     const density = view.asset.density || 1;
-    // Thu nhỏ ảnh dày (scale < density) thì nội suy, như render.js trong màn.
+    // Thu nhỏ ảnh dày (scale < density) thì nội suy, như render/canvas.js trong màn.
     ctx.imageSmoothingEnabled = scale < density;
     ctx.drawImage(view.image, frame * fw * density, 0, fw * density, fh * density, originX, originY, fw * scale, fh * scale);
     ctx.imageSmoothingEnabled = false;

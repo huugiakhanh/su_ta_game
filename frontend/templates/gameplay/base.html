@@ -3,15 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>SUTA – Trưng Trắc · {{ title }}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/levels/trung-trac.css') }}">
+  <title>SUTA – {% block chapter_name %}{% endblock %} · {{ title }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/game/game.css') }}">
+  {% block chapter_css %}{% endblock %}
 </head>
-<!-- data-gender: giới tính tài khoản (rỗng = khách hoặc tài khoản cũ chưa chọn) — hero.js, TT-HERO-01. -->
+<!-- Khung màn chơi dùng chung mọi chương (ENGINE-01). Template chương kế thừa
+     file này và điền: chapter_name, brand, canvas_label, skill_slots,
+     skill_controls, skill_help, chapter_css, chapter_script.
+     data-gender: giới tính tài khoản (rỗng = khách hoặc tài khoản cũ chưa chọn) — engine/hero.js, TT-HERO-01. -->
 <body data-level="{{ level_id }}" data-gender="{{ player_gender or '' }}" data-logged-in="{{ '1' if logged_in else '0' }}">
   <main class="game-shell">
     <section class="hud" aria-label="Thông tin màn chơi">
-      <div class="hud__brand">SUTA · TRƯNG TRẮC
-        <!-- Mở menu cài đặt (TT-TIME-01, settings.js; phím Esc/P). Thay nút loa cũ. -->
+      <div class="hud__brand">{% block brand %}SUTA{% endblock %}
+        <!-- Mở menu cài đặt (TT-TIME-01, settings.js; phím Esc/P). -->
         <button id="settingsButton" class="hud__settings" type="button" aria-haspopup="dialog" aria-label="Cài đặt (Esc)" title="Cài đặt (Esc)">⚙️</button>
       </div>
       <div class="hud__item"><span>Điểm</span><strong id="scoreValue">0</strong></div>
@@ -21,16 +25,16 @@
     </section>
 
     <section class="stage-wrap">
-      <canvas id="gameCanvas" width="480" height="270" aria-label="Màn chơi Trưng Trắc"></canvas>
-      <!-- Dòng báo tải asset (TT-HERO-01: bỏ màn phủ + nút Bắt đầu — vào màn là
-           nhân vật tự chạy vào). Tải xong thì ẩn; thiếu asset thì giữ lời báo. -->
+      <canvas id="gameCanvas" width="480" height="270" aria-label="{% block canvas_label %}Màn chơi{% endblock %}"></canvas>
+      <!-- Dòng báo tải asset (TT-HERO-01: vào màn là nhân vật tự chạy vào).
+           Tải xong thì ẩn; thiếu asset thì giữ lời báo. -->
       <div id="loadingPanel" class="loading-note" role="status" hidden>
         <p id="loadingText">Đang tải bản đồ...</p>
       </div>
 
       <!-- Chọn nhân vật (hero.js): khách lần đầu / tài khoản cũ chưa có giới tính /
            "Đổi nhân vật" trong menu cài đặt. Ảnh = avatar trang chủ (cùng người
-           với PLAYER_MALE / PLAYER_FEMALE). -->
+           với PLAYER_MALE / PLAYER_FEMALE — nhân vật chung mọi chương). -->
       <div id="heroPicker" class="panel hero-picker" role="dialog" aria-modal="true" aria-labelledby="heroPickerTitle">
         <h1>{{ title }}</h1>
         <p id="heroPickerTitle">Chọn nhân vật của bạn</p>
@@ -48,47 +52,37 @@
 
       <div id="messageBox" class="message" aria-live="polite"></div>
 
-      <!-- Màn 3 (ui.js): thanh khiên chiến xa (giai đoạn 1) / "Đợt N/3" (giai đoạn 2). -->
+      <!-- Ô boss góc trên-phải (chương cập nhật qua CHAPTER.hooks.updateHud): nhãn + dãy nấc. -->
       <div id="bossHud" class="boss-hud" hidden>
         <span id="bossHudLabel" class="boss-hud__label"></span>
-        <span id="shieldPips" class="boss-hud__pips"><i></i><i></i><i></i></span>
+        <span id="bossHudPips" class="boss-hud__pips"><i></i><i></i><i></i></span>
       </div>
 
-      <!-- Góc trên-trái khung chơi (TT-HUD-02): hàng máu + sách, dưới là ô kỹ năng. -->
+      <!-- Góc trên-trái khung chơi (TT-HUD-02): hàng máu + vật phẩm, dưới là ô kỹ năng. -->
       <div class="corner-hud">
-      <!-- Máu (icon tim) + số bình thư đã nhặt (ẩn ở màn không có sách) — ui.js. -->
+      <!-- Máu (icon tim) + số vật phẩm đã nhặt (ẩn ở màn không có vật phẩm) — ui.js. -->
       <div id="statusBar" class="status-bar">
         <div id="healthHearts" class="status-bar__hearts" role="img" aria-label="Máu"></div>
-        <div id="bookHud" class="status-bar__books" aria-label="Sách đã thu thập">
-          <i id="bookIcon" class="status-bar__book-icon" aria-hidden="true">📖</i><strong id="bookValue">0/5</strong>
+        <div id="itemHud" class="status-bar__items" aria-label="{% block item_label %}Vật phẩm đã thu thập{% endblock %}">
+          <i id="itemIcon" class="status-bar__item-icon" aria-hidden="true">{% block item_glyph %}★{% endblock %}</i><strong id="itemValue">0/0</strong>
         </div>
       </div>
 
-      <!-- Ô kỹ năng (ui.js): ô Lướt hiện ở mọi màn; ô kỹ năng/buff màn 3 chỉ
-           hiện phần thưởng đã nhận ở màn 2. -->
+      <!-- Ô kỹ năng (ui.js): ô Lướt hiện ở mọi màn; khe kỹ năng của chương (block
+           skill_slots, `data-skill` = id kỹ năng) chỉ hiện kỹ năng đã sở hữu. -->
       <div id="skillBar" class="skill-bar">
         <div id="dashSlot" class="skill skill--dash">
           <img class="skill__icon" alt="Lướt" width="32" height="32" hidden>
           <b class="skill__glyph" aria-hidden="true">»</b>
           <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">S</kbd>
         </div>
-        <div class="skill" data-skill="SK_LE_CHAN_ARROW_RAIN" hidden>
-          <img class="skill__icon" alt="Mưa tên" width="64" height="64">
-          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">K</kbd>
-        </div>
-        <div class="skill" data-skill="SK_TRUNG_NHI_SHADOW" hidden>
-          <img class="skill__icon" alt="Bóng Trưng Nhị" width="64" height="64">
-          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">L</kbd>
-        </div>
-        <div class="skill skill--buff" data-skill="BUFF_Y_CHI_KIEN_CUONG" hidden>
-          <img class="skill__icon" alt="Ý chí kiên cường" width="64" height="64">
-          <i class="skill__cd"></i><span class="skill__time"></span>
-        </div>
+        {% block skill_slots %}{% endblock %}
       </div>
       </div>
 
       <!-- Nút cảm ứng (TT-MOBILE-01): phủ lên canvas, chỉ hiện trên máy cảm ứng.
-           Trái: ◀ ▶ + ▲ nhảy; phải: ĐÁNH ở góc, LƯỚT/TÊN/BÓNG xếp vòng cung.
+           Trái: ◀ ▶ + ▲ nhảy; phải: ĐÁNH ở góc, LƯỚT + khe kỹ năng 1/2 (block
+           skill_controls: data-control="skill1"/"skill2") xếp vòng cung.
            Ảnh nút chiêu do ui.js gán (cùng ảnh ô kỹ năng HUD); chưa tải thì hiện chữ. -->
       <div class="mobile-controls" aria-label="Điều khiển cảm ứng">
         <div class="mobile-controls__move">
@@ -99,12 +93,11 @@
         <div class="mobile-controls__action">
           <button class="control control--attack" data-control="attack" aria-label="Đánh"><img class="control__icon" alt="" hidden><span class="control__label">ĐÁNH</span></button>
           <button class="control control--slide" data-control="dash" aria-label="Lướt"><img class="control__icon" alt="" hidden><span class="control__label">LƯỚT</span></button>
-          <button class="control control--skill control--arrow-rain" data-control="arrowRain" data-skill="SK_LE_CHAN_ARROW_RAIN" aria-label="Mưa tên" hidden><img class="control__icon" alt="" hidden><span class="control__label">TÊN</span></button>
-          <button class="control control--skill control--shadow" data-control="shadow" data-skill="SK_TRUNG_NHI_SHADOW" aria-label="Bóng Trưng Nhị" hidden><img class="control__icon" alt="" hidden><span class="control__label">BÓNG</span></button>
+          {% block skill_controls %}{% endblock %}
         </div>
       </div>
 
-      <!-- Hội thoại NPC / cốt truyện / câu hỏi lịch sử màn 1 (dialogue.js). -->
+      <!-- Hội thoại NPC / cốt truyện / câu hỏi lịch sử (dialogue.js). -->
       <div id="dialoguePanel" class="panel dialogue" role="dialog" aria-modal="true" aria-labelledby="dialogueName">
         <div class="dialogue__box">
           <img id="dialoguePortrait" class="dialogue__portrait" alt="" width="64" height="64">
@@ -173,21 +166,20 @@
       <span><kbd>W</kbd> hoặc <kbd>Space</kbd> nhảy</span>
       <span><kbd>S</kbd> hoặc <kbd>Shift</kbd> lướt</span>
       <span><kbd>J</kbd> tấn công</span>
-      <span data-skill="SK_LE_CHAN_ARROW_RAIN" hidden><kbd>K</kbd> mưa tên</span>
-      <span data-skill="SK_TRUNG_NHI_SHADOW" hidden><kbd>L</kbd> bóng Trưng Nhị</span>
+      {% block skill_help %}{% endblock %}
       <span><kbd>R</kbd> chơi lại</span>
       <span><kbd>M</kbd> tắt/bật âm thanh</span>
       <span><kbd>Esc</kbd> cài đặt</span>
     </section>
   </main>
 
-  <!-- Máy cảm ứng cầm dọc (TT-MOBILE-01): che màn + nhắc xoay ngang; main.js
+  <!-- Máy cảm ứng cầm dọc (TT-MOBILE-01): che màn + nhắc xoay ngang; engine
        không chạy update() khi lớp này hiện. -->
   <div id="rotateOverlay" class="rotate-overlay" role="alert">
     <div class="rotate-overlay__phone" aria-hidden="true"></div>
     <p>Hãy xoay ngang điện thoại để chơi</p>
   </div>
 
-  <script type="module" src="{{ url_for('static', filename='js/levels/trung-trac/main.js') }}"></script>
+  {% block chapter_script %}{% endblock %}
 </body>
 </html>
