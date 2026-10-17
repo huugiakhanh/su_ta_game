@@ -23,15 +23,16 @@ export function spearBox(body, facing) {
 // đòn trong cùng lúc). Bao cát (`harmless`) không cho điểm.
 // Enemy có `kind` riêng của chương (CHAPTER.enemyKinds): `blockStrike` chặn
 // đòn (vd. chiến xa còn khiên), `onStruck` thay phần xử lý trúng đòn/hết máu.
-export function strikeEnemy(enemy) {
+// `damage`: số hp mất (mặc định 1; > 1 khi chí mạng — BT-ENGINE E4).
+export function strikeEnemy(enemy, damage = 1) {
   const kind = CHAPTER.enemyKinds?.[enemy.kind];
   if (kind?.blockStrike?.(enemy)) return;
-  enemy.hp -= 1;
+  enemy.hp -= damage;
   enemy.hitTimer = .18;
   playSfx(enemy.hp > 0 ? 'hit' : 'enemyDie');
   if (!enemy.harmless) state.score += enemy.boss ? 150 : 100;
   if (kind?.onStruck) {
-    kind.onStruck(enemy);
+    kind.onStruck(enemy, damage);
     return;
   }
   if (enemy.hp > 0) return;
@@ -47,8 +48,8 @@ export function strikeEnemy(enemy) {
   if (message) showMessage(message);
 }
 
-export function strikeHazard(hazard) {
-  hazard.hp -= 1;
+export function strikeHazard(hazard, damage = 1) {
+  hazard.hp -= damage;
   hazard.hitTimer = .18;
   playSfx(hazard.hp > 0 ? 'hit' : 'enemyDie');
   state.score += hazard.hitScore ?? 100;
@@ -56,9 +57,29 @@ export function strikeHazard(hazard) {
 }
 
 // Đòn kỹ năng trúng 1 mục tiêu (enemy hoặc hazard).
-export function strike(target) {
-  if (state.enemies.includes(target)) strikeEnemy(target);
-  else strikeHazard(target);
+export function strike(target, damage = 1) {
+  if (state.enemies.includes(target)) strikeEnemy(target, damage);
+  else strikeHazard(target, damage);
+}
+
+// Sát thương 1 đòn chém của người chơi lên `target` (BT-ENGINE E4): chương
+// quyết qua `CHAPTER.skills.attackDamage(target)` -> số hoặc { damage, crit }
+// (chỉ ở màn bật khe kỹ năng). Không có hook = 1, không chí mạng.
+export function attackDamage(target) {
+  const result = state.skills ? CHAPTER.skills.attackDamage?.(target) : null;
+  if (typeof result === 'number') return { damage: result, crit: false };
+  return { damage: result?.damage ?? 1, crit: Boolean(result?.crit) };
+}
+
+// Đòn chém của người chơi trúng `target`: tính sát thương (có thể chí mạng),
+// trừ máu; chí mạng thì phát tiếng `crit` (nếu chương khai báo) và gọi
+// `CHAPTER.hooks.onCrit(target)` để chương tự vẽ hiệu ứng/chữ.
+export function playerStrike(target, strikeFn) {
+  const { damage, crit } = attackDamage(target);
+  strikeFn(target, damage);
+  if (!crit) return;
+  if (CHAPTER.audio?.sfx?.crit) playSfx('crit');
+  CHAPTER.hooks?.onCrit?.(target);
 }
 
 // Hazard hết máu: tắt va chạm/đạn/di chuyển NGAY, phát death (break) một lần.

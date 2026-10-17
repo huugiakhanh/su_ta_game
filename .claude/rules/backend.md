@@ -20,7 +20,7 @@ Lý do quyết định: `docs/archive/SUTA_DB_TASK_01.md`, `REPORT_SUTA-DB-01.md
 ## Database
 
 - **Migration**: `migrations/NNN_ten.sql`; `run_migrations()` chạy file chưa có trong `schema_migrations`, mỗi file 1 transaction. Đổi schema = **thêm file mới**, không sửa file đã chạy. `001_baseline.sql` drop bảng cũ và tạo lại toàn bộ.
-- **Danh mục** (seed trong migration, Source of Truth cho id): `chapters` (1 = Trưng Trắc), `levels` (id = 100 × chương + màn → 101–103, kèm `first_clear_gold/gems`), `rewards` (3 phần thưởng NPC màn 2), `achievements`. Số thưởng/thành tựu là `DESIGN_BASELINE`.
+- **Danh mục** (seed trong migration, Source of Truth cho id): `chapters` (1 = Trưng Trắc, 2 = Bà Triệu — migration 005), `levels` (id = 100 × chương + màn → 101–103, 201–203, kèm `first_clear_gold/gems`), `rewards` (3 phần thưởng NPC màn 2 mỗi chương), `achievements`. Số thưởng/thành tựu là `DESIGN_BASELINE`.
 - **Người chơi**:
   - `users` (`username`, `password_hash` werkzeug, `display_name`, `gold`, `gems`, `avatar` `male`|`female`).
   - `chapter_progress` (+ `chapter_progress_rewards`) = object `progress` của `progress.js` (`levelNComplete` ⇔ `cleared_level ≥ N`).

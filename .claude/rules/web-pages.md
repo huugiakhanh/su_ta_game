@@ -39,7 +39,7 @@ paths:
 ## Trắc nghiệm `/quiz`
 
 - `quiz.js` đếm giờ **chỉ lúc suy nghĩ** (từ lúc hiện câu tới lúc chọn, không tính 3,5 s xem giải thích); hết bài gửi `POST /api/quiz/result`, khách được nhắc đăng nhập. Không thưởng.
-- Ngân hàng câu: `static/assets/question/trung-trac-question.json` (nội dung lịch sử — xem rule `history-content.md`).
+- Ngân hàng câu theo chương (BT-ENGINE): `QUIZ_BANKS` trong `quiz.js` → `static/assets/question/<chương>-question.json` (nội dung lịch sử — xem rule `history-content.md`); `excluded` = id câu tạm loại chờ team (lọc ở JS, không sửa JSON). Chọn chương ở màn thiết lập hoặc `?chapter=<slug>`. BXH Quiz gộp mọi chương (`quiz_results` không có cột chương).
 
 ## Chung
 

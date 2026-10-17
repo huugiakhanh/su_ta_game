@@ -4,8 +4,10 @@
 //
 // Hai manifest sprite (ENGINE-01): manifest CHUNG (nhân vật nam/nữ, icon HUD —
 // SHARED_SPRITE_ROOT) + manifest CHƯƠNG (CHAPTER.spriteRoot). Mỗi asset nhớ thư
-// mục gốc của mình (`asset.root`, animation.js). Môi trường (nền, tile, prop)
-// chỉ có manifest chương (CHAPTER.mapRoot).
+// mục gốc của mình (`asset.root`, animation.js). Môi trường (nền, tile, prop):
+// manifest chương (CHAPTER.mapRoot) + asset MƯỢN của chương khác
+// (CHAPTER.borrowedMaps — vd. Bà Triệu dùng lại trời, tile, bia câu hỏi của
+// Trưng Trắc); mỗi mục map cũng nhớ thư mục gốc (`asset.root`).
 // Nạp theo màn (Phần D): sprite canvas chỉ những ID trong LEVEL.sprites; nền
 // chỉ các vùng của màn (đồi xa bỏ khi mọi vùng dùng trời che nó).
 
@@ -100,7 +102,7 @@ const densityOf = asset => (Number.isInteger(asset.density) && asset.density >= 
 async function loadMapEntry(id, byId) {
   const asset = byId[id];
   if (!asset) return null;
-  const image = await loadImage(joinAssetPath(CHAPTER.mapRoot, asset.file), true);
+  const image = await loadImage(joinAssetPath(asset.root, asset.file), true);
   if (!image) return null;
   const density = densityOf(asset);
   if (image.naturalWidth !== asset.w * density || image.naturalHeight !== asset.h * density) {
@@ -115,7 +117,7 @@ async function loadMapEntry(id, byId) {
 async function loadTilesetEntry(id, byId) {
   const entry = await loadMapEntry(id, byId);
   if (!entry) return null;
-  const meta = await fetchJson(CHAPTER.mapRoot, entry.asset.metadata);
+  const meta = await fetchJson(entry.asset.root, entry.asset.metadata);
   return meta ? { entry, meta } : null;
 }
 
@@ -130,7 +132,8 @@ async function loadMapAssets() {
   if (stage.ground_y !== GROUND_Y || lengthMismatch) {
     console.warn(`${CHAPTER.mapManifest}: stage khác engine/chương`, stage, { GROUND_Y, worldWidth: LEVEL.worldWidth });
   }
-  const byId = Object.fromEntries(manifest.assets.map(asset => [asset.id, asset]));
+  const byId = Object.fromEntries(manifest.assets.map(asset => [asset.id, { ...asset, root: CHAPTER.mapRoot }]));
+  await addBorrowedMaps(byId);
   const missing = [];
 
   await Promise.all(backdropIds().map(async id => {
@@ -163,7 +166,7 @@ async function loadMapAssets() {
     }
     const states = {};
     await Promise.all(Object.entries(entry.asset.state_files || {}).map(async ([name, file]) => {
-      const stateImage = await loadImage(joinAssetPath(CHAPTER.mapRoot, file), true);
+      const stateImage = await loadImage(joinAssetPath(entry.asset.root, file), true);
       if (!stateImage) return;
       stateImage.density = entry.image.density;
       states[name] = stateImage;
@@ -171,6 +174,25 @@ async function loadMapAssets() {
     props[id] = { image: entry.image, asset: entry.asset, states };
   }));
   return { layers, tileset, terrain, props, missing };
+}
+
+// Asset map mượn của chương khác (CHAPTER.borrowedMaps = [{ root, manifest, ids }]):
+// chỉ các ID liệt kê, ID trùng với manifest chương thì chương thắng. Thiếu
+// manifest/ID thì cảnh báo (asset đó tính là thiếu khi nạp).
+async function addBorrowedMaps(byId) {
+  await Promise.all((CHAPTER.borrowedMaps || []).map(async ({ root, manifest, ids }) => {
+    const borrowed = await fetchJson(root, manifest);
+    if (!borrowed) {
+      console.warn(`không nạp được manifest mượn ${manifest}`);
+      return;
+    }
+    const source = Object.fromEntries(borrowed.assets.map(asset => [asset.id, asset]));
+    ids.forEach(id => {
+      if (byId[id]) return;
+      if (source[id]) byId[id] = { ...source[id], root };
+      else console.warn(`${manifest}: không có ${id} để mượn`);
+    });
+  }));
 }
 
 // Bộ tile ghép địa hình (TT-TERRAIN-01, CHAPTER.tiles.terrain): { image, tileW,

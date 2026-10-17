@@ -3,6 +3,7 @@
 
 import { images } from '../assets.js';
 import { state, bossAlive, enemyArtKey } from '../state.js';
+import { platformActive } from '../entities.js';
 import { getAnimMeta, frameIndex } from '../animation.js';
 import { VIEW_W, GROUND_Y, PROJECTILE_MAX_RANGE, PROJECTILE_FADE_RANGE, ITEM_BOB_AMPLITUDE } from '../config.js';
 import { CHAPTER, LEVEL } from '../chapter.js';
@@ -175,8 +176,9 @@ export function drawHazards(time, submerged = false) {
     const facing = facingDirection(centerX, hazard.facing, hazard.kind === 'thrower');
     const drawn = sprite && drawAnimated(sprite.id, sprite.anims, sprite.durations, hazard, pivotX, footY, facing);
     if (!drawn) {
-      drawPlaceholder(hazard);
-      debugLabels.set(hazard, `${hazard.sprite} (placeholder)`);
+      if (hazard.kind === 'vent') drawVentFallback(hazard);
+      else drawPlaceholder(hazard);
+      debugLabels.set(hazard, `${hazard.sprite} (placeholder${hazard.kind === 'vent' ? ` ${hazard.ventState}` : ''})`);
       return;
     }
     debugLabels.set(hazard, drawn.label);
@@ -184,6 +186,42 @@ export function drawHazards(time, submerged = false) {
       const barW = hazard.w + 8;
       drawHealthBar(pivotX - barW / 2, drawn.top - 5, barW, hazard.hp / hazard.maxHp, hazard.boss ? '#e34c36' : '#e2ad45');
     }
+  });
+}
+
+// Vent thiếu asset (TODO_MISSING): vùng tím bán trong suốt theo trạng thái —
+// off: vệt mờ sát đất, warn: nhấp nháy thấp, active: cả cột khí.
+function drawVentFallback(hazard) {
+  const x = Math.round(hazard.x - state.cameraX);
+  const bottom = Math.round(hazard.y + hazard.h);
+  const height = hazard.ventState === 'active' ? hazard.h : hazard.ventState === 'warn' ? 10 : 3;
+  const alpha = hazard.ventState === 'active' ? .45 : hazard.ventState === 'warn' ? .35 + .25 * Math.sin(hazard.phase * 20) : .25;
+  ctx.fillStyle = `rgba(150, 70, 190, ${alpha})`;
+  ctx.fillRect(x, bottom - height, Math.round(hazard.w), height);
+}
+
+// Bục một chiều tĩnh (BT-ENGINE E6): có `sprite` (prop trong map manifest) thì
+// vẽ ảnh x1 — mặt bục = hàng `pivot.y` của ảnh (mặc định 0), mép trái hitbox =
+// cột `visible_bbox.x` (thân cành) nên ảnh lùi trái theo đó; thiếu ảnh thì
+// khối gỗ dẹt dự phòng (TODO_MISSING).
+// Bục gắn hazard không vẽ riêng (lưng con vật đã có trong sprite).
+export function drawPlatforms() {
+  state.platforms.forEach(platform => {
+    if (platform.attached || !platformActive(platform)) return;
+    const left = Math.round(platform.x - state.cameraX);
+    if (left + platform.w < -40 || left > VIEW_W + 40) return;
+    const top = Math.round(platform.y);
+    const prop = platform.sprite ? images.maps.props[platform.sprite] : null;
+    if (prop) {
+      const pivotY = prop.asset.pivot?.y || 0;
+      const insetX = prop.asset.visible_bbox?.x || 0;
+      drawMapImage(ctx, prop.image, 0, 0, mapWidth(prop.image), mapHeight(prop.image), left - insetX, top - pivotY);
+      return;
+    }
+    ctx.fillStyle = '#6b4526';
+    ctx.fillRect(left, top, Math.round(platform.w), platform.h);
+    ctx.fillStyle = '#8f6236';
+    ctx.fillRect(left, top, Math.round(platform.w), 2);
   });
 }
 

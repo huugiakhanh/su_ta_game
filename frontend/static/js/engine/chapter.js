@@ -11,13 +11,20 @@
 //   key           khoá ngắn, dùng cho sessionStorage tiến trình (`suta.<key>.progress`)
 //   spriteRoot / spriteManifest   manifest sprite của chương
 //   mapRoot / mapManifest         manifest môi trường (nền, tile, prop)
+//   borrowedMaps? [{ root, manifest, ids }] — asset map mượn của chương khác (chỉ các
+//                 ID liệt kê; trùng ID thì manifest chương thắng)
 //   tiles         { ground, groundRegion, terrain? } — ID tileset mặt đất, vùng tile
 //                 dùng chung, bộ tile ghép địa hình
 //   farHills?     { id, parallax, bottomY, hiddenUnderSky: [id trời] }
 //   mapProps      ID prop môi trường cần nạp (vật cản, vật phẩm, cổng, cờ, bia)
 //   domSprites    ID ảnh DOM riêng chương (chân dung)
 //   sprites       { obstacles, hazards, enemies, projectiles, npcs } — bảng ánh xạ
-//                 loại -> asset/animation/hitbox (xem config.js của chương)
+//                 loại -> asset/animation/hitbox (xem config.js của chương).
+//                 Số máu người chơi mất mỗi lần trúng (mặc định 1): `damage` của
+//                 hazards[…]/projectiles[…], `rules.damage` của enemies[…] (cú đánh).
+//                 hazards[…] thêm (BT-ENGINE): `ride: { top, inset }` = bục một chiều
+//                 trên lưng (voi rừng); kind `vent`: `cycle: { off, warn, active }` (giây),
+//                 anims idle/warn/active; `ignoreDash` = lướt không miễn sát thương
 //   item?         { sprite, fps } — vật phẩm thu thập (ô HUD + vẽ)
 //   quizStele?    ID prop bia câu hỏi chặn đường
 //   questions     bộ câu hỏi (stt -> câu); dialogues: thoại NPC (id -> thoại)
@@ -29,11 +36,15 @@
 //                 hiệu ứng do chương): { defs: { id: { slot: 'skill1'|'skill2'|null,
 //                 portrait, timer(skills) -> { left, total, active } } },
 //                 createState(owned), update(dt, triggered: Set<id>),
-//                 onPlayerHurt?(), onAttackStart?() }
+//                 onPlayerHurt?(), onAttackStart?(),
+//                 attackDamage?(target) -> số | { damage, crit } — sát thương đòn chém
+//                 của người chơi (chí mạng); không có = 1 }
 //   enemyKinds?   { kind: { update(enemy, dt), blockStrike?(enemy) -> true = đòn bị chặn,
-//                 onStruck?(enemy), onContact?(enemy, player), shake?(enemy),
+//                 onStruck?(enemy, damage), onContact?(enemy, player), shake?(enemy),
 //                 debugLabel?(enemy, label) } } — enemy có `kind` riêng của chương
 //   hooks?        { updateHud?(), keepDashing?(player), onAttackWindow?(box),
+//                 onCrit?(target) — đòn chém chí mạng (chương vẽ hiệu ứng; tiếng `crit`
+//                 phát nếu audio.sfx có),
 //                 debugEntities?() -> [hộp], draw?: { beforeEnemies?(time),
 //                 beforePlayer?(time), afterPlayer?(time) } }
 //   levels        { [id]: LEVEL } — mỗi màn:
@@ -42,7 +53,8 @@
 //     arena?       true = đấu trường: tường 2 đầu, không về đích, camera neo tâm
 //     playerStartX? mép trái hitbox người chơi lúc vào màn (mặc định PLAYER_START_X)
 //     sprites      ID sprite canvas màn này cần nạp (ngoài sprite người chơi)
-//     content(options) -> { obstacles, hazards, holes, items, enemies, npcs, quizzes, ...thêm }
+//     content(options) -> { obstacles, hazards, holes, items, enemies, npcs, quizzes, platforms?, ...thêm }
+//                  (platforms: bục một chiều — entities.js makePlatform; bục lưng hazard `ride` tự thêm)
 //                  (đặt địa hình bằng setTerrain/buildTerrain trước khi dựng nội dung)
 //     events?(player, dt)  sự kiện riêng mỗi frame (sau câu hỏi + gặp NPC)
 //     update?(dt)  chạy mỗi frame sau quân/đạn (trận boss)

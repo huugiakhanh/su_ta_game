@@ -56,13 +56,14 @@ def quiz_view():
 
 
 # GAME PLAY
-def render_trung_trac(level_id, title):
-    """Template dùng chung 3 màn. Đã đăng nhập thì truyền giới tính tài khoản
+def render_chapter_level(slug, level_id, title):
+    """Màn chơi của một chương: template `gameplay/levels/<slug>.html` dùng chung
+    3 màn của chương (BT-ENGINE). Đã đăng nhập thì truyền giới tính tài khoản
     (None nếu tài khoản cũ chưa chọn) để màn chơi biết nhân vật ngay — TT-HERO-01."""
     user_id = session.get("user_id")
     user = find_by_id(user_id) if user_id else None
     return render_template(
-        "gameplay/levels/trung-trac.html",
+        f"gameplay/levels/{slug}.html",
         level_id=level_id,
         title=title,
         logged_in=user is not None,
@@ -73,7 +74,7 @@ def render_trung_trac(level_id, title):
 @pages_bp.get("/gameplay/level/Trung_Trac/trung-trac.html")
 @pages_bp.get("/gameplay/levels/trung-trac")
 def trung_trac():
-    return render_trung_trac(1, "Màn 1: Vượt ải")
+    return render_chapter_level("trung-trac", 1, "Màn 1: Vượt ải")
 
 @pages_bp.get("/gameplay/level/level%20test/level-test-inline.html")
 @pages_bp.get("/gameplay/level/level test/level-test-inline.html")
@@ -83,9 +84,25 @@ def level_test():
 
 @pages_bp.get("/gameplay/levels/trung-trac/2")
 def trung_trac_level_2():
-    return render_trung_trac(2, "Màn 2: Chiêu mộ hiền tài")
+    return render_chapter_level("trung-trac", 2, "Màn 2: Chiêu mộ hiền tài")
 
 
 @pages_bp.get("/gameplay/levels/trung-trac/3")
 def trung_trac_level_3():
-    return render_trung_trac(3, "Màn 3: Trận Luy Lâu")
+    return render_chapter_level("trung-trac", 3, "Màn 3: Trận Luy Lâu")
+
+
+# Chương Bà Triệu (BT-SKELETON): khung 3 màn, chưa mở trên trang chủ.
+@pages_bp.get("/gameplay/levels/ba-trieu")
+def ba_trieu():
+    return render_chapter_level("ba-trieu", 1, "Màn 1: Rừng núi Nưa")
+
+
+@pages_bp.get("/gameplay/levels/ba-trieu/2")
+def ba_trieu_level_2():
+    return render_chapter_level("ba-trieu", 2, "Màn 2: Chiêu mộ hiền tài")
+
+
+@pages_bp.get("/gameplay/levels/ba-trieu/3")
+def ba_trieu_level_3():
+    return render_chapter_level("ba-trieu", 3, "Màn 3: Chiến lũy Bồ Điền")

@@ -4,7 +4,7 @@
 // (makeObstacle, makeHazard, makeProjectile). Không đụng state đang chơi.
 
 import { worldX, groundYAt, flatSpan, terrainLevelAt } from './geometry.js';
-import { NPC_RULES, NPC_RESCUE, TERRAIN_CELL } from './config.js';
+import { NPC_RULES, NPC_RESCUE, TERRAIN_CELL, JUMP_FORCE, GRAVITY } from './config.js';
 import { CHAPTER } from './chapter.js';
 import { createAnim } from './animation.js';
 
@@ -98,6 +98,63 @@ export function makeItem(chunk, localX, lift) {
 // cộng `dx`; `sfx` = tiếng phát khi mỗi nhóm bắt đầu (null = im).
 export function makeSpawner(groups, gap, loop, { spawn, x, sfx = null }) {
   return { groups, gap, loop, spawn, x, sfx, index: 0, pending: [], time: 0, wait: gap, done: false };
+}
+
+// Bục một chiều (BT-ENGINE E6): đứng được từ trên, nhảy xuyên từ dưới, đi
+// ngang xuyên qua; quân/hazard/đạn không dùng bục. `localX` = mép trái (như
+// makeObstacle), `height` = khoảng cách mặt bục tới mặt đất tại tâm bục.
+// `y` = mặt trên; `h` chỉ là bề dày vẽ/F2. `sprite` = prop trong map manifest
+// chương (thiếu ảnh thì vẽ khối dự phòng). `dx` = quãng dịch frame trước (bục
+// gắn hazard — chở người chơi theo).
+export const PLATFORM_THICKNESS = 6;
+
+export function makePlatform(chunk, localX, height, w, options = {}) {
+  const x = worldX(chunk, localX);
+  return {
+    x, y: groundYAt(x + w / 2) - height, w, h: PLATFORM_THICKNESS,
+    sprite: options.sprite || null, attached: null, dx: 0
+  };
+}
+
+// Bục gắn trên lưng hazard (BT-ENGINE E7 — voi rừng): sprite hazard khai báo
+// `ride: { top, inset }` -> bục rộng hazard.w − 2·inset, mặt bục ở hazard.y +
+// top. Vị trí đồng bộ mỗi frame ở hazards.js (syncRidePlatforms).
+export function makeRidePlatform(hazard) {
+  const ride = CHAPTER.sprites.hazards[hazard.sprite]?.ride;
+  if (!ride) return null;
+  return {
+    x: hazard.x + ride.inset, y: hazard.y + ride.top, w: hazard.w - ride.inset * 2, h: PLATFORM_THICKNESS,
+    sprite: null, attached: hazard, dx: 0
+  };
+}
+
+// Bục đang dùng được: bục tĩnh luôn; bục gắn hazard chỉ khi hazard đã xuất
+// hiện (roller đã kích hoạt) và còn sống.
+export function platformActive(platform) {
+  const owner = platform.attached;
+  return !owner || (owner.alive && owner.active);
+}
+
+// Nhảy cao tối đa (≈ 83px): JUMP_FORCE² / (2·GRAVITY).
+const MAX_JUMP_HEIGHT = JUMP_FORCE * JUMP_FORCE / (2 * GRAVITY);
+
+// Bục tĩnh phải với tới được: mặt bục cao hơn chỗ đứng gần nhất (mặt đất dưới
+// bục, hoặc bục khác thấp hơn trong vòng `reach` px ngang) quá tầm nhảy thì
+// cảnh báo để phát hiện khi chỉnh layout. Bục chồng NPC/bia câu hỏi cũng cảnh báo.
+export function checkPlatformReach(content, reach = 96) {
+  const platforms = (content.platforms || []).filter(platform => !platform.attached);
+  platforms.forEach(platform => {
+    const center = platform.x + platform.w / 2;
+    const footholds = [groundYAt(center), ...platforms
+      .filter(other => other !== platform && other.y > platform.y
+        && other.x - reach < platform.x + platform.w && other.x + other.w + reach > platform.x)
+      .map(other => other.y)];
+    const rise = Math.min(...footholds) - platform.y;
+    if (rise > MAX_JUMP_HEIGHT) console.warn(`bục ở x=${Math.round(platform.x)} cao ${Math.round(rise)}px > tầm nhảy ${Math.round(MAX_JUMP_HEIGHT)}px`);
+    const blocked = [...content.npcs.map(npc => npc.centerX), ...content.quizzes.map(quiz => quiz.x)]
+      .some(x => x > platform.x && x < platform.x + platform.w);
+    if (blocked) console.warn(`bục ở x=${Math.round(platform.x)} chồng lên NPC/bia câu hỏi`);
+  });
 }
 
 // Vật cản `requiresHole` (cầu) chỉ được giữ khi có hố phủ đúng nhịp cầu;

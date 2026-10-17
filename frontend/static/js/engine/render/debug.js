@@ -42,6 +42,14 @@ export function drawDebugOverlay() {
       ctx.fillText(label, pivotX, y - 3);
     }
   });
+  // Bục một chiều (E6–E7): xanh lơ; bục gắn hazard chưa xuất hiện thì bỏ.
+  ctx.strokeStyle = '#3ce0e0';
+  state.platforms.forEach(platform => {
+    if (platform.attached && !(platform.attached.alive && platform.attached.active)) return;
+    const x = Math.round(platform.x - state.cameraX);
+    if (x + platform.w < -20 || x > VIEW_W + 20) return;
+    ctx.strokeRect(x + .5, Math.round(platform.y) + .5, Math.round(platform.w) - 1, platform.h - 1);
+  });
   state.items.filter(item => !item.collected).forEach(item => {
     const x = Math.round(item.x - state.cameraX);
     ctx.strokeStyle = '#4fa3ff';

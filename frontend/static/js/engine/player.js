@@ -12,7 +12,8 @@ import {
 import { CHAPTER, LEVEL } from './chapter.js';
 import { playSfx } from './audio.js';
 import { hurtPlayer } from './damage.js';
-import { spearBox, strikeEnemy, strikeHazard } from './combat.js';
+import { spearBox, strikeEnemy, strikeHazard, playerStrike } from './combat.js';
+import { platformActive } from './entities.js';
 
 export function pointHasGround(worldXPosition) {
   return !state.holes.some(hole => worldXPosition > hole.x && worldXPosition < hole.x + hole.w);
@@ -48,6 +49,25 @@ function resolveTerrainWalls(p, previousBottom) {
     p.vx = 0;
     return;
   }
+}
+
+// Bục một chiều (BT-ENGINE E6): tiếp đất khi đang rơi/đứng (vy ≥ 0), một
+// trong 2 chân nằm trên bục, chân frame trước chưa xuống quá mặt bục
+// GROUND_SNAP_DISTANCE (nhảy từ dưới lên / đi ngang thì xuyên qua). Chọn bục
+// CAO nhất thoả điều kiện. Trả về bục hoặc null.
+function landingPlatform(p, previousBottom) {
+  if (p.vy < 0) return null;
+  const feetY = p.y + p.h;
+  const left = p.x + FOOT_MARGIN;
+  const right = p.x + p.w - FOOT_MARGIN;
+  let best = null;
+  state.platforms.forEach(platform => {
+    if (!platformActive(platform)) return;
+    if (right < platform.x || left > platform.x + platform.w) return;
+    if (feetY < platform.y || previousBottom > platform.y + GROUND_SNAP_DISTANCE) return;
+    if (!best || platform.y < best.y) best = platform;
+  });
+  return best;
 }
 
 export function startAttack() {
@@ -88,7 +108,7 @@ export function updateAttack() {
   state.enemies.forEach(enemy => {
     if (!enemy.alive || !canHit(enemy)) return;
     p.attackHits.add(enemy);
-    strikeEnemy(enemy);
+    playerStrike(enemy, strikeEnemy);
   });
 
   // Hazard có `hp` cũng chém được; loại hp = 0 (bẫy, tháp canh...) thì phải né
@@ -96,7 +116,7 @@ export function updateAttack() {
   state.hazards.forEach(hazard => {
     if (!hazard.alive || hazard.hp <= 0 || !canHit(hazard)) return;
     p.attackHits.add(hazard);
-    strikeHazard(hazard);
+    playerStrike(hazard, strikeHazard);
   });
 
   // Vật của chương bị chém trong cửa sổ đánh (Trưng Trắc: phản hũ dầu).
@@ -147,6 +167,8 @@ export function updatePlayerAnimation(dt) {
 // sườn bậc, tiếp đất, vật cản, kết thúc cú lướt. Trả về đáy hitbox frame trước.
 export function updatePlayerControl(dt) {
   const p = state.player;
+  // Đứng trên bục di chuyển (lưng voi — E7): chở theo quãng bục dịch ở frame trước.
+  if (p.platform && platformActive(p.platform)) p.x += p.platform.dx;
   const previousBottom = p.y + p.h;
 
   p.invulnerable = Math.max(0, p.invulnerable - dt);
@@ -203,6 +225,14 @@ export function updatePlayerControl(dt) {
     && previousBottom <= groundY + GROUND_SNAP_DISTANCE;
   if (mayFollowSlope || landedOnGround) {
     p.y = groundY - p.h;
+    p.vy = 0;
+    p.grounded = true;
+  }
+
+  // Bục một chiều cao hơn mặt đất thì đứng trên bục (kể cả bục trên hố).
+  p.platform = landingPlatform(p, previousBottom);
+  if (p.platform && (!p.grounded || p.platform.y < p.y + p.h)) {
+    p.y = p.platform.y - p.h;
     p.vy = 0;
     p.grounded = true;
   }

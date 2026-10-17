@@ -1,0 +1,13 @@
+{% extends "gameplay/base.html" %}
+{# Chương Bà Triệu — dùng chung 3 màn. Khung chung ở gameplay/base.html.
+   BT-SKELETON: chưa có kỹ năng (khe kỹ năng thêm ở BT-L3). #}
+
+{% block chapter_name %}Bà Triệu{% endblock %}
+{% block brand %}SUTA · BÀ TRIỆU{% endblock %}
+{% block canvas_label %}Màn chơi Bà Triệu{% endblock %}
+{% block item_label %}Quyển Sách Tinh Hoa đã thu thập{% endblock %}
+{% block item_glyph %}📖{% endblock %}
+
+{% block chapter_script %}
+  <script type="module" src="{{ url_for('static', filename='js/levels/ba-trieu/main.js') }}"></script>
+{% endblock %}

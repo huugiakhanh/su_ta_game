@@ -1,0 +1,437 @@
+{
+    "chapter":  "ba-trieu",
+    "version":  "32.A2-review",
+    "assets":  [
+                   {
+                       "id":  "EN_NGO_LUMBERJACK",
+                       "category":  "enemy",
+                       "priority":  "P0",
+                       "frame_w":  48,
+                       "frame_h":  48,
+                       "density":  4,
+                       "pivot":  "bottom-center",
+                       "facing":  "right",
+                       "status":  "NORMALIZED",
+                       "animations":  [
+                                          {
+                                              "name":  "idle",
+                                              "file":  "enemy/EN_NGO_LUMBERJACK/en_ngo_lumberjack_idle.png",
+                                              "frames":  6,
+                                              "fps":  9,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "walk",
+                                              "file":  "enemy/EN_NGO_LUMBERJACK/en_ngo_lumberjack_walk.png",
+                                              "frames":  8,
+                                              "fps":  11,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "attack_01",
+                                              "file":  "enemy/EN_NGO_LUMBERJACK/en_ngo_lumberjack_attack_01.png",
+                                              "frames":  10,
+                                              "fps":  10,
+                                              "loop":  false,
+                                              "hit_frame":  7,
+                                              "frame_w":  80
+                                          },
+                                          {
+                                              "name":  "hurt",
+                                              "file":  "enemy/EN_NGO_LUMBERJACK/en_ngo_lumberjack_hurt.png",
+                                              "frames":  3,
+                                              "fps":  12,
+                                              "loop":  false,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "death",
+                                              "file":  "enemy/EN_NGO_LUMBERJACK/en_ngo_lumberjack_death.png",
+                                              "frames":  6,
+                                              "fps":  12,
+                                              "loop":  false,
+                                              "hit_frame":  null
+                                          }
+                                      ],
+                       "qa_notes":  "A2 revision 1: attack, hurt and death reprocessed with fixed bottom-center pivot and one asset output scale; attack redrawn."
+                   },
+                   {
+                       "id":  "EN_WILD_ELEPHANT",
+                       "category":  "enemy",
+                       "priority":  "P0",
+                       "frame_w":  128,
+                       "frame_h":  96,
+                       "density":  4,
+                       "pivot":  "bottom-center",
+                       "facing":  "right",
+                       "status":  "NORMALIZED",
+                       "animations":  [
+                                          {
+                                              "name":  "idle",
+                                              "file":  "enemy/EN_WILD_ELEPHANT/en_wild_elephant_idle.png",
+                                              "frames":  6,
+                                              "fps":  8,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "walk",
+                                              "file":  "enemy/EN_WILD_ELEPHANT/en_wild_elephant_walk.png",
+                                              "frames":  8,
+                                              "fps":  10,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          }
+                                      ],
+                       "qa_notes":  "A2 revision 1: gray-brown two-tusk wild elephant redrawn; natural back, fixed pivot and shared scale."
+                   },
+                   {
+                       "id":  "PLAYER_BA_TRIEU",
+                       "category":  "player",
+                       "priority":  "P0",
+                       "frame_w":  48,
+                       "frame_h":  48,
+                       "density":  4,
+                       "pivot":  "bottom-center",
+                       "facing":  "right",
+                       "status":  "NORMALIZED",
+                       "animations":  [
+                                          {
+                                              "name":  "idle",
+                                              "file":  "player/PLAYER_BA_TRIEU/player_ba_trieu_idle.png",
+                                              "frames":  6,
+                                              "fps":  9,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "run",
+                                              "file":  "player/PLAYER_BA_TRIEU/player_ba_trieu_run.png",
+                                              "frames":  8,
+                                              "fps":  16,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "talk",
+                                              "file":  "player/PLAYER_BA_TRIEU/player_ba_trieu_talk.png",
+                                              "frames":  4,
+                                              "fps":  8,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          }
+                                      ],
+                       "qa_notes":  "A2: idle/run copied pixel-for-pixel from samples; talk 4@8 was generated and its lower 41 image rows match idle frame 1 pixel-for-pixel."
+                   },
+                   {
+                       "id":  "PORTRAIT_BA_TRIEU",
+                       "category":  "portrait",
+                       "priority":  "P0",
+                       "frame_w":  64,
+                       "frame_h":  64,
+                       "density":  4,
+                       "pivot":  "bottom-center",
+                       "facing":  "right",
+                       "status":  "NORMALIZED",
+                       "animations":  [
+                                          {
+                                              "name":  "idle",
+                                              "file":  "portrait/PORTRAIT_BA_TRIEU/portrait_ba_trieu_idle.png",
+                                              "frames":  1,
+                                              "fps":  1,
+                                              "loop":  false,
+                                              "hit_frame":  null
+                                          }
+                                      ],
+                       "qa_notes":  "A2: idle portrait copied pixel-for-pixel from samples."
+                   },
+                   {
+                       "id":  "EN_NGO_HUNTER",
+                       "category":  "enemy",
+                       "priority":  "P0",
+                       "frame_w":  48,
+                       "frame_h":  48,
+                       "density":  4,
+                       "pivot":  "bottom-center",
+                       "facing":  "right",
+                       "status":  "NORMALIZED",
+                       "animations":  [
+                                          {
+                                              "name":  "idle",
+                                              "file":  "enemy/EN_NGO_HUNTER/en_ngo_hunter_idle.png",
+                                              "frames":  6,
+                                              "fps":  8,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "throw",
+                                              "file":  "enemy/EN_NGO_HUNTER/en_ngo_hunter_throw.png",
+                                              "frames":  8,
+                                              "fps":  16,
+                                              "loop":  false,
+                                              "hit_frame":  5
+                                          },
+                                          {
+                                              "name":  "hurt",
+                                              "file":  "enemy/EN_NGO_HUNTER/en_ngo_hunter_hurt.png",
+                                              "frames":  3,
+                                              "fps":  12,
+                                              "loop":  false,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "death",
+                                              "file":  "enemy/EN_NGO_HUNTER/en_ngo_hunter_death.png",
+                                              "frames":  6,
+                                              "fps":  12,
+                                              "loop":  false,
+                                              "hit_frame":  null
+                                          }
+                                      ],
+                       "qa_notes":  "A2: indigo crossbow hunter attached to low shrub; throw hit frame 5."
+                   },
+                   {
+                       "id":  "PJ_CROSSBOW_BOLT",
+                       "category":  "projectile",
+                       "priority":  "P0",
+                       "frame_w":  16,
+                       "frame_h":  8,
+                       "density":  4,
+                       "pivot":  "bottom-center",
+                       "facing":  "right",
+                       "status":  "NORMALIZED",
+                       "animations":  [
+                                          {
+                                              "name":  "idle",
+                                              "file":  "projectile/PJ_CROSSBOW_BOLT/pj_crossbow_bolt_idle.png",
+                                              "frames":  1,
+                                              "fps":  1,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          }
+                                      ],
+                       "qa_notes":  "A2: short right-facing bolt with iron tip and feather tail."
+                   },
+                   {
+                       "id":  "OB_BOULDER",
+                       "category":  "obstacle",
+                       "priority":  "P0",
+                       "frame_w":  32,
+                       "frame_h":  32,
+                       "density":  4,
+                       "pivot":  "bottom-center",
+                       "facing":  "right",
+                       "status":  "NORMALIZED",
+                       "animations":  [
+                                          {
+                                              "name":  "roll",
+                                              "file":  "obstacle/OB_BOULDER/ob_boulder_roll.png",
+                                              "frames":  8,
+                                              "fps":  18,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "break",
+                                              "file":  "obstacle/OB_BOULDER/ob_boulder_break.png",
+                                              "frames":  5,
+                                              "fps":  12,
+                                              "loop":  false,
+                                              "hit_frame":  null
+                                          }
+                                      ],
+                       "qa_notes":  "A2: mossy limestone; roll texture rotates; break shrinks through five frames.",
+                       "visible_bbox":  {
+                                            "x":  2,
+                                            "y":  3,
+                                            "w":  28,
+                                            "h":  28
+                                        }
+                   },
+                   {
+                       "id":  "TR_BAMBOO_SPIKE_PIT",
+                       "category":  "obstacle",
+                       "priority":  "P0",
+                       "frame_w":  48,
+                       "frame_h":  16,
+                       "density":  4,
+                       "pivot":  "bottom-center",
+                       "facing":  "right",
+                       "status":  "NORMALIZED",
+                       "animations":  [
+                                          {
+                                              "name":  "hidden",
+                                              "file":  "obstacle/TR_BAMBOO_SPIKE_PIT/tr_bamboo_spike_pit_hidden.png",
+                                              "frames":  1,
+                                              "fps":  1,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "reveal",
+                                              "file":  "obstacle/TR_BAMBOO_SPIKE_PIT/tr_bamboo_spike_pit_reveal.png",
+                                              "frames":  6,
+                                              "fps":  24,
+                                              "loop":  false,
+                                              "hit_frame":  null
+                                          }
+                                      ],
+                       "qa_notes":  "A2: yellow-brown bamboo spikes rise from a shallow grass-covered slit."
+                   },
+                   {
+                       "id":  "EN_NGO_CAVALRY",
+                       "category":  "enemy",
+                       "priority":  "P0",
+                       "frame_w":  96,
+                       "frame_h":  64,
+                       "density":  4,
+                       "pivot":  "bottom-center",
+                       "facing":  "right",
+                       "status":  "NORMALIZED",
+                       "animations":  [
+                                          {
+                                              "name":  "gallop",
+                                              "file":  "enemy/EN_NGO_CAVALRY/en_ngo_cavalry_gallop.png",
+                                              "frames":  8,
+                                              "fps":  18,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "hurt",
+                                              "file":  "enemy/EN_NGO_CAVALRY/en_ngo_cavalry_hurt.png",
+                                              "frames":  3,
+                                              "fps":  12,
+                                              "loop":  false,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "death",
+                                              "file":  "enemy/EN_NGO_CAVALRY/en_ngo_cavalry_death.png",
+                                              "frames":  6,
+                                              "fps":  12,
+                                              "loop":  false,
+                                              "hit_frame":  null
+                                          }
+                                      ],
+                       "qa_notes":  "A2: dark horse with saddle/reins, no paired stirrups or horse armour; indigo Wu rider and horizontal spear."
+                   },
+                   {
+                       "id":  "FX_MIASMA",
+                       "category":  "fx",
+                       "priority":  "P0",
+                       "frame_w":  48,
+                       "frame_h":  48,
+                       "density":  4,
+                       "pivot":  "bottom-center",
+                       "facing":  "right",
+                       "status":  "NORMALIZED",
+                       "animations":  [
+                                          {
+                                              "name":  "idle",
+                                              "file":  "fx/FX_MIASMA/fx_miasma_idle.png",
+                                              "frames":  4,
+                                              "fps":  6,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "warn",
+                                              "file":  "fx/FX_MIASMA/fx_miasma_warn.png",
+                                              "frames":  4,
+                                              "fps":  12,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "active",
+                                              "file":  "fx/FX_MIASMA/fx_miasma_active.png",
+                                              "frames":  6,
+                                              "fps":  12,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          }
+                                      ],
+                       "qa_notes":  "A2 revision 1: four solid dusty-purple tones, no dither; idle \u003c=4, warn \u003c=10, active 44 logical px."
+                   },
+                   {
+                       "id":  "EN_NGO_TAX_OFFICIAL",
+                       "category":  "enemy",
+                       "priority":  "P0",
+                       "frame_w":  64,
+                       "frame_h":  64,
+                       "density":  4,
+                       "pivot":  "bottom-center",
+                       "facing":  "right",
+                       "status":  "NORMALIZED",
+                       "animations":  [
+                                          {
+                                              "name":  "walk",
+                                              "file":  "enemy/EN_NGO_TAX_OFFICIAL/en_ngo_tax_official_walk.png",
+                                              "frames":  8,
+                                              "fps":  11,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "idle",
+                                              "file":  "enemy/EN_NGO_TAX_OFFICIAL/en_ngo_tax_official_idle.png",
+                                              "frames":  6,
+                                              "fps":  9,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "throw",
+                                              "file":  "enemy/EN_NGO_TAX_OFFICIAL/en_ngo_tax_official_throw.png",
+                                              "frames":  6,
+                                              "fps":  15,
+                                              "loop":  false,
+                                              "hit_frame":  4
+                                          },
+                                          {
+                                              "name":  "hurt",
+                                              "file":  "enemy/EN_NGO_TAX_OFFICIAL/en_ngo_tax_official_hurt.png",
+                                              "frames":  3,
+                                              "fps":  12,
+                                              "loop":  false,
+                                              "hit_frame":  null
+                                          },
+                                          {
+                                              "name":  "death",
+                                              "file":  "enemy/EN_NGO_TAX_OFFICIAL/en_ngo_tax_official_death.png",
+                                              "frames":  9,
+                                              "fps":  15,
+                                              "loop":  false,
+                                              "hit_frame":  null
+                                          }
+                                      ],
+                       "qa_notes":  "A2 revision 1: overweight indigo-robed official scaled near 44 logical px; held chest releases on frame 4, projectile kept separate."
+                   },
+                   {
+                       "id":  "PJ_SILVER_CHEST",
+                       "category":  "projectile",
+                       "priority":  "P0",
+                       "frame_w":  16,
+                       "frame_h":  16,
+                       "density":  4,
+                       "pivot":  "bottom-center",
+                       "facing":  "right",
+                       "status":  "NORMALIZED",
+                       "animations":  [
+                                          {
+                                              "name":  "loop",
+                                              "file":  "projectile/PJ_SILVER_CHEST/pj_silver_chest_loop.png",
+                                              "frames":  6,
+                                              "fps":  18,
+                                              "loop":  true,
+                                              "hit_frame":  null
+                                          }
+                                      ],
+                       "qa_notes":  "A2: empty iron-banded wooden chest, six rotating poses."
+                   }
+               ]
+}

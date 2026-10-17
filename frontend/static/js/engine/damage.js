@@ -16,11 +16,13 @@ export function playerImmune(p) {
   return p.invulnerable > 0 || p.dashing;
 }
 
-export function hurtPlayer(reason) {
+// `amount`: số máu mất (BT-ENGINE E3 — đòn nặng như búa lính đốn gỗ); thống kê
+// `hitsTaken` vẫn chỉ +1 mỗi lần trúng đòn.
+export function hurtPlayer(reason, amount = 1) {
   const p = state.player;
   if (p.invulnerable > 0 || state.won) return;
   playSfx('hurt');
-  state.health -= 1;
+  state.health = Math.max(0, state.health - amount);
   state.stats.hitsTaken += 1;
   state.score = Math.max(0, state.score - 50);
   p.invulnerable = 1.25;

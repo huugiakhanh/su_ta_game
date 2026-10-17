@@ -162,6 +162,9 @@ export function makeHazard(kind, sprite, chunk, localX, options = {}) {
     // animation death/break một lần, xong thì xoá khỏi state.
     dying: false,
     sprung: false,
+    // Vent (BT-ENGINE E8): giây lệch nhịp ban đầu / đồng hồ chu kỳ; trạng thái phun.
+    phase: options.phase ?? 0,
+    ventState: 'off',
     projectile: options.projectile || null,
     fireInterval: options.fireInterval ?? 1.8,
     fireRange: options.fireRange ?? 258,

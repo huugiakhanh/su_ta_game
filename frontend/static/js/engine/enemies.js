@@ -40,7 +40,7 @@ function advanceMeleeAttack(enemy, dt, art, onEnd) {
   if (!action.hit && action.time >= start && action.time < start + 1 / meta.fps
     && !playerImmune(p) && aabb(p, meleeBox(enemy, art.rules))) {
     action.hit = true;
-    hurtPlayer(art.attackMessage);
+    hurtPlayer(art.attackMessage, art.rules?.damage ?? 1);
   }
   if (action.time >= animLength(meta)) {
     enemy.action = null;

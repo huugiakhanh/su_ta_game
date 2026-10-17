@@ -58,6 +58,7 @@ def test_pages_render(client):
     assert client.get("/gameplay/level/Trung_Trac/trung-trac.html").status_code == 200
     assert client.get("/gameplay/levels/trung-trac/2").status_code == 200
     assert client.get("/gameplay/levels/trung-trac/3").status_code == 200
+    assert client.get("/gameplay/levels/ba-trieu/3").status_code == 200
 
 
 def test_migrations_are_idempotent(client):
@@ -129,7 +130,8 @@ def test_leaderboard_uses_best_per_level(client):
     result = client.get("/api/game/leaderboard").json
     board = result["data"]
     assert [(row["rank"], row["total_score"], row["total_time"]) for row in board] == [(1, 800, 120.0), (2, 500, 90.0)]
-    assert result["me"]["rank"] == 1 and result["levels_total"] == 3
+    # Toàn game: 3 màn Trưng Trắc + 3 màn Bà Triệu (migration 005).
+    assert result["me"]["rank"] == 1 and result["levels_total"] == 6
 
 
 def test_leaderboard_scopes_and_me_outside_top(client):

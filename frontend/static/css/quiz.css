@@ -235,6 +235,16 @@ body {
     box-shadow: 0 0 0 transparent;
 }
 
+/* Nút chọn chương (BT-ENGINE E2): chương đang chọn tô đậm như lúc rê chuột. */
+.btn-chapter.is-active {
+    background: #ffca28;
+    box-shadow: 0 3px 0 #c79a00;
+}
+
+.btn-chapter:disabled {
+    cursor: wait;
+}
+
 .slider-container {
     margin: 20px 0;
     padding: 20px;

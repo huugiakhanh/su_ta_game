@@ -12,7 +12,13 @@
         <!-- MÀN HÌNH THIẾT LẬP (MỚI) -->
         <div id="setup-screen" class="text-center">
             <h2 style="color: #c62828; margin-bottom: 20px; font-family: 'Times New Roman', serif; font-size: 28px;">THIẾT LẬP BÀI THI</h2>
-            <p style="margin-bottom: 20px; font-size: 18px; color: #4e342e;">Chọn số lượng câu hỏi bạn muốn thử sức:</p>
+            <p style="margin-bottom: 12px; font-size: 18px; color: #4e342e;">Chọn chương:</p>
+            <div class="preset-buttons chapter-buttons" id="chapter-buttons">
+                <button class="btn-preset btn-chapter" data-chapter="trung-trac" onclick="selectChapter('trung-trac')">Trưng Trắc</button>
+                <button class="btn-preset btn-chapter" data-chapter="ba-trieu" onclick="selectChapter('ba-trieu')">Bà Triệu</button>
+            </div>
+
+            <p style="margin: 20px 0; font-size: 18px; color: #4e342e;">Chọn số lượng câu hỏi bạn muốn thử sức:</p>
             
             <div class="preset-buttons">
                 <button class="btn-preset" onclick="setQuestionCount(5)">5 Câu</button>

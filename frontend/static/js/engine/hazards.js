@@ -8,13 +8,17 @@
 //             `sprung`) và bắt đầu gây sát thương.
 //   prop    — chỉ để vẽ, không va chạm.
 //   patrol  — mini-boss đi tuần, vào tầm thì đứng lại ném.
+//   vent    — vùng phun theo nhịp (chướng khí — BT-ENGINE E8): off -> warn ->
+//             active -> off theo `cycle` của sprite, chỉ gây sát thương lúc active.
+// Hazard có `ride` (sprite) mang một bục một chiều trên lưng (E7 — voi rừng):
+// bục đi theo hazard; người chơi đứng trên lưng thì không bị va chạm thân.
 // Hazard đang chết (dying) chỉ phát nốt animation, không va chạm/di chuyển.
 
 import { state } from './state.js';
 import { showMessage } from './ui.js';
 import { aabb, groundYAt, makeProjectile } from './geometry.js';
 import { setAnim, tickAnim, getAnimMeta, hitTime, animLength } from './animation.js';
-import { VIEW_W, PROJECTILE_SPEED, PROJECTILE_MAX_RANGE, HAZARD_DESPAWN_MARGIN } from './config.js';
+import { VIEW_W, PROJECTILE_SPEED, PROJECTILE_MAX_RANGE, HAZARD_DESPAWN_MARGIN, GROUND_SNAP_DISTANCE } from './config.js';
 import { CHAPTER } from './chapter.js';
 import { playSfx } from './audio.js';
 import { hurtPlayer, playerImmune } from './damage.js';
@@ -85,6 +89,7 @@ function updateHazardAnimation(hazard, dt) {
   else if (hazard.hitTimer > 0 && anims.hurt) next = 'hurt';
   else if (hazard.action && anims[hazard.action.name]) next = hazard.action.name;
   else if (hazard.sprung) next = 'sprung';
+  else if (hazard.kind === 'vent') next = hazard.ventState === 'off' ? 'idle' : hazard.ventState;
   else if (hazard.kind === 'patrol') next = hazard.walking ? 'move' : 'idle';
   else next = hazard.kind === 'roller' && hazard.active ? 'move' : 'idle';
   setAnim(hazard, next);
@@ -100,6 +105,40 @@ function updateDyingHazard(hazard, dt) {
   if (spriteOf(hazard)?.corpse) return;
   const { meta } = hazardAnim(hazard, 'death');
   if (!meta || hazard.anim.time >= animLength(meta)) hazard.dying = false;
+}
+
+// Vùng phun theo nhịp (kind `vent`): `phase` = giây lệch nhịp ban đầu (nhiều
+// miệng phun không đồng bộ). Chu kỳ `cycle` { off, warn, active } (giây) của
+// sprite; harmful chỉ khi active.
+function updateVent(hazard, dt) {
+  const { off, warn, active } = spriteOf(hazard).cycle;
+  hazard.phase += dt;
+  const t = hazard.phase % (off + warn + active);
+  hazard.ventState = t < off ? 'off' : t < off + warn ? 'warn' : 'active';
+  hazard.harmful = hazard.ventState === 'active';
+}
+
+// Người chơi đang đứng trên lưng hazard `ride` (chân không thấp hơn mặt bục
+// quá GROUND_SNAP_DISTANCE) -> không tính va chạm thân.
+function ridingOn(hazard, player) {
+  const ride = spriteOf(hazard)?.ride;
+  return Boolean(ride) && player.y + player.h <= hazard.y + ride.top + GROUND_SNAP_DISTANCE;
+}
+
+// Bục gắn hazard (E7) đi theo hazard; `dx` = quãng dịch frame này — player.js
+// chở người chơi đứng trên bục theo ở frame sau. Hazard đã mất thì bỏ bục.
+function syncRidePlatforms() {
+  state.platforms = state.platforms.filter(platform => {
+    const hazard = platform.attached;
+    if (!hazard) return true;
+    if (!hazard.alive) return false;
+    const ride = spriteOf(hazard).ride;
+    const nextX = hazard.x + ride.inset;
+    platform.dx = nextX - platform.x;
+    platform.x = nextX;
+    platform.y = hazard.y + ride.top;
+    return true;
+  });
 }
 
 // Mini-boss đi tuần (kind `patrol`): người chơi ngoài tầm fireRange và không
@@ -150,6 +189,7 @@ export function updateHazards(dt) {
     }
 
     if (hazard.kind === 'patrol') updatePatrol(hazard, dt, playerCenter);
+    if (hazard.kind === 'vent') updateVent(hazard, dt);
 
     if (hazard.kind === 'trap' && !hazard.sprung) {
       if (Math.abs(playerCenter - (hazard.x + hazard.w / 2)) <= hazard.triggerDistance) {
@@ -189,14 +229,17 @@ export function updateHazards(dt) {
 
     updateHazardAnimation(hazard, dt);
 
-    if (hazard.harmful && !playerImmune(player) && aabb(player, hazard)) {
-      const spec = spriteOf(hazard);
-      hurtPlayer((hazard.sprung && spec?.sprungMessage) || spec?.hitMessage || CHAPTER.text.hazardHit);
+    const spec = spriteOf(hazard);
+    // `ignoreDash` (vent): lướt KHÔNG miễn sát thương, chỉ còn nhấp nháy sau khi trúng đòn.
+    const immune = spec?.ignoreDash ? player.invulnerable > 0 : playerImmune(player);
+    if (hazard.harmful && !immune && aabb(player, hazard) && !ridingOn(hazard, player)) {
+      hurtPlayer((hazard.sprung && spec?.sprungMessage) || spec?.hitMessage || CHAPTER.text.hazardHit, spec?.damage ?? 1);
     }
   });
 
   // Xác (`corpse`) giữ dying = true mãi nên nằm lại map.
   state.hazards = state.hazards.filter(hazard => hazard.alive || hazard.dying);
+  syncRidePlatforms();
 }
 
 export function updateProjectiles(dt) {
@@ -219,7 +262,7 @@ export function updateProjectiles(dt) {
     // Đang dash thì đạn bay xuyên qua (không tan, không trừ máu).
     if (!playerImmune(player) && aabb(player, projectile)) {
       projectile.alive = false;
-      hurtPlayer(CHAPTER.text.projectileHit);
+      hurtPlayer(CHAPTER.text.projectileHit, CHAPTER.sprites.projectiles[projectile.sprite]?.damage ?? 1);
     }
   });
   state.projectiles = state.projectiles.filter(projectile => projectile.alive);

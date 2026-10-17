@@ -9,7 +9,7 @@ import { setTerrain } from './geometry.js';
 import { GROUND_Y, INTRO, MAX_HEALTH, PLAYER_SIZE, PLAYER_START_X } from './config.js';
 import { CHAPTER, LEVEL } from './chapter.js';
 import { createAnim } from './animation.js';
-import { makeNpc } from './entities.js';
+import { makeNpc, makeRidePlatform } from './entities.js';
 
 export let state = null;
 
@@ -109,6 +109,11 @@ export function createLevelState(options = {}) {
     npcs: [],
     quizzes: [],
     ...(CHAPTER.stateFields?.() || {}),
-    ...content
+    ...content,
+    // Bục một chiều của màn + bục tự gắn trên hazard có `ride` (BT-ENGINE E6–E7).
+    platforms: [
+      ...(content.platforms || []),
+      ...(content.hazards || []).map(makeRidePlatform).filter(Boolean)
+    ]
   };
 }

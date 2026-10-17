@@ -25,18 +25,50 @@ function updateClock() {
     document.getElementById("time-display").innerText = `⏱ ${formatClock(elapsedSeconds())}`;
 }
 
-// 1. Tải toàn bộ dữ liệu ngay khi mở trang
-async function loadQuestions() {
+// Bộ câu hỏi theo chương (BT-ENGINE E2). `excluded`: id câu tạm loại, chờ team
+// quyết (Bà Triệu — docs/SUTA_BT_TASK_00.md §3.3); lọc ở đây, không sửa file JSON.
+const QUIZ_BANKS = {
+    'trung-trac': { url: '/static/assets/question/trung-trac-question.json', excluded: [] },
+    'ba-trieu': { url: '/static/assets/question/ba-trieu-question.json', excluded: [15, 33, 37, 41, 45] },
+};
+const DEFAULT_CHAPTER = 'trung-trac';
+let currentChapter = null;
+let loadToken = 0;
+
+// Chương chọn sẵn từ `?chapter=<slug>` (nút từ trang khác), sai thì về mặc định.
+function chapterFromUrl() {
+    const chapter = new URLSearchParams(window.location.search).get('chapter');
+    return QUIZ_BANKS[chapter] ? chapter : DEFAULT_CHAPTER;
+}
+
+function markChapterButtons(chapter, loading) {
+    document.querySelectorAll(".btn-chapter").forEach(button => {
+        button.classList.toggle("is-active", button.dataset.chapter === chapter);
+        button.disabled = loading;
+    });
+}
+
+// 1. Tải bộ câu hỏi của chương (lúc mở trang và mỗi lần đổi chương)
+async function selectChapter(chapter) {
+    if (!QUIZ_BANKS[chapter] || chapter === currentChapter) return;
+    const bank = QUIZ_BANKS[chapter];
+    const token = ++loadToken;
+    markChapterButtons(chapter, true);
     try {
-        const response = await fetch('/static/assets/question/trung-trac-question.json');
+        const response = await fetch(bank.url);
         if (!response.ok) throw new Error("Không thể tải file JSON");
-        
-        allQuestions = await response.json();
-        
-        // Cập nhật giới hạn tối đa cho thanh kéo bằng đúng tổng số câu hỏi có trong file
+
+        const questions = (await response.json()).filter(q => !bank.excluded.includes(q.id));
+        if (token !== loadToken) return;
+        allQuestions = questions;
+        currentChapter = chapter;
+        markChapterButtons(chapter, false);
+
+        // Cập nhật giới hạn tối đa cho thanh kéo bằng đúng tổng số câu hỏi của chương
         const slider = document.getElementById("question-slider");
         slider.max = allQuestions.length;
-        
+        setQuestionCount(parseInt(slider.value));
+
         // Mở màn hình setup
         showSetupScreen();
     } catch (error) {
@@ -243,4 +275,4 @@ async function submitQuizResult(questionCount, correct, seconds) {
 }
 
 // Chạy hàm khi trang web tải xong
-window.onload = loadQuestions;
+window.onload = () => selectChapter(chapterFromUrl());
