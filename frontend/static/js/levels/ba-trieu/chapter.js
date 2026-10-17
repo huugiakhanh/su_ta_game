@@ -49,7 +49,9 @@ export const BA_TRIEU = {
       chunks: LEVEL1_CHUNKS, worldWidth: CHUNK_W * LEVEL1_CHUNKS, zones: LEVEL1_ZONES, finishX: LEVEL1_FINISH_X, gate: FINISH_GATE,
       sprites: LEVEL_SPRITES[1],
       content: level1Content,
-      introMessage: 'Màn 1: Rừng núi Nưa',
+      // BT-00 §5.1 (nguyên văn, duyệt 17/10/2026).
+      introMessage: 'Màn 1: Rừng núi Nưa — Năm 248, quan lại Đông Ngô cướp bóc dân lành. Hãy theo Triệu Thị Trinh vào núi Nưa, thu đủ 5 Quyển Sách Tinh Hoa.',
+      introMessageTime: 4200,
       // Layout thử cơ chế BT-ENGINE B: ?layout=engine.
       testLayout: 'engine',
       summary: state => `Bạn thu thập ${state.itemsCollected}/5 Quyển Sách Tinh Hoa và đạt ${state.score} điểm.`

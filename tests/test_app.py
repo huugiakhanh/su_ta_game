@@ -175,9 +175,26 @@ def test_quiz_leaderboard_total_correct_then_time(client):
     assert result["me"]["rank"] == 3 and result["me"]["total_questions"] == 10
 
 
+def test_ba_trieu_rewards_and_achievements(client):
+    # BT-REWARD (migration 006): qua 3 màn chương 2 -> 120/180/240 vàng + 8 KC, 4 thành tựu BT_*.
+    assert query("SELECT id, first_clear_gold, first_clear_gems FROM levels WHERE chapter_id = 2 ORDER BY id") == [
+        (201, 120, 0), (202, 180, 0), (203, 240, 8)]
+    register_and_login(client)
+    first = save_time(client, 201, 200, 500, {"hits_taken": 3})
+    assert first["gold_gained"] == 120 + 60
+    assert [a["code"] for a in first["new_achievements"]] == ["BT_CLEAR_1"]
+    assert [a["code"] for a in save_time(client, 202, 300)["new_achievements"]] == ["BT_CLEAR_2"]
+    last = save_time(client, 203, 350)
+    # Tổng 850 s < 15 phút -> thần tốc chương 2; không mở thành tựu chương 1.
+    assert {a["code"] for a in last["new_achievements"]} == {"BT_CHAPTER", "BT_SPEED"}
+    gold, gems = query("SELECT gold, gems FROM users")[0]
+    assert (gold, gems) == (120 + 180 + 240 + 60 + 60, 8 + 12 + 6)
+
+
 def test_achievements_list(client):
     guest = client.get("/api/game/achievements").json["data"]
-    assert len(guest) == 6 and not any(a["unlocked"] for a in guest)
+    # 6 thành tựu chương 1 + 4 chương 2 (migration 006).
+    assert len(guest) == 10 and not any(a["unlocked"] for a in guest)
     register_and_login(client)
     save_time(client, 101, 100, 0, {"hits_taken": 0})
     unlocked = {a["code"] for a in client.get("/api/game/achievements").json["data"] if a["unlocked"]}

@@ -1,13 +1,15 @@
-// Thoại chương Bà Triệu. BT-SKELETON: thoại NPC, cốt truyện, câu kết chương
-// còn là NHÁP chờ team duyệt (docs/SUTA_BT_TASK_00.md §4–5) — chưa đưa vào.
-// Sau khi duyệt: chép NGUYÊN VĂN vào đây (Source of Truth, không tự sửa).
+// Thoại chương Bà Triệu — chép NGUYÊN VĂN từ docs/SUTA_BT_TASK_00.md §4–5 (người
+// dùng duyệt 17/10/2026). Source of Truth: không tự sửa (rule history-content.md).
 
-// TODO_MISSING: Triệu Quốc Đạt, anh em họ Lý, Bạch Tượng (BT-L2).
+// TODO_MISSING: NPC Triệu Quốc Đạt, anh em họ Lý, Bạch Tượng + cốt truyện (§4) —
+// đưa vào ở BT-L2 cùng NPC/sprite màn 2.
 export const NPC_DIALOGUES = {};
 
-// TODO_MISSING: câu kết chương + ghi chú lịch sử (BT-00 §5.3, chờ duyệt).
-// Tạm chỉ báo điểm.
+// §5.3 Panel kết chương: dòng 1 (điểm) + dòng 2 (kết cục lịch sử), nối bằng dấu
+// cách vì #endText hiển thị bằng textContent một đoạn.
 export const CHAPTER_END = {
   title: 'Hoàn thành chương Bà Triệu',
-  text: score => `Điểm: ${score}.`
+  text: score => `Bạn đã cùng Bà Triệu đẩy lui quân Đông Ngô và đạt ${score} điểm. `
+    + 'Theo sử cũ, cuộc khởi nghĩa kéo dài khoảng 5–6 tháng. Trước thế giặc mạnh, Bà Triệu tuẫn tiết ở núi Tùng '
+    + '(Hậu Lộc, Thanh Hóa) khi mới 23 tuổi. Nhân dân lập đền thờ bà đến ngày nay.'
 };

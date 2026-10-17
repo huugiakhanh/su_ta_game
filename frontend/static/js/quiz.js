@@ -25,8 +25,8 @@ function updateClock() {
     document.getElementById("time-display").innerText = `⏱ ${formatClock(elapsedSeconds())}`;
 }
 
-// Bộ câu hỏi theo chương (BT-ENGINE E2). `excluded`: id câu tạm loại, chờ team
-// quyết (Bà Triệu — docs/SUTA_BT_TASK_00.md §3.3); lọc ở đây, không sửa file JSON.
+// Bộ câu hỏi theo chương (BT-ENGINE E2). `excluded`: id câu team loại hẳn
+// (Bà Triệu — người dùng chốt 17/10, docs/SUTA_BT_TASK_00.md §3.3); lọc ở đây, không sửa file JSON.
 const QUIZ_BANKS = {
     'trung-trac': { url: '/static/assets/question/trung-trac-question.json', excluded: [] },
     'ba-trieu': { url: '/static/assets/question/ba-trieu-question.json', excluded: [15, 33, 37, 41, 45] },

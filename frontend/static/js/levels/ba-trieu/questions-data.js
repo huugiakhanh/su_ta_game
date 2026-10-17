@@ -1,6 +1,6 @@
 // SINH TỰ ĐỘNG bằng tools/make_question_data.py ba-trieu — KHÔNG sửa tay.
 // Nguồn: assets/question/ba-trieu-question.json (Excel của team). Pool + câu loại: docs/SUTA_BT_TASK_00.md §3.3.
-// Câu tạm loại, chờ team: 15, 33, 37, 41, 45.
+// Câu team loại hẳn: 15, 33, 37, 41, 45.
 
 export const QUESTIONS = {
   1: {stt: 1, question: "Bà Triệu có tên thật là gì?", answers: ["Triệu Thị Nhị", "Triệu Thị Trinh", "Triệu Ẩu", "Triệu Trinh Nương"], correct: 1, explain: "Tên thật của bà là Triệu Thị Trinh, sinh năm 226."},

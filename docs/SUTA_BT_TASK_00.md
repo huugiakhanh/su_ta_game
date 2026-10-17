@@ -6,7 +6,8 @@ Nguồn: Excel của team `DATA các nhân vật.xlsx`, sheet "2 Bà Triệu" (�
 Mẫu tham chiếu: chương Trưng Trắc (`js/levels/trung-trac/`, `docs/archive/SUTA_TT_TASK_NPC_01.md`, `SUTA_TT_TASK_BOSS_01.md`).
 
 > Task card này **chỉ là tài liệu**. Mỗi giai đoạn code ở mục 2 có task card riêng, duyệt trước khi làm.
-> Mục 4 (thoại) và 5.3 (kết chương) là **NHÁP do Claude soạn — CHỜ TEAM DUYỆT**. Chưa duyệt thì không đưa vào code.
+> Mục 4 (thoại) và 5 (câu chữ khác) **ĐÃ DUYỆT 17/10/2026** (người dùng duyệt nguyên văn) — từ nay là **Source of Truth**,
+> chép nguyên văn vào `dialogue-data.js` / `config.js`, không tự sửa (rule `history-content.md`).
 
 ---
 
@@ -18,7 +19,7 @@ Mẫu tham chiếu: chương Trưng Trắc (`js/levels/trung-trac/`, `docs/archi
 | 2 | Bạch Tượng = **kỹ năng gọi voi** (phím L: voi trắng lao ngang màn hình húc địch). **Không có cơ chế cưỡi.** Excel ghi "thú cưỡi, tăng tốc, miễn nhiễm bẫy nhỏ" → đổi thành kỹ năng. |
 | 3 | Thêm vào engine **bục lơ lửng một chiều** (cành cây cho chướng khí, lưng voi rừng đứng được). |
 | 4 | Thoại NPC màn 2 (đáp án sai, gợi ý, "vì sao đúng"), cốt truyện, câu kết chương: **Claude soạn nháp, team duyệt**. |
-| 5 | Câu **15, 33, 37, 41, 45** tạm loại, chờ team (mục 3.3). Các câu còn lại chép nguyên văn. |
+| 5 | Câu **15, 33, 37, 41, 45** **loại hẳn** (người dùng chốt 17/10), cả trong game lẫn `/quiz`. Các câu còn lại chép nguyên văn. |
 | 6 | Mini-boss màn 1 = **Tham quan thu thuế** (ném hòm bạc). |
 | 7 | Kết chương: thắng Lục Dận như Excel **+ 1–2 câu kết cục lịch sử** (mục 5.3). |
 | 8 | Thứ tự: **khung chương → màn 1 → màn 2 → màn 3**; mỗi màn: prompt Codex → code bằng asset tạm → thay asset thật. |
@@ -79,7 +80,7 @@ Mỗi giai đoạn: kế hoạch → duyệt → code → `pytest tests` + `/ver
 
 ### 3.3 Câu hỏi
 
-**Tạm loại, chờ team quyết** (không đưa vào game, không sửa chữ):
+**Loại hẳn — người dùng chốt 17/10/2026** (không đưa vào game và `/quiz`, không sửa chữ trong JSON):
 
 | Câu | Lý do |
 |---|---|
@@ -89,7 +90,7 @@ Mỗi giai đoạn: kế hoạch → duyệt → code → `pytest tests` + `/ver
 | 41 | Phố Bà Triệu "giao với đường nào" — nhiều phố cắt ngang, đáp án dễ gây tranh cãi; không phải kiến thức lịch sử |
 | 45 | "Dưới góc độ game thiết kế" — không phải kiến thức lịch sử |
 
-**Chia pool** (theo số thứ tự Excel; đề xuất, team sửa được):
+**Chia pool** (theo số thứ tự Excel) — **ĐÃ DUYỆT 17/10/2026**:
 
 | Pool | Câu |
 |---|---|
@@ -98,7 +99,7 @@ Mỗi giai đoạn: kế hoạch → duyệt → code → `pytest tests` + `/ver
 | `NPC_QUESTION_POOLS.bachTuong` (voi) | 7, 23, 36 |
 | `LEVEL1_QUESTION_POOL` (còn lại, rút 4 câu/lượt) | 1, 2, 3, 4, 8, 9, 10, 11, 12, 14, 18, 19, 20, 21, 22, 24, 25, 26, 28, 30, 31, 32, 34, 35, 38, 39, 40, 42, 43, 46, 47, 48 |
 
-Trang `/quiz`: thêm chọn chương để nạp `ba-trieu-question.json` (BT-ENGINE). Bộ quiz có loại 5 câu trên không → **chờ team** (mặc định: loại giống trong game).
+Trang `/quiz`: chọn chương để nạp `ba-trieu-question.json` (BT-ENGINE), loại 5 câu trên như trong game.
 
 ### 3.4 Màn 3 — "Chiến lũy Bồ Điền" — boss Lục Dận
 - Đấu trường 1 chunk: một bên đầm lầy, một bên núi đá; rung màn hình khi voi dậm. Lục Dận đứng trên **đài cao**, không với tới.
@@ -115,7 +116,7 @@ Trang `/quiz`: thêm chọn chương để nạp `ba-trieu-question.json` (BT-EN
 
 ---
 
-## 4. NỘI DUNG MÀN 2 — NHÁP, CHỜ TEAM DUYỆT
+## 4. NỘI DUNG MÀN 2 — ĐÃ DUYỆT 17/10/2026
 
 Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy nguyên văn Excel. Thoại xưng hô với Bà Triệu (như chương 1 xưng hô với Trưng Trắc).
 
@@ -174,11 +175,11 @@ Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy nguyên văn Excel.
 1. "Tin buồn truyền về: Triệu Quốc Đạt đã qua đời."
 2. "Nghĩa quân tôn Bà Triệu lên làm chủ tướng, tiếp tục cuộc khởi nghĩa."
 
-> Cần team xác nhận: thứ tự sự kiện (Quốc Đạt mất trước khi gặp anh em họ Lý?) và cách nói về cái chết của ông.
+> Đã duyệt cùng mục 4: cốt truyện hiện **sau cuộc gặp Triệu Quốc Đạt, trước khi gặp anh em họ Lý**, đúng câu chữ trên.
 
 ---
 
-## 5. CÂU CHỮ KHÁC — NHÁP, CHỜ TEAM DUYỆT
+## 5. CÂU CHỮ KHÁC — ĐÃ DUYỆT 17/10/2026
 
 ### 5.1 Thông báo đầu màn
 - Màn 1: "Màn 1: Rừng núi Nưa — Năm 248, quan lại Đông Ngô cướp bóc dân lành. Hãy theo Triệu Thị Trinh vào núi Nưa, thu đủ 5 Quyển Sách Tinh Hoa."
@@ -204,16 +205,44 @@ Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy nguyên văn Excel.
 | `BT_ART_02` | NPC + chân dung Triệu Quốc Đạt, ba anh em họ Lý, Bạch Tượng; voi trắng kỹ năng; icon 3 kỹ năng; nền + tile đầm lầy Bồ Điền |
 | `BT_ART_03` | Lục Dận (trên đài, rơi, chạy) + chân dung, tháp vàng, kỵ binh thiết giáp, tên độc, tiền vàng, nền chiến lũy, cờ chiến thắng |
 
-Nhạc nền 3 màn: tạm dùng nhạc chương 1 → `TODO_MISSING` nhạc riêng.
+Nhạc nền 3 màn: giao **Gemini Pro** (người dùng chốt 17/10) theo [GEMINI_PROMPT_BT_MUSIC.md](GEMINI_PROMPT_BT_MUSIC.md); trong lúc chờ tạm dùng nhạc chương 1.
 
 ## 7. VIỆC CHỜ TEAM
 
-- [ ] Duyệt nháp mục 4 và 5 (đáp án sai, gợi ý, cốt truyện, kết chương).
-- [ ] Quyết 5 câu tạm loại (mục 3.3), và bộ `/quiz` có loại theo không.
-- [ ] Duyệt chia pool câu hỏi (mục 3.3).
-- [ ] Số vàng/kim cương thưởng và thành tựu chương 2 (`BT_*`) — xem `docs/archive/REPORT_SUTA-DB-01.md`.
-- [ ] Nhạc nền riêng chương.
+- [x] Duyệt mục 4 và 5 — 17/10/2026.
+- [x] Loại hẳn 5 câu 15, 33, 37, 41, 45 (cả `/quiz`) — 17/10/2026.
+- [x] Duyệt chia pool câu hỏi — 17/10/2026.
+- [x] Số vàng/kim cương thưởng và thành tựu chương 2 — Claude thiết kế, người dùng duyệt 17/10 (mục 9); đã làm migration `006_ba_trieu_rewards.sql`.
+- [ ] Nhạc nền riêng chương — giao Gemini Pro, prompt [GEMINI_PROMPT_BT_MUSIC.md](GEMINI_PROMPT_BT_MUSIC.md).
+- [ ] Còn mở: rìu thay "búa tạ quai ngang" (Excel), mũ quan thu thuế, mức hoạ tiết Đông Sơn năm 248 (BT_ART_01).
 
 ## 8. GATE BT-00
 1. Team duyệt mục 4–5 (ghi "ĐÃ DUYỆT <ngày>" vào đầu từng mục, sửa trực tiếp nếu cần).
 2. Sau khi duyệt, nội dung mục 4–5 thành **Source of Truth**, chép nguyên văn vào `dialogue-data.js` ở BT-L2/BT-L3.
+
+## 9. THƯỞNG VÀNG / THÀNH TỰU CHƯƠNG 2 (Claude thiết kế, người dùng duyệt 17/10/2026 — `DESIGN_BASELINE`; migration `006`, luật `game_service.py`)
+
+Nguyên tắc: chương sau thưởng cao hơn chương trước ~20% (khó hơn, chơi sau); cùng khuôn thành tựu chương 1 để BXH/bảng thành tựu
+đọc đồng nhất; chỉ dùng dữ liệu server đã có (thời gian tốt nhất, `stats` của lượt) — không thêm cột/bảng.
+
+**Thưởng qua màn lần đầu** (cột `levels.first_clear_*`, migration mới `006` — không sửa `005` đã chạy):
+
+| Màn | Chương 1 (đối chiếu) | Chương 2 đề xuất |
+|---|---|---|
+| 1 | 100 vàng | **120 vàng** |
+| 2 | 150 vàng | **180 vàng** |
+| 3 | 200 vàng + 5 KC | **240 vàng + 8 KC** |
+| Tổng | 450 vàng + 5 KC | **540 vàng + 8 KC** |
+
+**Thành tựu mới** (bảng `achievements` + luật trong `ACHIEVEMENT_RULES`):
+
+| Code | Tên | Điều kiện | Thưởng |
+|---|---|---|---|
+| `BT_CLEAR_1` | Vào núi Nưa | Hoàn thành màn 1 chương Bà Triệu | 60 vàng |
+| `BT_CLEAR_2` | Tụ nghĩa Bồ Điền | Hoàn thành màn 2 chương Bà Triệu | 60 vàng |
+| `BT_CHAPTER` | Khởi nghĩa Bà Triệu | Hoàn thành chương Bà Triệu | 12 KC |
+| `BT_SPEED` | Cưỡi gió đạp sóng | Tổng thời gian tốt nhất 3 màn Bà Triệu dưới 15 phút | 6 KC |
+
+- `TT_FLAWLESS` ("qua một màn không trúng đòn") và `TT_SCHOLAR` ("qua một màn, đúng mọi câu hỏi") **giữ chung mọi chương** như
+  đã chốt ở BT-SKELETON (Q3) — không tạo bản `BT_` trùng nghĩa.
+- Giới hạn 15 phút bằng chương 1; xem lại sau khi BT-L1–L3 có độ dài thật.

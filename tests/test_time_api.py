@@ -380,3 +380,22 @@ def test_save_time_accepts_ba_trieu_levels(client, level_id):
     response = client.post("/api/game/save-time", json={"level_id": level_id, "clear_time": 60})
     assert response.status_code == 200
     assert client.saved[-1][1] == level_id
+
+
+# BT-REWARD: luật thành tựu chương 2 (hàm thuần, không cần DB).
+def test_ba_trieu_achievement_rules():
+    from backend.services.game_service import ACHIEVEMENT_RULES as rules
+
+    def ctx(best_times, stats=None):
+        return {"best_times": best_times, "stats": stats or {}}
+
+    fast_bt = {201: 200.0, 202: 300.0, 203: 399.0}
+    assert rules["BT_CLEAR_1"](ctx({201: 90.0})) and not rules["BT_CLEAR_2"](ctx({201: 90.0}))
+    assert rules["BT_CHAPTER"](ctx({203: 300.0}))
+    assert rules["BT_SPEED"](ctx(fast_bt))                       # 899 s < 15 phút
+    assert not rules["BT_SPEED"](ctx({**fast_bt, 203: 400.0}))   # đúng 900 s -> chưa đạt
+    assert not rules["BT_SPEED"](ctx({201: 100.0, 202: 100.0}))  # thiếu màn 3
+    # Hai chương tính riêng: thời gian chương 2 không mở "thần tốc" chương 1 và ngược lại.
+    assert not rules["TT_SPEED"](ctx(fast_bt))
+    assert not rules["BT_SPEED"](ctx({101: 100.0, 102: 100.0, 103: 100.0}))
+

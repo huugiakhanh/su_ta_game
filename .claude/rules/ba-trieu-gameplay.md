@@ -22,6 +22,8 @@ Kế hoạch + quyết định đã chốt: [docs/SUTA_BT_TASK_00.md](../../docs
 
 ## Nội dung lịch sử
 
-- `questions-data.js` **sinh bằng** `python tools/make_question_data.py ba-trieu` từ `assets/question/ba-trieu-question.json` (khớp Excel 50/50). Không sửa tay; đổi pool/câu loại thì sửa `CHAPTERS` trong script rồi chạy lại. Câu 15, 33, 37, 41, 45 tạm loại, chờ team.
-- `dialogue-data.js`: thoại NPC, cốt truyện, câu kết chương còn **nháp chờ team duyệt** (BT-00 §4–5) → để trống/`TODO_MISSING`. Duyệt xong mới chép nguyên văn (rule `history-content.md`).
+- `questions-data.js` **sinh bằng** `python tools/make_question_data.py ba-trieu` từ `assets/question/ba-trieu-question.json` (khớp Excel 50/50). Không sửa tay; đổi pool/câu loại thì sửa `CHAPTERS` trong script rồi chạy lại. Câu 15, 33, 37, 41, 45 **loại hẳn** (người dùng chốt 17/10, cả `/quiz`); pool đã duyệt.
+- `dialogue-data.js`: thoại NPC, cốt truyện, cutscene, câu kết chương **đã duyệt 17/10** (BT-00 §4–5) — chép **nguyên văn** từ task card (rule `history-content.md`); NPC/cốt truyện màn 2 đưa vào ở BT-L2, cutscene màn 3 ở BT-L3.
 - Phần thưởng màn 2 (id khớp seed `005`): `BUFF_BT_CRIT` Chí mạng, `SK_BT_RATTAN_SHIELD` Khiên mây tre (K), `SK_BT_WHITE_ELEPHANT` Gọi Bạch Tượng (L) — cơ chế làm ở BT-L2/L3 (chí mạng qua hook `skills.attackDamage` của engine).
+- Thưởng/thành tựu (BT-00 mục 9, migration `006_ba_trieu_rewards.sql`): qua màn lần đầu 120/180/240 vàng + 8 KC; `BT_CLEAR_1`, `BT_CLEAR_2`, `BT_CHAPTER`, `BT_SPEED` (3 màn < 15 phút) — luật trong `backend/services/game_service.py` (`CHAPTER_BT_LEVELS`).
+- Nhạc nền: giao Gemini Pro theo `docs/GEMINI_PROMPT_BT_MUSIC.md`; nộp vào `audio/ba-trieu/` rồi đổi `MUSIC_FILES` trong `audio-data.js`.

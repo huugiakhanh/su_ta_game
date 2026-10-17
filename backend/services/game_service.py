@@ -5,7 +5,9 @@ from backend.db import db_cursor
 
 
 CHAPTER_TT_LEVELS = (101, 102, 103)
-# DESIGN_BASELINE (task card D9): tổng thời gian tốt nhất 3 màn Trưng Trắc.
+CHAPTER_BT_LEVELS = (201, 202, 203)
+# DESIGN_BASELINE (task card D9; chương 2: BT-00 mục 9): tổng thời gian tốt nhất
+# 3 màn của chương dưới mốc này -> thành tựu "thần tốc" của chương.
 SPEED_LIMIT_SECONDS = 15 * 60
 
 
@@ -13,9 +15,11 @@ def _cleared(level_id):
     return lambda ctx: level_id in ctx["best_times"]
 
 
-def _speed(ctx):
-    times = [ctx["best_times"].get(level) for level in CHAPTER_TT_LEVELS]
-    return None not in times and sum(times) < SPEED_LIMIT_SECONDS
+def _speed_for(levels):
+    def rule(ctx):
+        times = [ctx["best_times"].get(level) for level in levels]
+        return None not in times and sum(times) < SPEED_LIMIT_SECONDS
+    return rule
 
 
 def _flawless(ctx):
@@ -33,9 +37,14 @@ ACHIEVEMENT_RULES = {
     "TT_CLEAR_1": _cleared(101),
     "TT_CLEAR_2": _cleared(102),
     "TT_CHAPTER": _cleared(103),
-    "TT_SPEED": _speed,
+    "TT_SPEED": _speed_for(CHAPTER_TT_LEVELS),
     "TT_FLAWLESS": _flawless,
     "TT_SCHOLAR": _scholar,
+    # Chương 2 Bà Triệu (migration 006). TT_FLAWLESS / TT_SCHOLAR dùng chung mọi chương.
+    "BT_CLEAR_1": _cleared(201),
+    "BT_CLEAR_2": _cleared(202),
+    "BT_CHAPTER": _cleared(203),
+    "BT_SPEED": _speed_for(CHAPTER_BT_LEVELS),
 }
 
 

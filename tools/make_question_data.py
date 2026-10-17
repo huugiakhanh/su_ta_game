@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parent.parent
 QUESTION_DIR = ROOT / "frontend" / "static" / "assets" / "question"
 LEVELS_DIR = ROOT / "frontend" / "static" / "js" / "levels"
 
-# excluded: câu tạm loại chờ team; level1: bộ rút câu hỏi màn 1; npc: bộ câu hỏi
+# excluded: câu team loại hẳn; level1: bộ rút câu hỏi màn 1; npc: bộ câu hỏi
 # chặn đường trước từng NPC màn 2 (khoá = id NPC trong dialogue-data.js).
 CHAPTERS = {
     "ba-trieu": {
@@ -51,7 +51,7 @@ def build(slug):
     lines = [
         f"// SINH TỰ ĐỘNG bằng tools/make_question_data.py {slug} — KHÔNG sửa tay.",
         f"// Nguồn: assets/question/{slug}-question.json (Excel của team). Pool + câu loại: {config['task']}.",
-        f"// Câu tạm loại, chờ team: {', '.join(map(str, config['excluded']))}.",
+        f"// Câu team loại hẳn: {', '.join(map(str, config['excluded']))}.",
         "",
         "export const QUESTIONS = {",
     ]
