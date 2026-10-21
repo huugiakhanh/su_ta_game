@@ -1,11 +1,13 @@
 // Hằng số RIÊNG chương Bà Triệu (chương 2) — không chứa logic. Hằng số chung
 // mọi chương ở engine/config.js. Mọi toạ độ/kích thước/tốc độ là pixel logic.
 //
-// Asset riêng chương: đợt Codex BT_ART_01 (docs/CODEX_PROMPT_BT_ART_01.md, nhập
-// 17/10/2026, status NORMALIZED — chờ chơi thử). Trời, tile mặt đất/địa hình,
+// Asset riêng chương: đợt Codex BT_ART_01 (docs/CODEX_PROMPT_BT_ART_01.md) và
+// BT_ART_02 (docs/CODEX_PROMPT_BT_ART_02.md, nhập 21/10/2026 — lính Ngô + Bà Triệu
+// vẽ lại theo chuẩn cao 34 px logic; NPC/FX/icon màn 2 chờ BT-L2). Trời, tile mặt đất/địa hình,
 // lớp giữa làng, bia câu hỏi, 2 vật cản MƯỢN của chương Trưng Trắc qua
 // BORROWED_MAPS (prompt: "dùng lại, không vẽ"). Không import file nào của chương
-// 1. Bố cục màn vẫn là khung BT-SKELETON (bố cục thật ở BT-L1). Mọi số DESIGN_BASELINE.
+// 1. Màn 1 = bố cục thật BT-L1 (docs/SUTA_BT_TASK_L1_01.md); màn 2–3 còn khung
+// BT-SKELETON. Mọi số DESIGN_BASELINE.
 
 import { CHUNK_W } from '../../engine/config.js';
 
@@ -28,13 +30,16 @@ export const BORROWED_MAPS = [{
 export const TILES = { ground: 'TILESET_TT_GROUND', groundRegion: 'Z1', terrain: 'TILESET_TT_TERRAIN' };
 export const FAR_HILLS = { id: 'BG_BT_FAR_NUA', parallax: 0.2, bottomY: 230, hiddenUnderSky: [] };
 
-// Chân dung (ảnh DOM) — nạp ở mọi màn. Bà Triệu dẫn màn (chờ thoại team duyệt).
-export const PORTRAITS = ['PORTRAIT_BA_TRIEU'];
+// Chân dung (ảnh DOM) — nạp ở mọi màn: Bà Triệu (dẫn màn 1) + 3 NPC màn 2.
+export const PORTRAITS = ['PORTRAIT_BA_TRIEU', 'PORTRAIT_TRIEU_QUOC_DAT', 'PORTRAIT_LY_HOANG', 'PORTRAIT_BACH_TUONG'];
 
 // Sprite canvas mỗi màn cần (chỉ nạp ảnh màn đang chơi dùng). Màn 1 gồm cả
-// layout thử ?layout=engine (voi rừng, đá lăn, chướng khí).
+// layout thử ?layout=engine; PLAYER_BA_TRIEU = Bà Triệu đứng chờ (NPC dẫn).
 export const LEVEL_SPRITES = {
-  1: ['EN_NGO_LUMBERJACK', 'TR_BAMBOO_SPIKE_PIT', 'OB_BOULDER', 'EN_WILD_ELEPHANT', 'FX_MIASMA'],
+  1: [
+    'PLAYER_BA_TRIEU', 'EN_NGO_LUMBERJACK', 'EN_NGO_HUNTER', 'PJ_CROSSBOW_BOLT', 'OB_BOULDER', 'EN_WILD_ELEPHANT',
+    'TR_BAMBOO_SPIKE_PIT', 'EN_NGO_CAVALRY', 'FX_MIASMA', 'EN_NGO_TAX_OFFICIAL', 'PJ_SILVER_CHEST'
+  ],
   2: ['EN_NGO_LUMBERJACK', 'TR_BAMBOO_SPIKE_PIT'],
   3: ['EN_NGO_LUMBERJACK']
 };
@@ -46,21 +51,39 @@ export const LEVEL_URLS = {
   3: '/gameplay/levels/ba-trieu/3'
 };
 
-// ---- Màn 1 "Rừng núi Nưa" ----
-// Vùng cảnh: làng Quan Yên (nền làng mượn chương 1) -> rừng nứa -> rừng thiêng
-// -> sườn núi đá -> doanh trại núi Nưa (cổng trại = đích).
-export const LEVEL1_CHUNKS = 6;
+// ---- Màn 1 "Rừng núi Nưa" (BT-L1) ----
+// 12 chunk = 9216 px = stage_length của maps_bt.json. Vùng cảnh: làng Quan Yên
+// (nền làng mượn chương 1) -> rừng nứa -> rừng thiêng -> sườn núi đá -> rừng
+// nứa -> doanh trại núi Nưa (cổng trại = đích). Nhóm chướng ngại xáo trong vùng
+// được phép (level1.js) để đúng cảnh.
+export const LEVEL1_CHUNKS = 12;
 export const LEVEL1_ZONES = [
   { id: 'BT1', x0: 0, x1: CHUNK_W, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_VILLAGE' },
-  { id: 'BT2', x0: CHUNK_W, x1: CHUNK_W * 2, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_NUA_FOREST' },
-  { id: 'BT3', x0: CHUNK_W * 2, x1: CHUNK_W * 3, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_SACRED_FOREST' },
-  { id: 'BT4', x0: CHUNK_W * 3, x1: CHUNK_W * 5, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_ROCKY_SLOPE' },
-  { id: 'BT5', x0: CHUNK_W * 5, x1: CHUNK_W * LEVEL1_CHUNKS, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_CAMP' }
+  { id: 'BT2', x0: CHUNK_W, x1: CHUNK_W * 3, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_NUA_FOREST' },
+  { id: 'BT3', x0: CHUNK_W * 3, x1: CHUNK_W * 5, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_SACRED_FOREST' },
+  { id: 'BT4', x0: CHUNK_W * 5, x1: CHUNK_W * 8, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_ROCKY_SLOPE' },
+  { id: 'BT2', x0: CHUNK_W * 8, x1: CHUNK_W * 10, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_NUA_FOREST' },
+  { id: 'BT5', x0: CHUNK_W * 10, x1: CHUNK_W * LEVEL1_CHUNKS, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_CAMP' }
 ];
-export const LEVEL1_FINISH_X = CHUNK_W * LEVEL1_CHUNKS - 96;
-// Cổng trại nghĩa quân: TÂM tại đích (192px -> trải 4416–4608), không hitbox;
-// mở khi đủ sách (+ hạ mini-boss khi có — BT-L1).
+// Đích = worldX(12, 618) như chương 1; cổng trại đặt TÂM tại đây (192px ->
+// trải 8970–9162 < 9216), không hitbox; mở khi đủ sách + hạ mini-boss.
+export const LEVEL1_FINISH_X = CHUNK_W * 11 + 618;
 export const FINISH_GATE = { closed: 'PROP_BT_CAMP_GATE', open: 'PROP_BT_CAMP_GATE_OPEN', worldX: LEVEL1_FINISH_X };
+// Bà Triệu đứng chờ ở chunk 1 (NPC dẫn — như Trưng Trắc chương 1).
+export const GUIDE_LOCAL_X = 190;
+// Mini-boss tham quan thu thuế (patrol, như kiệu quan chương 1 — Q4: 6 đòn):
+// cố định chunk 11, đi tuần patrolRange quanh localX, vào fireRange thì dừng
+// ném hòm bạc rỗng; fireInterval tính từ lúc ném xong.
+export const MINIBOSS = {
+  chunk: 11, localX: 510, hp: 6, patrolRange: 160, speed: 30,
+  fireRange: 240, fireInterval: 2.5, hitScore: 100, defeatScore: 700
+};
+// Hố chông tre cố định chunk 11 (ngoài 10 nhóm xáo) — đủ 12 chướng ngại.
+export const FIXED_PIT = { chunk: 11, localX: 220 };
+// Nghỉ chân hồi 1 máu (Q2) — 1 lần khi vượt điểm này.
+export const REST = { chunk: 9, localX: 282 };
+// 5 Quyển Sách Tinh Hoa cố định: [chunk, localX, độ cao trên mặt đất].
+export const LEVEL1_ITEMS = [[2, 390, 56], [4, 640, 60], [6, 300, 64], [7, 600, 72], [9, 420, 60]];
 
 // ---- Màn 2 "Chiêu mộ hiền tài" (PLACEHOLDER cảnh: chờ nền Bồ Điền ở BT_ART_02) ----
 export const LEVEL2_CHUNKS = 4;
@@ -95,7 +118,7 @@ export const WAVES = {
 //                bachTuong (chưa có NPC — gắn NPC ở BT-L2).
 export const QUIZ = {
   level1Count: 4,
-  level1Spots: [[2, 312], [3, 560], [4, 560], [5, 560]],
+  level1Spots: [[3, 312], [5, 640], [8, 312], [10, 560]],
   level2Spots: { quocDat: [1, 600], hoLy: [2, 600], bachTuong: [3, 600] }
 };
 
@@ -117,17 +140,17 @@ export const MAP_PROPS_IN_GAME = [
 ];
 
 // ---- Quân địch, hazard, đạn ----
-// Hitbox (w, h) tính từ pivot bottom-center, đo từ strip BT_ART_01 (px logic) —
-// KHÔNG lấy từ cỡ ảnh. DESIGN_BASELINE.
-// Lính đốn gỗ EN_NGO_LUMBERJACK (hành vi `guard` của engine): thân cao ~31 px
-// logic -> hitbox 22×32 (LUMBERJACK — nội dung màn dùng). Rìu ở ô hit 7
-// (10@10): đầu rìu cách tâm 22,25 px (11,25 px ngoài mép hitbox), cao 35–46,5 px
-// tính từ đỉnh ô = 20–32 px từ đỉnh hitbox. Vung chậm, sát thương 2 (BT-00
+// Hitbox (w, h) tính từ pivot bottom-center, đo từ strip BT_ART_02 (lính Ngô vẽ
+// lại ×1,097 theo chuẩn cao 34 px logic, px logic) — KHÔNG lấy từ cỡ ảnh. DESIGN_BASELINE.
+// Lính đốn gỗ EN_NGO_LUMBERJACK (hành vi `guard` của engine): thân cao ~34 px
+// logic (kể cả mũ) -> hitbox 24×34 (LUMBERJACK — nội dung màn dùng). Rìu ở ô hit 7
+// (10@10): đầu rìu cách tâm 24,5 px (12,5 px ngoài mép hitbox), cao 0–12 px
+// trên mặt chân = 22–34 px từ đỉnh hitbox. Vung chậm, sát thương 2 (BT-00
 // §3.1); nghỉ 1,8 s giữa 2 nhát.
-export const LUMBERJACK = { w: 22, h: 32, hp: 2 };
+export const LUMBERJACK = { w: 24, h: 34, hp: 2 };
 export const GUARD = {
   patrolRange: 96, speed: 20, aggroRange: 110,
-  attackReach: 14, attackBoxY: 20, attackBoxH: 12, attackCooldown: 1.8, damage: 2
+  attackReach: 14, attackBoxY: 22, attackBoxH: 12, attackCooldown: 1.8, damage: 2
 };
 export const ENEMY_SPRITES = {
   normal: {
@@ -163,15 +186,18 @@ export const HAZARD_SPRITES = {
     cycle: { off: 1.6, warn: .6, active: 1.2 }, ignoreDash: true,
     hitMessage: 'Bạn hít phải chướng khí! Hãy leo lên cành cây.'
   },
-  // ---- Khai báo sẵn cho BT-L1 (chưa đặt vào màn) ----
-  // Thợ săn nấp trong bụi (thrower): người cao ~18 px trên bụi; đầu nỏ ô hit 5
-  // cao 20 px, cách tâm 12 px.
+  // Thợ săn nấp trong bụi (thrower): bụi + người cao ~20 px; đầu nỏ ô hit 5
+  // cao ~20 px, cách tâm ~12,5 px (report Codex Gate B1 bản sửa 1).
   ngoHunter: {
-    id: 'EN_NGO_HUNTER', w: 24, h: 18, muzzle: 20, muzzleX: 12,
-    anims: { idle: 'idle', throw: 'throw', hurt: 'hurt', death: 'death' }
+    id: 'EN_NGO_HUNTER', w: 26, h: 20, muzzle: 20, muzzleX: 13,
+    anims: { idle: 'idle', throw: 'throw', hurt: 'hurt', death: 'death' },
+    hitMessage: 'Bạn va phải thợ săn quan lại!', breakMessage: 'Đã hạ thợ săn quan lại!'
   },
-  // Kỵ binh Ngô (roller): ngựa + người thấy được ~75×34 px.
-  ngoCavalry: { id: 'EN_NGO_CAVALRY', w: 56, h: 34, anims: { move: 'gallop', idle: 'gallop', hurt: 'hurt', death: 'death' } },
+  // Kỵ binh Ngô (roller): ngựa + người thấy được ~82×37,5 px.
+  ngoCavalry: {
+    id: 'EN_NGO_CAVALRY', w: 61, h: 37, anims: { move: 'gallop', idle: 'gallop', hurt: 'hurt', death: 'death' },
+    hitMessage: 'Kỵ binh Ngô xông tới đâm trúng bạn!', breakMessage: 'Đã hạ kỵ binh Ngô!'
+  },
   // Mini-boss tham quan thu thuế (patrol): thân ~40×44 px; hòm rời tay ô hit 4,
   // cao 31 px, cách tâm 22 px.
   ngoTaxOfficial: {
@@ -200,9 +226,15 @@ export const PROJECTILE_SPRITES = {
   crossbowBolt: { id: 'PJ_CROSSBOW_BOLT', anim: 'idle', w: 12, h: 3 },
   silverChest: { id: 'PJ_SILVER_CHEST', anim: 'loop', w: 10, h: 10 }
 };
-// NPC: Bà Triệu dẫn màn 1 (chưa đặt — thoại chờ team duyệt, BT-00 §4–5).
+// NPC: Bà Triệu dẫn màn 1; 3 NPC màn 2 (BT_ART_02) khai báo sẵn — đặt vào màn ở
+// BT-L2 (khi đó thêm ID vào LEVEL_SPRITES[2]). NPC_HO_LY: 3 người trong 1 ô
+// 112×48, chỉ Lý Hoằng (giữa) nói. NPC_BACH_TUONG ô 128×96: `bow` (không lặp)
+// sau khi trả lời đúng, `charge` dùng cho kỹ năng Gọi Bạch Tượng (BT-L3).
 export const NPC_SPRITES = {
-  baTrieu: { id: 'PLAYER_BA_TRIEU', portrait: 'PORTRAIT_BA_TRIEU', anims: { idle: 'idle', talk: 'talk' } }
+  baTrieu: { id: 'PLAYER_BA_TRIEU', portrait: 'PORTRAIT_BA_TRIEU', anims: { idle: 'idle', talk: 'talk' } },
+  quocDat: { id: 'NPC_TRIEU_QUOC_DAT', portrait: 'PORTRAIT_TRIEU_QUOC_DAT', anims: { idle: 'idle', talk: 'talk' } },
+  hoLy: { id: 'NPC_HO_LY', portrait: 'PORTRAIT_LY_HOANG', anims: { idle: 'idle', talk: 'talk' } },
+  bachTuong: { id: 'NPC_BACH_TUONG', portrait: 'PORTRAIT_BACH_TUONG', anims: { idle: 'idle', talk: 'talk', bow: 'bow' } }
 };
 
 // ---- Phần thưởng màn 2 (id khớp seed backend/migrations/005_ba_trieu.sql) ----
@@ -223,7 +255,7 @@ export const TEXT = {
   projectileHit: 'Bạn trúng đạn của quân Ngô!',
   bossContact: 'Quân Ngô phản công!',
   bossDefeated: 'Đã đánh bại quân Ngô!',
-  bossBlocksFinish: 'Hãy hạ quân địch trước khi đi tiếp.',
+  bossBlocksFinish: 'Hãy hạ tên tham quan thu thuế trước khi vào doanh trại.',
   itemPicked: (count, total) => `Đã thu thập Quyển Sách Tinh Hoa ${count}/${total}`,
   itemsMissing: count => `Bạn còn thiếu ${count} Quyển Sách Tinh Hoa.`,
   rescueHint: name => `Hãy hạ quân Ngô đang vây ${name}!`

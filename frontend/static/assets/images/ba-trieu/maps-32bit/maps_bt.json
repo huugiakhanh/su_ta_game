@@ -1,285 +1,331 @@
 {
-    "schema_version":  1,
-    "map_id":  "BA_TRIEU",
-    "pipeline":  "parallax_layers",
-    "render_mode":  "side_scroll_mode",
-    "engine_target":  "project-native Canvas",
-    "stage":  {
-                  "canvas_w":  480,
-                  "canvas_h":  270,
-                  "stage_length":  9216,
-                  "ground_y":  248,
-                  "tile_size":  16,
-                  "camera_width_spans":  20,
-                  "last_span_partial":  true
-              },
-    "assets":  [
-                   {
-                       "id":  "BG_BT_MID_NUA_FOREST",
-                       "category":  "parallax",
-                       "file":  "bg/BG_BT_MID_NUA_FOREST/bg_bt_mid_nua_forest.png",
-                       "w":  768,
-                       "h":  160,
-                       "density":  4,
-                       "transparent":  true,
-                       "zone":  [
-                                    "Z1"
-                                ],
-                       "anchor":  "bottom-at-GROUND_Y",
-                       "frames":  1,
-                       "fps":  null,
-                       "priority":  "P0",
-                       "status":  "NORMALIZED",
-                       "prompt":  "bg/BG_BT_MID_NUA_FOREST/bg_bt_mid_nua_forest.prompt.txt",
-                       "raw":  "raw/bg_bt_mid_nua_forest_raw.png",
-                       "qa_notes":  "Gate A1 revision: 3072x640, 64 inherited palette colors, binary alpha, opaque bottom corners. Cyclic cut rotated 1846 image px; seam p95=74 versus internal adjacent-column p95=109. Preview repeated twice shows continuous ground/vegetation. Await team Gate A1 review before import.",
-                       "tileable_x":  true,
-                       "parallax_hint":  0.5,
-                       "transition_width":  192,
-                       "transition_policy":  "diagonal-alpha-blend"
-                   },
-                   {
-                       "id":  "BG_BT_FAR_NUA",
-                       "category":  "parallax",
-                       "file":  "bg/BG_BT_FAR_NUA/bg_bt_far_nua.png",
-                       "w":  960,
-                       "h":  120,
-                       "density":  4,
-                       "transparent":  true,
-                       "zone":  [
-                                    "Z1",
-                                    "Z2",
-                                    "Z3",
-                                    "Z4"
-                                ],
-                       "anchor":  "bottom-at-y-230",
-                       "frames":  1,
-                       "fps":  null,
-                       "priority":  "P0",
-                       "status":  "NORMALIZED",
-                       "prompt":  "meta/generation_prompts_a2.md",
-                       "raw":  "raw/bg_bt_far_nua_raw.png",
-                       "qa_notes":  "A2: distant blue-gray wooded Nua ridge; horizontal loop.",
-                       "tileable_x":  true,
-                       "parallax_hint":  0.2
-                   },
-                   {
-                       "id":  "BG_BT_MID_ROCKY_SLOPE",
-                       "category":  "parallax",
-                       "file":  "bg/BG_BT_MID_ROCKY_SLOPE/bg_bt_mid_rocky_slope.png",
-                       "w":  768,
-                       "h":  160,
-                       "density":  4,
-                       "transparent":  true,
-                       "zone":  [
-                                    "Z2"
-                                ],
-                       "anchor":  "bottom-at-GROUND_Y",
-                       "frames":  1,
-                       "fps":  null,
-                       "priority":  "P0",
-                       "status":  "NORMALIZED",
-                       "prompt":  "meta/generation_prompts_a2.md",
-                       "raw":  "raw/bg_bt_mid_rocky_slope_raw.png",
-                       "qa_notes":  "A2 revision 1: middle parallax, 64 colors; sacred forest has open far-layer gaps.",
-                       "tileable_x":  true,
-                       "parallax_hint":  0.5,
-                       "transition_width":  192,
-                       "transition_policy":  "diagonal-alpha-blend"
-                   },
-                   {
-                       "id":  "BG_BT_MID_SACRED_FOREST",
-                       "category":  "parallax",
-                       "file":  "bg/BG_BT_MID_SACRED_FOREST/bg_bt_mid_sacred_forest.png",
-                       "w":  768,
-                       "h":  160,
-                       "density":  4,
-                       "transparent":  true,
-                       "zone":  [
-                                    "Z3"
-                                ],
-                       "anchor":  "bottom-at-GROUND_Y",
-                       "frames":  1,
-                       "fps":  null,
-                       "priority":  "P0",
-                       "status":  "NORMALIZED",
-                       "prompt":  "meta/generation_prompts_a2.md",
-                       "raw":  "raw/bg_bt_mid_sacred_forest_rework_raw.png",
-                       "qa_notes":  "A2 revision 1: middle parallax, 64 colors; sacred forest has open far-layer gaps.",
-                       "tileable_x":  true,
-                       "parallax_hint":  0.5,
-                       "transition_width":  192,
-                       "transition_policy":  "diagonal-alpha-blend"
-                   },
-                   {
-                       "id":  "BG_BT_MID_CAMP",
-                       "category":  "parallax",
-                       "file":  "bg/BG_BT_MID_CAMP/bg_bt_mid_camp.png",
-                       "w":  768,
-                       "h":  160,
-                       "density":  4,
-                       "transparent":  true,
-                       "zone":  [
-                                    "Z4"
-                                ],
-                       "anchor":  "bottom-at-GROUND_Y",
-                       "frames":  1,
-                       "fps":  null,
-                       "priority":  "P0",
-                       "status":  "NORMALIZED",
-                       "prompt":  "meta/generation_prompts_a2.md",
-                       "raw":  "raw/bg_bt_mid_camp_raw.png",
-                       "qa_notes":  "A2 revision 1: middle parallax, 64 colors; sacred forest has open far-layer gaps.",
-                       "tileable_x":  true,
-                       "parallax_hint":  0.5,
-                       "transition_width":  192,
-                       "transition_policy":  "diagonal-alpha-blend"
-                   },
-                   {
-                       "id":  "PROP_BT_BRANCH",
-                       "category":  "prop",
-                       "file":  "props/PROP_BT_BRANCH/prop_bt_branch.png",
-                       "w":  64,
-                       "h":  16,
-                       "density":  4,
-                       "transparent":  true,
-                       "zone":  [
-                                    "Z3"
-                                ],
-                       "anchor":  "top-left",
-                       "frames":  1,
-                       "fps":  null,
-                       "priority":  "P0",
-                       "status":  "NORMALIZED",
-                       "prompt":  "meta/generation_prompts_a2.md",
-                       "raw":  "raw/prop_bt_branch_rework_raw.png",
-                       "qa_notes":  "A2 revision 1: thicker branch, 32 colors, walkable top at row 0.",
-                       "pivot":  {
-                                     "y":  0,
-                                     "x":  0
-                                 },
-                       "visible_bbox":  {
-                                            "y":  0,
-                                            "w":  60,
-                                            "h":  9,
-                                            "x":  2
-                                        }
-                   },
-                   {
-                       "id":  "PROP_BT_BRANCH_LONG",
-                       "category":  "prop",
-                       "file":  "props/PROP_BT_BRANCH_LONG/prop_bt_branch_long.png",
-                       "w":  128,
-                       "h":  16,
-                       "density":  4,
-                       "transparent":  true,
-                       "zone":  [
-                                    "Z3"
-                                ],
-                       "anchor":  "top-left",
-                       "frames":  1,
-                       "fps":  null,
-                       "priority":  "P0",
-                       "status":  "NORMALIZED",
-                       "prompt":  "meta/generation_prompts_a2.md",
-                       "raw":  "raw/prop_bt_branch_rework_raw.png",
-                       "qa_notes":  "A2 revision 1: thicker long branch, 32 colors, walkable top at row 0.",
-                       "pivot":  {
-                                     "y":  0,
-                                     "x":  0
-                                 },
-                       "visible_bbox":  {
-                                            "y":  0,
-                                            "w":  120,
-                                            "h":  9,
-                                            "x":  4
-                                        }
-                   },
-                   {
-                       "id":  "ITEM_BT_TINH_HOA",
-                       "category":  "item",
-                       "file":  "items/ITEM_BT_TINH_HOA/item_bt_tinh_hoa_idle.png",
-                       "w":  64,
-                       "h":  16,
-                       "density":  4,
-                       "transparent":  true,
-                       "zone":  [
-                                    "Z4"
-                                ],
-                       "anchor":  "center",
-                       "frames":  4,
-                       "fps":  8,
-                       "priority":  "P0",
-                       "status":  "NORMALIZED",
-                       "prompt":  "meta/generation_prompts_a2.md",
-                       "raw":  "raw/item_bt_tinh_hoa_idle_raw.png",
-                       "qa_notes":  "A2 revision 1: four-frame 64x16 logical strip.",
-                       "pivot":  {
-                                     "y":  8,
-                                     "x":  8
-                                 },
-                       "frame_w":  16,
-                       "frame_h":  16
-                   },
-                   {
-                       "id":  "PROP_BT_CAMP_GATE",
-                       "category":  "prop",
-                       "file":  "props/PROP_BT_CAMP_GATE/prop_bt_camp_gate.png",
-                       "w":  192,
-                       "h":  176,
-                       "density":  4,
-                       "transparent":  true,
-                       "zone":  [
-                                    "Z4"
-                                ],
-                       "anchor":  "bottom-center-at-GROUND_Y",
-                       "frames":  1,
-                       "fps":  null,
-                       "priority":  "P0",
-                       "status":  "NORMALIZED",
-                       "prompt":  "meta/generation_prompts_a2.md",
-                       "raw":  "raw/prop_bt_camp_gate_raw.png",
-                       "qa_notes":  "A2: closed woven bamboo gate with thatch roof.",
-                       "pivot":  {
-                                     "y":  176,
-                                     "x":  96
-                                 },
-                       "visible_bbox":  {
-                                            "y":  1,
-                                            "w":  184,
-                                            "h":  174,
-                                            "x":  4
-                                        }
-                   },
-                   {
-                       "id":  "PROP_BT_CAMP_GATE_OPEN",
-                       "category":  "prop",
-                       "file":  "props/PROP_BT_CAMP_GATE_OPEN/prop_bt_camp_gate_open.png",
-                       "w":  192,
-                       "h":  176,
-                       "density":  4,
-                       "transparent":  true,
-                       "zone":  [
-                                    "Z4"
-                                ],
-                       "anchor":  "bottom-center-at-GROUND_Y",
-                       "frames":  1,
-                       "fps":  null,
-                       "priority":  "P0",
-                       "status":  "NORMALIZED",
-                       "prompt":  "meta/generation_prompts_a2.md",
-                       "raw":  "raw/prop_bt_camp_gate_open_raw.png",
-                       "qa_notes":  "A2: outer pixels copied from closed gate; central doors open to transparent passage.",
-                       "pivot":  {
-                                     "y":  176,
-                                     "x":  96
-                                 },
-                       "visible_bbox":  {
-                                            "y":  1,
-                                            "w":  184,
-                                            "h":  174,
-                                            "x":  4
-                                        }
-                   }
-               ]
+  "schema_version": 1,
+  "map_id": "BA_TRIEU",
+  "pipeline": "parallax_layers",
+  "render_mode": "side_scroll_mode",
+  "engine_target": "project-native Canvas",
+  "stage": {
+    "canvas_w": 480,
+    "canvas_h": 270,
+    "stage_length": 9216,
+    "ground_y": 248,
+    "tile_size": 16,
+    "camera_width_spans": 20,
+    "last_span_partial": true
+  },
+  "assets": [
+    {
+      "id": "BG_BT_MID_NUA_FOREST",
+      "category": "parallax",
+      "file": "bg/BG_BT_MID_NUA_FOREST/bg_bt_mid_nua_forest.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "Z1"
+      ],
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "prompt": "bg/BG_BT_MID_NUA_FOREST/bg_bt_mid_nua_forest.prompt.txt",
+      "raw": "raw/bg_bt_mid_nua_forest_raw.png",
+      "qa_notes": "Gate A1 revision: 3072x640, 64 inherited palette colors, binary alpha, opaque bottom corners. Cyclic cut rotated 1846 image px; seam p95=74 versus internal adjacent-column p95=109. Preview repeated twice shows continuous ground/vegetation. Await team Gate A1 review before import.",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "transition_policy": "diagonal-alpha-blend"
+    },
+    {
+      "id": "BG_BT_FAR_NUA",
+      "category": "parallax",
+      "file": "bg/BG_BT_FAR_NUA/bg_bt_far_nua.png",
+      "w": 960,
+      "h": 120,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "Z1",
+        "Z2",
+        "Z3",
+        "Z4"
+      ],
+      "anchor": "bottom-at-y-230",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "prompt": "meta/generation_prompts_a2.md",
+      "raw": "raw/bg_bt_far_nua_raw.png",
+      "qa_notes": "A2: distant blue-gray wooded Nua ridge; horizontal loop.",
+      "tileable_x": true,
+      "parallax_hint": 0.2
+    },
+    {
+      "id": "BG_BT_MID_ROCKY_SLOPE",
+      "category": "parallax",
+      "file": "bg/BG_BT_MID_ROCKY_SLOPE/bg_bt_mid_rocky_slope.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "Z2"
+      ],
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "prompt": "meta/generation_prompts_a2.md",
+      "raw": "raw/bg_bt_mid_rocky_slope_raw.png",
+      "qa_notes": "A2 revision 1: middle parallax, 64 colors; sacred forest has open far-layer gaps.",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "transition_policy": "diagonal-alpha-blend"
+    },
+    {
+      "id": "BG_BT_MID_SACRED_FOREST",
+      "category": "parallax",
+      "file": "bg/BG_BT_MID_SACRED_FOREST/bg_bt_mid_sacred_forest.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "Z3"
+      ],
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "prompt": "meta/generation_prompts_a2.md",
+      "raw": "raw/bg_bt_mid_sacred_forest_rework_raw.png",
+      "qa_notes": "A2 revision 1: middle parallax, 64 colors; sacred forest has open far-layer gaps.",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "transition_policy": "diagonal-alpha-blend"
+    },
+    {
+      "id": "BG_BT_MID_CAMP",
+      "category": "parallax",
+      "file": "bg/BG_BT_MID_CAMP/bg_bt_mid_camp.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "Z4"
+      ],
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "prompt": "meta/generation_prompts_a2.md",
+      "raw": "raw/bg_bt_mid_camp_raw.png",
+      "qa_notes": "A2 revision 1: middle parallax, 64 colors; sacred forest has open far-layer gaps.",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "transition_policy": "diagonal-alpha-blend"
+    },
+    {
+      "id": "PROP_BT_BRANCH",
+      "category": "prop",
+      "file": "props/PROP_BT_BRANCH/prop_bt_branch.png",
+      "w": 64,
+      "h": 16,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "Z3"
+      ],
+      "anchor": "top-left",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "prompt": "meta/generation_prompts_a2.md",
+      "raw": "raw/prop_bt_branch_rework_raw.png",
+      "qa_notes": "A2 revision 1: thicker branch, 32 colors, walkable top at row 0.",
+      "pivot": {
+        "y": 0,
+        "x": 0
+      },
+      "visible_bbox": {
+        "y": 0,
+        "w": 60,
+        "h": 9,
+        "x": 2
+      }
+    },
+    {
+      "id": "PROP_BT_BRANCH_LONG",
+      "category": "prop",
+      "file": "props/PROP_BT_BRANCH_LONG/prop_bt_branch_long.png",
+      "w": 128,
+      "h": 16,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "Z3"
+      ],
+      "anchor": "top-left",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "prompt": "meta/generation_prompts_a2.md",
+      "raw": "raw/prop_bt_branch_rework_raw.png",
+      "qa_notes": "A2 revision 1: thicker long branch, 32 colors, walkable top at row 0.",
+      "pivot": {
+        "y": 0,
+        "x": 0
+      },
+      "visible_bbox": {
+        "y": 0,
+        "w": 120,
+        "h": 9,
+        "x": 4
+      }
+    },
+    {
+      "id": "ITEM_BT_TINH_HOA",
+      "category": "item",
+      "file": "items/ITEM_BT_TINH_HOA/item_bt_tinh_hoa_idle.png",
+      "w": 64,
+      "h": 16,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "Z4"
+      ],
+      "anchor": "center",
+      "frames": 4,
+      "fps": 8,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "prompt": "meta/generation_prompts_a2.md",
+      "raw": "raw/item_bt_tinh_hoa_idle_raw.png",
+      "qa_notes": "A2 revision 1: four-frame 64x16 logical strip.",
+      "pivot": {
+        "y": 8,
+        "x": 8
+      },
+      "frame_w": 16,
+      "frame_h": 16
+    },
+    {
+      "id": "PROP_BT_CAMP_GATE",
+      "category": "prop",
+      "file": "props/PROP_BT_CAMP_GATE/prop_bt_camp_gate.png",
+      "w": 192,
+      "h": 176,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "Z4"
+      ],
+      "anchor": "bottom-center-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "prompt": "meta/generation_prompts_a2.md",
+      "raw": "raw/prop_bt_camp_gate_raw.png",
+      "qa_notes": "A2: closed woven bamboo gate with thatch roof.",
+      "pivot": {
+        "y": 176,
+        "x": 96
+      },
+      "visible_bbox": {
+        "y": 1,
+        "w": 184,
+        "h": 174,
+        "x": 4
+      }
+    },
+    {
+      "id": "PROP_BT_CAMP_GATE_OPEN",
+      "category": "prop",
+      "file": "props/PROP_BT_CAMP_GATE_OPEN/prop_bt_camp_gate_open.png",
+      "w": 192,
+      "h": 176,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "Z4"
+      ],
+      "anchor": "bottom-center-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "prompt": "meta/generation_prompts_a2.md",
+      "raw": "raw/prop_bt_camp_gate_open_raw.png",
+      "qa_notes": "A2: outer pixels copied from closed gate; central doors open to transparent passage.",
+      "pivot": {
+        "y": 176,
+        "x": 96
+      },
+      "visible_bbox": {
+        "y": 1,
+        "w": 184,
+        "h": 174,
+        "x": 4
+      }
+    },
+    {
+      "id": "BG_BT_MID_MARSH",
+      "category": "parallax",
+      "file": "bg/BG_BT_MID_MARSH/bg_bt_mid_marsh.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "BT_L2_MARSH"
+      ],
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "NORMALIZED",
+      "prompt": "bg/BG_BT_MID_MARSH/bg_bt_mid_marsh.prompt.txt",
+      "raw": "raw/bg_bt_mid_marsh_revision_raw.png",
+      "qa_notes": "BT_ART_02 B1: 3072x640, 64 inherited map colors, binary alpha. Edge seam p95 34 versus internal p95 67; 82 edge rows differ. Opened 212 enclosed key pockets in foliage/reeds/shelter. Zone tag is provisional for game integration.",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "transition_policy": "diagonal-alpha-blend"
+    },
+    {
+      "id": "BG_BT_FAR_PLAIN",
+      "category": "parallax",
+      "file": "bg/BG_BT_FAR_PLAIN/bg_bt_far_plain.png",
+      "w": 960,
+      "h": 120,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "BT_L2_MARSH"
+      ],
+      "anchor": "bottom-at-y-230",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "NORMALIZED",
+      "prompt": "bg/BG_BT_FAR_PLAIN/bg_bt_far_plain.prompt.txt",
+      "raw": "raw/bg_bt_far_plain_raw.png",
+      "tileable_x": true,
+      "parallax_hint": 0.2,
+      "qa_notes": "BT_ART_02 B2: low blue-gray distant hills and flooded plain; 48 existing palette colors, binary alpha, opaque bottom. Native-resolution 1920px cyclic tile repeated twice, no enlargement/mirroring/identical-edge copy. Seam metrics in meta/gate_b2/far_plain_qa.json."
+    }
+  ]
 }

@@ -7,12 +7,12 @@ import {
   SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, BORROWED_MAPS, FINISH_GATE, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
   LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
   OBSTACLE_TYPES, QUIZ_STELE_ID, MAP_PROPS_IN_GAME, HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES, NPC_SPRITES,
-  ITEM, REWARD_NAMES, TEXT
+  ITEM, REWARD_NAMES, TEXT, GUIDE_LOCAL_X
 } from './config.js';
 import { QUESTIONS } from './questions-data.js';
-import { NPC_DIALOGUES, CHAPTER_END } from './dialogue-data.js';
+import { NPC_DIALOGUES, CHAPTER_END, STORY_BA_TRIEU_INTRO } from './dialogue-data.js';
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
-import { level1Content } from './level1.js';
+import { level1Content, level1Events } from './level1.js';
 import { level2Content } from './level2.js';
 import { level3Content, updateLevel3 } from './level3.js';
 
@@ -43,12 +43,17 @@ export const BA_TRIEU = {
   chapterEnd: CHAPTER_END,
   text: TEXT,
   audio: { sfx: SFX, music: MUSIC, musicFiles: MUSIC_FILES },
+  // Cờ nghỉ chân màn 1 (level1Events).
+  stateFields: () => ({ restUsed: false }),
   levels: {
     1: {
       id: 1, title: 'Màn 1: Rừng núi Nưa', url: LEVEL_URLS[1],
       chunks: LEVEL1_CHUNKS, worldWidth: CHUNK_W * LEVEL1_CHUNKS, zones: LEVEL1_ZONES, finishX: LEVEL1_FINISH_X, gate: FINISH_GATE,
       sprites: LEVEL_SPRITES[1],
       content: level1Content,
+      events: level1Events,
+      // Bà Triệu chờ người chơi ở đầu màn (thoại BT-L1 §3, duyệt 17/10/2026).
+      guide: { npc: 'baTrieu', localX: GUIDE_LOCAL_X, story: STORY_BA_TRIEU_INTRO },
       // BT-00 §5.1 (nguyên văn, duyệt 17/10/2026).
       introMessage: 'Màn 1: Rừng núi Nưa — Năm 248, quan lại Đông Ngô cướp bóc dân lành. Hãy theo Triệu Thị Trinh vào núi Nưa, thu đủ 5 Quyển Sách Tinh Hoa.',
       introMessageTime: 4200,

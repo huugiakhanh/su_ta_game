@@ -202,7 +202,7 @@ Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy nguyên văn Excel.
 | Đợt | Nội dung |
 |---|---|
 | `BT_ART_01` | `NPC_BA_TRIEU` (dẫn màn) + `PORTRAIT_BA_TRIEU` (tận dụng `docs/CODEX_PROMPT_SAMPLE_BT_DBL.md`), 8 địch/vật cản mục 3.1 + đạn (tên nỏ, hòm bạc), cành cây bục, Quyển Sách Tinh Hoa, bia câu hỏi, nền + tile núi Nưa, điểm đích doanh trại |
-| `BT_ART_02` | NPC + chân dung Triệu Quốc Đạt, ba anh em họ Lý, Bạch Tượng; voi trắng kỹ năng; icon 3 kỹ năng; nền + tile đầm lầy Bồ Điền |
+| `BT_ART_02` | [CODEX_PROMPT_BT_ART_02.md](CODEX_PROMPT_BT_ART_02.md) (duyệt 19/10): NPC + chân dung Triệu Quốc Đạt, nhóm họ Lý (1 sprite), Bạch Tượng (`charge` dùng cho kỹ năng); lính Ngô thường `EN_NGO_SOLDIER` (quân vây NPC); FX khiên + chí mạng; icon 3 kỹ năng; nền đầm lầy Bồ Điền (không tileset riêng — engine 1 tileset/chương) |
 | `BT_ART_03` | Lục Dận (trên đài, rơi, chạy) + chân dung, tháp vàng, kỵ binh thiết giáp, tên độc, tiền vàng, nền chiến lũy, cờ chiến thắng |
 
 Nhạc nền 3 màn: giao **Gemini Pro** (người dùng chốt 17/10) theo [GEMINI_PROMPT_BT_MUSIC.md](GEMINI_PROMPT_BT_MUSIC.md); trong lúc chờ tạm dùng nhạc chương 1.

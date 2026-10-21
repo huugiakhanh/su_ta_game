@@ -25,7 +25,7 @@ Lý do của các quyết định cũ nằm trong report ở `docs/archive/` (tr
 - **Màn 2 — Chiêu mộ hiền tài** (`…/trung-trac/2`): giải cứu và gặp Thi Sách → Lê Chân → Trưng Nhị, trả lời câu hỏi, nhận phần thưởng.
 - **Màn 3 — Trận Luy Lâu** (`…/trung-trac/3`): boss Tô Định 3 giai đoạn, cutscene kết chương.
 
-Chương **Bà Triệu** (chương 2) đang làm theo [docs/SUTA_BT_TASK_00.md](docs/SUTA_BT_TASK_00.md): mới có **khung** 3 màn (`/gameplay/levels/ba-trieu[/2|/3]`) với asset riêng màn 1 (BT_ART_01) + vài asset mượn chương 1; bố cục thật, NPC, boss chưa làm; thẻ trang chủ còn khoá.
+Chương **Bà Triệu** (chương 2) đang làm theo [docs/SUTA_BT_TASK_00.md](docs/SUTA_BT_TASK_00.md): **màn 1 "Rừng núi Nưa" đã chơi được** (`/gameplay/levels/ba-trieu`: 12 chướng ngại xáo theo vùng, mini-boss tham quan thu thuế, Bà Triệu dẫn màn); màn 2–3 còn khung (`…/ba-trieu/2`, `/3`), chưa NPC chiêu mộ, kỹ năng, boss Lục Dận; thẻ trang chủ còn khoá.
 
 Phần thưởng màn 2 chỉ có tác dụng ở màn 3. Giáp, tăng dame vĩnh viễn, cửa hàng, năng lượng **chưa có**. Khi được yêu cầu làm việc liên quan, kiểm tra code thực tế thay vì giả định roadmap đã xong.
 

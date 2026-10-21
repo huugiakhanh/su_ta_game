@@ -43,7 +43,10 @@ scene Godot. Claude soát, chép vào game và tích hợp.
 
 - Mỗi animation = **strip ngang 1×N**, mỗi ô đúng cỡ, không khoảng cách, true alpha. Strip rộng `frames × frame_w × 4`, cao `frame_h × 4`.
 - **Pivot bottom-center**, quay mặt **PHẢI** (code tự lật). Baseline: hàng có nội dung thấp nhất của chân trong [`frame_h×4 − 8`,
-  `frame_h×4 − 5`] (người: 184–187, khuyến nghị 187); mọi frame cùng baseline, cùng tỉ lệ thân (người: thân cao 120–136 px ảnh).
+  `frame_h×4 − 5`] (người: 184–187, khuyến nghị 187); mọi frame cùng baseline, cùng tỉ lệ thân.
+- **Chiều cao chuẩn người trưởng thành (chốt 19/10/2026, mọi chương):** từ **đỉnh sọ** tới đáy chân ở `idle` = **34 ± 1 px logic
+  (132–140 px ảnh)**, **không tính** mũ, búi tóc, lông chim, vương miện, vũ khí. Nữ/thiếu niên dáng nhỏ được tới 33. Mốc so: `PLAYER_MALE`
+  / `PLAYER_FEMALE` (~35). Boss, mini-boss, quan béo… lớn hơn chỉ khi prompt ghi số riêng. Report ghi số đo đỉnh sọ của mọi người mới.
 - **Số frame:** animation **lặp** tự do; animation **không lặp** được thêm frame nhưng phải giữ nhịp: tổng thời lượng `frames/fps` và
   tỉ lệ `(hit_frame − 1)/frames` không đổi (vd. 6 frame @12 chạm ô 3 → 9 frame @18 chạm ô 4). `PLAYER_TRUNG_TRAC.jump` đúng **3** ô
   (lên/đỉnh/rơi — code chọn theo vận tốc). Số frame cụ thể do prompt quy định.
