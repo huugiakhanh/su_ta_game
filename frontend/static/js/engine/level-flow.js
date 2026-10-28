@@ -187,18 +187,23 @@ function updateMeetings(p, dt) {
 
   const npc = state.npcs.find(item => !item.met);
   if (!npc) return false;
+  // NPC to (voi, nhóm người) khai báo `holdGap` riêng trong sprites.npcs để
+  // người chơi đứng ngoài thân; khoảng nói chuyện dời theo cùng độ lệch.
+  const holdGap = CHAPTER.sprites.npcs?.[npc.id]?.holdGap ?? NPC_RULES.holdGap;
+  const talkDistance = NPC_RULES.talkDistance + holdGap - NPC_RULES.holdGap;
   const front = p.x + p.w;
-  if (front > npc.centerX - NPC_RULES.holdGap) {
-    p.x = npc.centerX - NPC_RULES.holdGap - p.w;
+  if (front > npc.centerX - holdGap) {
+    p.x = npc.centerX - holdGap - p.w;
     p.vx = 0;
   }
   const distance = npc.centerX - (p.x + p.w);
-  const captive = state.enemies.some(enemy => enemy.captorOf === npc.id && enemy.alive);
+  // Quân vây = enemy hoặc hazard (thợ săn…) có `captorOf` còn sống.
+  const captive = [...state.enemies, ...state.hazards].some(item => item.captorOf === npc.id && item.alive);
   if (captive && distance <= NPC_RESCUE.hintRange && state.rescueHintTimer <= 0) {
     state.rescueHintTimer = NPC_RESCUE.hintInterval;
     showMessage(CHAPTER.text.rescueHint(CHAPTER.dialogues[npc.id].name), 2400);
   }
-  if (!captive && distance <= NPC_RULES.talkDistance) {
+  if (!captive && distance <= talkDistance) {
     openNpcDialogue(npc, () => { npc.met = true; });
     return true;
   }

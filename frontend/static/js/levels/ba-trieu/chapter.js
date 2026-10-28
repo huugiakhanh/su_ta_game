@@ -1,11 +1,12 @@
 // Định nghĩa chương Bà Triệu (chương 2) cho engine màn chơi. Hợp đồng các
-// trường: engine/chapter.js. 3 màn khung (BT-SKELETON) với asset riêng
-// BT_ART_01 + asset map mượn chương 1 (config.js) — chưa có NPC, kỹ năng, boss.
+// trường: engine/chapter.js. Màn 1 (BT-L1), màn 2 (BT-L2: 3 NPC chiêu mộ),
+// màn 3 còn khung — chưa có kỹ năng, boss. Asset riêng BT_ART_01/02 + asset map
+// mượn chương 1 (config.js).
 
 import { CHUNK_W } from '../../engine/config.js';
 import {
   SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, BORROWED_MAPS, FINISH_GATE, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
-  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
+  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FAR_HILLS, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
   OBSTACLE_TYPES, QUIZ_STELE_ID, MAP_PROPS_IN_GAME, HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES, NPC_SPRITES,
   ITEM, REWARD_NAMES, TEXT, GUIDE_LOCAL_X
 } from './config.js';
@@ -13,7 +14,7 @@ import { QUESTIONS } from './questions-data.js';
 import { NPC_DIALOGUES, CHAPTER_END, STORY_BA_TRIEU_INTRO } from './dialogue-data.js';
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
 import { level1Content, level1Events } from './level1.js';
-import { level2Content } from './level2.js';
+import { level2Content, level2Events } from './level2.js';
 import { level3Content, updateLevel3 } from './level3.js';
 
 export const BA_TRIEU = {
@@ -64,8 +65,10 @@ export const BA_TRIEU = {
     2: {
       id: 2, title: 'Màn 2: Chiêu mộ hiền tài', url: LEVEL_URLS[2],
       chunks: LEVEL2_CHUNKS, worldWidth: CHUNK_W * LEVEL2_CHUNKS, zones: LEVEL2_ZONES, finishX: LEVEL2_FINISH_X, gate: null,
+      farHills: LEVEL2_FAR_HILLS,
       sprites: LEVEL_SPRITES[2],
       content: level2Content,
+      events: level2Events,
       introMessage: 'Màn 2: Chiêu mộ hiền tài',
       summary: state => `Bạn đạt ${state.score} điểm.`
     },

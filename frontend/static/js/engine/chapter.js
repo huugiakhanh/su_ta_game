@@ -52,6 +52,7 @@
 //     gate?        { closed, open, worldX, flag? } — cổng vẽ tại worldX (null = không cổng)
 //     arena?       true = đấu trường: tường 2 đầu, không về đích, camera neo tâm
 //     playerStartX? mép trái hitbox người chơi lúc vào màn (mặc định PLAYER_START_X)
+//     farHills?    đồi xa riêng màn (cùng dạng CHAPTER.farHills, thay cho bản của chương)
 //     sprites      ID sprite canvas màn này cần nạp (ngoài sprite người chơi)
 //     content(options) -> { obstacles, hazards, holes, items, enemies, npcs, quizzes, platforms?, ...thêm }
 //                  (platforms: bục một chiều — entities.js makePlatform; bục lưng hazard `ride` tự thêm)

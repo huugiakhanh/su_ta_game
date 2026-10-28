@@ -40,7 +40,10 @@ export const LEVEL_SPRITES = {
     'PLAYER_BA_TRIEU', 'EN_NGO_LUMBERJACK', 'EN_NGO_HUNTER', 'PJ_CROSSBOW_BOLT', 'OB_BOULDER', 'EN_WILD_ELEPHANT',
     'TR_BAMBOO_SPIKE_PIT', 'EN_NGO_CAVALRY', 'FX_MIASMA', 'EN_NGO_TAX_OFFICIAL', 'PJ_SILVER_CHEST'
   ],
-  2: ['EN_NGO_LUMBERJACK', 'TR_BAMBOO_SPIKE_PIT'],
+  2: [
+    'NPC_TRIEU_QUOC_DAT', 'NPC_HO_LY', 'NPC_BACH_TUONG', 'EN_NGO_SOLDIER', 'EN_NGO_LUMBERJACK', 'EN_NGO_HUNTER',
+    'PJ_CROSSBOW_BOLT', 'OB_BOULDER', 'TR_BAMBOO_SPIKE_PIT', 'EN_NGO_CAVALRY'
+  ],
   3: ['EN_NGO_LUMBERJACK']
 };
 
@@ -85,14 +88,27 @@ export const REST = { chunk: 9, localX: 282 };
 // 5 Quyển Sách Tinh Hoa cố định: [chunk, localX, độ cao trên mặt đất].
 export const LEVEL1_ITEMS = [[2, 390, 56], [4, 640, 60], [6, 300, 64], [7, 600, 72], [9, 420, 60]];
 
-// ---- Màn 2 "Chiêu mộ hiền tài" (PLACEHOLDER cảnh: chờ nền Bồ Điền ở BT_ART_02) ----
-export const LEVEL2_CHUNKS = 4;
+// ---- Màn 2 "Chiêu mộ hiền tài" (BT-L2, docs/SUTA_BT_TASK_L2_01.md) ----
+// 9 chunk cố định: rừng nứa (Triệu Quốc Đạt) -> sườn đá -> đầm lầy Bồ Điền (họ
+// Lý, Bạch Tượng). Đồi xa đồng bằng riêng màn (engine LEVEL.farHills). Về đích
+// cuối chunk 9 khi đã gặp đủ 3 NPC (không cổng, như chương 1).
+export const LEVEL2_CHUNKS = 9;
 export const LEVEL2_ZONES = [
-  { id: 'BT2', x0: 0, x1: CHUNK_W * 2, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_NUA_FOREST' },
-  { id: 'BT3', x0: CHUNK_W * 2, x1: CHUNK_W * 3, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_SACRED_FOREST' },
-  { id: 'BT5', x0: CHUNK_W * 3, x1: CHUNK_W * LEVEL2_CHUNKS, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_CAMP' }
+  { id: 'BT2', x0: 0, x1: CHUNK_W * 3, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_NUA_FOREST' },
+  { id: 'BT4', x0: CHUNK_W * 3, x1: CHUNK_W * 5, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_ROCKY_SLOPE' },
+  { id: 'BT6', x0: CHUNK_W * 5, x1: CHUNK_W * LEVEL2_CHUNKS, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_MARSH' }
 ];
+export const LEVEL2_FAR_HILLS = { id: 'BG_BT_FAR_PLAIN', parallax: 0.2, bottomY: 230, hiddenUnderSky: [] };
 export const LEVEL2_FINISH_X = CHUNK_W * LEVEL2_CHUNKS - 96;
+// Quân vây NPC (giải cứu): [dx tâm so với tâm NPC, đoạn tuần tra [min, max]].
+// Triệu Quốc Đạt = như engine NPC_RESCUE (1 trái, 1 phải); họ Lý (nhóm 3 người
+// rộng ±43) cả 2 lính bên trái, đoạn tuần tra tới chỗ người chơi bị giữ
+// (holdGap 48); Bạch Tượng: 2 thợ săn nấp bên trái (đứng yên, bắn nỏ).
+export const CAPTORS = {
+  quocDat: [{ dx: -100, patrol: [-170, -30] }, { dx: 48, patrol: [-60, 80] }],
+  hoLy: [{ dx: -110, patrol: [-180, -60] }, { dx: -170, patrol: [-240, -60] }],
+  bachTuong: [{ dx: -130 }, { dx: -220 }]
+};
 
 // ---- Màn 3 "Chiến lũy Bồ Điền" (PLACEHOLDER: đấu trường trại, chưa có boss — BT_ART_03) ----
 // Đấu trường 1 chunk, tường vô hình 2 đầu. Quân ra ở spawnX; hết đợt cuối +
@@ -114,12 +130,11 @@ export const WAVES = {
 // Câu hỏi chặn đường (điểm + luật ở engine):
 //   level1Count  số câu mỗi lượt màn 1 (rút ngẫu nhiên, không trùng).
 //   level1Spots  [chunk, localX] — chạm x này thì hỏi (theo thứ tự).
-//   level2Spots  [chunk, localX] — 3 câu màn 2, lần lượt từ pool quocDat, hoLy,
-//                bachTuong (chưa có NPC — gắn NPC ở BT-L2).
+//   level2Spots  [chunk, localX] — câu hỏi về NPC sắp gặp (pool cùng tên).
 export const QUIZ = {
   level1Count: 4,
   level1Spots: [[3, 312], [5, 640], [8, 312], [10, 560]],
-  level2Spots: { quocDat: [1, 600], hoLy: [2, 600], bachTuong: [3, 600] }
+  level2Spots: { quocDat: [2, 560], hoLy: [5, 560], bachTuong: [8, 560] }
 };
 
 // ---- Môi trường ----
@@ -152,12 +167,27 @@ export const GUARD = {
   patrolRange: 96, speed: 20, aggroRange: 110,
   attackReach: 14, attackBoxY: 22, attackBoxH: 12, attackCooldown: 1.8, damage: 2
 };
+export const SOLDIER = { w: 22, h: 34, hp: 2 };
+export const SOLDIER_GUARD = {
+  patrolRange: 96, speed: 22, aggroRange: 130,
+  attackReach: 49, attackBoxY: 10, attackBoxH: 9, attackCooldown: 1.6, damage: 1
+};
 export const ENEMY_SPRITES = {
   normal: {
     id: 'EN_NGO_LUMBERJACK', behavior: 'guard', rules: GUARD,
     anims: { idle: 'idle', walk: 'walk', attack: 'attack_01', hurt: 'hurt', death: 'death' },
     attackMessage: 'Bạn bị lính đốn gỗ bổ rìu trúng!', contactMessage: 'Bạn va phải lính Ngô!',
     defeatMessage: 'Đã đánh bại lính đốn gỗ.'
+  },
+  // Lính Ngô thường EN_NGO_SOLDIER (BT-L2, quân vây NPC — enemy `art: 'soldier'`):
+  // thân ~14 px rộng, sọ→chân ~35 -> hitbox 22×34. Kích ô hit 4 (9@18) vươn tới
+  // 60 px từ tâm (49 px ngoài mép), cao 16–24 px trên chân = 10–18 px từ đỉnh
+  // hitbox. Q4: giữ đúng tầm hình nhưng sát thương 1, nghỉ 1,6 s.
+  soldier: {
+    id: 'EN_NGO_SOLDIER', behavior: 'guard', rules: SOLDIER_GUARD,
+    anims: { idle: 'idle', walk: 'walk', attack: 'attack_01', hurt: 'hurt', death: 'death' },
+    attackMessage: 'Bạn bị lính Ngô đâm kích trúng!', contactMessage: 'Bạn va phải lính Ngô!',
+    defeatMessage: 'Đã đánh bại lính Ngô.'
   }
 };
 export const HAZARD_SPRITES = {
@@ -226,15 +256,16 @@ export const PROJECTILE_SPRITES = {
   crossbowBolt: { id: 'PJ_CROSSBOW_BOLT', anim: 'idle', w: 12, h: 3 },
   silverChest: { id: 'PJ_SILVER_CHEST', anim: 'loop', w: 10, h: 10 }
 };
-// NPC: Bà Triệu dẫn màn 1; 3 NPC màn 2 (BT_ART_02) khai báo sẵn — đặt vào màn ở
-// BT-L2 (khi đó thêm ID vào LEVEL_SPRITES[2]). NPC_HO_LY: 3 người trong 1 ô
-// 112×48, chỉ Lý Hoằng (giữa) nói. NPC_BACH_TUONG ô 128×96: `bow` (không lặp)
-// sau khi trả lời đúng, `charge` dùng cho kỹ năng Gọi Bạch Tượng (BT-L3).
+// NPC: Bà Triệu dẫn màn 1; 3 NPC màn 2 (BT_ART_02). NPC_HO_LY: 3 người trong 1
+// ô 112×48 (thấy được ±43 px quanh tâm), chỉ Lý Hoằng (giữa) nói.
+// NPC_BACH_TUONG ô 128×96 (thân voi ±52 px): `bow` để BT-L3 (Q5), `charge`
+// dùng cho kỹ năng Gọi Bạch Tượng. `holdGap` (engine updateMeetings) = người
+// chơi dừng cách tâm NPC bao xa — ngoài thân NPC to.
 export const NPC_SPRITES = {
   baTrieu: { id: 'PLAYER_BA_TRIEU', portrait: 'PORTRAIT_BA_TRIEU', anims: { idle: 'idle', talk: 'talk' } },
   quocDat: { id: 'NPC_TRIEU_QUOC_DAT', portrait: 'PORTRAIT_TRIEU_QUOC_DAT', anims: { idle: 'idle', talk: 'talk' } },
-  hoLy: { id: 'NPC_HO_LY', portrait: 'PORTRAIT_LY_HOANG', anims: { idle: 'idle', talk: 'talk' } },
-  bachTuong: { id: 'NPC_BACH_TUONG', portrait: 'PORTRAIT_BACH_TUONG', anims: { idle: 'idle', talk: 'talk', bow: 'bow' } }
+  hoLy: { id: 'NPC_HO_LY', portrait: 'PORTRAIT_LY_HOANG', anims: { idle: 'idle', talk: 'talk' }, holdGap: 48 },
+  bachTuong: { id: 'NPC_BACH_TUONG', portrait: 'PORTRAIT_BACH_TUONG', anims: { idle: 'idle', talk: 'talk' }, holdGap: 56 }
 };
 
 // ---- Phần thưởng màn 2 (id khớp seed backend/migrations/005_ba_trieu.sql) ----

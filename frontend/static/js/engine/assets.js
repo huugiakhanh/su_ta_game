@@ -76,7 +76,7 @@ export function loadSharedManifest() {
 // ID lớp nền màn đang chơi cần: trời + lớp giữa của mọi vùng, và đồi xa — trừ
 // khi trời của MỌI vùng đều che đồi xa (farHills.hiddenUnderSky — vd. màn 3 Trưng Trắc).
 function backdropIds() {
-  const hills = CHAPTER.farHills;
+  const hills = LEVEL.farHills ?? CHAPTER.farHills;
   const skies = LEVEL.zones.map(zone => zone.sky);
   const hillsVisible = hills && skies.some(sky => !hills.hiddenUnderSky.includes(sky));
   return [...new Set([...LEVEL.zones.flatMap(zone => [zone.sky, zone.mid]), ...(hillsVisible ? [hills.id] : [])])];

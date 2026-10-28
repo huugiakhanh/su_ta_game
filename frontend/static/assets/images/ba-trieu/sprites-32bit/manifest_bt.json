@@ -442,7 +442,7 @@
       "density": 4,
       "pivot": "bottom-center",
       "facing": "right",
-      "status": "NORMALIZED",
+      "status": "IN_GAME",
       "visible_bbox": {
         "x": 16,
         "y": 11,
@@ -478,7 +478,7 @@
       "density": 4,
       "pivot": "bottom-center",
       "facing": "right",
-      "status": "NORMALIZED",
+      "status": "IN_GAME",
       "visible_bbox": {
         "x": 13,
         "y": 34,
@@ -564,7 +564,7 @@
       "density": 4,
       "pivot": "bottom-center",
       "facing": "right",
-      "status": "NORMALIZED",
+      "status": "IN_GAME",
       "visible_bbox": {
         "x": 13,
         "y": 6,
@@ -644,7 +644,7 @@
       "density": 4,
       "pivot": "bottom-center",
       "facing": "right",
-      "status": "NORMALIZED",
+      "status": "IN_GAME",
       "animations": [
         {
           "name": "idle",

@@ -63,7 +63,7 @@ function drawSky() {
 // Đồi xa tắt dần dưới các ảnh trời trong CHAPTER.farHills.hiddenUnderSky (trời giông),
 // theo đúng hệ số hoà của trời nên cả hai đổi cùng nhịp.
 function drawFarHills() {
-  const hills = CHAPTER.farHills;
+  const hills = LEVEL.farHills ?? CHAPTER.farHills;
   const image = hills && images.maps.layers[hills.id];
   if (!image) return;
   const { from, to, t } = sceneryAt('sky');

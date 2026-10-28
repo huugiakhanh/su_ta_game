@@ -30,7 +30,7 @@ Engine ở `frontend/static/js/engine/` chạy **mọi chương**. Phần riêng
   - nút panel;
   - xử lý `?viewer=1`, `?debug=1`, `?layout=<LEVEL.testLayout>`.
 - Mô phỏng:
-  - `level-flow.js`: `update(dt)`, cảnh vào màn + NPC dẫn (`LEVEL.guide`), câu hỏi chặn đường, gặp/giải cứu NPC, vật phẩm, về đích, camera, khe kỹ năng.
+  - `level-flow.js`: `update(dt)`, cảnh vào màn + NPC dẫn (`LEVEL.guide`), câu hỏi chặn đường, gặp/giải cứu NPC (quân vây = enemy **hoặc hazard** `captorOf`; NPC to khai báo `sprites.npcs[id].holdGap` — BT-L2), vật phẩm, về đích, camera, khe kỹ năng. Đồi xa: `LEVEL.farHills ?? CHAPTER.farHills`.
   - `player.js`: điều khiển/vật lý người chơi, đánh, lướt, animation; đứng trên **bục một chiều** `state.platforms` (BT-ENGINE E6: tiếp đất từ trên khi `vy ≥ 0` và chân frame trước ≤ mặt bục + `GROUND_SNAP_DISTANCE`; nhảy từ dưới / đi ngang xuyên qua; không có thao tác rơi xuyên — ↓ là lướt; `p.platform` = bục đang đứng, bục gắn hazard chở người chơi theo `dx`).
   - `combat.js`: `strikeEnemy(enemy, damage)`, `strikeHazard(hazard, damage)`, `strike(target, damage)`, `breakHazard`, `spearBox`, `playerStrike`/`attackDamage` (đòn chém người chơi: sát thương + chí mạng do `CHAPTER.skills.attackDamage`, chí mạng gọi `hooks.onCrit` — BT-ENGINE).
   - `damage.js`: `hurtPlayer(reason, amount = 1)`, `respawnAfterFall`, `playerImmune`. Số máu mất lấy từ dữ liệu chương: `damage` của hazard/đạn, `rules.damage` của lính (cú đánh); không khai báo = 1.
