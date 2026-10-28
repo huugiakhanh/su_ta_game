@@ -55,7 +55,7 @@
           "hit_frame": null
         }
       ],
-      "qa_notes": "BT_ART_02 Gate B1 bản sửa 1: idle/walk/hurt/death xuất lại từ raw, attack từ revision3_source; hệ số ×34/31, 10@10 hit 7 frame_w 80 logic, mảnh nguồn đã lọc."
+      "qa_notes": "BT_ART_02_FIX_LJ — 28/10/2026: hurt/death/attack_01 rebuilt from new high-resolution ImageGen grids using accepted idle as identity/scale reference; fixed per-animation nearest scales 0.320/0.345/0.455, fixed source center to pivot, baseline 187. idle/walk untouched. Frames/fps/hit7/frame_w unchanged (death remains 48). Binary alpha, <=32 accepted palette colors. Anatomical landmarks estimated under cloth cap; final visual acceptance pending Claude /asset-review. See SPRITE_REPORT_BT_32.md and meta/fix_lj/qa_results.json."
     },
     {
       "id": "EN_WILD_ELEPHANT",

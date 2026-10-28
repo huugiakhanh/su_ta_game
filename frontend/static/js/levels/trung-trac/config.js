@@ -289,14 +289,15 @@ export const HAZARD_SPRITES = {
 //   attackBoxY / attackBoxH  dải dọc của mũi kích so với đỉnh hitbox lính.
 //   attackCooldown  nghỉ giữa 2 cú đâm (giây), tính từ lúc đâm xong hoặc lúc
 //                bị chém ngắt cú đâm.
-// Vùng đâm đo theo strip attack_01 vẽ lại 2026-09-26. Ở ô hit 3–4, mũi kích
-// tới x=43/42 trong cell 48px: 8px quá mép hitbox (pivot 24, nửa hitbox 11).
-// attackReach thêm 4px dung sai; dải mũi kích y=20–29 trong sprite tương ứng
-// y=13–22 tính từ đỉnh hitbox lính. Body cao trung bình 40.5px, lệch 7.4% so
-// với idle 43.75px và nằm trong ngưỡng đồng bộ sprite.
+// Vùng đâm đo theo strip attack_01 SCALE_FIX_01 (28/10/2026, lính vẽ lại ×1,18
+// theo chuẩn cao 34 px logic; `frame_w` 128): ô hit 4 mũi kích cách pivot 29,5
+// px = 18,5 px quá mép hitbox (nửa hitbox 11) -> attackReach 18; dải mũi kích
+// ô 3–4 cách đỉnh hitbox 12–19,5 px -> attackBoxY 12, attackBoxH 9. Hitbox
+// 22×40 giữ nguyên: thân mới cao 33–34 px (đỉnh sọ -> chân) + mũ, khớp hitbox
+// hơn bản cũ (~29 px).
 export const GUARD = {
   patrolRange: 96, speed: 24, aggroRange: 110,
-  attackReach: 12, attackBoxY: 13, attackBoxH: 10, attackCooldown: 1.2
+  attackReach: 18, attackBoxY: 12, attackBoxH: 9, attackCooldown: 1.2
 };
 
 // Quân cảm tử EN_HAN_RUSHER (TT-BOSS-01 §3.3, DESIGN_BASELINE):

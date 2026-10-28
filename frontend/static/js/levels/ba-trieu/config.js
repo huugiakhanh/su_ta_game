@@ -144,8 +144,8 @@ export const MAP_PROPS_IN_GAME = [
 // lại ×1,097 theo chuẩn cao 34 px logic, px logic) — KHÔNG lấy từ cỡ ảnh. DESIGN_BASELINE.
 // Lính đốn gỗ EN_NGO_LUMBERJACK (hành vi `guard` của engine): thân cao ~34 px
 // logic (kể cả mũ) -> hitbox 24×34 (LUMBERJACK — nội dung màn dùng). Rìu ở ô hit 7
-// (10@10): đầu rìu cách tâm 24,5 px (12,5 px ngoài mép hitbox), cao 0–12 px
-// trên mặt chân = 22–34 px từ đỉnh hitbox. Vung chậm, sát thương 2 (BT-00
+// (10@10, vẽ lại BT_ART_02_FIX_LJ cùng khổ người idle): đầu rìu cách tâm 25 px
+// (13 px ngoài mép hitbox), cao 0–10,5 px trên mặt chân — ô đánh 0–12 px = 22–34 px từ đỉnh hitbox. Vung chậm, sát thương 2 (BT-00
 // §3.1); nghỉ 1,8 s giữa 2 nhát.
 export const LUMBERJACK = { w: 24, h: 34, hp: 2 };
 export const GUARD = {

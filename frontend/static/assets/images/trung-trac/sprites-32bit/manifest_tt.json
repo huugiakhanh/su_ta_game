@@ -114,7 +114,8 @@
           "frames": 9,
           "fps": 18,
           "loop": false,
-          "hit_frame": 4
+          "hit_frame": 4,
+          "frame_w": 128
         },
         {
           "name": "hurt",
@@ -130,10 +131,11 @@
           "frames": 6,
           "fps": 12,
           "loop": false,
-          "hit_frame": null
+          "hit_frame": null,
+          "frame_w": 80
         }
       ],
-      "qa_notes": "GATE 2 — đủ animation; người dùng duyệt 02/10/2026; chờ chơi thử trong game"
+      "qa_notes": "GATE 2 — đủ animation; người dùng duyệt 02/10/2026; chờ chơi thử trong game | SCALE_FIX_01 luot 2: NORMALIZED from raw; baseline 187, centered foot root, no reach-lock translation. Head QA in meta/scale_fix_01_r2/qa.json. Deferred victory, PLAYER_FEMALE.run and PLAYER_TRUNG_TRAC.hurt retained."
     },
     {
       "id": "NPC_TRUNG_NHI",

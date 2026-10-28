@@ -79,7 +79,7 @@
           "hit_frame": null
         }
       ],
-      "qa_notes": "TT-HERO-01 Gate H2: 8 animations complete; alpha 0/255; <=32 chapter-palette colors; frame sizes and hit_frame validated; pending /asset-review and game integration"
+      "qa_notes": "TT-HERO-01 Gate H2: 8 animations complete; alpha 0/255; <=32 chapter-palette colors; frame sizes and hit_frame validated; pending /asset-review and game integration | SCALE_FIX_01 luot 2: NORMALIZED from raw; baseline 187, centered foot root, no reach-lock translation. Head QA in meta/scale_fix_01_r2/qa.json. Deferred victory, PLAYER_FEMALE.run and PLAYER_TRUNG_TRAC.hurt retained."
     },
     {
       "id": "PLAYER_FEMALE",
@@ -158,7 +158,7 @@
           "hit_frame": null
         }
       ],
-      "qa_notes": "TT-HERO-01 Gate H2: 8 animations complete; alpha 0/255; <=32 chapter-palette colors; frame sizes and hit_frame validated; pending /asset-review and game integration"
+      "qa_notes": "TT-HERO-01 Gate H2: 8 animations complete; alpha 0/255; <=32 chapter-palette colors; frame sizes and hit_frame validated; pending /asset-review and game integration | SCALE_FIX_01 luot 2: NORMALIZED from raw; baseline 187, centered foot root, no reach-lock translation. Head QA in meta/scale_fix_01_r2/qa.json. Deferred victory, PLAYER_FEMALE.run and PLAYER_TRUNG_TRAC.hurt retained."
     },
     {
       "id": "ICON_SK_DASH",

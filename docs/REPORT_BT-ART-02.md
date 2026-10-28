@@ -30,6 +30,13 @@ Không sửa engine, không sửa chương Trưng Trắc, không đặt NPC/lín
 | 5 | Kỵ binh | PASS — hitbox 61×37, lao trúng −1 máu |
 | 6 | `pytest tests` | PASS — 94 passed, 1 skipped |
 
+## Sau commit 26f59f0 (21/10/2026)
+- Gỡ phần `renderScale` **chưa commit** (không phải của task này) ở 6 file engine/Trưng Trắc bằng `git restore`: nó phóng ảnh khi vẽ để
+  che lỗi tỉ lệ asset (đòn đánh người chơi ×1,2, lính Hán ×1,03) — trái rule "không hệ số bù tỉ lệ". Kiểm: không còn `renderScale` trong
+  `js/`; `pytest` 94 passed; màn 1 Trưng Trắc và Bà Triệu chém 2 đòn hạ lính, console sạch.
+- Sửa tận gốc giao Codex: [CODEX_PROMPT_SCALE_FIX_01.md](CODEX_PROMPT_SCALE_FIX_01.md) — `attack_01`/`victory` người chơi nhỏ hơn `idle`
+  ~15–18%; `EN_HAN_GUARD` lên chuẩn 34.
+
 ## TODO
 - Người dùng chơi tay màn 1 với lính Ngô mới (hitbox to hơn ~10%).
 - BT-L2: đặt `NPC_TRIEU_QUOC_DAT`, `NPC_HO_LY`, `NPC_BACH_TUONG`, `EN_NGO_SOLDIER` (cần `ENEMY_SPRITES` mới, `frame_w` 128 của `attack_01`), nền đầm lầy; thêm ID vào `LEVEL_SPRITES[2]`; đổi status → `IN_GAME`.

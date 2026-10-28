@@ -53,7 +53,8 @@ scene Godot. Claude soát, chép vào game và tích hợp.
 - `hit_frame` đếm từ 1. Đòn đánh có 3 pha rõ: **báo trước (≥ 2 frame) → chạm → thu về**. Tầm vũ khí ở ô chạm giữ như ảnh hiện tại
   (code tính vùng sát thương theo đó, lệch ≤ 8 px ảnh).
 - Ô rộng riêng 1 animation (`frame_w` riêng ≥ của asset, căn giữa pivot) chỉ khi prompt yêu cầu — hiện có `attack_01` của
-  `PLAYER_TRUNG_TRAC` và `NPC_TRUNG_NHI` (128).
+  `PLAYER_MALE`, `PLAYER_FEMALE`, `PLAYER_TRUNG_TRAC`, `NPC_TRUNG_NHI`, `EN_HAN_GUARD`, `EN_NGO_SOLDIER` (128), `attack_01` của
+  `EN_NGO_LUMBERJACK` (80), `death` của `EN_HAN_GUARD` (80).
 - Tên animation chuẩn: `idle`, `run`, `walk`, `jump`, `dash`, `attack_01`, `throw`, `hurt`, `death`, `talk`, `alarm`, `roll`, `break`,
   `charge`, `stun`, `shield_break`, `idle_cracked`, `flee`, `disarmed`, `victory`, `hidden`, `reveal`, `loop`, `impact`, `gallop`.
 - Không vẽ FX/đạn dính vào thân; không bóng đổ dưới chân (code vẽ).
