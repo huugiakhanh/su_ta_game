@@ -6,7 +6,7 @@ import { ui } from './ui.js';
 import { clearInput } from './input.js';
 import { GOLD_ICON_URL } from './config.js';
 import { CHAPTER, LEVEL, levelIds, isLastLevel } from './chapter.js';
-import { readProgress, saveProgress, submitLevelRecord } from './progress.js';
+import { readProgress, saveProgress, submitLevelRecord, markChapterCleared } from './progress.js';
 import { formatTime, levelTime } from './timer.js';
 import { playSfx, playMusic } from './audio.js';
 
@@ -53,6 +53,8 @@ export function endGame(won) {
   ui.replayChapter.hidden = !chapterEnd;
   ui.home.hidden = !chapterEnd;
   if (chapterEnd) {
+    // Cờ bền "đã qua chương" -> trang chủ mở khoá chương kế tiếp cho khách (HOME-UNLOCK).
+    markChapterCleared();
     ui.next.hidden = true;
     ui.endTitle.textContent = CHAPTER.chapterEnd.title;
     ui.endText.textContent = CHAPTER.chapterEnd.text(state.score);

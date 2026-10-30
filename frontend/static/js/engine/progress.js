@@ -206,3 +206,16 @@ export async function submitLevelRecord(level, seconds, score, stats) {
     return { status: 'error' };
   }
 }
+
+// Đã qua hết chương (thắng màn cuối) — cờ BỀN trong localStorage `suta.cleared.<CHAPTER.id>`
+// (HOME-UNLOCK): trang chủ dùng cho KHÁCH để mở khoá chương kế tiếp (tài khoản
+// đăng nhập thì server trả /api/game/cleared-chapters). Không xoá khi "Chơi lại
+// chương"; lượt chơi thử (`?debug=1`, `?layout=…`) không đặt cờ.
+export function markChapterCleared() {
+  if (isTestRun()) return;
+  try {
+    localStorage.setItem(`suta.cleared.${CHAPTER.id}`, '1');
+  } catch {
+    // Trình duyệt chặn localStorage: trang chủ coi như chưa qua (khách).
+  }
+}

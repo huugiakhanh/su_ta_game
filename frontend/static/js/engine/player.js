@@ -175,9 +175,16 @@ export function updatePlayerControl(dt) {
   p.hurtTimer = Math.max(0, p.hurtTimer - dt);
   p.attackCooldown = Math.max(0, p.attackCooldown - dt);
   p.dashCooldown = Math.max(0, (p.dashCooldown || 0) - dt);
+  p.stun = Math.max(0, (p.stun || 0) - dt);
   state.enemies.forEach(enemy => { enemy.hitTimer = Math.max(0, enemy.hitTimer - dt); });
 
-  const move = Number(keys.right) - Number(keys.left);
+  // Đang choáng (BT-L3 E2 — damage.js stunPlayer): bỏ qua phím, vẫn rơi theo trọng lực.
+  if (p.stun > 0) {
+    pressed.dash = false;
+    pressed.jump = false;
+    pressed.attack = false;
+  }
+  const move = p.stun > 0 ? 0 : Number(keys.right) - Number(keys.left);
   if (!p.dashing && move !== 0) p.facing = move;
 
   if (pressed.dash) startDash();

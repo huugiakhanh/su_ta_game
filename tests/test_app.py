@@ -191,6 +191,16 @@ def test_ba_trieu_rewards_and_achievements(client):
     assert (gold, gems) == (120 + 180 + 240 + 60 + 60, 8 + 12 + 6)
 
 
+def test_cleared_chapters(client):
+    # HOME-UNLOCK: chương 1 chỉ tính đã qua khi qua màn cuối (103).
+    register_and_login(client)
+    save_time(client, 101, 100)
+    save_time(client, 102, 200)
+    assert client.get("/api/game/cleared-chapters").json["chapters"] == []
+    save_time(client, 103, 300)
+    assert client.get("/api/game/cleared-chapters").json["chapters"] == [1]
+
+
 def test_achievements_list(client):
     guest = client.get("/api/game/achievements").json["data"]
     # 6 thành tựu chương 1 + 4 chương 2 (migration 006).

@@ -21,6 +21,8 @@ export function playerImmune(p) {
 export function hurtPlayer(reason, amount = 1) {
   const p = state.player;
   if (p.invulnerable > 0 || state.won) return;
+  // Kỹ năng chặn đòn của chương (BT-L3 E1 — Khiên mây tre) -> bỏ qua sát thương.
+  if (state.skills && CHAPTER.skills.blockHurt?.(reason)) return;
   playSfx('hurt');
   state.health = Math.max(0, state.health - amount);
   state.stats.hitsTaken += 1;
@@ -36,6 +38,17 @@ export function hurtPlayer(reason, amount = 1) {
   if (state.skills) CHAPTER.skills.onPlayerHurt?.();
   showMessage(reason);
   if (state.health <= 0) endGame(false);
+}
+
+// Choáng (BT-L3 E2): `time` giây không điều khiển được (player.js), không mất
+// máu. Kỹ năng chặn đòn của chương chặn được. Trả về true nếu đã choáng.
+export function stunPlayer(reason, time) {
+  const p = state.player;
+  if (state.won) return false;
+  if (state.skills && CHAPTER.skills.blockHurt?.(reason)) return false;
+  p.stun = Math.max(p.stun || 0, time);
+  showMessage(reason);
+  return true;
 }
 
 export function respawnAfterFall() {

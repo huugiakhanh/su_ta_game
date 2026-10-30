@@ -27,6 +27,7 @@ paths:
 
 - Giao diện gỗ + vàng + giấy cổ, đồng bộ Bảng xếp hạng. Chấm đặt tuyệt đối tại 50% chiều cao, thẻ/năm đặt theo khoảng cách tới tâm → chấm luôn nằm đúng trục (không dùng lưới chia hàng — lệch khi thẻ cao hơn chỗ trống). Cỡ thẻ `--card-w` co giãn theo chiều cao màn hình.
 - Thẻ khoá: class `locked` + `.lock-overlay`. Mở khoá nhân vật = bỏ 2 thứ đó; thẻ tự có viền vàng + nhãn "CHƠI NGAY".
+- **Mở khoá theo tiến độ (HOME-UNLOCK)**: thẻ có `data-unlock-after="<id chương>"` (+ `data-hero`, `data-route`) tự mở khi chương đó đã qua hết — `shared.js clearedChapters()`/`applyChapterUnlocks()` mỗi lần mở cửa sổ (dòng thời gian, chọn tướng). Tài khoản: `GET /api/game/cleared-chapters` (đã qua màn cuối, `user_level_stats`); khách: cờ localStorage `suta.cleared.<id>` do engine `progress.js markChapterCleared()` đặt khi thắng màn cuối (lượt `?debug`/`?layout` không đặt). Chương mới: thêm thuộc tính này vào thẻ của chương.
 - Ảnh thẻ là bản thu nhỏ `characters/avatar/thumb/*.webp` (tỉ lệ 1024×707 → khung ảnh đúng tỉ lệ, không cắt). Thêm/đổi ảnh gốc thì chạy `python tools/make_home_images.py`. Logo dùng `logo2.webp`.
 
 ## Thư viện lịch sử

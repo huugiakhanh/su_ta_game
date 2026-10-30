@@ -1,12 +1,12 @@
 // Định nghĩa chương Bà Triệu (chương 2) cho engine màn chơi. Hợp đồng các
 // trường: engine/chapter.js. Màn 1 (BT-L1), màn 2 (BT-L2: 3 NPC chiêu mộ),
-// màn 3 còn khung — chưa có kỹ năng, boss. Asset riêng BT_ART_01/02 + asset map
-// mượn chương 1 (config.js).
+// màn 3 (BT-L3: boss Lục Dận + 3 kỹ năng + cutscene). Asset riêng BT_ART_01–03 +
+// asset map mượn chương 1 (config.js).
 
 import { CHUNK_W } from '../../engine/config.js';
 import {
   SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, BORROWED_MAPS, FINISH_GATE, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
-  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FAR_HILLS, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
+  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FAR_HILLS, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES, LEVEL3_FAR_HILLS,
   OBSTACLE_TYPES, QUIZ_STELE_ID, MAP_PROPS_IN_GAME, HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES, NPC_SPRITES,
   ITEM, REWARD_NAMES, TEXT, GUIDE_LOCAL_X
 } from './config.js';
@@ -15,7 +15,10 @@ import { NPC_DIALOGUES, CHAPTER_END, STORY_BA_TRIEU_INTRO } from './dialogue-dat
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
 import { level1Content, level1Events } from './level1.js';
 import { level2Content, level2Events } from './level2.js';
-import { level3Content, updateLevel3 } from './level3.js';
+import { level3Content } from './level3.js';
+import { updateBattle, updateCutscene, ENEMY_KINDS, updateBossHud, battleDebugEntities } from './boss.js';
+import { BT_SKILLS, showCrit, skillDebugEntities } from './skills.js';
+import { DRAW_LAYERS } from './render-extras.js';
 
 export const BA_TRIEU = {
   id: 2,
@@ -44,8 +47,16 @@ export const BA_TRIEU = {
   chapterEnd: CHAPTER_END,
   text: TEXT,
   audio: { sfx: SFX, music: MUSIC, musicFiles: MUSIC_FILES },
-  // Cờ nghỉ chân màn 1 (level1Events).
-  stateFields: () => ({ restUsed: false }),
+  skills: BT_SKILLS,
+  enemyKinds: ENEMY_KINDS,
+  // Cờ nghỉ chân màn 1 (level1Events); tiến trình trận boss màn 3 (level3Content).
+  stateFields: () => ({ restUsed: false, battle: null }),
+  hooks: {
+    updateHud: updateBossHud,
+    onCrit: showCrit,
+    debugEntities: () => [...battleDebugEntities(), ...skillDebugEntities()],
+    draw: DRAW_LAYERS
+  },
   levels: {
     1: {
       id: 1, title: 'Màn 1: Rừng núi Nưa', url: LEVEL_URLS[1],
@@ -76,10 +87,16 @@ export const BA_TRIEU = {
       id: 3, title: 'Màn 3: Chiến lũy Bồ Điền', url: LEVEL_URLS[3],
       chunks: 1, worldWidth: ARENA.width, zones: LEVEL3_ZONES, finishX: ARENA.width, arena: true,
       playerStartX: ARENA.playerStartX, gate: null,
+      farHills: LEVEL3_FAR_HILLS,
       sprites: LEVEL_SPRITES[3],
       content: level3Content,
-      update: updateLevel3,
+      update: updateBattle,
+      cutscene: updateCutscene,
+      // BT-00 §5.1 (giữ nguyên — BT-L3 Q1a).
       introMessage: 'Màn 3: Chiến lũy Bồ Điền',
+      // Layout thử kỹ năng: ?layout=skills (bao cát + kỵ binh thiết giáp lặp).
+      testLayout: 'skills',
+      skills: true,
       summary: state => `Bạn đạt ${state.score} điểm.`
     }
   }

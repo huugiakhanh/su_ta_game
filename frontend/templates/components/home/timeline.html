@@ -24,11 +24,12 @@
                     <div class="t-year">Năm 40</div>
                 </div>
 
-                <div class="t-item t-bottom">
+                {# HOME-UNLOCK: mở khi đã qua chương 1 (timeline.js applyChapterUnlocks). #}
+                <div class="t-item t-bottom" data-unlock-after="1" data-hero="Bà Triệu" data-route="/gameplay/levels/ba-trieu">
                     <div class="t-year">Năm 248</div>
                     <div class="t-dot"></div>
                     <div class="t-card locked">
-                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <div class="lock-overlay">🔒 Qua chương Trưng Trắc</div>
                         <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/ba_trieu.webp') }}" alt="Bà Triệu" loading="lazy" decoding="async">
                         <div class="t-info">
                             <h4>Bà Triệu</h4>

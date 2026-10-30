@@ -326,6 +326,57 @@
       "tileable_x": true,
       "parallax_hint": 0.2,
       "qa_notes": "BT_ART_02 B2: low blue-gray distant hills and flooded plain; 48 existing palette colors, binary alpha, opaque bottom. Native-resolution 1920px cyclic tile repeated twice, no enlargement/mirroring/identical-edge copy. Seam metrics in meta/gate_b2/far_plain_qa.json."
+    },
+    {
+      "id": "BG_BT_MID_FORTRESS",
+      "category": "parallax",
+      "file": "bg/BG_BT_MID_FORTRESS/bg_bt_mid_fortress.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "BT_STAGE_3"
+      ],
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "NORMALIZED",
+      "prompt": "bg/BG_BT_MID_FORTRESS/bg_bt_mid_fortress.prompt.txt",
+      "raw": "raw/bg_bt_mid_fortress_raw.png",
+      "qa_notes": "BT_ART_03 Gate C1: native-density generated fortress and marsh motifs;64 inherited colors, binary alpha, opaque bottom, circular raster overlap. Seam p95=30.05 <= internal32; edges differ, no mirrored band. Preview x1/x2 in preview/gate_c1. Await identity review. BT_ART_03_FIX_C1: background redrawn: clear reflective marsh/reeds left;3 palisade layers,earth rampart and1 bamboo hut/blank flag center;gray rocky crag right;natural cyclic marsh return.64 inherited colors,0 palette additions;binary alpha,opaque bottom,0 enclosed transparent holes,1 opaque component;seam p95=33<=internal p95=66;old bright row575 line removed. New prompts/raw/audit in meta/fix_c1; new mockup/repeat previews in preview/gate_c1/fix_c1. All structural fields/stage preserved.",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "transition_policy": "diagonal-alpha-blend"
+    },
+    {
+      "id": "PROP_BT_VICTORY_FLAG",
+      "category": "prop",
+      "file": "props/PROP_BT_VICTORY_FLAG/prop_bt_victory_flag_wave.png",
+      "w": 96,
+      "h": 32,
+      "frame_w": 24,
+      "frame_h": 32,
+      "density": 4,
+      "transparent": true,
+      "zone": [
+        "BT_STAGE_3"
+      ],
+      "anchor": "bottom-left-at-flag_attach",
+      "pivot": {
+        "x": 0,
+        "y": 32
+      },
+      "frames": 4,
+      "fps": 6,
+      "loop": true,
+      "priority": "P0",
+      "status": "NORMALIZED",
+      "prompt": "meta/gate_c2/flag_grid_source.json",
+      "raw": "raw/bt_art_03_c2_flag_grid_raw.png",
+      "qa_notes": "BT_ART_03 Gate C2: plain turmeric flag with red border; total strip384x128, frame96x128. Shared32-color environment subset, no palette addition. flag_attach supplied by hosting object/code, stage unchanged. QA in sprites meta/gate_c2/final_qa.json; mockups preview/gate_c2."
     }
   ]
 }

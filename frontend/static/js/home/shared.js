@@ -112,3 +112,40 @@ export function showSelectedHero(heroName, routeUrl) {
   hint.textContent = `(Thử Thách: ${heroName})`;
   startBtn.replaceChildren(title, hint);
 }
+
+// ---- Mở khoá chương theo tiến độ (HOME-UNLOCK) ----
+// Id các chương đã qua hết (thắng màn cuối). Tài khoản: server
+// (/api/game/cleared-chapters); khách: cờ localStorage `suta.cleared.<id>` do
+// engine/progress.js markChapterCleared() đặt. Lỗi mạng/bị chặn -> coi như chưa qua.
+export async function clearedChapters() {
+  if (home.user) {
+    try {
+      const response = await fetch('/api/game/cleared-chapters');
+      if (response.ok) return new Set((await response.json()).chapters);
+    } catch {
+      // Mất mạng: giữ khoá.
+    }
+    return new Set();
+  }
+  const ids = new Set();
+  try {
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const match = /^suta\.cleared\.(\d+)$/.exec(localStorage.key(i));
+      if (match && localStorage.getItem(match[0]) === '1') ids.add(Number(match[1]));
+    }
+  } catch {
+    // localStorage bị chặn: giữ khoá.
+  }
+  return ids;
+}
+
+// Mở các thẻ `[data-unlock-after="<id chương>"]` trong `root` khi chương đó đã qua:
+// `unlock(card)` do cửa sổ gọi tự đổi giao diện + hành vi bấm của thẻ.
+export async function applyChapterUnlocks(root, unlock) {
+  const cards = [...root.querySelectorAll('[data-unlock-after]')];
+  if (!cards.length) return;
+  const cleared = await clearedChapters();
+  cards.forEach((card) => {
+    if (cleared.has(Number(card.dataset.unlockAfter))) unlock(card);
+  });
+}

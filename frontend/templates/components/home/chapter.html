@@ -111,11 +111,13 @@
         <span class="btn-play-now">▶ Bắt đầu chơi</span>
       </div>
 
-      <div class="hero-select-card locked" onclick="alert('Màn chơi Bà Triệu đang phát triển!')">
+      {# HOME-UNLOCK: mở khi đã qua chương 1 (chapter.js applyChapterUnlocks). #}
+      <div class="hero-select-card locked" data-unlock-after="1" data-route="/gameplay/levels/ba-trieu"
+           onclick="alert('Hoàn thành chương Trưng Trắc để mở khóa Bà Triệu!')">
         <span class="hero-badge-year">Năm 248</span>
         <strong class="hero-select-name">Bà Triệu</strong>
         <small class="hero-select-sub">(Triệu Thị Trinh)</small>
-        <span class="btn-play-now">🔒 Sắp ra mắt</span>
+        <span class="btn-play-now">🔒 Qua chương Trưng Trắc</span>
       </div>
 
       <div class="hero-select-card locked" onclick="alert('Màn chơi Lý Nam Đế đang phát triển!')">

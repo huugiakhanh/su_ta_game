@@ -32,7 +32,8 @@ export function drawFinishGate(time = 0) {
   const pivot = prop?.asset.pivot || { x: w / 2, y: h };
   const left = Math.round(gate.worldX - pivot.x - state.cameraX);
   if (left + w < -48 || left > VIEW_W + 48) return;
-  const top = GROUND_Y - pivot.y;
+  // `sink`: chìm thêm xuống đất (ảnh có hàng trống ở đáy — cổng trại Bà Triệu).
+  const top = GROUND_Y - pivot.y + (gate.sink || 0);
   if (prop) drawMapImage(ctx, prop.image, 0, 0, w, h, left, top);
   else drawLandmarkFallback(left, top, w, h);
   if (state.gateOpen && gate.flag) drawVictoryFlag(gate.flag, prop, left, top, time);

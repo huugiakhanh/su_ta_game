@@ -1,12 +1,22 @@
 // Dòng thời gian chọn nhân vật (HOME-LAZY-01) — HTML: components/home/timeline.html,
 // CSS: css/home/timeline.css.
-import { showSelectedHero } from './shared.js';
+import { showSelectedHero, applyChapterUnlocks } from './shared.js';
 
 const modal = () => document.getElementById('timeline-modal');
 
 export function open() {
   // Vừa gắn vào trang thì chờ 1 khung hình để hiệu ứng mờ dần (opacity) vẫn chạy.
   requestAnimationFrame(() => modal()?.classList.remove('hidden'));
+  // Chương đã qua -> mở thẻ chương kế tiếp (HOME-UNLOCK); mỗi lần mở cửa sổ kiểm lại.
+  if (modal()) applyChapterUnlocks(modal(), unlockItem);
+}
+
+function unlockItem(item) {
+  const card = item.querySelector('.t-card');
+  if (!card?.classList.contains('locked')) return;
+  card.classList.remove('locked');
+  card.querySelector('.lock-overlay')?.remove();
+  item.addEventListener('click', () => window.selectHero(item.dataset.hero, item.dataset.route));
 }
 
 window.closeTimeline = function closeTimeline() {

@@ -81,8 +81,25 @@ function updateSkills(dt) {
   CHAPTER.skills.update(dt, triggered);
 }
 
+// Rung màn hình (BT-L3 E3): `time` giây, lệch ngang tối đa `amp` px, giảm dần.
+// Lần rung mạnh hơn/dài hơn ghi đè lần đang rung. Vẽ ở render/index.js.
+export function shakeCamera(time, amp) {
+  const shake = state.cameraShake;
+  if (shake && shake.time > time && shake.amp >= amp) return;
+  state.cameraShake = { time, total: time, amp };
+}
+
+function tickCameraShake(dt) {
+  const shake = state.cameraShake;
+  if (!shake) return;
+  shake.time -= dt;
+  if (shake.time <= 0) state.cameraShake = null;
+}
+
 export function update(dt) {
-  if (!state.running || state.paused || state.won) return;
+  if (!state.running || state.paused) return;
+  tickCameraShake(dt);
+  if (state.won) return;
   if (state.cutscene) {
     LEVEL.cutscene(dt);
     return;

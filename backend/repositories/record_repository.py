@@ -60,3 +60,21 @@ def get_leaderboard(chapter_id=None, level_id=None, limit=10, user_id=None):
         if user_id is not None and row[0] == user_id:
             me = entry
     return {"data": board, "me": me, "levels_total": levels_total}
+
+
+# Chương đã qua = đã qua màn CUỐI của chương (màn có level_no lớn nhất) — trang
+# chủ dùng để mở khoá chương kế tiếp (HOME-UNLOCK). Trả về danh sách id chương tăng dần.
+CLEARED_CHAPTERS_QUERY = """
+    SELECT l.chapter_id
+    FROM levels l
+    JOIN (SELECT chapter_id, MAX(level_no) AS last_no FROM levels GROUP BY chapter_id) last
+      ON last.chapter_id = l.chapter_id AND last.last_no = l.level_no
+    JOIN user_level_stats s ON s.level_id = l.id AND s.user_id = %s
+    ORDER BY l.chapter_id
+"""
+
+
+def cleared_chapters(user_id):
+    with db_cursor() as (_, cursor):
+        cursor.execute(CLEARED_CHAPTERS_QUERY, (user_id,))
+        return [row[0] for row in cursor.fetchall()]

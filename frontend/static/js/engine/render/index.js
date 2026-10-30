@@ -24,6 +24,10 @@ export function draw(time = 0) {
   debugLabels.clear();
   if (!state) return;
   const layers = CHAPTER.hooks?.draw || {};
+  // Rung màn hình (BT-L3 E3): lệch camera ngang trong frame này rồi trả lại.
+  const shake = state.cameraShake;
+  const shakeX = shake ? Math.round((Math.random() * 2 - 1) * shake.amp * shake.time / shake.total) : 0;
+  state.cameraX += shakeX;
   drawBackdrops();
   drawGround();
   drawFinishGate(time);
@@ -41,6 +45,7 @@ export function draw(time = 0) {
   layers.beforePlayer?.(time);
   drawPlayer(time);
   layers.afterPlayer?.(time);
+  state.cameraX -= shakeX;
   // Cutscene: tối dần/sáng lại (fade 0..1).
   if (state.cutscene?.fade > 0) {
     ctx.fillStyle = `rgba(0, 0, 0, ${state.cutscene.fade})`;

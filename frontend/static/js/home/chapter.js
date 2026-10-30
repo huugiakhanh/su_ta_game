@@ -2,6 +2,8 @@
 // HTML: components/home/chapter.html, CSS: css/home/chapter.css.
 // Hiện chưa có nút nào trên trang chủ mở cửa sổ này.
 
+import { applyChapterUnlocks } from './shared.js';
+
 let selectedChapter = null;
 
 export function init() {
@@ -64,7 +66,16 @@ window.openHeroSelectModal = function openHeroSelectModal() {
   if (!heroModal) return;
   heroModal.hidden = false;
   document.body.classList.add('chapter-modal-open');
+  // Chương đã qua -> mở thẻ tướng kế tiếp (HOME-UNLOCK).
+  applyChapterUnlocks(heroModal, unlockHeroCard);
 };
+
+function unlockHeroCard(card) {
+  if (!card.classList.contains('locked')) return;
+  card.classList.replace('locked', 'active');
+  card.onclick = () => window.playHeroLevel(card.dataset.route);
+  card.querySelector('.btn-play-now').textContent = '▶ Bắt đầu chơi';
+}
 
 window.closeHeroSelectModal = function closeHeroSelectModal() {
   const heroModal = document.getElementById('heroSelectModal');

@@ -6,8 +6,8 @@
 // vẽ lại theo chuẩn cao 34 px logic; NPC/FX/icon màn 2 chờ BT-L2). Trời, tile mặt đất/địa hình,
 // lớp giữa làng, bia câu hỏi, 2 vật cản MƯỢN của chương Trưng Trắc qua
 // BORROWED_MAPS (prompt: "dùng lại, không vẽ"). Không import file nào của chương
-// 1. Màn 1 = bố cục thật BT-L1 (docs/SUTA_BT_TASK_L1_01.md); màn 2–3 còn khung
-// BT-SKELETON. Mọi số DESIGN_BASELINE.
+// 1. Màn 1 = BT-L1, màn 2 = BT-L2, màn 3 = BT-L3 (boss Lục Dận + 3 kỹ năng,
+// asset BT_ART_03 — docs/SUTA_BT_TASK_L3_01.md). Mọi số DESIGN_BASELINE.
 
 import { CHUNK_W } from '../../engine/config.js';
 
@@ -30,8 +30,12 @@ export const BORROWED_MAPS = [{
 export const TILES = { ground: 'TILESET_TT_GROUND', groundRegion: 'Z1', terrain: 'TILESET_TT_TERRAIN' };
 export const FAR_HILLS = { id: 'BG_BT_FAR_NUA', parallax: 0.2, bottomY: 230, hiddenUnderSky: [] };
 
-// Chân dung (ảnh DOM) — nạp ở mọi màn: Bà Triệu (dẫn màn 1) + 3 NPC màn 2.
-export const PORTRAITS = ['PORTRAIT_BA_TRIEU', 'PORTRAIT_TRIEU_QUOC_DAT', 'PORTRAIT_LY_HOANG', 'PORTRAIT_BACH_TUONG'];
+// Ảnh DOM — nạp ở mọi màn: chân dung Bà Triệu (dẫn màn 1), 3 NPC màn 2, Lục Dận
+// (cốt truyện màn 3) + 3 icon kỹ năng màn 3 (ô HUD, nút cảm ứng).
+export const PORTRAITS = [
+  'PORTRAIT_BA_TRIEU', 'PORTRAIT_TRIEU_QUOC_DAT', 'PORTRAIT_LY_HOANG', 'PORTRAIT_BACH_TUONG', 'PORTRAIT_LUC_DAN',
+  'ICON_SK_BT_CRIT', 'ICON_SK_BT_RATTAN_SHIELD', 'ICON_SK_BT_WHITE_ELEPHANT'
+];
 
 // Sprite canvas mỗi màn cần (chỉ nạp ảnh màn đang chơi dùng). Màn 1 gồm cả
 // layout thử ?layout=engine; PLAYER_BA_TRIEU = Bà Triệu đứng chờ (NPC dẫn).
@@ -44,7 +48,11 @@ export const LEVEL_SPRITES = {
     'NPC_TRIEU_QUOC_DAT', 'NPC_HO_LY', 'NPC_BACH_TUONG', 'EN_NGO_SOLDIER', 'EN_NGO_LUMBERJACK', 'EN_NGO_HUNTER',
     'PJ_CROSSBOW_BOLT', 'OB_BOULDER', 'TR_BAMBOO_SPIKE_PIT', 'EN_NGO_CAVALRY'
   ],
-  3: ['EN_NGO_LUMBERJACK']
+  3: [
+    'BOSS_LUC_DAN', 'PROP_BT_COMMAND_TOWER', 'EN_BT_GOLD_TOWER', 'EN_NGO_ARMORED_CAVALRY', 'PJ_BT_POISON_ARROW',
+    'PJ_BT_GOLD_COIN', 'FX_BT_STUN', 'FX_BT_ARMOR_SPARK', 'FX_BT_RATTAN_SHIELD', 'FX_BT_CRIT', 'NPC_BACH_TUONG',
+    'PLAYER_BA_TRIEU_ELEPHANT'
+  ]
 };
 
 // URL trang từng màn (route ở backend/routes/pages.py).
@@ -71,7 +79,9 @@ export const LEVEL1_ZONES = [
 // Đích = worldX(12, 618) như chương 1; cổng trại đặt TÂM tại đây (192px ->
 // trải 8970–9162 < 9216), không hitbox; mở khi đủ sách + hạ mini-boss.
 export const LEVEL1_FINISH_X = CHUNK_W * 11 + 618;
-export const FINISH_GATE = { closed: 'PROP_BT_CAMP_GATE', open: 'PROP_BT_CAMP_GATE_OPEN', worldX: LEVEL1_FINISH_X };
+// Đáy hình cổng ở hàng 174,5/176 logic (trống 1,5 px dưới chân cột) -> chìm 2 px
+// để chân cột chạm đất (`sink`, engine drawFinishGate).
+export const FINISH_GATE = { closed: 'PROP_BT_CAMP_GATE', open: 'PROP_BT_CAMP_GATE_OPEN', worldX: LEVEL1_FINISH_X, sink: 2 };
 // Bà Triệu đứng chờ ở chunk 1 (NPC dẫn — như Trưng Trắc chương 1).
 export const GUIDE_LOCAL_X = 190;
 // Mini-boss tham quan thu thuế (patrol, như kiệu quan chương 1 — Q4: 6 đòn):
@@ -110,22 +120,100 @@ export const CAPTORS = {
   bachTuong: [{ dx: -130 }, { dx: -220 }]
 };
 
-// ---- Màn 3 "Chiến lũy Bồ Điền" (PLACEHOLDER: đấu trường trại, chưa có boss — BT_ART_03) ----
-// Đấu trường 1 chunk, tường vô hình 2 đầu. Quân ra ở spawnX; hết đợt cuối +
-// hết quân thì thắng chương (level3.js).
-export const ARENA = { width: CHUNK_W, playerStartX: 170, spawnX: 700 };
+// ---- Màn 3 "Chiến lũy Bồ Điền" (BT-L3, docs/SUTA_BT_TASK_L3_01.md) ----
+// Đấu trường 1 chunk, tường vô hình 2 đầu, nền chiến lũy (đầm lầy – rào tre –
+// núi đá). Đài chỉ huy bên phải (Lục Dận đứng trên, không với tới), 3 tháp vàng
+// giữa đấu trường, kỵ binh thiết giáp ra từ mép phải. Mọi số DESIGN_BASELINE.
+export const ARENA = { width: CHUNK_W, playerStartX: 170, spawnX: CHUNK_W + 40 };
 export const LEVEL3_ZONES = [
-  { id: 'BT5', x0: 0, x1: ARENA.width, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_CAMP' }
+  { id: 'BT7', x0: 0, x1: ARENA.width, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_FORTRESS' }
 ];
-// 3 đợt lính; đợt sau = đợt trước chết hết + gap giây (engine makeSpawner).
-export const WAVES = {
-  gap: 1.5,
-  groups: [
-    [{ type: 'guard', at: 0, dx: 0 }],
-    [{ type: 'guard', at: 0, dx: 0 }, { type: 'guard', at: 0, dx: -40 }],
-    [{ type: 'guard', at: 0, dx: 0 }, { type: 'guard', at: 0, dx: -40 }, { type: 'guard', at: .8, dx: 0 }]
-  ]
+export const LEVEL3_FAR_HILLS = LEVEL2_FAR_HILLS;
+
+// Đài chỉ huy PROP_BT_COMMAND_TOWER (sprite 96×160, pivot giữa chân): sàn cao 128 px
+// logic trên mặt đất, rộng ±19,5 quanh tâm (report Gate C1). `shake` 4@16 lặp,
+// `collapse` 10@12. Lục Dận đứng giữa sàn.
+//   x            tâm đài (cách mép phải 150 — trong khung nhìn rộng 640 khi
+//                người chơi đứng đầu đấu trường)
+//   floor        độ cao sàn trên mặt đất
+//   shakeTime    rung trước khi sụp (giây); collapse dùng thời lượng manifest
+export const COMMAND_TOWER = { id: 'PROP_BT_COMMAND_TOWER', x: CHUNK_W - 150, floor: 128, shakeTime: .6 };
+
+// Boss Lục Dận BOSS_LUC_DAN (ô 48×48):
+//   GĐ 1–2 đứng trên đài, `command` (6@12, hit 3) mỗi `commandInterval` giây (GĐ 2:
+//   `commandIntervalP2`) — ở hit_frame phát 1 loạt mưa tên độc.
+//   GĐ 3: rơi (`fall` 6@12) từ sàn xuống đất trước đài (tâm `groundX`), đứng trong
+//   bùn (`mud_idle`). Thân trong bùn đo được −16…+10,5, cao 31 px -> hitbox 24×30.
+//   `passive` (không tấn công, chạm không mất máu), `hp` máu; trúng đòn `hurt`
+//   (3@12) + đẩy lùi `knockback` px về phía đài. Hết máu: `flee` (8@16) chạy
+//   sang phải `fleeSpeed` px/s.
+export const BOSS_LD = {
+  id: 'BOSS_LUC_DAN', commandInterval: 3.5, commandIntervalP2: 5, startDelay: 2.4,
+  groundX: CHUNK_W - 210, w: 24, h: 30, hp: 8, knockback: 10, maxX: CHUNK_W - 160,
+  fleeSpeed: 120, hitScore: 150, defeatScore: 1000
 };
+
+// Mưa tên độc (PJ_BT_POISON_ARROW 8×24, mũi ở hàng đáy ô, rơi thẳng): mỗi loạt
+// `count` mũi quanh người chơi (lệch ±spread), vạch báo đỏ trên đất `warnTime`
+// giây rồi rơi `fallSpeed` px/s từ mép trên. Hitbox 4×10 ở đầu mũi. −1 máu.
+export const POISON_ARROWS = { id: 'PJ_BT_POISON_ARROW', anim: 'idle', count: 3, spread: 70, warnTime: .7, fallSpeed: 420, w: 4, h: 10 };
+
+// Tháp canh chứa vàng EN_BT_GOLD_TOWER (ô 48×96): thân thấy được ±20,5, cao 83
+// -> hitbox 36×80. Đứng yên, `hp` máu; quay về phía người chơi; `throw` (6@10,
+// hit 4) mỗi `throwInterval` giây (tháp lệch nhịp `phase`), tiền rời tay ở
+// (+21,5, −55,25) px so với chân (report Gate C2). Hết máu `destroyed` (8@12),
+// đống đổ nằm lại. Bạch Tượng húc: −`elephantDamage` máu.
+export const GOLD_TOWER = {
+  id: 'EN_BT_GOLD_TOWER', xs: [240, 365, 490], w: 36, h: 80, hp: 4,
+  throwInterval: 2.8, phase: .9, startDelay: 1.6, muzzleX: 21.5, muzzle: 55.25, elephantDamage: 2
+};
+
+// Đồng tiền vàng PJ_BT_GOLD_COIN (ô 16×16, xoay 6@18): bay vòng cung, rơi tới
+// chỗ người chơi lúc ném sau `flightTime` giây. Trúng người chơi (không miễn
+// thương): không mất máu, CHOÁNG `stun` giây (engine stunPlayer, có FX_BT_STUN).
+// Hitbox 8×8. Chạm đất thì biến mất.
+export const GOLD_COIN = { id: 'PJ_BT_GOLD_COIN', anim: 'loop', flightTime: 1.1, gravity: 520, w: 8, h: 8, stun: 1.2 };
+// Vòng choáng FX_BT_STUN (32×16, tâm vòng ở (16, 8) logic): tâm đặt `lift` px trên đỉnh đầu.
+export const STUN_FX = { id: 'FX_BT_STUN', anim: 'loop', lift: 0 };
+
+// Kỵ binh thiết giáp EN_NGO_ARMORED_CAVALRY (ô 96×64, `blocked` riêng frame_w 104):
+// ngựa + người thấy được −35…+44, cao ~44 px -> hitbox 64×40. `count` lượt, mỗi
+// lượt 1 con ra từ ARENA.spawnX, phi `speed` px/s về phía người chơi, chạm
+// tường quay đầu. Chạm thân −1 máu (lướt né được). Đòn chém thường bị giáp chặn
+// (`blocked` 4@20 + FX_BT_ARMOR_SPARK). Chỉ Bạch Tượng húc mới hạ được:
+// `knockback` (8@14, bị hất `pushSpeed` px/s) -> `death` (6@12) -> xác nằm
+// `corpseTime` giây. Lượt sau ra `gap` giây sau khi lượt trước ngã.
+export const ARMORED_CAVALRY = {
+  id: 'EN_NGO_ARMORED_CAVALRY', count: 3, w: 64, h: 40, speed: 150, gap: 1.6, startDelay: 1.2,
+  pushSpeed: 140, corpseTime: 2, spark: 'FX_BT_ARMOR_SPARK', hintInterval: 4, defeatScore: 500
+};
+
+// Câu chữ thông báo riêng trận (BT-L3 Q1, duyệt 28/10/2026).
+export const BOSS_TEXT = {
+  coinStun: 'Không nhận vàng giặc!',
+  armorHint: 'Giáp quá dày — hãy gọi Bạch Tượng (L)!',
+  phase3: 'Đài chỉ huy rung chuyển!',
+  arrowHit: 'Bạn trúng tên độc!',
+  cavalryHit: 'Kỵ binh thiết giáp xông tới húc trúng bạn!'
+};
+
+// Cutscene kết chương (giây, px/s): Lục Dận trúng đòn cuối đứng `beatenHold`, tối
+// dần `fadeTime` (người chơi về x `playerX`); Bạch Tượng cúi chào (`bow`) tại
+// `elephantX`, chớp tối `mountFade` rồi Bà Triệu cưỡi voi
+// (PLAYER_BA_TRIEU_ELEPHANT) đứng `mountHold`, lao sang phải `chargeSpeed`
+// tới `chargeToX`; cờ PROP_BT_VICTORY_FLAG (24×32, pivot bottom-left = chân cán)
+// cắm trên đỉnh đống đổ đài chỉ huy (collapse ô cuối cao ~18 px): chân cán tại
+// x `flag.x`, cao `flag.lift` px trên mặt đất (nền chiến lũy là lớp parallax nên
+// không gắn cờ vào ụ đất trong nền) rồi panel cốt truyện câu 2.
+export const BT_CUTSCENE = {
+  beatenHold: .8, fadeTime: .6, playerX: 120, elephantX: 300, mountFade: .35, mountHold: .6,
+  chargeSpeed: 150, chargeToX: CHUNK_W - 240, victoryHold: 1,
+  flag: { id: 'PROP_BT_VICTORY_FLAG', x: CHUNK_W - 154, lift: 15 }
+};
+
+// Layout thử kỹ năng `?layout=skills` (màn 3): bao cát + kỵ binh thiết giáp ra
+// lặp (không boss, không tháp, không mưa tên).
+export const SKILL_TEST = { dummyX: 420, dummyHp: 99, cavalryGap: 3 };
 
 // Câu hỏi chặn đường (điểm + luật ở engine):
 //   level1Count  số câu mỗi lượt màn 1 (rút ngẫu nhiên, không trùng).
@@ -151,7 +239,7 @@ export const ITEM = { sprite: 'ITEM_BT_TINH_HOA', fps: 8 };
 export const QUIZ_STELE_ID = 'PROP_TT_QUIZ_STELE';
 export const MAP_PROPS_IN_GAME = [
   ...Object.values(OBSTACLE_TYPES).map(type => type.id), ITEM.sprite, QUIZ_STELE_ID,
-  FINISH_GATE.closed, FINISH_GATE.open, BRANCH.short.sprite, BRANCH.long.sprite
+  FINISH_GATE.closed, FINISH_GATE.open, BRANCH.short.sprite, BRANCH.long.sprite, 'PROP_BT_VICTORY_FLAG'
 ];
 
 // ---- Quân địch, hazard, đạn ----
@@ -188,7 +276,21 @@ export const ENEMY_SPRITES = {
     anims: { idle: 'idle', walk: 'walk', attack: 'attack_01', hurt: 'hurt', death: 'death' },
     attackMessage: 'Bạn bị lính Ngô đâm kích trúng!', contactMessage: 'Bạn va phải lính Ngô!',
     defeatMessage: 'Đã đánh bại lính Ngô.'
-  }
+  },
+  // Màn 3 (BT-L3): enemy `kind` riêng chương (boss.js ENEMY_KINDS) — hành vi +
+  // animation do chương lo; bảng này chỉ ánh xạ tên trạng thái -> animation.
+  goldTower: {
+    id: 'EN_BT_GOLD_TOWER', anims: { idle: 'idle', throw: 'throw', hurt: 'hurt', death: 'destroyed' }
+  },
+  armoredCavalry: {
+    id: 'EN_NGO_ARMORED_CAVALRY',
+    anims: { idle: 'gallop', gallop: 'gallop', blocked: 'blocked', knockback: 'knockback', death: 'death' }
+  },
+  lucDan: {
+    id: 'BOSS_LUC_DAN', anims: { idle: 'mud_idle', hurt: 'hurt', flee: 'flee' }
+  },
+  // Bao cát layout thử `?layout=skills` (không asset — hộp tạm + thanh máu).
+  dummy: { id: null, anims: {} }
 };
 export const HAZARD_SPRITES = {
   // Hố chông tre (trap): như chông sắt chương 1, chìm 3 px vào cỏ.
@@ -269,11 +371,33 @@ export const NPC_SPRITES = {
 };
 
 // ---- Phần thưởng màn 2 (id khớp seed backend/migrations/005_ba_trieu.sql) ----
-// Tên theo docs/SUTA_BT_TASK_00.md §3.4; cơ chế làm ở BT-L2/BT-L3.
+// Tên theo docs/SUTA_BT_TASK_00.md §3.4; cơ chế ở màn 3 (skills.js, BT-L3).
 export const REWARD_NAMES = {
   BUFF_BT_CRIT: 'Chí mạng',
   SK_BT_RATTAN_SHIELD: 'Khiên mây tre',
   SK_BT_WHITE_ELEPHANT: 'Gọi Bạch Tượng'
+};
+
+// Kỹ năng màn 3 (BT-L3 mục 3, DESIGN_BASELINE). `icon` = ảnh ô HUD/nút cảm ứng.
+//   Chí mạng (bị động): mỗi đòn chém `chance` gây ×`multiplier`; FX_BT_CRIT
+//     `impact` (5@20) tại điểm trúng.
+//   Khiên mây tre (K): giơ khiên `duration` giây (FX_BT_RATTAN_SHIELD raise 3@20 ->
+//     hold 4@8 lặp; chặn được thì `block` 4@20), chặn mọi sát thương + choáng
+//     (engine skills.blockHurt); hồi chiêu `cooldown` tính từ lúc hạ khiên.
+//     Khiên vẽ trước người chơi, cách tâm `offsetX` về phía mặt.
+//   Gọi Bạch Tượng (L): NPC_BACH_TUONG `charge` lao từ ngoài mép sau lưng người
+//     chơi theo hướng mặt `speed` px/s qua hết đấu trường; thân 96×50 (thấy được
+//     ±49, cao 54). Húc trúng: kỵ binh thiết giáp ngã, tháp −2 máu, Lục Dận (GĐ 3)
+//     −`bossDamage`, lính thường −2; mỗi mục tiêu 1 lần/lượt. Rung màn hình.
+export const SKILLS = {
+  BUFF_BT_CRIT: { slot: null, chance: .25, multiplier: 2, fx: 'FX_BT_CRIT', icon: 'ICON_SK_BT_CRIT' },
+  SK_BT_RATTAN_SHIELD: {
+    slot: 'skill1', duration: 2.5, cooldown: 10, offsetX: 10, fx: 'FX_BT_RATTAN_SHIELD', icon: 'ICON_SK_BT_RATTAN_SHIELD'
+  },
+  SK_BT_WHITE_ELEPHANT: {
+    slot: 'skill2', cooldown: 14, speed: 360, w: 96, h: 50, damage: 2, bossDamage: 2,
+    shake: { amp: 2, time: .25 }, sprite: 'NPC_BACH_TUONG', icon: 'ICON_SK_BT_WHITE_ELEPHANT'
+  }
 };
 
 // ---- Câu chữ thông báo dùng trong engine (CHAPTER.text) ----

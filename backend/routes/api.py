@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, request, session
 
 from backend.repositories.user_repository import create, exists, find_by_credentials, find_by_id, set_avatar, set_gender
 from backend.repositories.achievement_repository import list_achievements
-from backend.repositories.record_repository import get_leaderboard
+from backend.repositories.record_repository import cleared_chapters, get_leaderboard
 from backend.repositories.quiz_repository import get_quiz_leaderboard, save_quiz_result
 from backend.repositories.progress_repository import (
     LEVELS_PER_CHAPTER, clear_progress, get_progress, known_reward_ids, save_progress,
@@ -273,6 +273,19 @@ def achievements():
     # Khách vẫn xem được danh mục (chưa mở cái nào).
     try:
         return jsonify({"status": "success", "data": list_achievements(session.get("user_id"))})
+    except Exception as e:
+        return payload_error(f"Có lỗi xảy ra: {str(e)}"), 500
+
+
+@api_bp.get("/api/game/cleared-chapters")
+def cleared_chapters_route():
+    # Chương đã qua màn cuối -> trang chủ mở khoá chương kế tiếp. Khách -> 401
+    # (trình duyệt dùng cờ localStorage `suta.cleared.<id>` do engine end-game.js đặt).
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"status": "guest"}), 401
+    try:
+        return jsonify({"status": "success", "chapters": cleared_chapters(user_id)})
     except Exception as e:
         return payload_error(f"Có lỗi xảy ra: {str(e)}"), 500
 

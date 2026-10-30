@@ -37,6 +37,7 @@
 //                 portrait, timer(skills) -> { left, total, active } } },
 //                 createState(owned), update(dt, triggered: Set<id>),
 //                 onPlayerHurt?(), onAttackStart?(),
+//                 blockHurt?(reason) -> true = chặn đòn/choáng này (BT-L3 E1 — damage.js),
 //                 attackDamage?(target) -> số | { damage, crit } — sát thương đòn chém
 //                 của người chơi (chí mạng); không có = 1 }
 //   enemyKinds?   { kind: { update(enemy, dt), blockStrike?(enemy) -> true = đòn bị chặn,
@@ -49,7 +50,8 @@
 //                 beforePlayer?(time), afterPlayer?(time) } }
 //   levels        { [id]: LEVEL } — mỗi màn:
 //     id, title, url, chunks, worldWidth, zones, finishX
-//     gate?        { closed, open, worldX, flag? } — cổng vẽ tại worldX (null = không cổng)
+//     gate?        { closed, open, worldX, flag?, sink? } — cổng vẽ tại worldX (null = không cổng);
+//                  sink = px chìm thêm xuống đất khi đáy hình cách đáy ảnh
 //     arena?       true = đấu trường: tường 2 đầu, không về đích, camera neo tâm
 //     playerStartX? mép trái hitbox người chơi lúc vào màn (mặc định PLAYER_START_X)
 //     farHills?    đồi xa riêng màn (cùng dạng CHAPTER.farHills, thay cho bản của chương)

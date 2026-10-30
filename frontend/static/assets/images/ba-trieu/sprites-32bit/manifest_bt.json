@@ -815,6 +815,339 @@
         }
       ],
       "qa_notes": "BT_ART_02 B2: HUD icon, 128x128, checked at 32x32 next to DASH and ATTACK."
+    },
+    {
+      "id": "BOSS_LUC_DAN",
+      "category": "boss",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "boss/BOSS_LUC_DAN/boss_luc_dan_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "command",
+          "file": "boss/BOSS_LUC_DAN/boss_luc_dan_command.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": 3
+        },
+        {
+          "name": "fall",
+          "file": "boss/BOSS_LUC_DAN/boss_luc_dan_fall.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "mud_idle",
+          "file": "boss/BOSS_LUC_DAN/boss_luc_dan_mud_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "hurt",
+          "file": "boss/BOSS_LUC_DAN/boss_luc_dan_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "flee",
+          "file": "boss/BOSS_LUC_DAN/boss_luc_dan_flee.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "BT_ART_03 Gate C1: generated native-detail sources; shared inherited 32-color palette; binary alpha; bottom-center; QA and code measurements in meta/gate_c1/final_qa.json. Await Gate C1 identity review. BT_ART_03_FIX_LD: idle/command12 frames redrawn with one sword always in near hand; far hand empty; command1/6 exactly idle1; face probes9–11px, delta<=1; baseline187,32 inherited colors. New mirrored transition GIF: preview/gate_c1/boss_luc_dan_idle_command_loop.gif. Other4 actions unchanged; see FIX_LD report."
+    },
+    {
+      "id": "EN_NGO_ARMORED_CAVALRY",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 96,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "gallop",
+          "file": "enemy/EN_NGO_ARMORED_CAVALRY/en_ngo_armored_cavalry_gallop.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "blocked",
+          "file": "enemy/EN_NGO_ARMORED_CAVALRY/en_ngo_armored_cavalry_blocked.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null,
+          "frame_w": 104
+        },
+        {
+          "name": "knockback",
+          "file": "enemy/EN_NGO_ARMORED_CAVALRY/en_ngo_armored_cavalry_knockback.png",
+          "frames": 8,
+          "fps": 14,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_NGO_ARMORED_CAVALRY/en_ngo_armored_cavalry_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "BT_ART_03 Gate C1: generated native-detail sources; shared inherited 32-color palette; binary alpha; bottom-center; QA and code measurements in meta/gate_c1/final_qa.json. Await Gate C1 identity review. blocked frame_w=104 logic to preserve lance and head scale; other actions96. BT_ART_03_FIX_C1: death6@12 redrawn to retain full neck/chest/flank/rump lamellar barding matching gallop1;6 frames each1 connected component; final frame height16logic; baseline251,binary alpha,32 inherited colors. gallop/blocked/knockback and all other assets preserved. New transition GIF preview/gate_c1/en_ngo_armored_cavalry_gallop_death.gif; audit meta/fix_c1/final_qa.json. This overrides earlier death armor-broken design."
+    },
+    {
+      "id": "PROP_BT_COMMAND_TOWER",
+      "category": "prop",
+      "priority": "P0",
+      "frame_w": 96,
+      "frame_h": 160,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "prop/PROP_BT_COMMAND_TOWER/prop_bt_command_tower_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "shake",
+          "file": "prop/PROP_BT_COMMAND_TOWER/prop_bt_command_tower_shake.png",
+          "frames": 4,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "collapse",
+          "file": "prop/PROP_BT_COMMAND_TOWER/prop_bt_command_tower_collapse.png",
+          "frames": 10,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "BT_ART_03 Gate C1: generated native-detail sources; shared inherited 32-color palette; binary alpha; bottom-center; QA and code measurements in meta/gate_c1/final_qa.json. Await Gate C1 identity review."
+    },
+    {
+      "id": "PORTRAIT_LUC_DAN",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_LUC_DAN/portrait_luc_dan_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "BT_ART_03 Gate C2: generated multi-row raw sources; shared palette, binary alpha; QA, head locks, pivots and code measurements in meta/gate_c2/final_qa.json. Await Gate C2 review."
+    },
+    {
+      "id": "EN_BT_GOLD_TOWER",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 96,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_BT_GOLD_TOWER/en_bt_gold_tower_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_BT_GOLD_TOWER/en_bt_gold_tower_throw.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": false,
+          "hit_frame": 4
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_BT_GOLD_TOWER/en_bt_gold_tower_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "destroyed",
+          "file": "enemy/EN_BT_GOLD_TOWER/en_bt_gold_tower_destroyed.png",
+          "frames": 8,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "BT_ART_03 Gate C2: generated multi-row raw sources; shared palette, binary alpha; QA, head locks, pivots and code measurements in meta/gate_c2/final_qa.json. Await Gate C2 review."
+    },
+    {
+      "id": "PJ_BT_GOLD_COIN",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "projectile/PJ_BT_GOLD_COIN/pj_bt_gold_coin_loop.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "BT_ART_03 Gate C2: generated multi-row raw sources; shared palette, binary alpha; QA, head locks, pivots and code measurements in meta/gate_c2/final_qa.json. Await Gate C2 review."
+    },
+    {
+      "id": "PJ_BT_POISON_ARROW",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 8,
+      "frame_h": 24,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "projectile/PJ_BT_POISON_ARROW/pj_bt_poison_arrow_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "BT_ART_03 Gate C2: generated multi-row raw sources; shared palette, binary alpha; QA, head locks, pivots and code measurements in meta/gate_c2/final_qa.json. Await Gate C2 review. Arrow only: user authorized two existing environment greens #23331B/#364C16; palette files unchanged."
+    },
+    {
+      "id": "FX_BT_STUN",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "fx/FX_BT_STUN/fx_bt_stun_loop.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "BT_ART_03 Gate C2: generated multi-row raw sources; shared palette, binary alpha; QA, head locks, pivots and code measurements in meta/gate_c2/final_qa.json. Await Gate C2 review."
+    },
+    {
+      "id": "FX_BT_ARMOR_SPARK",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "impact",
+          "file": "fx/FX_BT_ARMOR_SPARK/fx_bt_armor_spark_impact.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "BT_ART_03 Gate C2: generated multi-row raw sources; shared palette, binary alpha; QA, head locks, pivots and code measurements in meta/gate_c2/final_qa.json. Await Gate C2 review."
+    },
+    {
+      "id": "PLAYER_BA_TRIEU_ELEPHANT",
+      "category": "cutscene",
+      "priority": "P0",
+      "frame_w": 128,
+      "frame_h": 96,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "cutscene/PLAYER_BA_TRIEU_ELEPHANT/player_ba_trieu_elephant_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "charge",
+          "file": "cutscene/PLAYER_BA_TRIEU_ELEPHANT/player_ba_trieu_elephant_charge.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "BT_ART_03 Gate C2: generated multi-row raw sources; shared palette, binary alpha; QA, head locks, pivots and code measurements in meta/gate_c2/final_qa.json. Await Gate C2 review. BT_ART_03_FIX_C2: repaired hair/cape cutout seams in all14 frames from generated textured patches; preserves every existing opaque head/elephant pixel,40 inherited colors,baseline378. Full ROI scan has0 vertical transparent slits width1-8 and height>6. New *_fix.gif and *_fix_zoom_x3.png previews; audit meta/fix_c2/final_qa.json. Await review."
     }
   ]
 }

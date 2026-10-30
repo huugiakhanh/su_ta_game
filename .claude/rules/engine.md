@@ -30,10 +30,10 @@ Engine ở `frontend/static/js/engine/` chạy **mọi chương**. Phần riêng
   - nút panel;
   - xử lý `?viewer=1`, `?debug=1`, `?layout=<LEVEL.testLayout>`.
 - Mô phỏng:
-  - `level-flow.js`: `update(dt)`, cảnh vào màn + NPC dẫn (`LEVEL.guide`), câu hỏi chặn đường, gặp/giải cứu NPC (quân vây = enemy **hoặc hazard** `captorOf`; NPC to khai báo `sprites.npcs[id].holdGap` — BT-L2), vật phẩm, về đích, camera, khe kỹ năng. Đồi xa: `LEVEL.farHills ?? CHAPTER.farHills`.
+  - `level-flow.js`: `update(dt)`, cảnh vào màn + NPC dẫn (`LEVEL.guide`), câu hỏi chặn đường, gặp/giải cứu NPC (quân vây = enemy **hoặc hazard** `captorOf`; NPC to khai báo `sprites.npcs[id].holdGap` — BT-L2), vật phẩm, về đích, camera, khe kỹ năng. Đồi xa: `LEVEL.farHills ?? CHAPTER.farHills`. **Rung màn hình** `shakeCamera(time, amp)` (BT-L3 E3): `state.cameraShake`, lệch camera ngang giảm dần, vẽ ở `render/index.js`.
   - `player.js`: điều khiển/vật lý người chơi, đánh, lướt, animation; đứng trên **bục một chiều** `state.platforms` (BT-ENGINE E6: tiếp đất từ trên khi `vy ≥ 0` và chân frame trước ≤ mặt bục + `GROUND_SNAP_DISTANCE`; nhảy từ dưới / đi ngang xuyên qua; không có thao tác rơi xuyên — ↓ là lướt; `p.platform` = bục đang đứng, bục gắn hazard chở người chơi theo `dx`).
   - `combat.js`: `strikeEnemy(enemy, damage)`, `strikeHazard(hazard, damage)`, `strike(target, damage)`, `breakHazard`, `spearBox`, `playerStrike`/`attackDamage` (đòn chém người chơi: sát thương + chí mạng do `CHAPTER.skills.attackDamage`, chí mạng gọi `hooks.onCrit` — BT-ENGINE).
-  - `damage.js`: `hurtPlayer(reason, amount = 1)`, `respawnAfterFall`, `playerImmune`. Số máu mất lấy từ dữ liệu chương: `damage` của hazard/đạn, `rules.damage` của lính (cú đánh); không khai báo = 1.
+  - `damage.js`: `hurtPlayer(reason, amount = 1)`, `stunPlayer(reason, time)` (BT-L3 E2: `p.stun` giây — `player.js` bỏ qua phím, vẫn rơi), `respawnAfterFall`, `playerImmune`. Kỹ năng chặn đòn của chương `CHAPTER.skills.blockHurt(reason)` trả `true` thì bỏ qua cả sát thương lẫn choáng (BT-L3 E1 — khiên mây tre). Số máu mất lấy từ dữ liệu chương: `damage` của hazard/đạn, `rules.damage` của lính (cú đánh); không khai báo = 1.
   - `hazards.js`: roller, patrol, thrower, trap, prop, **vent** (vùng phun theo nhịp `cycle` off/warn/active, `phase` lệch nhịp; `ignoreDash` = lướt không miễn) + đạn. Sprite hazard có `ride: { top, inset }` mang bục trên lưng (E7 — voi rừng): bục đồng bộ cuối `updateHazards`, đứng trên lưng thì không tính va chạm thân; roller có `hp` thì chém vỡ được (đá lăn).
   - `enemies.js`: hành vi `guard`/`rusher` theo `sprites.enemies[art].behavior` + `rules`, chạm thân, sinh quân theo đợt.
   - `end-game.js`: thắng/thua, tiến trình, panel, kỷ lục.
@@ -65,7 +65,7 @@ Chương lo phần riêng:
 - `defs[id]` = `{ slot, portrait, timer(skills) }`;
 - `createState(owned)`;
 - `update(dt, triggered)`;
-- `onPlayerHurt()` và `onAttackStart()` (không bắt buộc).
+- `onPlayerHurt()`, `onAttackStart()`, `attackDamage(target)` (chí mạng), `blockHurt(reason)` (chặn đòn) — không bắt buộc.
 
 Màn bật khe kỹ năng bằng `LEVEL.skills: true`.
 

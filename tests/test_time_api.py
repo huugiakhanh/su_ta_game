@@ -108,6 +108,18 @@ GOOD_PROGRESS = {"score": 2500, "books": 5, "level1Complete": True, "level2Compl
                  "level3Complete": False, "rewards": ["SK_LE_CHAN_ARROW_RAIN"], "times": {"1": 83.2}}
 
 
+# ---- Mở khoá chương trên trang chủ (HOME-UNLOCK) ----
+
+def test_cleared_chapters_guest(client):
+    assert client.get("/api/game/cleared-chapters").status_code == 401
+
+
+def test_cleared_chapters_logged_in(client, monkeypatch):
+    monkeypatch.setattr(api, "cleared_chapters", lambda user_id: [1] if user_id == USER["id"] else [])
+    login(client)
+    assert client.get("/api/game/cleared-chapters").json == {"status": "success", "chapters": [1]}
+
+
 @pytest.mark.parametrize("method", ["get", "put", "delete"])
 def test_progress_requires_session(client, method):
     response = getattr(client, method)("/api/game/progress/1", json=GOOD_PROGRESS)

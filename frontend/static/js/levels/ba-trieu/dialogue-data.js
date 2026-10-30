@@ -93,6 +93,21 @@ export const STORY_BA_TRIEU_INTRO = {
   ]
 };
 
+// §5.2 Cutscene màn 3 — nguyên văn docs/SUTA_BT_TASK_00.md (duyệt 17/10/2026).
+// Câu 1 sau khi Lục Dận trúng đòn cuối (chân dung Lục Dận), câu 2 khi Bà Triệu
+// cưỡi voi trắng dẫn quân (chân dung Bà Triệu).
+export const STORY_LUC_DAN_FALLS = {
+  portrait: 'PORTRAIT_LUC_DAN',
+  memorial: false,
+  lines: ['Đài cao sụp đổ, Lục Dận rơi xuống đầm lầy.']
+};
+
+export const STORY_BT_VICTORY = {
+  portrait: 'PORTRAIT_BA_TRIEU',
+  memorial: false,
+  lines: ['Bà Triệu mặc giáp vàng, cưỡi voi trắng dẫn quân xông lên. Lục Dận bỏ chạy về phương Bắc.']
+};
+
 // §5.3 Panel kết chương: dòng 1 (điểm) + dòng 2 (kết cục lịch sử), nối bằng dấu
 // cách vì #endText hiển thị bằng textContent một đoạn.
 export const CHAPTER_END = {

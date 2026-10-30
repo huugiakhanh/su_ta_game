@@ -58,6 +58,8 @@ export function createLevelState(options = {}) {
     paused: false,
     won: false,
     cameraX: 0,
+    // Rung màn hình (BT-L3 E3 — level-flow.js shakeCamera): { time, amp } hoặc null.
+    cameraShake: null,
     score: options.score ?? 0,
     health: MAX_HEALTH,
     itemsCollected: 0,
@@ -93,6 +95,8 @@ export function createLevelState(options = {}) {
       attackHits: new Set(),
       hurtTimer: 0,
       invulnerable: 0,
+      // Giây choáng còn lại (BT-L3 E2 — damage.js stunPlayer).
+      stun: 0,
       // Animation đang phát { name, time } — xem animation.js.
       anim: createAnim('idle'),
       // Mốc thời gian (giây, đồng hồ requestAnimationFrame) lúc thua.
