@@ -30,6 +30,8 @@ function updateClock() {
 const QUIZ_BANKS = {
     'trung-trac': { url: '/static/assets/question/trung-trac-question.json', excluded: [] },
     'ba-trieu': { url: '/static/assets/question/ba-trieu-question.json', excluded: [15, 33, 37, 41, 45] },
+    // Lý Nam Đế: giữ đủ 50 câu (người dùng chốt 30/10, docs/SUTA_LND_TASK_00.md §3.3).
+    'ly-nam-de': { url: '/static/assets/question/ly-nam-de-question.json', excluded: [] },
 };
 const DEFAULT_CHAPTER = 'trung-trac';
 let currentChapter = null;

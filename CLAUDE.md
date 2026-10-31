@@ -7,6 +7,7 @@ Hướng dẫn cho Claude Code khi làm việc trong repo này. File này nạp 
 | [engine.md](.claude/rules/engine.md) | Engine màn chơi dùng chung mọi chương `js/engine/`, `gameplay/base.html`, `css/game/` |
 | [trung-trac-gameplay.md](.claude/rules/trung-trac-gameplay.md) | Phần riêng chương Trưng Trắc `js/levels/trung-trac/`, template + CSS chương |
 | [ba-trieu-gameplay.md](.claude/rules/ba-trieu-gameplay.md) | Chương Bà Triệu `js/levels/ba-trieu/` (đang làm), script sinh câu hỏi |
+| [ly-nam-de-gameplay.md](.claude/rules/ly-nam-de-gameplay.md) | Chương Lý Nam Đế `js/levels/ly-nam-de/` (khung), script sinh câu hỏi |
 | [assets-32bit.md](.claude/rules/assets-32bit.md) | Asset (`assets/`, `static/assets/`), file JS vẽ/nạp asset, brief + prompt Codex, `tools/` |
 | [backend.md](.claude/rules/backend.md) | `backend/`, `tests/`, `app.py` |
 | [web-pages.md](.claude/rules/web-pages.md) | Trang chủ + cửa sổ, Thư viện lịch sử, `/quiz` |
@@ -26,6 +27,8 @@ Lý do của các quyết định cũ nằm trong report ở `docs/archive/` (tr
 - **Màn 3 — Trận Luy Lâu** (`…/trung-trac/3`): boss Tô Định 3 giai đoạn, cutscene kết chương.
 
 Chương **Bà Triệu** (chương 2, [docs/SUTA_BT_TASK_00.md](docs/SUTA_BT_TASK_00.md)) **chơi được cả 3 màn** (`/gameplay/levels/ba-trieu[/2|/3]`): rừng núi Nưa (mini-boss tham quan thu thuế) → chiêu mộ Triệu Quốc Đạt, họ Lý, Bạch Tượng → boss Lục Dận 3 giai đoạn + 3 kỹ năng + cutscene. Thẻ trang chủ (dòng thời gian, chọn tướng) **mở khoá khi đã qua chương Trưng Trắc** (HOME-UNLOCK: tài khoản theo `/api/game/cleared-chapters`, khách theo cờ localStorage `suta.cleared.<id>`); vào bằng URL thì luôn được.
+
+Chương **Lý Nam Đế** (chương 3, [docs/SUTA_LND_TASK_00.md](docs/SUTA_LND_TASK_00.md)) mới có **khung 3 màn chạy bằng asset mượn chương 1–2** (`/gameplay/levels/ly-nam-de[/2|/3]`, LND-SKELETON): chưa có NPC, kỹ năng, boss Tiêu Tư; thẻ trang chủ còn khoá. `/quiz` và BXH đã có chương 3.
 
 Phần thưởng màn 2 chỉ có tác dụng ở màn 3. Giáp, tăng dame vĩnh viễn, cửa hàng, năng lượng **chưa có**. Khi được yêu cầu làm việc liên quan, kiểm tra code thực tế thay vì giả định roadmap đã xong.
 
@@ -56,13 +59,14 @@ su_ta_game/
 │   ├── templates/            # home.html, history.html, quiz.html, library/hero.html,
 │   │                         # components/home/*.html (cửa sổ trang chủ), gameplay/base.html (khung màn chơi chung)
 │   │                         # + gameplay/levels/trung-trac.html (kế thừa base, dùng chung 3 màn)
-│   │                         # + gameplay/levels/ba-trieu.html (chương 2, đang làm)
+│   │                         # + gameplay/levels/ba-trieu.html (chương 2), ly-nam-de.html (chương 3, khung)
 │   └── static/
 │       ├── css/              # main.css, home/*.css, history.css, library.css, quiz.css, game/game.css (khung màn chơi), levels/*.css
 │       ├── js/home/          # ES modules trang chủ
 │       ├── js/engine/        # engine màn chơi dùng chung mọi chương (người chơi, vật lý, quân, HUD, render...)
 │       ├── js/levels/trung-trac/   # phần riêng chương: chapter.js (định nghĩa chương), nội dung màn, boss, kỹ năng
-│       ├── js/levels/ba-trieu/     # chương 2 (đang làm)
+│       ├── js/levels/ba-trieu/     # chương 2
+│       ├── js/levels/ly-nam-de/    # chương 3 (khung, asset mượn)
 │       ├── js/{history,library,quiz}.js
 │       └── assets/           # images/<chương>/ (asset riêng chương) + images/shared/ (nhân vật nam/nữ, icon HUD) + images dùng chung, audio/, question/
 ├── tools/make_home_images.py # sinh ảnh thu nhỏ cho web (ảnh gốc giữ nguyên)

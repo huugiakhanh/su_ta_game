@@ -106,3 +106,19 @@ def ba_trieu_level_2():
 @pages_bp.get("/gameplay/levels/ba-trieu/3")
 def ba_trieu_level_3():
     return render_chapter_level("ba-trieu", 3, "Màn 3: Chiến lũy Bồ Điền")
+
+
+# Chương Lý Nam Đế (LND-SKELETON): khung 3 màn bằng asset mượn, chưa mở trên trang chủ.
+@pages_bp.get("/gameplay/levels/ly-nam-de")
+def ly_nam_de():
+    return render_chapter_level("ly-nam-de", 1, "Màn 1: Từ quan chiêu binh")
+
+
+@pages_bp.get("/gameplay/levels/ly-nam-de/2")
+def ly_nam_de_level_2():
+    return render_chapter_level("ly-nam-de", 2, "Màn 2: Chiêu mộ hiền tài")
+
+
+@pages_bp.get("/gameplay/levels/ly-nam-de/3")
+def ly_nam_de_level_3():
+    return render_chapter_level("ly-nam-de", 3, "Màn 3: Công phá thành Long Biên")

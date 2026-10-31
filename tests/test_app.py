@@ -59,6 +59,7 @@ def test_pages_render(client):
     assert client.get("/gameplay/levels/trung-trac/2").status_code == 200
     assert client.get("/gameplay/levels/trung-trac/3").status_code == 200
     assert client.get("/gameplay/levels/ba-trieu/3").status_code == 200
+    assert client.get("/gameplay/levels/ly-nam-de/3").status_code == 200
 
 
 def test_migrations_are_idempotent(client):
@@ -130,8 +131,8 @@ def test_leaderboard_uses_best_per_level(client):
     result = client.get("/api/game/leaderboard").json
     board = result["data"]
     assert [(row["rank"], row["total_score"], row["total_time"]) for row in board] == [(1, 800, 120.0), (2, 500, 90.0)]
-    # Toàn game: 3 màn Trưng Trắc + 3 màn Bà Triệu (migration 005).
-    assert result["me"]["rank"] == 1 and result["levels_total"] == 6
+    # Toàn game: 3 màn mỗi chương — Trưng Trắc, Bà Triệu (005), Lý Nam Đế (007).
+    assert result["me"]["rank"] == 1 and result["levels_total"] == 9
 
 
 def test_leaderboard_scopes_and_me_outside_top(client):
@@ -189,6 +190,22 @@ def test_ba_trieu_rewards_and_achievements(client):
     assert {a["code"] for a in last["new_achievements"]} == {"BT_CHAPTER", "BT_SPEED"}
     gold, gems = query("SELECT gold, gems FROM users")[0]
     assert (gold, gems) == (120 + 180 + 240 + 60 + 60, 8 + 12 + 6)
+
+
+
+def test_ly_nam_de_rewards_and_achievements(client):
+    # LND-SKELETON (migration 007): qua 3 màn chương 3 -> 144/216/288 vàng + 10 KC, 4 thành tựu LND_*.
+    assert query("SELECT id, first_clear_gold, first_clear_gems FROM levels WHERE chapter_id = 3 ORDER BY id") == [
+        (301, 144, 0), (302, 216, 0), (303, 288, 10)]
+    register_and_login(client)
+    first = save_time(client, 301, 200, 500, {"hits_taken": 3})
+    assert first["gold_gained"] == 144 + 72
+    assert [a["code"] for a in first["new_achievements"]] == ["LND_CLEAR_1"]
+    assert [a["code"] for a in save_time(client, 302, 300)["new_achievements"]] == ["LND_CLEAR_2"]
+    last = save_time(client, 303, 350)
+    assert {a["code"] for a in last["new_achievements"]} == {"LND_CHAPTER", "LND_SPEED"}
+    gold, gems = query("SELECT gold, gems FROM users")[0]
+    assert (gold, gems) == (144 + 216 + 288 + 72 + 72, 10 + 14 + 7)
 
 
 def test_cleared_chapters(client):

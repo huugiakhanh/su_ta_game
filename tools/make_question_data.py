@@ -4,7 +4,7 @@ Nguồn: frontend/static/assets/question/<chương>-question.json — bản JSON
 Excel team (đã đối chiếu khớp Excel, xem docs/SUTA_BT_TASK_00.md). Nội dung câu hỏi
 là Source of Truth: script chỉ chép, không sửa chữ.
 
-Chạy:  python tools/make_question_data.py ba-trieu
+Chạy:  python tools/make_question_data.py ba-trieu   (hoặc ly-nam-de)
 Chỉ dùng cho chương có cấu hình trong CHAPTERS bên dưới (Trưng Trắc giữ file cũ).
 """
 
@@ -30,6 +30,17 @@ CHAPTERS = {
             "bachTuong": [7, 23, 36],
         },
     },
+    "ly-nam-de": {
+        "task": "docs/SUTA_LND_TASK_00.md §3.3",
+        "excluded": [],
+        "level1": [1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 16, 19, 20, 21, 22, 24, 25, 26, 27, 29, 31,
+                   32, 33, 35, 36, 37, 38, 39, 42, 43, 44, 45, 46, 47, 50],
+        "npc": {
+            "phamTu": [14, 15, 17, 18, 40],
+            "tinhThieu": [7, 28, 41, 48],
+            "trieuTuc": [8, 23, 30, 34, 49],
+        },
+    },
 }
 
 
@@ -51,7 +62,7 @@ def build(slug):
     lines = [
         f"// SINH TỰ ĐỘNG bằng tools/make_question_data.py {slug} — KHÔNG sửa tay.",
         f"// Nguồn: assets/question/{slug}-question.json (Excel của team). Pool + câu loại: {config['task']}.",
-        f"// Câu team loại hẳn: {', '.join(map(str, config['excluded']))}.",
+        f"// Câu team loại hẳn: {', '.join(map(str, config['excluded'])) or 'không có'}.",
         "",
         "export const QUESTIONS = {",
     ]

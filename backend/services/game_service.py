@@ -6,7 +6,8 @@ from backend.db import db_cursor
 
 CHAPTER_TT_LEVELS = (101, 102, 103)
 CHAPTER_BT_LEVELS = (201, 202, 203)
-# DESIGN_BASELINE (task card D9; chương 2: BT-00 mục 9): tổng thời gian tốt nhất
+CHAPTER_LND_LEVELS = (301, 302, 303)
+# DESIGN_BASELINE (task card D9; chương 2: BT-00 mục 9; chương 3: LND-00 mục 9): tổng thời gian tốt nhất
 # 3 màn của chương dưới mốc này -> thành tựu "thần tốc" của chương.
 SPEED_LIMIT_SECONDS = 15 * 60
 
@@ -45,6 +46,11 @@ ACHIEVEMENT_RULES = {
     "BT_CLEAR_2": _cleared(202),
     "BT_CHAPTER": _cleared(203),
     "BT_SPEED": _speed_for(CHAPTER_BT_LEVELS),
+    # Chương 3 Lý Nam Đế (migration 007).
+    "LND_CLEAR_1": _cleared(301),
+    "LND_CLEAR_2": _cleared(302),
+    "LND_CHAPTER": _cleared(303),
+    "LND_SPEED": _speed_for(CHAPTER_LND_LEVELS),
 }
 
 
