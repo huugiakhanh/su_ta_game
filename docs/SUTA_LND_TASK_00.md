@@ -8,7 +8,7 @@ Mẫu tham chiếu: chương Bà Triệu ([SUTA_BT_TASK_00.md](SUTA_BT_TASK_00.m
 > Task card này **chỉ là tài liệu**. Mỗi giai đoạn code ở mục 2 có task card riêng, duyệt trước khi làm.
 > **ĐÃ DUYỆT 31/10/2026** (người dùng, khi lập kế hoạch LND-SKELETON): chia pool 3.3, tên 3 màn 5.1, thưởng/thành tựu mục 9,
 > tên buff Tinh Thiều **"Lương thảo dồi dào"**.
-> Mục 4 (thoại màn 2) và phần còn lại của mục 5 vẫn là **NHÁP CHỜ DUYỆT**. Sau khi duyệt sẽ thành
+> Mục 4 (thoại màn 2) và 5 (câu chữ khác) **ĐÃ DUYỆT 31/10/2026** (người dùng duyệt nguyên văn) — từ nay là
 > **Source of Truth**, chép nguyên văn vào `dialogue-data.js` / `config.js`, không tự sửa (rule `history-content.md`).
 
 ---
@@ -118,7 +118,7 @@ Trang `/quiz`: thêm chương 3 để nạp `ly-nam-de-question.json` (LND-SKELE
 
 ---
 
-## 4. NỘI DUNG MÀN 2 — NHÁP CHỜ DUYỆT
+## 4. NỘI DUNG MÀN 2 — ĐÃ DUYỆT 31/10/2026
 
 Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy nguyên văn Excel, còn lại Claude soạn nháp. Thoại xưng hô với Lý Bí (như chương 2 xưng hô với Bà Triệu).
 
@@ -177,7 +177,7 @@ Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy nguyên văn Excel,
 
 ---
 
-## 5. CÂU CHỮ KHÁC — NHÁP CHỜ DUYỆT
+## 5. CÂU CHỮ KHÁC — ĐÃ DUYỆT 31/10/2026
 
 ### 5.1 Thông báo đầu màn
 - Màn 1: "Màn 1: Từ quan chiêu binh — Đầu thế kỷ 6, thứ sử Tiêu Tư nhà Lương tàn bạo, tham nhũng. Hãy theo Lý Bí tập hợp lực lượng, thu đủ 5 Quyển Sách Tinh Hoa."
@@ -211,7 +211,7 @@ Mượn asset chương 1–2 trong lúc chờ (trời ngày, tile mặt đất, 
 
 ## 7. VIỆC CHỜ TEAM
 
-- [ ] Duyệt mục 4 và 5 (ghi "ĐÃ DUYỆT <ngày>" vào đầu mục, sửa trực tiếp nếu cần). Tên 3 màn ở 5.1 đã duyệt 31/10.
+- [x] Duyệt mục 4 và 5 — 31/10/2026 (người dùng duyệt nguyên văn đề xuất).
 - [x] Duyệt chia pool câu hỏi (mục 3.3) — 31/10/2026.
 - [x] Đặt tên buff Tinh Thiều (`BUFF_LND_SUPPLY`) — "Lương thảo dồi dào", 31/10/2026.
 - [x] Duyệt thưởng vàng/thành tựu (mục 9) — 31/10/2026.

@@ -43,14 +43,15 @@ export const LY_NAM_DE = {
   chapterEnd: CHAPTER_END,
   text: TEXT,
   audio: { sfx: SFX, music: MUSIC, musicFiles: MUSIC_FILES },
-  // Tên màn: LND-00 §5.1 (duyệt 31/10/2026); câu mô tả màn 1 còn chờ duyệt.
+  // Tên màn + thông báo đầu màn: LND-00 §5.1 (nguyên văn, duyệt 31/10/2026).
   levels: {
     1: {
       id: 1, title: 'Màn 1: Từ quan chiêu binh', url: LEVEL_URLS[1],
       chunks: LEVEL1_CHUNKS, worldWidth: CHUNK_W * LEVEL1_CHUNKS, zones: LEVEL1_ZONES, finishX: LEVEL1_FINISH_X, gate: null,
       sprites: LEVEL_SPRITES[1],
       content: level1Content,
-      introMessage: 'Màn 1: Từ quan chiêu binh',
+      introMessage: 'Màn 1: Từ quan chiêu binh — Đầu thế kỷ 6, thứ sử Tiêu Tư nhà Lương tàn bạo, tham nhũng. Hãy theo Lý Bí tập hợp lực lượng, thu đủ 5 Quyển Sách Tinh Hoa.',
+      introMessageTime: 4200,
       summary: state => `Bạn thu thập ${state.itemsCollected}/5 Quyển Sách Tinh Hoa và đạt ${state.score} điểm.`
     },
     2: {

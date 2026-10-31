@@ -20,6 +20,6 @@ Kế hoạch + quyết định đã chốt: [docs/SUTA_LND_TASK_00.md](../../doc
 ## Nội dung lịch sử
 
 - `questions-data.js` **sinh bằng** `python tools/make_question_data.py ly-nam-de` từ `assets/question/ly-nam-de-question.json` (khớp Excel 50/50). Không sửa tay; đổi pool thì sửa `CHAPTERS` trong script rồi chạy lại. **Giữ đủ 50 câu** (không loại câu nào); câu nghi vấn chờ team ở LND-00 mục 7. `/quiz` dùng cùng JSON (`QUIZ_BANKS['ly-nam-de']`, `excluded: []`).
-- `dialogue-data.js`: thoại NPC, cutscene, câu kết chương còn là **nháp chờ duyệt** (LND-00 §4–5) → để trống/`TODO_MISSING`, panel hết chương tạm chỉ báo điểm. Sau khi duyệt chép **nguyên văn**.
+- `dialogue-data.js`: thoại NPC, cutscene, câu kết chương **đã duyệt** (LND-00 §4–5) — chép **nguyên văn** từ task card (rule `history-content.md`): thoại Lý Bí dẫn màn + câu đầu màn 1 ở LND-L1, 3 NPC màn 2 ở LND-L2, cutscene ở LND-L3. Đã có trong khung: thông báo đầu màn 1 (§5.1, `chapter.js`) và panel kết chương (§5.4, `CHAPTER_END`).
 - Phần thưởng màn 2 (id khớp seed `007`): `SK_LND_TO_LICH_SHIELD` Khiên Tô Lịch (K), `BUFF_LND_SUPPLY` Lương thảo dồi dào (bị động — quân màn 3 rơi bình máu nhiều hơn), `SK_LND_TIDE` Triều Cường (L). Cơ chế làm ở LND-L3.
 - Thưởng/thành tựu (LND-00 mục 9, migration `007`): qua màn lần đầu 144/216/288 vàng + 10 KC; `LND_CLEAR_1`, `LND_CLEAR_2`, `LND_CHAPTER`, `LND_SPEED` (3 màn < 15 phút) — luật trong `game_service.py` (`CHAPTER_LND_LEVELS`).

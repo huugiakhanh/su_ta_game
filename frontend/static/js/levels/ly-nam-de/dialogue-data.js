@@ -1,13 +1,15 @@
-// Thoại chương Lý Nam Đế. LND-SKELETON: thoại NPC, cốt truyện, cutscene, câu kết
-// chương còn là NHÁP chờ team duyệt (docs/SUTA_LND_TASK_00.md §4–5) — chưa đưa vào.
-// Sau khi duyệt: chép NGUYÊN VĂN vào đây (Source of Truth, không tự sửa).
+// Thoại chương Lý Nam Đế — chép NGUYÊN VĂN docs/SUTA_LND_TASK_00.md §4–5 (người
+// dùng duyệt 31/10/2026, Source of Truth, không tự sửa). Thoại Lý Bí dẫn màn 1
+// đưa vào ở LND-L1, 3 NPC màn 2 ở LND-L2, cutscene màn 3 ở LND-L3.
 
-// TODO_MISSING: Phạm Tu, Tinh Thiều, Triệu Túc (LND-L2).
+// TODO: Phạm Tu, Tinh Thiều, Triệu Túc (§4, LND-L2).
 export const NPC_DIALOGUES = {};
 
-// TODO_MISSING: dòng điểm + kết cục lịch sử (LND-00 §5.4, chờ duyệt).
-// Tạm chỉ báo điểm.
+// §5.4 Panel kết chương: dòng 1 (điểm) + dòng 2 (kết cục lịch sử), nối bằng dấu
+// cách vì #endText hiển thị bằng textContent một đoạn.
 export const CHAPTER_END = {
   title: 'Hoàn thành chương Lý Nam Đế',
-  text: score => `Điểm: ${score}.`
+  text: score => `Bạn đã cùng Lý Bí đánh đuổi quân Lương và đạt ${score} điểm. `
+    + 'Mùa xuân năm 544, Lý Bí lên ngôi Hoàng đế, tức Lý Nam Đế, đặt quốc hiệu Vạn Xuân, niên hiệu Thiên Đức, '
+    + 'mong đất nước mãi trường tồn như vạn mùa xuân.'
 };
