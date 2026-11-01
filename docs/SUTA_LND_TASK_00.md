@@ -49,7 +49,7 @@ Mẫu tham chiếu: chương Bà Triệu ([SUTA_BT_TASK_00.md](SUTA_BT_TASK_00.m
 | **LND-00** | Task card này + team duyệt mục 3.3, 4, 5 | — |
 | **LND-ART-BIBLE** | Phụ lục art bible thế kỷ 6 trong `SUTA_TT_ART_BRIEF_32.md` (trang phục quân Lương, hào trưởng Giao Châu, thành Long Biên, sông Hồng), tra cứu có nguồn bằng `/research` | — |
 | **LND-SKELETON** | [SUTA_LND_TASK_SKELETON_01.md](SUTA_LND_TASK_SKELETON_01.md) — thư mục chương, `chapter.js`/`config.js`, template, route, migration `007` (chương 3, level 301–303, phần thưởng), `VALID_*`, thẻ trang chủ + timeline, `/quiz` thêm chương, rule `.claude/rules/ly-nam-de-gameplay.md`. Chạy được bằng asset mượn | LND-00 |
-| **LND-ENGINE** | Mục 3.5 | LND-SKELETON |
+| **LND-ENGINE** | [SUTA_LND_TASK_ENGINE_01.md](SUTA_LND_TASK_ENGINE_01.md) — mục 3.5 | LND-SKELETON |
 | **LND-L1** + `LND_ART_01` | Màn 1 (mục 3.1) | SKELETON, ENGINE |
 | **LND-L2** + `LND_ART_02` | Màn 2 (mục 3.2) | L1, LND-00 duyệt |
 | **LND-L3** + `LND_ART_03` | Màn 3 boss Tiêu Tư (mục 3.4) | L2 |

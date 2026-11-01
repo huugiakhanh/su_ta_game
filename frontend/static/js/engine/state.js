@@ -97,6 +97,8 @@ export function createLevelState(options = {}) {
       invulnerable: 0,
       // Giây choáng còn lại (BT-L3 E2 — damage.js stunPlayer).
       stun: 0,
+      // Chỗ đứng vững cuối cùng { x, feetY } — rơi sông thì hiện lại ở đây (LND-ENGINE E1).
+      safeSpot: null,
       // Animation đang phát { name, time } — xem animation.js.
       anim: createAnim('idle'),
       // Mốc thời gian (giây, đồng hồ requestAnimationFrame) lúc thua.
@@ -109,6 +111,8 @@ export function createLevelState(options = {}) {
     hazards: [],
     holes: [],
     items: [],
+    // Bình máu rơi khi hạ địch (LND-ENGINE E4b — combat.js dropHeal).
+    pickups: [],
     enemies: [],
     npcs: [],
     quizzes: [],

@@ -42,6 +42,13 @@ export function drawDebugOverlay() {
       ctx.fillText(label, pivotX, y - 3);
     }
   });
+  // Công tắc ẩn của bẫy rơi (LND-ENGINE E3): vạch cam trên mặt đất.
+  ctx.fillStyle = '#ff9f1c';
+  state.hazards.forEach(hazard => {
+    if (hazard.kind !== 'snare' || hazard.snareState !== 'idle') return;
+    const center = hazard.x + hazard.w / 2 - state.cameraX;
+    ctx.fillRect(Math.round(center - hazard.triggerWidth / 2), Math.round(hazard.floorY) - 2, Math.round(hazard.triggerWidth), 2);
+  });
   // Bục một chiều (E6–E7): xanh lơ; bục gắn hazard chưa xuất hiện thì bỏ.
   ctx.strokeStyle = '#3ce0e0';
   state.platforms.forEach(platform => {
@@ -50,7 +57,11 @@ export function drawDebugOverlay() {
     if (x + platform.w < -20 || x > VIEW_W + 20) return;
     ctx.strokeRect(x + .5, Math.round(platform.y) + .5, Math.round(platform.w) - 1, platform.h - 1);
   });
-  state.items.filter(item => !item.collected).forEach(item => {
+  ctx.strokeStyle = '#ff6fae';
+  state.pickups.forEach(pickup => {
+    ctx.strokeRect(Math.round(pickup.x - state.cameraX) + .5, Math.round(pickup.y) + .5, pickup.w - 1, pickup.h - 1);
+  });
+  state.items.filter(item => !item.collected && !item.hidden).forEach(item => {
     const x = Math.round(item.x - state.cameraX);
     ctx.strokeStyle = '#4fa3ff';
     ctx.strokeRect(x - ITEM_HITBOX.w / 2 + .5, Math.round(item.y) - ITEM_HITBOX.h / 2 + .5, ITEM_HITBOX.w - 1, ITEM_HITBOX.h - 1);

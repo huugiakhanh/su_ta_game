@@ -5,7 +5,7 @@ import { images } from '../assets.js';
 import { state, bossAlive, enemyArtKey } from '../state.js';
 import { platformActive } from '../entities.js';
 import { getAnimMeta, frameIndex } from '../animation.js';
-import { VIEW_W, GROUND_Y, PROJECTILE_MAX_RANGE, PROJECTILE_FADE_RANGE, ITEM_BOB_AMPLITUDE } from '../config.js';
+import { VIEW_W, GROUND_Y, PROJECTILE_MAX_RANGE, PROJECTILE_FADE_RANGE, ITEM_BOB_AMPLITUDE, HEAL_PICKUP, HEART_ICON } from '../config.js';
 import { CHAPTER, LEVEL } from '../chapter.js';
 import {
   ctx, debugLabels, drawMapImage, mapWidth, mapHeight, drawSprite, spriteImage, drawAnimated, drawPlaceholder,
@@ -94,7 +94,7 @@ function drawLandmarkFallback(left, top, w, h) {
 export function drawItems(time) {
   const prop = images.maps.props[CHAPTER.item?.sprite];
   state.items.forEach((item, index) => {
-    if (item.collected) return;
+    if (item.collected || item.hidden) return;
     const x = Math.round(item.x - state.cameraX);
     if (x < -36 || x > VIEW_W + 36) return;
     const y = Math.round(item.y) + Math.round(Math.sin(time * 4 + index) * ITEM_BOB_AMPLITUDE);
@@ -106,6 +106,22 @@ export function drawItems(time) {
     const { frame_w: fw = mapWidth(prop.image), frame_h: fh = mapHeight(prop.image), frames = 1 } = prop.asset;
     const frame = Math.floor(time * CHAPTER.item.fps + index) % frames;
     drawMapImage(ctx, prop.image, frame * fw, 0, fw, fh, x - fw / 2, y - fh / 2);
+  });
+}
+
+// Bình máu rơi (LND-ENGINE E4b): sprite `CHAPTER.pickups.heal` ({ id, anim }) nếu
+// chương có, không thì icon tim chung ICON_HUD_HEART; nháy HEAL_PICKUP.blink giây cuối.
+export function drawPickups(time) {
+  const art = CHAPTER.pickups?.heal || { id: HEART_ICON, anim: 'idle' };
+  const meta = getAnimMeta(art.id, art.anim);
+  const image = meta ? spriteImage(art.id, art.anim) : null;
+  state.pickups.forEach(pickup => {
+    const centerX = Math.round(pickup.x + pickup.w / 2 - state.cameraX);
+    if (centerX < -24 || centerX > VIEW_W + 24) return;
+    if (pickup.life < HEAL_PICKUP.blink && Math.floor(time * 8) % 2) return;
+    const footY = Math.round(pickup.y + pickup.h) - 1;
+    if (meta && image) drawSprite(image, meta, frameIndex(meta, time), centerX, footY, 1);
+    else drawPlaceholder(pickup);
   });
 }
 
@@ -244,7 +260,17 @@ export function drawProjectiles() {
     // tâm hitbox; ảnh gốc quay PHẢI nên bay sang trái thì lật.
     const frame = frameIndex(meta, projectile.age);
     const footY = centerY - Math.round(meta.frame_h / 2) + meta.frame_h - 1;
-    drawSprite(image, meta, frame, centerX, footY, projectile.direction < 0 ? -1 : 1, alpha);
+    if (projectile.angle) {
+      // Đạn nhắm (LND-ENGINE E2): xoay ảnh (gốc quay PHẢI) theo góc bay quanh tâm hitbox.
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(projectile.angle);
+      ctx.translate(-centerX, -centerY);
+      drawSprite(image, meta, frame, centerX, footY, 1, alpha);
+      ctx.restore();
+    } else {
+      drawSprite(image, meta, frame, centerX, footY, projectile.direction < 0 ? -1 : 1, alpha);
+    }
     debugLabels.set(projectile, `${art.anim} ${frame + 1}/${meta.frames}`);
   });
 }

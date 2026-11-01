@@ -60,9 +60,18 @@ export function respawnAfterFall() {
     endGame(false);
     return;
   }
-  const chunkStart = Math.floor(p.x / CHUNK_W) * CHUNK_W;
-  p.x = Math.max(48, chunkStart + 72);
-  p.y = groundYAt(p.x + p.w / 2) - p.normalH;
+  // Rơi xuống sông (hố `water` — LND-ENGINE E1): hiện lại ở chỗ đứng vững cuối
+  // cùng (player.js rememberSafeSpot). Hố thường: đầu chunk +72 như cũ.
+  const center = p.x + p.w / 2;
+  const river = state.holes.some(hole => hole.water && center >= hole.x && center <= hole.x + hole.w);
+  if (river && p.safeSpot) {
+    p.x = p.safeSpot.x;
+    p.y = p.safeSpot.feetY - p.normalH;
+  } else {
+    const chunkStart = Math.floor(p.x / CHUNK_W) * CHUNK_W;
+    p.x = Math.max(48, chunkStart + 72);
+    p.y = groundYAt(p.x + p.w / 2) - p.normalH;
+  }
   p.h = p.normalH;
   p.dashing = false;
   p.dashTimer = 0;

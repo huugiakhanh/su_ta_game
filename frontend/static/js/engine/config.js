@@ -151,6 +151,12 @@ export const HAZARD_DESPAWN_MARGIN = 312;
 // hơn hình — dễ nhặt), nhấp nhô ±ITEM_BOB_AMPLITUDE px.
 export const ITEM_HITBOX = { w: 22, h: 26 };
 export const ITEM_BOB_AMPLITUDE = 3;
+// Bình máu rơi khi hạ địch (LND-ENGINE E4b, DESIGN_BASELINE): nằm `life` giây
+// (nháy `blink` giây cuối) rồi mất; hitbox nhặt w×h; nhặt +`heal` máu.
+export const HEAL_PICKUP = { life: 10, blink: 2, w: 16, h: 16, heal: 1 };
+// Rơi xuống sông (LND-ENGINE E1): chỗ "đứng vững" để hiện lại phải có đất/bục
+// trải ra ít nhất chừng này px quanh tâm người chơi (không hiện lại sát mép khe).
+export const RESPAWN_EDGE_MARGIN = 20;
 
 // ---- NPC, câu hỏi (DESIGN_BASELINE) ----
 //   talkDistance  khoảng trống từ mép phải người chơi tới tâm NPC để mở hội thoại.

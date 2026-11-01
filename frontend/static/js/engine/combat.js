@@ -6,6 +6,8 @@ import { showMessage } from './ui.js';
 import { setAnim } from './animation.js';
 import { CHAPTER } from './chapter.js';
 import { playSfx } from './audio.js';
+import { groundYAt } from './geometry.js';
+import { HEAL_PICKUP } from './config.js';
 
 // Vùng mũi giáo của một thân người (người chơi, bóng kỹ năng): dải 48px ngay
 // trước mặt theo `facing`.
@@ -42,6 +44,7 @@ export function strikeEnemy(enemy, damage = 1) {
   enemy.action = null;
   setAnim(enemy, 'death');
   if (enemy.harmless) return;
+  dropHeal(enemy);
   state.score += enemy.boss ? 700 : 250;
   // Quân ra thành đợt đông (art không có defeatMessage) — không thông báo từng con.
   const message = enemy.boss ? CHAPTER.text.bossDefeated : CHAPTER.sprites.enemies[enemyArtKey(enemy)]?.defeatMessage;
@@ -95,7 +98,31 @@ export function breakHazard(hazard) {
   hazard.projectile = null;
   hazard.action = null;
   setAnim(hazard, 'death');
+  revealCarriedItems(hazard);
+  dropHeal(hazard);
   const spec = CHAPTER.sprites.hazards[hazard.sprite];
   if (hazard.boss && !spec?.corpse) playSfx('bossDefeat');
   showMessage(spec?.breakMessage ?? CHAPTER.text.hazardDefeated);
+}
+
+// Vật phẩm `carrier` = hazard này (LND-ENGINE E4a) hiện ra tại tâm hazard, cao
+// `lift` như lúc đặt (x kẹp trong màn). Gọi khi hazard bị phá hoặc rời màn.
+export function revealCarriedItems(hazard) {
+  state.items.forEach(item => {
+    if (!item.hidden || item.carrier !== hazard.id) return;
+    item.hidden = false;
+    item.x = Math.max(24, Math.min(state.finishX - 24, hazard.x + hazard.w / 2));
+    item.y = groundYAt(item.x) - item.lift;
+  });
+}
+
+// Bình máu rơi khi hạ địch (LND-ENGINE E4b): chương quyết qua
+// `CHAPTER.hooks.dropHeal(target)` (true = rơi 1 bình). Không có hook = không rơi.
+function dropHeal(target) {
+  if (!CHAPTER.hooks?.dropHeal?.(target)) return;
+  state.pickups.push({
+    x: target.x + target.w / 2 - HEAL_PICKUP.w / 2,
+    y: target.y + target.h / 2 - HEAL_PICKUP.h / 2,
+    w: HEAL_PICKUP.w, h: HEAL_PICKUP.h, vy: 0, life: HEAL_PICKUP.life
+  });
 }

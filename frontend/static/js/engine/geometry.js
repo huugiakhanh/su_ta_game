@@ -26,8 +26,11 @@ const COLUMNS_PER_CHUNK = CHUNK_W / TERRAIN_CELL;
 // = GROUND_Y), shift = dịch ngang theo số ô (nhóm vật cản màn 1 lệch ngẫu
 // nhiên). Độ cao cột = số '#' liền nhau tính từ hàng cuối; '#' lơ lửng phía
 // trên khoảng trống bị bỏ + cảnh báo. Chunk không khai báo = phẳng.
+// '~' ở hàng cuối = cột NƯỚC (sông — LND-ENGINE E1): hố có cờ nước, rơi xuống
+// thì hiện lại ở chỗ đứng vững cuối cùng (damage.js respawnAfterFall).
 export function buildTerrain(placements, chunks) {
   const levels = new Int8Array(chunks * COLUMNS_PER_CHUNK);
+  const water = new Uint8Array(chunks * COLUMNS_PER_CHUNK);
   placements.forEach(({ chunk, rows, shift = 0 }) => {
     rows.forEach(row => {
       if (row.length !== COLUMNS_PER_CHUNK) console.warn(`terrain chunk ${chunk}: hàng dài ${row.length} ô, cần ${COLUMNS_PER_CHUNK}`, row);
@@ -41,13 +44,14 @@ export function buildTerrain(placements, chunks) {
       const target = col + shift;
       if (target < 0 || target >= COLUMNS_PER_CHUNK) continue;
       levels[(chunk - 1) * COLUMNS_PER_CHUNK + target] = height - 1;
+      water[(chunk - 1) * COLUMNS_PER_CHUNK + target] = rows[rows.length - 1][col] === '~' ? 1 : 0;
     }
   });
   for (let col = 1; col < levels.length; col++) {
     const step = Math.abs(Math.max(levels[col], 0) - Math.max(levels[col - 1], 0));
     if (step > TERRAIN_MAX_STEP) console.warn(`terrain x=${col * TERRAIN_CELL}: bậc chênh ${step} ô > ${TERRAIN_MAX_STEP}`);
   }
-  return { levels };
+  return { levels, water };
 }
 
 // Độ cao (số ô) của cột chứa x; -1 = hố. Màn phẳng / ngoài màn -> 0.
@@ -56,15 +60,17 @@ export function terrainLevelAt(worldXPosition) {
   return terrain.levels[Math.floor(worldXPosition / TERRAIN_CELL)] ?? 0;
 }
 
-// Các hố của địa hình (chuỗi cột -1 liền nhau) dạng { x, w } như state.holes.
+// Các hố của địa hình (chuỗi cột -1 liền nhau, cùng loại) dạng { x, w, water }
+// như state.holes; `water` = khe sông (cột '~').
 export function terrainHoles() {
   const holes = [];
   if (!terrain) return holes;
   terrain.levels.forEach((level, col) => {
     if (level >= 0) return;
+    const water = Boolean(terrain.water?.[col]);
     const last = holes[holes.length - 1];
-    if (last && last.x + last.w === col * TERRAIN_CELL) last.w += TERRAIN_CELL;
-    else holes.push({ x: col * TERRAIN_CELL, w: TERRAIN_CELL });
+    if (last && last.x + last.w === col * TERRAIN_CELL && last.water === water) last.w += TERRAIN_CELL;
+    else holes.push({ x: col * TERRAIN_CELL, w: TERRAIN_CELL, water });
   });
   return holes;
 }
@@ -129,7 +135,9 @@ export function makeHazard(kind, sprite, chunk, localX, options = {}) {
   const size = CHAPTER.sprites.hazards[sprite];
   const centerX = worldX(chunk, localX);
   // floatY > 0: vật nổi trên nước (thuyền) nên đáy nằm DƯỚI mặt đất.
-  const baseY = (options.groundY ?? groundYAt(centerX)) + (options.floatY || 0);
+  const groundY = (options.groundY ?? groundYAt(centerX)) + (options.floatY || 0);
+  // Bẫy rơi (`snare` — LND-ENGINE E3) treo cao `dropHeight` px trên mặt đất.
+  const baseY = kind === 'snare' ? groundY - (options.dropHeight ?? 80) : groundY;
   const hp = options.hp ?? 0;
   return {
     kind,
@@ -153,7 +161,8 @@ export function makeHazard(kind, sprite, chunk, localX, options = {}) {
     triggerDistance: options.triggerDistance ?? 0,
     alarmFor: options.alarmFor || null,
     alarmed: false,
-    harmful: options.harmful ?? (kind !== 'prop'),
+    // Snare chỉ gây sát thương lúc rơi (hazards.js tự xử lý, không qua va chạm chung).
+    harmful: options.harmful ?? (kind !== 'prop' && kind !== 'snare'),
     hp,
     maxHp: hp,
     hitTimer: 0,
@@ -162,10 +171,19 @@ export function makeHazard(kind, sprite, chunk, localX, options = {}) {
     // animation death/break một lần, xong thì xoá khỏi state.
     dying: false,
     sprung: false,
+    // Snare (LND-ENGINE E3): mặt đất nơi vật rơi xuống, bề ngang công tắc ẩn
+    // (quanh tâm), trạng thái idle -> warn -> fall -> landed, vận tốc rơi.
+    floorY: groundY,
+    triggerWidth: options.triggerWidth ?? 32,
+    snareState: 'idle',
+    snareTimer: 0,
+    vy: 0,
     // Vent (BT-ENGINE E8): giây lệch nhịp ban đầu / đồng hồ chu kỳ; trạng thái phun.
     phase: options.phase ?? 0,
     ventState: 'off',
     projectile: options.projectile || null,
+    // Nhắm đạn vào thân người chơi lúc nhả (LND-ENGINE E2); false = bắn ngang.
+    aim: Boolean(options.aim),
     fireInterval: options.fireInterval ?? 1.8,
     fireRange: options.fireRange ?? 258,
     fireTimer: options.fireDelay ?? 0.9,
@@ -176,15 +194,24 @@ export function makeHazard(kind, sprite, chunk, localX, options = {}) {
   };
 }
 
-export function makeProjectile(sprite, x, y, direction) {
+// Đạn bay ngang theo `direction` (-1/1); có `aim` = { x, y } (LND-ENGINE E2)
+// thì bay thẳng tới điểm đó: vector đơn vị (vx, vy), `angle` để render xoay ảnh.
+export function makeProjectile(sprite, x, y, direction, aim = null) {
   const size = CHAPTER.sprites.projectiles[sprite];
+  const length = aim ? Math.hypot(aim.x - x, aim.y - y) : 0;
+  const vx = length ? (aim.x - x) / length : direction;
+  const vy = length ? (aim.y - y) / length : 0;
   return {
     sprite,
     x: x - size.w / 2,
     y: y - size.h / 2,
     w: size.w,
     h: size.h,
-    direction,
+    direction: Math.sign(vx) || direction,
+    vx,
+    vy,
+    // Góc bay (radian) — 0 với đạn ngang (render không xoay).
+    angle: vy ? Math.atan2(vy, vx) : 0,
     traveled: 0,
     // Giây đã bay — đồng hồ riêng cho animation lặp của đạn.
     age: 0,

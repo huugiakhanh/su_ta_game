@@ -10,7 +10,7 @@ import { ctx, debugLabels } from './canvas.js';
 import { drawBackdrops } from './backdrop.js';
 import { drawGround, drawHoles, drawTerrainDebug } from './terrain.js';
 import {
-  drawFinishGate, drawQuizSteles, drawItems, drawObstacles, drawPlatforms, drawHazards, drawProjectiles, drawEnemies,
+  drawFinishGate, drawQuizSteles, drawItems, drawPickups, drawObstacles, drawPlatforms, drawHazards, drawProjectiles, drawEnemies,
   drawNpcs
 } from './entities.js';
 import { drawPlayer } from './player.js';
@@ -35,6 +35,7 @@ export function draw(time = 0) {
   drawHazards(time, true);
   drawHoles();
   drawItems(time);
+  drawPickups(time);
   drawObstacles();
   drawPlatforms();
   drawNpcs(time);

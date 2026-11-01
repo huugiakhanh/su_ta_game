@@ -6,7 +6,7 @@ import { state } from '../state.js';
 import { groundYAt, terrainLevelAt } from '../geometry.js';
 import { VIEW_W, VIEW_H, GROUND_Y, TERRAIN_CELL, GROUND_FALLBACK_COLOR, GROUND_DECOR_DENSITY } from '../config.js';
 import { CHAPTER } from '../chapter.js';
-import { ctx, drawMapImage } from './canvas.js';
+import { ctx, drawMapImage, mapWidth, mapHeight } from './canvas.js';
 
 // Hash số nguyên tất định theo chỉ số cột tile (không random, không đổi khi
 // chơi lại) — chọn biến thể surface/fill và vị trí decor.
@@ -272,6 +272,36 @@ const PIT_WALL = 3;
 // còn thấy nền, xuống đáy tối dần (DESIGN_BASELINE).
 const HOLE_DEPTH_BANDS = [[0, 6, .15], [6, 12, .35], [12, 17, .55], [17, 22, .75]];
 
+// Khe sông (hố `water` — LND-ENGINE E1): mặt nước vẽ đè lên thân hazard nổi
+// (thuyền vẽ trước, lớp chìm). Ảnh nước = prop `CHAPTER.tiles.water` (map
+// manifest chương, có trong mapProps) lát ngang, đỉnh ảnh ở GROUND_Y; chưa có
+// asset (TODO_MISSING) thì dải nước bán trong suốt từ WATER_FALLBACK.top.
+const WATER_FALLBACK = { top: 8, body: 'rgba(38, 104, 150, .82)', crest: 'rgba(170, 220, 240, .9)' };
+
+function drawWater(hole, left, width) {
+  const prop = images.maps.props?.[CHAPTER.tiles?.water];
+  const depth = VIEW_H - GROUND_Y;
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(left, GROUND_Y, width, depth);
+  ctx.clip();
+  if (prop?.image) {
+    const w = mapWidth(prop.image);
+    const h = mapHeight(prop.image);
+    const camera = Math.round(state.cameraX);
+    // Lát theo toạ độ thế giới để các khe sông nối liền một mặt nước.
+    for (let x = Math.floor(hole.x / w) * w; x < hole.x + hole.w; x += w) {
+      drawMapImage(ctx, prop.image, 0, 0, w, h, x - camera, GROUND_Y);
+    }
+  } else {
+    ctx.fillStyle = WATER_FALLBACK.body;
+    ctx.fillRect(left, GROUND_Y + WATER_FALLBACK.top, width, depth - WATER_FALLBACK.top);
+    ctx.fillStyle = WATER_FALLBACK.crest;
+    ctx.fillRect(left, GROUND_Y + WATER_FALLBACK.top, width, 2);
+  }
+  ctx.restore();
+}
+
 export function drawHoles() {
   const tileset = images.maps.tileset;
   const camera = Math.round(state.cameraX);
@@ -279,6 +309,10 @@ export function drawHoles() {
     const left = Math.round(hole.x) - camera;
     const width = Math.round(hole.w);
     if (left + width < -24 || left > VIEW_W + 24) return;
+    if (hole.water) {
+      drawWater(hole, left, width);
+      return;
+    }
     const depth = VIEW_H - GROUND_Y;
     if (!tileset) {
       ctx.fillStyle = '#120a06';

@@ -85,10 +85,12 @@ export function makeQuiz(chunk, localX, stt, npc = null) {
 }
 
 // Vật phẩm thu thập (chương Trưng Trắc: bình thư) lơ lửng `lift` px trên mặt
-// đất tại chỗ đặt. Phải nhặt đủ mới về đích.
-export function makeItem(chunk, localX, lift) {
+// đất tại chỗ đặt. Phải nhặt đủ mới về đích. `carrier` = id hazard chở vật
+// phẩm (LND-ENGINE E4a — sách trong xe cống phẩm): ẩn, không nhặt được nhưng
+// vẫn tính vào tổng, hiện ra khi hazard đó bị phá/rời màn (combat.js).
+export function makeItem(chunk, localX, lift, { carrier = null } = {}) {
   const x = worldX(chunk, localX);
-  return { x, y: groundYAt(x) - lift, collected: false };
+  return { x, y: groundYAt(x) - lift, lift, collected: false, carrier, hidden: Boolean(carrier) };
 }
 
 // Hàng đợi sinh quân: groups (mỗi nhóm = [{type, at, dx}]) chạy lần lượt,

@@ -3,6 +3,7 @@
 // 1–2 (config.js) — chưa có NPC, kỹ năng, boss.
 
 import { CHUNK_W } from '../../engine/config.js';
+import { state } from '../../engine/state.js';
 import {
   SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, BORROWED_MAPS, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
   LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
@@ -43,6 +44,11 @@ export const LY_NAM_DE = {
   chapterEnd: CHAPTER_END,
   text: TEXT,
   audio: { sfx: SFX, music: MUSIC, musicFiles: MUSIC_FILES },
+  hooks: {
+    // Bình máu rơi khi hạ địch (engine LND-ENGINE E4b): tạm chỉ bật ở layout thử
+    // `?layout=engine` (luôn rơi); tỉ lệ thật + buff Tinh Thiều làm ở LND-L3.
+    dropHeal: () => state.layoutTest === 'engine'
+  },
   // Tên màn + thông báo đầu màn: LND-00 §5.1 (nguyên văn, duyệt 31/10/2026).
   levels: {
     1: {
@@ -52,6 +58,8 @@ export const LY_NAM_DE = {
       content: level1Content,
       introMessage: 'Màn 1: Từ quan chiêu binh — Đầu thế kỷ 6, thứ sử Tiêu Tư nhà Lương tàn bạo, tham nhũng. Hãy theo Lý Bí tập hợp lực lượng, thu đủ 5 Quyển Sách Tinh Hoa.',
       introMessageTime: 4200,
+      // Layout thử cơ chế LND-ENGINE: ?layout=engine.
+      testLayout: 'engine',
       summary: state => `Bạn thu thập ${state.itemsCollected}/5 Quyển Sách Tinh Hoa và đạt ${state.score} điểm.`
     },
     2: {

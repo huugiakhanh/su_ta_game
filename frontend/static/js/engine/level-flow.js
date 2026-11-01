@@ -7,9 +7,9 @@
 import { state, bossAlive } from './state.js';
 import { pressed } from './input.js';
 import { showMessage, tickMessage, updateHud } from './ui.js';
-import { aabb } from './geometry.js';
+import { aabb, groundYAt } from './geometry.js';
 import { setAnim, tickAnim } from './animation.js';
-import { VIEW_W, VIEW_H, NPC_RULES, NPC_RESCUE, INTRO, ITEM_HITBOX } from './config.js';
+import { VIEW_W, VIEW_H, NPC_RULES, NPC_RESCUE, INTRO, ITEM_HITBOX, GRAVITY, MAX_HEALTH, HEAL_PICKUP } from './config.js';
 import { CHAPTER, LEVEL } from './chapter.js';
 import { openNpcDialogue, openStory, openQuiz } from './dialogue.js';
 import { playSfx } from './audio.js';
@@ -132,6 +132,7 @@ export function update(dt) {
   }
 
   collectItems(p);
+  updatePickups(p, dt);
   touchEnemies(p);
 
   // Câu hỏi chặn đường mở thì dừng game — gặp NPC + sự kiện màn chờ frame sau.
@@ -165,7 +166,7 @@ export function update(dt) {
 // Vật phẩm thu thập: chạm hitbox nhặt (ITEM_HITBOX, lớn hơn hình) thì +200 điểm.
 function collectItems(p) {
   state.items.forEach(item => {
-    if (item.collected) return;
+    if (item.collected || item.hidden) return;
     const hitbox = { x: item.x - ITEM_HITBOX.w / 2, y: item.y - ITEM_HITBOX.h / 2, w: ITEM_HITBOX.w, h: ITEM_HITBOX.h };
     if (aabb(p, hitbox)) {
       item.collected = true;
@@ -175,6 +176,29 @@ function collectItems(p) {
       showMessage(CHAPTER.text.itemPicked(state.itemsCollected, state.items.length));
     }
   });
+}
+
+// Bình máu (LND-ENGINE E4b): rơi tới mặt đất (rơi vào hố thì mất), nằm `life`
+// giây rồi mất. Chạm khi còn thiếu máu: +HEAL_PICKUP.heal máu; đầy máu thì để lại.
+function updatePickups(p, dt) {
+  state.pickups.forEach(pickup => {
+    pickup.life -= dt;
+    const center = pickup.x + pickup.w / 2;
+    const overHole = state.holes.some(hole => center > hole.x && center < hole.x + hole.w);
+    const floor = overHole ? Infinity : groundYAt(center);
+    if (pickup.y + pickup.h < floor) {
+      pickup.vy += GRAVITY * dt;
+      pickup.y = Math.min(floor - pickup.h, pickup.y + pickup.vy * dt);
+      if (pickup.y + pickup.h >= floor) pickup.vy = 0;
+    }
+    if (pickup.y > VIEW_H) pickup.life = 0;
+    if (pickup.life > 0 && state.health < MAX_HEALTH && aabb(p, pickup)) {
+      pickup.life = 0;
+      state.health = Math.min(MAX_HEALTH, state.health + HEAL_PICKUP.heal);
+      playSfx('heal');
+    }
+  });
+  state.pickups = state.pickups.filter(pickup => pickup.life > 0);
 }
 
 // Câu hỏi chặn đường (TT-QUIZ-01): chạm mốc `quiz.x` thì mở câu hỏi 1 lần

@@ -34,7 +34,8 @@ export const PORTRAITS = [];
 // Sprite canvas mỗi màn cần (chỉ nạp ảnh màn đang chơi dùng). PLACEHOLDER: lính
 // Ngô thường làm lính Lương tạm.
 export const LEVEL_SPRITES = {
-  1: ['EN_NGO_SOLDIER', 'TR_BAMBOO_SPIKE_PIT', 'OB_BOULDER'],
+  // + thợ săn, tên nỏ: cung thủ/hoả tiễn tạm của layout thử ?layout=engine.
+  1: ['EN_NGO_SOLDIER', 'TR_BAMBOO_SPIKE_PIT', 'OB_BOULDER', 'EN_NGO_HUNTER', 'PJ_CROSSBOW_BOLT'],
   2: ['EN_NGO_SOLDIER', 'TR_BAMBOO_SPIKE_PIT'],
   3: ['EN_NGO_SOLDIER']
 };
@@ -112,13 +113,23 @@ export const GUARD = {
   patrolRange: 96, speed: 22, aggroRange: 130,
   attackReach: 49, attackBoxY: 10, attackBoxH: 9, attackCooldown: 1.6, damage: 1
 };
+// Chó săn (rusher — dữ liệu chương, không cần engine mới): thấp, chạy nhanh, cắn thấp.
+export const HOUND = {
+  hp: 1, w: 26, h: 18, speed: 150, attackRange: 10,
+  attackReach: 12, attackBoxY: 8, attackBoxH: 10, rest: .8, damage: 1
+};
 export const ENEMY_SPRITES = {
   normal: {
     id: 'EN_NGO_SOLDIER', behavior: 'guard', rules: GUARD,
     anims: { idle: 'idle', walk: 'walk', attack: 'attack_01', hurt: 'hurt', death: 'death' },
     attackMessage: 'Bạn bị lính Lương đâm trúng!', contactMessage: 'Bạn va phải lính Lương!',
     defeatMessage: 'Đã đánh bại lính Lương.'
-  }
+  },
+  // Chó săn (layout thử LND-ENGINE, PLACEHOLDER hộp dự phòng).
+  hound: {
+    id: null, behavior: 'rusher', rules: HOUND, anims: {},
+    attackMessage: 'Chó săn quân Lương cắn trúng bạn!', contactMessage: 'Chó săn quân Lương cắn trúng bạn!'
+ }
 };
 export const HAZARD_SPRITES = {
   // PLACEHOLDER hố chông tre chương 2 (cho bẫy lưới trúc — LND-ENGINE).
@@ -130,9 +141,56 @@ export const HAZARD_SPRITES = {
   boulder: {
     id: 'OB_BOULDER', w: 18, h: 18, anims: { move: 'roll', idle: 'roll', death: 'break' },
     hitMessage: 'Bạn bị đá lở lăn trúng!', breakMessage: 'Đá tảng vỡ tan!'
+  },
+  // ---- Layout thử `?layout=engine` (LND-ENGINE) — PLACEHOLDER: `id: null` = hộp
+  // dự phòng của engine (chưa có asset LND_ART_01); cung thủ mượn thợ săn chương 2.
+  // Bẫy lưới trúc (snare — E3): lưới 40×12 treo cao `dropHeight`, báo hiệu
+  // `warnTime` giây (bám theo đầu người chơi) rồi rơi, vận tốc đầu `fallSpeed`
+  // px/s; trúng −1 máu + trói `stun` giây (LND-ENGINE Q3).
+  netTrap: {
+    id: null, w: 40, h: 12, warnTime: .35, fallSpeed: 300, stun: 1, anims: { idle: 'idle', warn: 'warn', fall: 'fall', landed: 'landed' },
+    springMessage: 'Lưới trúc rung trên đầu!', hitMessage: 'Bạn bị lưới trúc chụp trúng!'
+  },
+  // Thuyền chiến (thrower nổi trong khe sông — E1/E2): thân 48×20, nổi `floatY` px
+  // dưới mặt đất; hoả tiễn rời mũi thuyền cao `muzzle`, nhắm vào người chơi.
+  warBoat: {
+    id: null, w: 48, h: 20, muzzle: 16, muzzleX: 0, anims: { idle: 'idle' },
+    hitMessage: 'Bạn va phải thuyền chiến!'
+  },
+  // Cung thủ trên tháp canh (thrower đứng cao — E2): tạm thợ săn chương 2.
+  towerArcher: {
+    id: 'EN_NGO_HUNTER', w: 26, h: 20, muzzle: 20, muzzleX: 13,
+    anims: { idle: 'idle', throw: 'throw', hurt: 'hurt', death: 'death' }, hitMessage: 'Bạn va phải cung thủ!'
+  },
+  // Xe chở cống phẩm (roller phá được, chở 1 Quyển Sách Tinh Hoa — E4a).
+  tributeCart: {
+    id: null, w: 40, h: 26, anims: { move: 'move', idle: 'idle', death: 'death' },
+    hitMessage: 'Xe cống phẩm lao trúng bạn!', breakMessage: 'Xe cống phẩm vỡ tung!'
   }
 };
-export const PROJECTILE_SPRITES = {};
+export const PROJECTILE_SPRITES = {
+  // Hoả tiễn / tên (tạm tên nỏ chương 2, ảnh quay PHẢI — engine xoay theo góc bay).
+  fireArrow: { id: 'PJ_CROSSBOW_BOLT', anim: 'idle', w: 10, h: 4 }
+};
+// Layout thử `?layout=engine` (màn 1 — LND-ENGINE): mỗi chunk thử một cơ chế mới.
+//   snare        bẫy lưới chunk 1 (tâm, độ cao treo, bề ngang công tắc ẩn).
+//   river        lưới địa hình chunk 2: 2 khe nước '~' + 1 mỏm đá '#' giữa.
+//   ledge        bục một chiều bắc ngang khe thứ 2 [chunk, localX, cao, rộng].
+//   boat         [chunk, localX tâm, floatY]; cung thủ [chunk, localX, độ cao đứng].
+//   cart         xe chở sách: chunk 4, lăn trái khi người chơi qua triggerLocalX.
+//   dropGuards   3 lính chunk 5 — hạ là rơi bình máu (hook dropHeal luôn true ở layout này).
+export const ENGINE_TEST = {
+  snare: { chunk: 1, localX: 380, dropHeight: 90, triggerWidth: 24 },
+  guard: [1, 520],
+  // Cột 16–21 nước (x 256–352), 22–29 đất, 30–40 nước (x 480–656) có bục giữa.
+  river: ['################~~~~~~########~~~~~~~~~~~#######'],
+  ledge: [2, 536, 40, 64],
+  boat: [2, 304, 14],
+  archer: [3, 520, 92],
+  cart: { chunk: 4, localX: 700, speed: -110, triggerLocalX: 260, hp: 2, itemLift: 40 },
+  hound: [4, 600],
+  dropGuards: [[5, 300], [5, 420], [5, 540]]
+};
 // NPC (Lý Bí dẫn màn 1, 3 NPC màn 2) — chưa có (LND-L1/L2).
 export const NPC_SPRITES = {};
 

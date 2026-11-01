@@ -7,7 +7,7 @@ import { aabb, groundYAt, terrainLevelAt } from './geometry.js';
 import { setAnim, tickAnim, getAnimMeta, hitTime } from './animation.js';
 import {
   FOOT_MARGIN, TERRAIN_CELL, GROUND_Y, MOVE_SPEED, GRAVITY, JUMP_FORCE, DASH_SPEED, DASH_TIME, DASH_COOLDOWN,
-  GROUND_SNAP_DISTANCE, ATTACK_COOLDOWN, ATTACK_ACTIVE_TIME, PLAYER_SPRITE_ID, PLAYER_ANIMATIONS
+  GROUND_SNAP_DISTANCE, ATTACK_COOLDOWN, ATTACK_ACTIVE_TIME, PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, RESPAWN_EDGE_MARGIN
 } from './config.js';
 import { CHAPTER, LEVEL } from './chapter.js';
 import { playSfx } from './audio.js';
@@ -68,6 +68,22 @@ function landingPlatform(p, previousBottom) {
     if (!best || platform.y < best.y) best = platform;
   });
   return best;
+}
+
+// Chỗ đứng vững cuối cùng (LND-ENGINE E1 — rơi sông thì hiện lại ở đây):
+// đứng trên đất hoặc bục TĨNH (không phải lưng hazard), đất/bục trải đủ
+// RESPAWN_EDGE_MARGIN quanh tâm để không hiện lại sát mép khe. Bục hẹp (mỏm
+// đá) chỉ cần tâm nằm trong nửa giữa bục.
+function rememberSafeSpot(p) {
+  if (!p.grounded || p.platform?.attached) return;
+  const center = p.x + p.w / 2;
+  const reach = p.w / 2 + RESPAWN_EDGE_MARGIN;
+  const inset = p.platform ? Math.min(reach, p.platform.w / 4) : 0;
+  const safe = p.platform
+    ? p.platform.x + inset <= center && p.platform.x + p.platform.w - inset >= center
+    : pointHasGround(center - reach) && pointHasGround(center + reach) && !state.holes.some(hole =>
+      hole.x < center + reach && hole.x + hole.w > center - reach);
+  if (safe) p.safeSpot = { x: p.x, feetY: p.y + p.h };
 }
 
 export function startAttack() {
@@ -265,6 +281,7 @@ export function updatePlayerControl(dt) {
   }
 
   if (!wasGrounded && p.grounded) playSfx('land');
+  rememberSafeSpot(p);
 
   // Nếu thời gian lướt vừa hết khi nhân vật còn nằm trong vùng vật cản,
   // duy trì dash tới khi ra khỏi vật để không bị mất máu ở khung hình cuối.

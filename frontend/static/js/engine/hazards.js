@@ -10,6 +10,9 @@
 //   patrol  — mini-boss đi tuần, vào tầm thì đứng lại ném.
 //   vent    — vùng phun theo nhịp (chướng khí — BT-ENGINE E8): off -> warn ->
 //             active -> off theo `cycle` của sprite, chỉ gây sát thương lúc active.
+//   snare   — bẫy rơi từ trên (lưới trúc — LND-ENGINE E3): công tắc ẩn trên mặt
+//             đất, chạm thì báo hiệu `warnTime` rồi rơi; trúng thì −máu + choáng
+//             `stun` giây; chạm đất thì nằm lại vô hại. Mỗi lượt 1 lần.
 // Hazard có `ride` (sprite) mang một bục một chiều trên lưng (E7 — voi rừng):
 // bục đi theo hazard; người chơi đứng trên lưng thì không bị va chạm thân.
 // Hazard đang chết (dying) chỉ phát nốt animation, không va chạm/di chuyển.
@@ -18,10 +21,13 @@ import { state } from './state.js';
 import { showMessage } from './ui.js';
 import { aabb, groundYAt, makeProjectile } from './geometry.js';
 import { setAnim, tickAnim, getAnimMeta, hitTime, animLength } from './animation.js';
-import { VIEW_W, PROJECTILE_SPEED, PROJECTILE_MAX_RANGE, HAZARD_DESPAWN_MARGIN, GROUND_SNAP_DISTANCE } from './config.js';
+import {
+  VIEW_W, VIEW_H, GRAVITY, PROJECTILE_SPEED, PROJECTILE_MAX_RANGE, HAZARD_DESPAWN_MARGIN, GROUND_SNAP_DISTANCE
+} from './config.js';
 import { CHAPTER } from './chapter.js';
 import { playSfx } from './audio.js';
-import { hurtPlayer, playerImmune } from './damage.js';
+import { hurtPlayer, stunPlayer, playerImmune } from './damage.js';
+import { revealCarriedItems } from './combat.js';
 
 const spriteOf = hazard => CHAPTER.sprites.hazards[hazard.sprite];
 
@@ -42,11 +48,14 @@ function fireProjectile(hazard) {
   const spec = spriteOf(hazard);
   const muzzle = spec?.muzzle ?? hazard.h * .7;
   playSfx('throw');
+  // `aim` (LND-ENGINE E2 — cung thủ tháp canh, thuyền): bay thẳng tới tâm thân người chơi.
+  const aim = hazard.aim ? { x: player.x + player.w / 2, y: player.y + player.h / 2 } : null;
   state.projectiles.push(makeProjectile(
     hazard.projectile,
     originX + direction * (spec?.muzzleX ?? hazard.w / 2 + 4),
     hazard.baseY - muzzle,
-    direction
+    direction,
+    aim
   ));
 }
 
@@ -90,6 +99,7 @@ function updateHazardAnimation(hazard, dt) {
   else if (hazard.action && anims[hazard.action.name]) next = hazard.action.name;
   else if (hazard.sprung) next = 'sprung';
   else if (hazard.kind === 'vent') next = hazard.ventState === 'off' ? 'idle' : hazard.ventState;
+  else if (hazard.kind === 'snare') next = hazard.snareState;
   else if (hazard.kind === 'patrol') next = hazard.walking ? 'move' : 'idle';
   else next = hazard.kind === 'roller' && hazard.active ? 'move' : 'idle';
   setAnim(hazard, next);
@@ -116,6 +126,52 @@ function updateVent(hazard, dt) {
   const t = hazard.phase % (off + warn + active);
   hazard.ventState = t < off ? 'off' : t < off + warn ? 'warn' : 'active';
   hazard.harmful = hazard.ventState === 'active';
+}
+
+// Bẫy rơi (kind `snare`): `idle` treo trên cây, công tắc ẩn rộng triggerWidth
+// quanh tâm trên mặt đất (chân người chơi chạm đất trong vùng) -> `warn` trong
+// `warnTime` giây (springMessage), vật rung BÁM theo đầu người chơi -> `fall`
+// thẳng xuống, vận tốc đầu `fallSpeed` + GRAVITY (đi bộ vẫn bị chụp, lướt thì
+// thoát — LND-ENGINE Q3); lúc rơi chạm người chơi (lướt miễn như hazard thường)
+// thì −`damage` máu + choáng `stun` giây, 1 lần; tới mặt đất -> `landed`, nằm lại vô hại.
+function updateSnare(hazard, dt, player) {
+  const spec = spriteOf(hazard);
+  if (hazard.snareState === 'idle') {
+    const center = hazard.x + hazard.w / 2;
+    const playerCenter = player.x + player.w / 2;
+    const onFloor = player.y + player.h >= hazard.floorY - GROUND_SNAP_DISTANCE;
+    if (onFloor && Math.abs(playerCenter - center) <= hazard.triggerWidth / 2 + player.w / 2) {
+      hazard.snareState = 'warn';
+      hazard.snareTimer = spec?.warnTime ?? .35;
+      playSfx('trap');
+      if (spec?.springMessage) showMessage(spec.springMessage);
+    }
+    return;
+  }
+  if (hazard.snareState === 'warn') {
+    hazard.x = player.x + player.w / 2 - hazard.w / 2;
+    hazard.snareTimer -= dt;
+    if (hazard.snareTimer <= 0) {
+      hazard.snareState = 'fall';
+      hazard.harmful = true;
+      hazard.vy = spec?.fallSpeed ?? 300;
+    }
+    return;
+  }
+  if (hazard.snareState !== 'fall') return;
+  hazard.vy += GRAVITY * dt;
+  hazard.baseY = Math.min(hazard.floorY, hazard.baseY + hazard.vy * dt);
+  hazard.y = hazard.baseY - hazard.h;
+  if (hazard.harmful && !playerImmune(player) && aabb(player, hazard)) {
+    hazard.harmful = false;
+    const message = spec?.hitMessage || CHAPTER.text.hazardHit;
+    hurtPlayer(message, spec?.damage ?? 1);
+    if (!state.won) stunPlayer(message, spec?.stun ?? 1);
+  }
+  if (hazard.baseY >= hazard.floorY) {
+    hazard.snareState = 'landed';
+    hazard.harmful = false;
+  }
 }
 
 // Người chơi đang đứng trên lưng hazard `ride` (chân không thấp hơn mặt bục
@@ -184,12 +240,19 @@ export function updateHazards(dt) {
       hazard.y = hazard.baseY - hazard.h;
       if (hazard.x + hazard.w < playerCenter - HAZARD_DESPAWN_MARGIN) {
         hazard.alive = false;
+        // Xe chở sách lăn qua mà chưa bị phá: sách vẫn hiện để không kẹt màn (E4a).
+        revealCarriedItems(hazard);
         return;
       }
     }
 
     if (hazard.kind === 'patrol') updatePatrol(hazard, dt, playerCenter);
     if (hazard.kind === 'vent') updateVent(hazard, dt);
+    if (hazard.kind === 'snare') {
+      updateSnare(hazard, dt, player);
+      updateHazardAnimation(hazard, dt);
+      return;
+    }
 
     if (hazard.kind === 'trap' && !hazard.sprung) {
       if (Math.abs(playerCenter - (hazard.x + hazard.w / 2)) <= hazard.triggerDistance) {
@@ -246,16 +309,23 @@ export function updateProjectiles(dt) {
   const player = state.player;
   state.projectiles.forEach(projectile => {
     if (!projectile.alive) return;
-    projectile.x += projectile.direction * PROJECTILE_SPEED * dt;
-    projectile.traveled += PROJECTILE_SPEED * dt;
+    // Đạn nhắm (E2) bay theo vector (vx, vy); đạn ngang vx = ±1, vy = 0.
+    const speed = CHAPTER.sprites.projectiles[projectile.sprite]?.speed ?? PROJECTILE_SPEED;
+    projectile.x += projectile.vx * speed * dt;
+    projectile.y += projectile.vy * speed * dt;
+    projectile.traveled += speed * dt;
     projectile.age += dt;
     if (projectile.traveled >= PROJECTILE_MAX_RANGE
-      || Math.abs(projectile.x - state.cameraX) > VIEW_W + HAZARD_DESPAWN_MARGIN) {
+      || Math.abs(projectile.x - state.cameraX) > VIEW_W + HAZARD_DESPAWN_MARGIN
+      || projectile.y + projectile.h < 0 || projectile.y > VIEW_H) {
       projectile.alive = false;
       return;
     }
-    // Đập vào sườn bậc đất (TT-TERRAIN-01) thì tan.
-    if (projectile.y + projectile.h / 2 > groundYAt(projectile.x + projectile.w / 2)) {
+    // Đập vào sườn bậc đất (TT-TERRAIN-01) thì tan. Trên khe hố/sông không có
+    // đất (đạn của thuyền bắn từ dưới mặt nước lên — LND-ENGINE E2).
+    const centerX = projectile.x + projectile.w / 2;
+    const overHole = state.holes.some(hole => centerX > hole.x && centerX < hole.x + hole.w);
+    if (!overHole && projectile.y + projectile.h / 2 > groundYAt(centerX)) {
       projectile.alive = false;
       return;
     }

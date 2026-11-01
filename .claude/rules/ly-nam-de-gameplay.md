@@ -7,7 +7,7 @@ paths:
 
 # Màn chơi chương Lý Nam Đế (chương 3)
 
-Kế hoạch + quyết định đã chốt: [docs/SUTA_LND_TASK_00.md](../../docs/SUTA_LND_TASK_00.md). Lộ trình: **LND-SKELETON (khung, xong)** → LND-ENGINE → LND-L1/L2/L3. Cấu trúc theo mẫu chương Bà Triệu (rule `ba-trieu-gameplay.md`); cơ chế chung ở engine (rule `engine.md`).
+Kế hoạch + quyết định đã chốt: [docs/SUTA_LND_TASK_00.md](../../docs/SUTA_LND_TASK_00.md). Lộ trình: **LND-SKELETON (khung, xong)** → **LND-ENGINE (xong)** → prompt Codex `LND_ART_01` → LND-L1/L2/L3. Cấu trúc theo mẫu chương Bà Triệu (rule `ba-trieu-gameplay.md`); cơ chế chung ở engine (rule `engine.md`).
 
 ## Trạng thái: khung 3 màn chạy bằng asset MƯỢN (PLACEHOLDER)
 
@@ -15,6 +15,7 @@ Kế hoạch + quyết định đã chốt: [docs/SUTA_LND_TASK_00.md](../../doc
 - Người chơi là nghĩa sĩ nam/nữ chung; Lý Bí là NPC dẫn màn 1 + cutscene (chưa làm).
 - **Asset tạm**: `SPRITE_ROOT`/`MAP_ROOT` trỏ thẳng thư mục chương 2 (`images/ba-trieu/`, `manifest_bt.json`, `maps_bt.json`) + `BORROWED_MAPS` của chương 1 như chương 2 đang mượn. Không chép ảnh. Lính Lương tạm = `EN_NGO_SOLDIER`, sách = `ITEM_BT_TINH_HOA`, nhạc = `audio/ba-trieu/level1–3.mp3`. Thay bằng `images/ly-nam-de/` (`manifest_lnd.json`, `maps_lnd.json`) ở `LND_ART_01–03`. Console báo `maps_bt.json: stage khác engine/chương` (stage_length 9216 ≠ 4608 của màn 1 khung) — vô hại, hết khi có `maps_lnd.json`.
 - **Không import file nào của `js/levels/trung-trac/` hay `js/levels/ba-trieu/`** — bảng nào cần thì khai báo lại trong `config.js` chương này.
+- Layout thử `?layout=engine` (màn 1, `ENGINE_TEST` trong `config.js`, LND-ENGINE): bẫy lưới (`netTrap`, kind `snare`), sông 2 khe `'~'` + mỏm đá + bục + thuyền (`warBoat`, thrower nổi `aim`), cung thủ đứng cao (`towerArcher`, tạm thợ săn chương 2) bắn chéo, xe cống phẩm (`tributeCart`) chở 1 sách (`carrier`), chó săn (`HOUND`, `rusher`), 3 lính rơi bình máu (`hooks.dropHeal` chỉ bật khi `state.layoutTest === 'engine'`). Mọi hình `id: null` = hộp dự phòng tới khi có `LND_ART_01`.
 - Màn khung (DESIGN_BASELINE): màn 1 = 6 chunk phẳng, 3 lính, 1 bẫy chông, 1 đá lăn, 2 vật cản, 5 sách, 4 câu hỏi, đích cuối (không cổng); màn 2 = 4 chunk, 2 lính, 1 bẫy, 3 câu hỏi theo pool `phamTu` → `tinhThieu` → `trieuTuc` (chưa NPC); màn 3 = đấu trường, 3 đợt lính (`WAVES`), hết quân → `endGame(true)` (`updateLevel3`). Chưa có kỹ năng, boss, cutscene.
 
 ## Nội dung lịch sử

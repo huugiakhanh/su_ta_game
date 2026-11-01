@@ -13,8 +13,9 @@
 //   mapRoot / mapManifest         manifest môi trường (nền, tile, prop)
 //   borrowedMaps? [{ root, manifest, ids }] — asset map mượn của chương khác (chỉ các
 //                 ID liệt kê; trùng ID thì manifest chương thắng)
-//   tiles         { ground, groundRegion, terrain? } — ID tileset mặt đất, vùng tile
-//                 dùng chung, bộ tile ghép địa hình
+//   tiles         { ground, groundRegion, terrain?, water? } — ID tileset mặt đất, vùng tile
+//                 dùng chung, bộ tile ghép địa hình; water = prop mặt nước lát trong
+//                 khe sông (cột '~' của lưới địa hình — LND-ENGINE E1; có trong mapProps)
 //   farHills?     { id, parallax, bottomY, hiddenUnderSky: [id trời] }
 //   mapProps      ID prop môi trường cần nạp (vật cản, vật phẩm, cổng, cờ, bia)
 //   domSprites    ID ảnh DOM riêng chương (chân dung)
@@ -24,7 +25,12 @@
 //                 hazards[…]/projectiles[…], `rules.damage` của enemies[…] (cú đánh).
 //                 hazards[…] thêm (BT-ENGINE): `ride: { top, inset }` = bục một chiều
 //                 trên lưng (voi rừng); kind `vent`: `cycle: { off, warn, active }` (giây),
-//                 anims idle/warn/active; `ignoreDash` = lướt không miễn sát thương
+//                 anims idle/warn/active; `ignoreDash` = lướt không miễn sát thương.
+//                 kind `snare` (LND-ENGINE E3): anims idle/warn/fall/landed, `warnTime`,
+//                 `stun` (giây choáng khi trúng), springMessage/hitMessage.
+//                 projectiles[…].speed? = tốc độ riêng (px/s). Hazard option `aim: true`
+//                 = đạn nhắm vào người chơi lúc nhả (E2, ảnh xoay theo góc bay)
+//   pickups?      { heal?: { id, anim } } — sprite bình máu rơi (E4b); thiếu = icon tim chung
 //   item?         { sprite, fps } — vật phẩm thu thập (ô HUD + vẽ)
 //   quizStele?    ID prop bia câu hỏi chặn đường
 //   questions     bộ câu hỏi (stt -> câu); dialogues: thoại NPC (id -> thoại)
@@ -46,6 +52,7 @@
 //   hooks?        { updateHud?(), keepDashing?(player), onAttackWindow?(box),
 //                 onCrit?(target) — đòn chém chí mạng (chương vẽ hiệu ứng; tiếng `crit`
 //                 phát nếu audio.sfx có),
+//                 dropHeal?(target) -> true = enemy/hazard vừa bị hạ rơi 1 bình máu (LND-ENGINE E4b),
 //                 debugEntities?() -> [hộp], draw?: { beforeEnemies?(time),
 //                 beforePlayer?(time), afterPlayer?(time) } }
 //   levels        { [id]: LEVEL } — mỗi màn:
