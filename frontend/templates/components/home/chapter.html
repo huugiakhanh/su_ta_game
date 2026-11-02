@@ -120,11 +120,13 @@
         <span class="btn-play-now">🔒 Qua chương Trưng Trắc</span>
       </div>
 
-      <div class="hero-select-card locked" onclick="alert('Màn chơi Lý Nam Đế đang phát triển!')">
+      {# HOME-UNLOCK: mở khi đã qua chương 2 (LND-L1). #}
+      <div class="hero-select-card locked" data-unlock-after="2" data-route="/gameplay/levels/ly-nam-de"
+           onclick="alert('Hoàn thành chương Bà Triệu để mở khóa Lý Nam Đế!')">
         <span class="hero-badge-year">Năm 544</span>
         <strong class="hero-select-name">Lý Nam Đế</strong>
         <small class="hero-select-sub">(Lý Bôn)</small>
-        <span class="btn-play-now">🔒 Sắp ra mắt</span>
+        <span class="btn-play-now">🔒 Qua chương Bà Triệu</span>
       </div>
 
       <div class="hero-select-card locked" onclick="alert('Màn chơi Triệu Quang Phục đang phát triển!')">

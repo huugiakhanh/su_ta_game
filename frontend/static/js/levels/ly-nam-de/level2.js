@@ -1,17 +1,17 @@
 // Màn 2 "Chiêu mộ hiền tài" — LND-SKELETON: chưa có NPC (thoại chờ team duyệt —
 // docs/SUTA_LND_TASK_00.md §4). Tạm: 3 câu hỏi chặn đường rút lần lượt từ pool
-// của Phạm Tu, Tinh Thiều, Triệu Túc; 2 lính Lương, 1 bẫy chông. NPC + giải cứu
-// làm ở LND-L2. DESIGN_BASELINE.
+// của Phạm Tu, Tinh Thiều, Triệu Túc; 2 lính Lương, 1 bẫy lưới trúc. NPC + giải
+// cứu làm ở LND-L2. DESIGN_BASELINE.
 
 import { worldX, makeHazard } from '../../engine/geometry.js';
 import { makeEnemy, makeQuiz, pick, checkTerrainFootprints } from '../../engine/entities.js';
-import { QUIZ, SOLDIER } from './config.js';
+import { QUIZ, SOLDIER, NET } from './config.js';
 import { NPC_QUESTION_POOLS } from './questions-data.js';
 
 export function level2Content() {
   const content = {
     obstacles: [],
-    hazards: [makeHazard('trap', 'bambooPit', 4, 300, { harmful: false, triggerDistance: 58 })],
+    hazards: [makeHazard('snare', 'netTrap', 4, 300, { dropHeight: NET.dropHeight, triggerWidth: NET.triggerWidth })],
     holes: [],
     items: [],
     enemies: [

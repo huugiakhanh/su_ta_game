@@ -1,19 +1,19 @@
 // Định nghĩa chương Lý Nam Đế (chương 3) cho engine màn chơi. Hợp đồng các
-// trường: engine/chapter.js. 3 màn khung (LND-SKELETON) bằng asset mượn chương
-// 1–2 (config.js) — chưa có NPC, kỹ năng, boss.
+// trường: engine/chapter.js. Màn 1 thật (LND-L1, asset LND_ART_01); màn 2–3 còn
+// khung (LND-SKELETON) — chưa có NPC màn 2, kỹ năng, boss.
 
 import { CHUNK_W } from '../../engine/config.js';
 import { state } from '../../engine/state.js';
 import {
   SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, BORROWED_MAPS, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
-  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
+  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, FINISH_GATE, GUIDE_LOCAL_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
   OBSTACLE_TYPES, QUIZ_STELE_ID, MAP_PROPS_IN_GAME, HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES, NPC_SPRITES,
   ITEM, REWARD_NAMES, TEXT
 } from './config.js';
 import { QUESTIONS } from './questions-data.js';
-import { NPC_DIALOGUES, CHAPTER_END } from './dialogue-data.js';
+import { NPC_DIALOGUES, CHAPTER_END, STORY_LY_BI_INTRO } from './dialogue-data.js';
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
-import { level1Content } from './level1.js';
+import { level1Content, level1Events } from './level1.js';
 import { level2Content } from './level2.js';
 import { level3Content, updateLevel3 } from './level3.js';
 
@@ -44,6 +44,7 @@ export const LY_NAM_DE = {
   chapterEnd: CHAPTER_END,
   text: TEXT,
   audio: { sfx: SFX, music: MUSIC, musicFiles: MUSIC_FILES },
+  stateFields: () => ({ restUsed: false }),
   hooks: {
     // Bình máu rơi khi hạ địch (engine LND-ENGINE E4b): tạm chỉ bật ở layout thử
     // `?layout=engine` (luôn rơi); tỉ lệ thật + buff Tinh Thiều làm ở LND-L3.
@@ -53,9 +54,12 @@ export const LY_NAM_DE = {
   levels: {
     1: {
       id: 1, title: 'Màn 1: Từ quan chiêu binh', url: LEVEL_URLS[1],
-      chunks: LEVEL1_CHUNKS, worldWidth: CHUNK_W * LEVEL1_CHUNKS, zones: LEVEL1_ZONES, finishX: LEVEL1_FINISH_X, gate: null,
+      chunks: LEVEL1_CHUNKS, worldWidth: CHUNK_W * LEVEL1_CHUNKS, zones: LEVEL1_ZONES, finishX: LEVEL1_FINISH_X, gate: FINISH_GATE,
       sprites: LEVEL_SPRITES[1],
       content: level1Content,
+      events: level1Events,
+      // Lý Bí chờ người chơi ở đầu màn (thoại LND-00 §5.2, duyệt 31/10/2026).
+      guide: { npc: 'lyBi', localX: GUIDE_LOCAL_X, story: STORY_LY_BI_INTRO },
       introMessage: 'Màn 1: Từ quan chiêu binh — Đầu thế kỷ 6, thứ sử Tiêu Tư nhà Lương tàn bạo, tham nhũng. Hãy theo Lý Bí tập hợp lực lượng, thu đủ 5 Quyển Sách Tinh Hoa.',
       introMessageTime: 4200,
       // Layout thử cơ chế LND-ENGINE: ?layout=engine.

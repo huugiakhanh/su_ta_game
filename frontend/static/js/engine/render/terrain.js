@@ -277,6 +277,7 @@ const HOLE_DEPTH_BANDS = [[0, 6, .15], [6, 12, .35], [12, 17, .55], [17, 22, .75
 // manifest chương, có trong mapProps) lát ngang, đỉnh ảnh ở GROUND_Y; chưa có
 // asset (TODO_MISSING) thì dải nước bán trong suốt từ WATER_FALLBACK.top.
 const WATER_FALLBACK = { top: 8, body: 'rgba(38, 104, 150, .82)', crest: 'rgba(170, 220, 240, .9)' };
+const WATER_BANK = '#2b1d12';
 
 function drawWater(hole, left, width) {
   const prop = images.maps.props?.[CHAPTER.tiles?.water];
@@ -290,8 +291,9 @@ function drawWater(hole, left, width) {
     const h = mapHeight(prop.image);
     const camera = Math.round(state.cameraX);
     // Lát theo toạ độ thế giới để các khe sông nối liền một mặt nước.
+    const top = GROUND_Y - (CHAPTER.tiles.waterLift || 0);
     for (let x = Math.floor(hole.x / w) * w; x < hole.x + hole.w; x += w) {
-      drawMapImage(ctx, prop.image, 0, 0, w, h, x - camera, GROUND_Y);
+      drawMapImage(ctx, prop.image, 0, 0, w, h, x - camera, top);
     }
   } else {
     ctx.fillStyle = WATER_FALLBACK.body;
@@ -300,6 +302,21 @@ function drawWater(hole, left, width) {
     ctx.fillRect(left, GROUND_Y + WATER_FALLBACK.top, width, 2);
   }
   ctx.restore();
+}
+
+// Nền khe sông (LND-L1): phủ màu `tiles.waterDeep` (mặc định vách bờ tối) trước
+// vật nổi (thuyền) — khe không lộ trời ở chỗ ảnh nước không phủ tới (hàng trống
+// trên cùng, đáy khung) mà thân thuyền vẫn hiện.
+export function drawWaterBanks() {
+  const camera = Math.round(state.cameraX);
+  ctx.fillStyle = CHAPTER.tiles?.waterDeep || WATER_BANK;
+  state.holes.forEach(hole => {
+    if (!hole.water) return;
+    const left = Math.round(hole.x) - camera;
+    const width = Math.round(hole.w);
+    if (left + width < -24 || left > VIEW_W + 24) return;
+    ctx.fillRect(left, GROUND_Y, width, VIEW_H - GROUND_Y);
+  });
 }
 
 export function drawHoles() {

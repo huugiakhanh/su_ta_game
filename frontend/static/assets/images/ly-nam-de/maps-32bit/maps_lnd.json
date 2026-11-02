@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "map_id": "LY_NAM_DE",
+  "chapter": "ly-nam-de",
+  "pipeline": "parallax_layers",
+  "render_mode": "side_scroll_mode",
+  "engine_target": "project-native Canvas",
+  "stage": {
+    "canvas_w": 480,
+    "canvas_h": 270,
+    "stage_length": 9216,
+    "ground_y": 248,
+    "tile_size": 16
+  },
+  "design_baseline": true,
+  "assets": [
+    {
+      "id": "BG_LND_MID_RED_RIVER",
+      "category": "parallax",
+      "file": "bg/BG_LND_MID_RED_RIVER/bg_lnd_mid_red_river.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "transition_policy": "diagonal-alpha-blend",
+      "qa_notes": "Native1536x640 tile repeated twice, no upscaling; inherited64-color palette. Review seam QA."
+    },
+    {
+      "id": "PROP_LND_RIVER_WATER",
+      "category": "prop",
+      "file": "props/PROP_LND_RIVER_WATER/prop_lnd_river_water.png",
+      "w": 64,
+      "h": 24,
+      "density": 4,
+      "transparent": true,
+      "anchor": "top-left",
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "qa_notes": "Rows0-5 transparent; opaque brown water from row6."
+    },
+    {
+      "id": "PROP_LND_ROCK_LEDGE",
+      "category": "prop",
+      "file": "props/PROP_LND_ROCK_LEDGE/prop_lnd_rock_ledge.png",
+      "w": 64,
+      "h": 16,
+      "density": 4,
+      "transparent": true,
+      "anchor": "top-left",
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "visible_bbox": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 13.75
+      },
+      "frames": 1,
+      "fps": null,
+      "status": "IN_GAME",
+      "qa_notes": "A2: flat existing generated top cropped to row0; mossy gray rock."
+    },
+    {
+      "id": "BG_LND_MID_MIDLAND_HILLS",
+      "category": "parallax",
+      "file": "bg/BG_LND_MID_MIDLAND_HILLS/bg_lnd_mid_midland_hills.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "A2: native repeat tile; inherited map palette; review seam/transition mockup."
+    },
+    {
+      "id": "BG_LND_MID_LUONG_CHECKPOINT",
+      "category": "parallax",
+      "file": "bg/BG_LND_MID_LUONG_CHECKPOINT/bg_lnd_mid_luong_checkpoint.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "A2: native repeat tile; inherited map palette; review seam/transition mockup."
+    },
+    {
+      "id": "BG_LND_FAR_MIDLANDS",
+      "category": "parallax",
+      "file": "bg/BG_LND_FAR_MIDLANDS/bg_lnd_far_midlands.png",
+      "w": 960,
+      "h": 120,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-y-230",
+      "frames": 1,
+      "fps": null,
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.2,
+      "transition_width": 192,
+      "qa_notes": "A2: native repeat tile; inherited map palette; review seam/transition mockup."
+    }
+  ]
+}

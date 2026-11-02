@@ -13,9 +13,12 @@
 //   mapRoot / mapManifest         manifest môi trường (nền, tile, prop)
 //   borrowedMaps? [{ root, manifest, ids }] — asset map mượn của chương khác (chỉ các
 //                 ID liệt kê; trùng ID thì manifest chương thắng)
-//   tiles         { ground, groundRegion, terrain?, water? } — ID tileset mặt đất, vùng tile
-//                 dùng chung, bộ tile ghép địa hình; water = prop mặt nước lát trong
-//                 khe sông (cột '~' của lưới địa hình — LND-ENGINE E1; có trong mapProps)
+//   tiles         { ground, groundRegion, terrain?, water?, waterLift?, waterDeep? } — ID
+//                 tileset mặt đất, vùng tile dùng chung, bộ tile ghép địa hình; water =
+//                 prop mặt nước lát trong khe sông (cột '~' của lưới địa hình — LND-ENGINE
+//                 E1; có trong mapProps); waterLift = nâng ảnh nước lên bao nhiêu px (ảnh
+//                 có hàng trống ở trên); waterDeep = màu phủ khe phía dưới/sau ảnh nước
+//                 (mặc định vách bờ tối)
 //   farHills?     { id, parallax, bottomY, hiddenUnderSky: [id trời] }
 //   mapProps      ID prop môi trường cần nạp (vật cản, vật phẩm, cổng, cờ, bia)
 //   domSprites    ID ảnh DOM riêng chương (chân dung)

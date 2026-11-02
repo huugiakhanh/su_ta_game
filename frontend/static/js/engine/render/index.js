@@ -8,7 +8,7 @@ import { VIEW_W, VIEW_H } from '../config.js';
 import { CHAPTER } from '../chapter.js';
 import { ctx, debugLabels } from './canvas.js';
 import { drawBackdrops } from './backdrop.js';
-import { drawGround, drawHoles, drawTerrainDebug } from './terrain.js';
+import { drawGround, drawHoles, drawWaterBanks, drawTerrainDebug } from './terrain.js';
 import {
   drawFinishGate, drawQuizSteles, drawItems, drawPickups, drawObstacles, drawPlatforms, drawHazards, drawProjectiles, drawEnemies,
   drawNpcs
@@ -32,6 +32,7 @@ export function draw(time = 0) {
   drawGround();
   drawFinishGate(time);
   drawQuizSteles(time);
+  drawWaterBanks();
   drawHazards(time, true);
   drawHoles();
   drawItems(time);

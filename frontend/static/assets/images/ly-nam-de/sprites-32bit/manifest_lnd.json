@@ -1,0 +1,506 @@
+{
+  "chapter": "ly-nam-de",
+  "version": "32.A2-r1",
+  "density": 4,
+  "pivot": "bottom-center",
+  "facing": "right",
+  "assets": [
+    {
+      "id": "NPC_LY_BI",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_LY_BI/npc_ly_bi_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_LY_BI/npc_ly_bi_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A1 candidate; proposed ash faction palette; visual review pending. Fixed scale across actions. See meta/qa_a1.json."
+    },
+    {
+      "id": "EN_LUONG_PATROL",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_LUONG_PATROL/en_luong_patrol_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_LUONG_PATROL/en_luong_patrol_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_LUONG_PATROL/en_luong_patrol_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_LUONG_PATROL/en_luong_patrol_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_LUONG_PATROL/en_luong_patrol_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A1 candidate; proposed ash faction palette; visual review pending. Fixed scale across actions. See meta/qa_a1.json."
+    },
+    {
+      "id": "PORTRAIT_LY_BI",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_LY_BI/portrait_ly_bi_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Waist-up dialogue portrait. Full source composition retained."
+    },
+    {
+      "id": "EN_LUONG_TAXMAN",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_LUONG_TAXMAN/en_luong_taxman_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_LUONG_TAXMAN/en_luong_taxman_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_LUONG_TAXMAN/en_luong_taxman_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_LUONG_TAXMAN/en_luong_taxman_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_01 A2: ash-gray A; ImageGen action grids, fixed per-asset scale; visual review pending. See meta/qa_a2.json."
+    },
+    {
+      "id": "PJ_LEAD_COINS",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "projectile/PJ_LEAD_COINS/pj_lead_coins_loop.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_01 A2: ash-gray A; ImageGen action grids, fixed per-asset scale; visual review pending. See meta/qa_a2.json."
+    },
+    {
+      "id": "EN_LUONG_WAR_BOAT",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 96,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_LUONG_WAR_BOAT/en_luong_war_boat_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_LUONG_WAR_BOAT/en_luong_war_boat_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        }
+      ],
+      "qa_notes": "LND_ART_01 A2: ash-gray A; ImageGen action grids, fixed per-asset scale; visual review pending. See meta/qa_a2.json."
+    },
+    {
+      "id": "EN_LUONG_ARCHER",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_LUONG_ARCHER/en_luong_archer_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_LUONG_ARCHER/en_luong_archer_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        }
+      ],
+      "qa_notes": "LND_ART_01 A2: ash-gray A; ImageGen action grids, fixed per-asset scale; visual review pending. See meta/qa_a2.json."
+    },
+    {
+      "id": "TR_BAMBOO_NET",
+      "category": "trap",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 24,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "trap/TR_BAMBOO_NET/tr_bamboo_net_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "warn",
+          "file": "trap/TR_BAMBOO_NET/tr_bamboo_net_warn.png",
+          "frames": 4,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "fall",
+          "file": "trap/TR_BAMBOO_NET/tr_bamboo_net_fall.png",
+          "frames": 2,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "landed",
+          "file": "trap/TR_BAMBOO_NET/tr_bamboo_net_landed.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_01 A2: ash-gray A; ImageGen action grids, fixed per-asset scale; visual review pending. See meta/qa_a2.json."
+    },
+    {
+      "id": "EN_LUONG_HOUND",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "run",
+          "file": "enemy/EN_LUONG_HOUND/en_luong_hound_run.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_LUONG_HOUND/en_luong_hound_attack_01.png",
+          "frames": 8,
+          "fps": 28,
+          "loop": false,
+          "hit_frame": 3
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_LUONG_HOUND/en_luong_hound_death.png",
+          "frames": 6,
+          "fps": 15,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_01 A2: ash-gray A; ImageGen action grids, fixed per-asset scale; visual review pending. See meta/qa_a2.json."
+    },
+    {
+      "id": "EN_LUONG_TRIBUTE_WAGON",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 128,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_LUONG_TRIBUTE_WAGON/en_luong_tribute_wagon_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_LUONG_TRIBUTE_WAGON/en_luong_tribute_wagon_walk.png",
+          "frames": 8,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_LUONG_TRIBUTE_WAGON/en_luong_tribute_wagon_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_LUONG_TRIBUTE_WAGON/en_luong_tribute_wagon_death.png",
+          "frames": 8,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_01 A2: ash-gray A; ImageGen action grids, fixed per-asset scale; visual review pending. See meta/qa_a2.json."
+    },
+    {
+      "id": "PROP_LUONG_WATCHTOWER",
+      "category": "prop",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 112,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "prop/PROP_LUONG_WATCHTOWER/prop_luong_watchtower_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A2: deck top y80 image; 92 logic above pivot; offset rear canopy. Design interpretation."
+    },
+    {
+      "id": "OB_TRIBUTE_CART",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "roll",
+          "file": "obstacle/OB_TRIBUTE_CART/ob_tribute_cart_roll.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "obstacle/OB_TRIBUTE_CART/ob_tribute_cart_break.png",
+          "frames": 5,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A4a — generated and normalized; awaiting visual approval"
+    },
+    {
+      "id": "PJ_FIRE_ARROW",
+      "category": "projectile",
+      "priority": "P1",
+      "frame_w": 24,
+      "frame_h": 8,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "projectile/PJ_FIRE_ARROW/pj_fire_arrow_loop.png",
+          "frames": 6,
+          "fps": 24,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "OB_BOULDER",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "roll",
+          "file": "obstacle/OB_BOULDER/ob_boulder_roll.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "obstacle/OB_BOULDER/ob_boulder_break.png",
+          "frames": 5,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A2: mossy limestone; roll texture rotates; break shrinks through five frames.",
+      "visible_bbox": {
+        "x": 2,
+        "y": 3,
+        "w": 28,
+        "h": 28
+      }
+    },
+    {
+      "id": "PJ_CROSSBOW_BOLT",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 8,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "projectile/PJ_CROSSBOW_BOLT/pj_crossbow_bolt_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A2: short right-facing bolt with iron tip and feather tail."
+    }
+  ]
+}

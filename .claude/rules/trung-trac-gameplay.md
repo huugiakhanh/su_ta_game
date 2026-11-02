@@ -30,7 +30,7 @@ Tham số URL (engine): `?viewer=1` (xem sprite), `?debug=1` (vào thẳng màn,
 
 Thêm nội dung (vật cản/hazard/item/dữ liệu màn): sửa `levelN.js` + `config.js` của chương. Hành vi riêng chương (boss, kỹ năng): `boss.js`/`skills.js` gắn qua hook; hành vi dùng được cho chương khác thì đưa vào engine (rule `engine.md`). Hiệu ứng vẽ riêng: `render-extras.js`.
 
-**Thêm màn**: mục mới trong `levels` của `chapter.js` + `levelN.js` (`content`, `events`), route gọi `render_chapter_level("trung-trac", level_id, title)` (`backend/routes/pages.py`), URL vào `LEVEL_URLS`, id level mới trong migration + `VALID_LEVEL_IDS`. `requireLevel()` của engine tự đòi qua mọi màn trước.
+**Thêm màn**: mục mới trong `levels` của `chapter.js` + `levelN.js` (`content`, `events`), route gọi `render_chapter_level("trung-trac", level_id, title)` (`backend/routes/pages.py`), URL vào `LEVEL_URLS`, id level mới trong migration + `VALID_LEVEL_IDS`. `requireLevel()` của engine tự đòi qua mọi màn trước. Route màn 1 giữ cả URL cũ `/gameplay/level/Trung_Trac/trung-trac.html` (alias trong `pages.py`) — khi thêm màn, cân nhắc có cần alias tương tự không.
 
 ## Hiển thị (TT-INT-01)
 
