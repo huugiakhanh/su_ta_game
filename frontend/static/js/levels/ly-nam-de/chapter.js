@@ -1,14 +1,14 @@
 // Định nghĩa chương Lý Nam Đế (chương 3) cho engine màn chơi. Hợp đồng các
-// trường: engine/chapter.js. Màn 1 thật (LND-L1, asset LND_ART_01); màn 2–3 còn
-// khung (LND-SKELETON) — chưa có NPC màn 2, kỹ năng, boss.
+// trường: engine/chapter.js. Màn 1 (LND-L1) và màn 2 (LND-L2) thật; màn 3 còn
+// khung (LND-SKELETON) — chưa có kỹ năng, boss.
 
 import { CHUNK_W } from '../../engine/config.js';
 import { state } from '../../engine/state.js';
 import {
   SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, BORROWED_MAPS, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
-  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, FINISH_GATE, GUIDE_LOCAL_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
+  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, FINISH_GATE, GUIDE_LOCAL_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, LEVEL2_FAR_HILLS, ARENA, LEVEL3_ZONES,
   OBSTACLE_TYPES, QUIZ_STELE_ID, MAP_PROPS_IN_GAME, HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES, NPC_SPRITES,
-  ITEM, REWARD_NAMES, TEXT
+  ITEM, PICKUPS, REWARD_NAMES, TEXT
 } from './config.js';
 import { QUESTIONS } from './questions-data.js';
 import { NPC_DIALOGUES, CHAPTER_END, STORY_LY_BI_INTRO } from './dialogue-data.js';
@@ -37,6 +37,7 @@ export const LY_NAM_DE = {
     npcs: NPC_SPRITES
   },
   item: ITEM,
+  pickups: PICKUPS,
   quizStele: QUIZ_STELE_ID,
   questions: QUESTIONS,
   dialogues: NPC_DIALOGUES,
@@ -69,6 +70,7 @@ export const LY_NAM_DE = {
     2: {
       id: 2, title: 'Màn 2: Chiêu mộ hiền tài', url: LEVEL_URLS[2],
       chunks: LEVEL2_CHUNKS, worldWidth: CHUNK_W * LEVEL2_CHUNKS, zones: LEVEL2_ZONES, finishX: LEVEL2_FINISH_X, gate: null,
+      farHills: LEVEL2_FAR_HILLS,
       sprites: LEVEL_SPRITES[2],
       content: level2Content,
       introMessage: 'Màn 2: Chiêu mộ hiền tài',

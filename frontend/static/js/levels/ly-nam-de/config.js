@@ -25,12 +25,12 @@ export const BORROWED_MAPS = [{
     'PROP_TT_QUIZ_STELE'
   ]
 }, {
-  // PLACEHOLDER nền màn 2–3 khung (thay ở LND_ART_02–03).
+  // Sách, cổng doanh trại (màn 1), đồi xa đồng trũng (màn 2); PLACEHOLDER nền
+  // màn 3 khung (thay ở LND_ART_03).
   root: '/static/assets/images/ba-trieu/maps-32bit/',
   manifest: 'maps_bt.json',
   ids: [
-    'ITEM_BT_TINH_HOA', 'PROP_BT_CAMP_GATE', 'PROP_BT_CAMP_GATE_OPEN',
-    'BG_BT_MID_NUA_FOREST', 'BG_BT_MID_MARSH', 'BG_BT_MID_CAMP'
+    'ITEM_BT_TINH_HOA', 'PROP_BT_CAMP_GATE', 'PROP_BT_CAMP_GATE_OPEN', 'BG_BT_FAR_PLAIN', 'BG_BT_MID_CAMP'
   ]
 }];
 // Mặt nước trong khe sông `'~'` (engine render/terrain.js drawWater): ảnh nước
@@ -43,19 +43,24 @@ export const TILES = {
 };
 export const FAR_HILLS = { id: 'BG_LND_FAR_MIDLANDS', parallax: 0.2, bottomY: 230, hiddenUnderSky: [] };
 
-// Ảnh DOM — chân dung Lý Bí (dẫn màn 1). NPC màn 2: LND_ART_02.
-export const PORTRAITS = ['PORTRAIT_LY_BI'];
+// Ảnh DOM — chân dung Lý Bí (dẫn màn 1) + 3 NPC màn 2.
+export const PORTRAITS = ['PORTRAIT_LY_BI', 'PORTRAIT_PHAM_TU', 'PORTRAIT_TINH_THIEU', 'PORTRAIT_TRIEU_TUC'];
 
 // Sprite canvas mỗi màn cần (chỉ nạp ảnh màn đang chơi dùng). Màn 1 gồm cả
-// layout thử ?layout=engine.
+// layout thử ?layout=engine. ITEM_LND_HEAL ở mọi màn: engine drawPickups tra
+// ảnh bình máu mỗi frame kể cả khi chưa có bình nào (thiếu thì cảnh báo).
 export const LEVEL_SPRITES = {
   1: [
     'NPC_LY_BI', 'EN_LUONG_PATROL', 'EN_LUONG_TAXMAN', 'PJ_LEAD_COINS', 'EN_LUONG_WAR_BOAT', 'PJ_FIRE_ARROW',
     'EN_LUONG_ARCHER', 'PROP_LUONG_WATCHTOWER', 'PJ_CROSSBOW_BOLT', 'TR_BAMBOO_NET', 'EN_LUONG_HOUND',
-    'OB_TRIBUTE_CART', 'OB_BOULDER', 'EN_LUONG_TRIBUTE_WAGON'
+    'OB_TRIBUTE_CART', 'OB_BOULDER', 'EN_LUONG_TRIBUTE_WAGON', 'ITEM_LND_HEAL'
   ],
-  2: ['EN_LUONG_PATROL', 'TR_BAMBOO_NET'],
-  3: ['EN_LUONG_PATROL']
+  2: [
+    'NPC_PHAM_TU', 'NPC_TINH_THIEU', 'NPC_TRIEU_TUC', 'EN_LUONG_PATROL', 'EN_LUONG_TAXMAN', 'PJ_LEAD_COINS',
+    'EN_LUONG_WAR_BOAT', 'PJ_FIRE_ARROW', 'EN_LUONG_ARCHER', 'PROP_LUONG_WATCHTOWER', 'PJ_CROSSBOW_BOLT',
+    'TR_BAMBOO_NET', 'EN_LUONG_HOUND', 'ITEM_LND_HEAL'
+  ],
+  3: ['EN_LUONG_PATROL', 'ITEM_LND_HEAL']
 };
 
 // URL trang từng màn (route ở backend/routes/pages.py).
@@ -121,21 +126,36 @@ export const TOWER = { localX: 380, deck: 91, fireInterval: 2, fireRange: 260 };
 //   level1Spots  [chunk, localX] — chạm x này thì hỏi (theo thứ tự); không
 //                rơi vào khe sông (khe chunk sông ở local 224–576).
 //   level2Spots  [chunk, localX] — câu hỏi về NPC sắp gặp (pool cùng tên,
-//                thứ tự Phạm Tu -> Tinh Thiều -> Triệu Túc, LND-00 §3.2).
+//                thứ tự Phạm Tu -> Tinh Thiều -> Triệu Túc, LND-00 §3.2);
+//                chunk 2 sau khe sông (khe tới local 576).
 export const QUIZ = {
   level1Count: 4,
   level1Spots: [[3, 312], [5, 680], [8, 560], [10, 560]],
-  level2Spots: { phamTu: [1, 600], tinhThieu: [2, 600], trieuTuc: [3, 600] }
+  level2Spots: { phamTu: [2, 680], tinhThieu: [5, 600], trieuTuc: [8, 600] }
 };
 
-// ---- Màn 2 "Chiêu mộ hiền tài" (khung) ----
-// 4 chunk, chuyển dần sang đầm lầy (tạm cho vùng sông nước Chu Diên).
-export const LEVEL2_CHUNKS = 4;
+// ---- Màn 2 "Chiêu mộ hiền tài" (LND-L2) ----
+// 9 chunk cố định (Q1): bờ sông Hồng (Phạm Tu — Thanh Trì, cửa sông Tô Lịch)
+// -> làng (Tinh Thiều) -> vùng sông nước Chu Diên (cha con Triệu Túc). Đồi xa
+// đồng trũng riêng màn (mượn chương 2). Về đích cuối chunk 9 khi đã gặp đủ 3 NPC
+// (không cổng, như chương 2).
+export const LEVEL2_CHUNKS = 9;
 export const LEVEL2_ZONES = [
-  { id: 'LND2', x0: 0, x1: CHUNK_W * 2, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_NUA_FOREST' },
-  { id: 'LND6', x0: CHUNK_W * 2, x1: CHUNK_W * LEVEL2_CHUNKS, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_MARSH' }
+  { id: 'LND3', x0: 0, x1: CHUNK_W * 3, sky: 'BG_TT_SKY_DAY', mid: 'BG_LND_MID_RED_RIVER' },
+  { id: 'LND2', x0: CHUNK_W * 3, x1: CHUNK_W * 6, sky: 'BG_TT_SKY_DAY', mid: 'BG_TT_MID_VILLAGE' },
+  { id: 'LND6', x0: CHUNK_W * 6, x1: CHUNK_W * LEVEL2_CHUNKS, sky: 'BG_TT_SKY_DAY', mid: 'BG_LND_MID_CHU_DIEN' }
 ];
+export const LEVEL2_FAR_HILLS = { id: 'BG_BT_FAR_PLAIN', parallax: 0.2, bottomY: 230, hiddenUnderSky: [] };
 export const LEVEL2_FINISH_X = CHUNK_W * LEVEL2_CHUNKS - 96;
+// Quân vây NPC (giải cứu): [dx tâm so với tâm NPC, đoạn tuần tra [min, max]].
+// Phạm Tu, Tinh Thiều = 1 trái + 1 phải (như engine NPC_RESCUE); cha con Triệu
+// Túc (nhóm 2 người rộng ±33) cả 2 lính bên trái, tuần tra tới chỗ người chơi
+// bị giữ (holdGap 40).
+export const CAPTORS = {
+  phamTu: [{ dx: -100, patrol: [-170, -30] }, { dx: 48, patrol: [-60, 80] }],
+  tinhThieu: [{ dx: -100, patrol: [-170, -30] }, { dx: 48, patrol: [-60, 80] }],
+  trieuTuc: [{ dx: -100, patrol: [-170, -50] }, { dx: -160, patrol: [-230, -50] }]
+};
 
 // ---- Màn 3 "Công phá thành Long Biên" (khung) ----
 // Đấu trường 1 chunk, 3 đợt lính ra ở spawnX (engine makeSpawner). Nền doanh trại
@@ -274,10 +294,19 @@ export const ENGINE_TEST = {
   hound: [4, 600],
   dropGuards: [[5, 300], [5, 420], [5, 540]]
 };
-// NPC: Lý Bí dẫn màn 1 (3 NPC màn 2 — LND-L2).
+// NPC: Lý Bí dẫn màn 1; 3 NPC màn 2 (LND_ART_02). NPC_TRIEU_TUC: 2 người trong 1
+// ô 96×48 (thấy được ±33 quanh tâm; ảnh gốc Triệu Quang Phục bên trái, Triệu Túc
+// — người nói — lệch +24). NPC quay về người chơi (đến từ trái) nên ảnh lật:
+// Triệu Túc đứng gần người chơi. `holdGap` 40 -> người chơi dừng ngoài nhóm.
 export const NPC_SPRITES = {
-  lyBi: { id: 'NPC_LY_BI', portrait: 'PORTRAIT_LY_BI', anims: { idle: 'idle', talk: 'talk' } }
+  lyBi: { id: 'NPC_LY_BI', portrait: 'PORTRAIT_LY_BI', anims: { idle: 'idle', talk: 'talk' } },
+  phamTu: { id: 'NPC_PHAM_TU', portrait: 'PORTRAIT_PHAM_TU', anims: { idle: 'idle', talk: 'talk' } },
+  tinhThieu: { id: 'NPC_TINH_THIEU', portrait: 'PORTRAIT_TINH_THIEU', anims: { idle: 'idle', talk: 'talk' } },
+  trieuTuc: { id: 'NPC_TRIEU_TUC', portrait: 'PORTRAIT_TRIEU_TUC', anims: { idle: 'idle', talk: 'talk' }, holdGap: 40 }
 };
+// Bình hồi máu rơi khi hạ quân (engine E4b — CHAPTER.pickups.heal); ống tre
+// thuốc 9×12,75 logic.
+export const PICKUPS = { heal: { id: 'ITEM_LND_HEAL', anim: 'idle' } };
 
 // ---- Phần thưởng màn 2 (id khớp seed backend/migrations/007_ly_nam_de.sql) ----
 // Tên theo docs/SUTA_LND_TASK_00.md §3.4 (duyệt 31/10/2026); cơ chế ở LND-L3.

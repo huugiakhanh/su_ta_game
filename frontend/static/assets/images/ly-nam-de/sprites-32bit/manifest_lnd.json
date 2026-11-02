@@ -501,6 +501,335 @@
         }
       ],
       "qa_notes": "A2: short right-facing bolt with iron tip and feather tail."
+    },
+    {
+      "id": "NPC_PHAM_TU",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_PHAM_TU/npc_pham_tu_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_PHAM_TU/npc_pham_tu_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B1; awaiting team visual review. Shared scale .346 per 512 reference cell; main-body feet row187 in all10frames; skull136-138px. Existing palette only,32colors across bothactions. See meta/qa_b1.json."
+    },
+    {
+      "id": "FX_LND_TIDE",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 128,
+      "frame_h": 96,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "surge",
+          "file": "fx/FX_LND_TIDE/fx_lnd_tide_surge.png",
+          "frames": 8,
+          "fps": 14,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "fade",
+          "file": "fx/FX_LND_TIDE/fx_lnd_tide_fade.png",
+          "frames": 5,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json.",
+      "design_baseline": true
+    },
+    {
+      "id": "FX_LND_TO_LICH_SHIELD",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "raise",
+          "file": "fx/FX_LND_TO_LICH_SHIELD/fx_lnd_to_lich_shield_raise.png",
+          "frames": 3,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "hold",
+          "file": "fx/FX_LND_TO_LICH_SHIELD/fx_lnd_to_lich_shield_hold.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "block",
+          "file": "fx/FX_LND_TO_LICH_SHIELD/fx_lnd_to_lich_shield_block.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "fx/FX_LND_TO_LICH_SHIELD/fx_lnd_to_lich_shield_break.png",
+          "frames": 6,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json.",
+      "design_baseline": true
+    },
+    {
+      "id": "ICON_SK_LND_SUPPLY",
+      "category": "icon",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_SK_LND_SUPPLY/icon_sk_lnd_supply_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json."
+    },
+    {
+      "id": "ICON_SK_LND_TIDE",
+      "category": "icon",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_SK_LND_TIDE/icon_sk_lnd_tide_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json."
+    },
+    {
+      "id": "ICON_SK_LND_TO_LICH_SHIELD",
+      "category": "icon",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "NORMALIZED",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_SK_LND_TO_LICH_SHIELD/icon_sk_lnd_to_lich_shield_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json."
+    },
+    {
+      "id": "ITEM_LND_HEAL",
+      "category": "item",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "item/ITEM_LND_HEAL/item_lnd_heal_idle.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json.",
+      "design_baseline": true,
+      "visible_bbox": {
+      "x": 3.5,
+      "y": 2.25,
+      "w": 9,
+      "h": 12.75
+    }
+    },
+    {
+      "id": "NPC_TINH_THIEU",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_TINH_THIEU/npc_tinh_thieu_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_TINH_THIEU/npc_tinh_thieu_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json."
+    },
+    {
+      "id": "NPC_TRIEU_TUC",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 96,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_TRIEU_TUC/npc_trieu_tuc_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_TRIEU_TUC/npc_trieu_tuc_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json."
+    },
+    {
+      "id": "PORTRAIT_PHAM_TU",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_PHAM_TU/portrait_pham_tu_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json."
+    },
+    {
+      "id": "PORTRAIT_TINH_THIEU",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_TINH_THIEU/portrait_tinh_thieu_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json."
+    },
+    {
+      "id": "PORTRAIT_TRIEU_TUC",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_TRIEU_TUC/portrait_trieu_tuc_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json."
     }
   ]
 }

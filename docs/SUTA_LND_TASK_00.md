@@ -52,7 +52,7 @@ Mẫu tham chiếu: chương Bà Triệu ([SUTA_BT_TASK_00.md](SUTA_BT_TASK_00.m
 | **LND-SKELETON** | [SUTA_LND_TASK_SKELETON_01.md](SUTA_LND_TASK_SKELETON_01.md) — thư mục chương, `chapter.js`/`config.js`, template, route, migration `007` (chương 3, level 301–303, phần thưởng), `VALID_*`, thẻ trang chủ + timeline, `/quiz` thêm chương, rule `.claude/rules/ly-nam-de-gameplay.md`. Chạy được bằng asset mượn | LND-00 |
 | **LND-ENGINE** | [SUTA_LND_TASK_ENGINE_01.md](SUTA_LND_TASK_ENGINE_01.md) — mục 3.5 | LND-SKELETON |
 | **LND-L1** + `LND_ART_01` | Màn 1 (mục 3.1) — **xong 02/11/2026** ([REPORT_LND-L1.md](archive/REPORT_LND-L1.md)) | SKELETON, ENGINE |
-| **LND-L2** + `LND_ART_02` | Màn 2 (mục 3.2) | L1, LND-00 duyệt |
+| **LND-L2** + `LND_ART_02` | Màn 2 (mục 3.2) — **xong 02/11/2026** ([REPORT_LND-L2.md](archive/REPORT_LND-L2.md)) | L1, LND-00 duyệt |
 | **LND-L3** + `LND_ART_03` | Màn 3 boss Tiêu Tư (mục 3.4) | L2 |
 | Nhạc | Prompt Gemini Pro theo khuôn `GEMINI_PROMPT_BT_MUSIC.md`; trong lúc chờ mượn nhạc chương 2 | — |
 
@@ -205,7 +205,7 @@ Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy nguyên văn Excel,
 | Đợt | Nội dung |
 |---|---|
 | `LND_ART_01` | **xong, `IN_GAME` 02/11/2026** (prompt đã xoá; kết quả soát + quyết định: [REPORT_LND-L1.md](archive/REPORT_LND-L1.md)) — `NPC_LY_BI` (dẫn màn) + `PORTRAIT_LY_BI`; lính tuần tiễu, quan thu thuế + đạn tiền chì/sổ sách, thuyền chiến + hoả tiễn, lưới trúc, cung thủ tháp canh + tên, chó săn, xe cống phẩm nhỏ + lớn (mini-boss), đá lở; nền + tile đồi Thái Nguyên, bờ sông Hồng (dải nước, mỏm đá), trạm kiểm soát, cổng đích |
-| `LND_ART_02` | NPC + chân dung Phạm Tu, Tinh Thiều, Triệu Túc; lính Lương thường (quân vây NPC); FX khiên Tô Lịch, sóng Triều Cường, bình hồi máu; icon 3 kỹ năng; nền sông nước Chu Diên |
+| `LND_ART_02` | [CODEX_PROMPT_LND_ART_02.md](CODEX_PROMPT_LND_ART_02.md) (02/11/2026, chốt danh sách thật ở đó; Triệu Túc vẽ cùng con Triệu Quang Phục, bình máu vẽ mới, 1 nền Chu Diên + mượn, FX/icon kỹ năng làm luôn) — NPC + chân dung Phạm Tu, Tinh Thiều, Triệu Túc; lính Lương thường (quân vây NPC); FX khiên Tô Lịch, sóng Triều Cường, bình hồi máu; icon 3 kỹ năng; nền sông nước Chu Diên |
 | `LND_ART_03` | Tiêu Tư (đánh bừa, ném vàng, bỏ chạy) + chân dung, máy bắn đá + đá tảng, cận vệ khiên sắt, xe hoả công (cháy / chết máy), nền tường thành Long Biên, cờ chiến thắng |
 
 Mượn asset chương 1–2 trong lúc chờ (trời ngày, tile mặt đất, bia câu hỏi, lính Ngô làm lính Lương tạm, tiền vàng `GOLD_COIN`) qua `BORROWED_MAPS`, không chép ảnh.

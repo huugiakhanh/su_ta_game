@@ -1,27 +1,95 @@
-// Màn 2 "Chiêu mộ hiền tài" — LND-SKELETON: chưa có NPC (thoại chờ team duyệt —
-// docs/SUTA_LND_TASK_00.md §4). Tạm: 3 câu hỏi chặn đường rút lần lượt từ pool
-// của Phạm Tu, Tinh Thiều, Triệu Túc; 2 lính Lương, 1 bẫy lưới trúc. NPC + giải
-// cứu làm ở LND-L2. DESIGN_BASELINE.
+// Màn 2 "Chiêu mộ hiền tài" (LND-L2, docs/SUTA_LND_TASK_L2_01.md): 9 chunk ĐẶT
+// CỐ ĐỊNH: bờ sông Hồng -> làng -> vùng sông nước Chu Diên. Thứ tự: câu hỏi về
+// Phạm Tu (chunk 2) -> Phạm Tu (chunk 3) -> câu hỏi về Tinh Thiều (chunk 5) ->
+// Tinh Thiều (chunk 6) -> câu hỏi về Triệu Túc (chunk 8) -> cha con Triệu Túc
+// (chunk 9) -> về đích cuối chunk 9. Mỗi NPC bị 2 lính Lương vây (CAPTORS).
+// Chướng ngại dùng lại cơ chế màn 1 (sông + thuyền + mỏm đá, lưới trúc, tháp
+// canh, quan thu thuế, chó săn). Mọi số DESIGN_BASELINE.
 
-import { worldX, makeHazard } from '../../engine/geometry.js';
-import { makeEnemy, makeQuiz, pick, checkTerrainFootprints } from '../../engine/entities.js';
-import { QUIZ, SOLDIER, NET } from './config.js';
+import { worldX, makeHazard, setTerrain, buildTerrain, terrainHoles } from '../../engine/geometry.js';
+import {
+  makeEnemy, makeNpc, makeQuiz, makePlatform, pick, checkTerrainFootprints, checkNpcClearance, checkPlatformReach
+} from '../../engine/entities.js';
+import { LEVEL } from '../../engine/chapter.js';
+import { GROUND_Y } from '../../engine/config.js';
+import { QUIZ, SOLDIER, HOUND, NET, RIVER, TOWER, ROCK_LEDGE, CAPTORS } from './config.js';
 import { NPC_QUESTION_POOLS } from './questions-data.js';
 
-export function level2Content() {
-  const content = {
-    obstacles: [],
-    hazards: [makeHazard('snare', 'netTrap', 4, 300, { dropHeight: NET.dropHeight, triggerWidth: NET.triggerWidth })],
-    holes: [],
-    items: [],
-    enemies: [
-      makeEnemy(worldX(2, 300) - SOLDIER.w / 2, SOLDIER.w, SOLDIER.h, SOLDIER.hp, false),
-      makeEnemy(worldX(3, 300) - SOLDIER.w / 2, SOLDIER.w, SOLDIER.h, SOLDIER.hp, false)
-    ],
-    npcs: [],
-    quizzes: Object.entries(QUIZ.level2Spots)
-      .map(([pool, spot]) => makeQuiz(...spot, pick(NPC_QUESTION_POOLS[pool])))
+// Khe sông chunk 2 và 7: lưới địa hình `RIVER` của màn 1 (khe 1 có thuyền, khe 2
+// có mỏm đá). Quanh NPC (local 560) và bia câu hỏi giữ đất phẳng.
+const RIVER_CHUNKS = [2, 7];
+
+function makeSoldier(chunk, localX) {
+  return makeEnemy(worldX(chunk, localX) - SOLDIER.w / 2, SOLDIER.w, SOLDIER.h, SOLDIER.hp, false);
+}
+
+function makeHound(chunk, localX) {
+  return {
+    ...makeEnemy(worldX(chunk, localX) - HOUND.w / 2, HOUND.w, HOUND.h, HOUND.hp, false),
+    art: 'hound', facing: -1, direction: -1, rest: 0, walking: true
   };
+}
+
+function makeNet(chunk, localX) {
+  return makeHazard('snare', 'netTrap', chunk, localX, { dropHeight: NET.dropHeight, triggerWidth: NET.triggerWidth });
+}
+
+function makeWarBoat(chunk) {
+  return makeHazard('thrower', 'warBoat', chunk, RIVER.boatX, {
+    groundY: GROUND_Y, floatY: RIVER.floatY, harmful: false,
+    projectile: 'fireArrow', aim: true, fireInterval: RIVER.fireInterval
+  });
+}
+
+// Quân vây NPC (engine giải cứu đếm enemy `captorOf`): lính Lương tuần tra
+// trong đoạn [min, max] quanh tâm NPC.
+function makeNpcCaptors(npc) {
+  return CAPTORS[npc.id].map(side => ({
+    ...makeEnemy(npc.centerX + side.dx - SOLDIER.w / 2, SOLDIER.w, SOLDIER.h, SOLDIER.hp, false, {
+      patrolMin: npc.centerX + side.patrol[0], patrolMax: npc.centerX + side.patrol[1]
+    }),
+    captorOf: npc.id
+  }));
+}
+
+export function level2Content() {
+  setTerrain(buildTerrain(RIVER_CHUNKS.map(chunk => ({ chunk, rows: RIVER.rows })), LEVEL.chunks));
+  const npcs = [
+    makeNpc('phamTu', 3, 560),
+    makeNpc('tinhThieu', 6, 560),
+    makeNpc('trieuTuc', 9, 560)
+  ];
+  const hazards = [
+    // chunk 1: lưới trúc
+    makeNet(1, 300),
+    // chunk 2, 7: thuyền chiến trong khe sông
+    ...RIVER_CHUNKS.map(makeWarBoat),
+    // chunk 4: quan thu thuế ném xâu tiền chì
+    makeHazard('thrower', 'taxman', 4, 440, { projectile: 'leadCoins', fireInterval: 2.8, fireRange: 220, hp: 2 }),
+    // chunk 5: tháp canh (vẽ sau) + cung thủ bắn chéo
+    makeHazard('prop', 'watchtower', 5, TOWER.localX),
+    makeHazard('thrower', 'towerArcher', 5, TOWER.localX, {
+      groundY: GROUND_Y - TOWER.deck, projectile: 'crossbowBolt', aim: true,
+      fireInterval: TOWER.fireInterval, fireRange: TOWER.fireRange
+    }),
+    // chunk 6: lưới trúc trước nhóm lính vây Tinh Thiều
+    makeNet(6, 200)
+  ];
+  const enemies = [
+    // lính tuần tiễu đi tuần chunk 1; chó săn chunk 4, 8
+    makeSoldier(1, 560),
+    makeHound(4, 680),
+    makeHound(8, 300),
+    ...npcs.flatMap(makeNpcCaptors)
+  ];
+  // Mỏm đá giữa khe sông thứ 2 của mỗi chunk sông.
+  const platforms = RIVER_CHUNKS.map(chunk =>
+    makePlatform(chunk, RIVER.ledge[0], RIVER.ledge[1], ROCK_LEDGE.w, { sprite: ROCK_LEDGE.sprite }));
+  // Câu hỏi chặn đường trước mỗi NPC: 1 câu rút ngẫu nhiên trong bộ của NPC.
+  const quizzes = npcs.map(npc => makeQuiz(...QUIZ.level2Spots[npc.id], pick(NPC_QUESTION_POOLS[npc.id]), npc.id));
+  const content = { obstacles: [], hazards, holes: terrainHoles(), items: [], enemies, npcs, quizzes, platforms };
+  checkNpcClearance(content);
   checkTerrainFootprints(content);
+  checkPlatformReach(content);
   return content;
 }

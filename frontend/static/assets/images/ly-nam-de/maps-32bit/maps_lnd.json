@@ -127,6 +127,25 @@
       "parallax_hint": 0.2,
       "transition_width": 192,
       "qa_notes": "A2: native repeat tile; inherited map palette; review seam/transition mockup."
+    },
+    {
+      "id": "BG_LND_MID_CHU_DIEN",
+      "category": "parallax",
+      "file": "bg/BG_LND_MID_CHU_DIEN/bg_lnd_mid_chu_dien.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "transition_policy": "diagonal-alpha-blend",
+      "qa_notes": "LND_ART_02 Gate B1; awaiting team visual review. Native1536x640 tile repeated twice,64 existing palette colors,binaryalpha,145px opaque bottom band. Wrap p95 32 <= internal75. No collision source. See meta/qa_b1.json."
     }
   ]
 }
