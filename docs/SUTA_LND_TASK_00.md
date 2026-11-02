@@ -54,7 +54,7 @@ Mẫu tham chiếu: chương Bà Triệu ([SUTA_BT_TASK_00.md](SUTA_BT_TASK_00.m
 | **LND-L1** + `LND_ART_01` | Màn 1 (mục 3.1) — **xong 02/11/2026** ([REPORT_LND-L1.md](archive/REPORT_LND-L1.md)) | SKELETON, ENGINE |
 | **LND-L2** + `LND_ART_02` | Màn 2 (mục 3.2) — **xong 02/11/2026** ([REPORT_LND-L2.md](archive/REPORT_LND-L2.md)) | L1, LND-00 duyệt |
 | **LND-L3** + `LND_ART_03` | Màn 3 boss Tiêu Tư (mục 3.4) — **xong 02/11/2026** ([SUTA_LND_TASK_L3_01.md](archive/SUTA_LND_TASK_L3_01.md), [REPORT_LND-L3.md](archive/REPORT_LND-L3.md)) | L2 |
-| Nhạc | Prompt Gemini Pro theo khuôn `GEMINI_PROMPT_BT_MUSIC.md`; trong lúc chờ mượn nhạc chương 2 | — |
+| Nhạc | **xong 02/11/2026** — 3 bản `audio/ly-nam-de/level1–3.mp3` (team tạo bằng Gemini Pro theo [GEMINI_PROMPT_LND_MUSIC.md](archive/GEMINI_PROMPT_LND_MUSIC.md)); 61,5–62,6 s, 192 kbps, −10,7 / −11,4 / −11,1 LUFS | — |
 
 Mỗi giai đoạn: kế hoạch → duyệt → code → `pytest tests` + `/verify-ui` → `/task-report`. Thay đổi engine phải chơi lại 3 màn Trưng Trắc + 3 màn Bà Triệu + `?layout=p2`, `?layout=skills`, `?layout=engine`, `?viewer=1`.
 

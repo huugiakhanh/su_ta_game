@@ -1,12 +1,14 @@
-// Âm thanh riêng chương Lý Nam Đế. TODO_MISSING nhạc riêng chương — tạm phát lại
-// 3 bản nhạc nền của chương Bà Triệu (PLACEHOLDER). Tiếng boss/kỹ năng màn 3
-// (LND-L3) tổng hợp chiptune. Định dạng: xem engine/sfx-data.js. Mọi số
-// DESIGN_BASELINE.
+// Âm thanh riêng chương Lý Nam Đế. Nhạc nền 3 màn: file mp3 của team (tạo theo
+// docs/archive/GEMINI_PROMPT_LND_MUSIC.md, nộp 02/11/2026 — mp3 192 kbps, 61–63 s,
+// phát lặp; engine cắt khoảng lặng ~2 s ở cuối khi tính điểm lặp). File mp3 là
+// asset của team, không sửa — thay nhạc thì chép đè cùng tên. Tiếng boss/kỹ
+// năng màn 3 (LND-L3) tổng hợp chiptune. Định dạng: xem engine/sfx-data.js.
+// Mọi số DESIGN_BASELINE.
 
 export const MUSIC_FILES = {
-  level1: '/static/assets/audio/ba-trieu/level1.mp3',
-  level2: '/static/assets/audio/ba-trieu/level2.mp3',
-  level3: '/static/assets/audio/ba-trieu/level3.mp3'
+  level1: '/static/assets/audio/ly-nam-de/level1.mp3',
+  level2: '/static/assets/audio/ly-nam-de/level2.mp3',
+  level3: '/static/assets/audio/ly-nam-de/level3.mp3'
 };
 
 export const MUSIC = {};
