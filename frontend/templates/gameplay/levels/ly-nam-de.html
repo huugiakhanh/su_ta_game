@@ -1,12 +1,37 @@
 {% extends "gameplay/base.html" %}
-{# Chương Lý Nam Đế — dùng chung 3 màn. Khung chung ở gameplay/base.html.
-   LND-SKELETON: chưa có khe kỹ năng (Khiên Tô Lịch, Triều Cường — LND-L3). #}
+{# Chương Lý Nam Đế — dùng chung 3 màn. Khung chung ở gameplay/base.html. #}
 
 {% block chapter_name %}Lý Nam Đế{% endblock %}
 {% block brand %}SUTA · LÝ NAM ĐẾ{% endblock %}
 {% block canvas_label %}Màn chơi Lý Nam Đế{% endblock %}
 {% block item_label %}Quyển Sách Tinh Hoa đã thu thập{% endblock %}
 {% block item_glyph %}📖{% endblock %}
+
+{# Khe kỹ năng màn 3 = phần thưởng màn 2 (skills.js, LND-L3) — chỉ hiện phần thưởng đã nhận. #}
+{% block skill_slots %}
+        <div class="skill" data-skill="SK_LND_TO_LICH_SHIELD" hidden>
+          <img class="skill__icon" alt="Khiên Tô Lịch" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">K</kbd>
+        </div>
+        <div class="skill" data-skill="SK_LND_TIDE" hidden>
+          <img class="skill__icon" alt="Triều Cường" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">L</kbd>
+        </div>
+        <div class="skill skill--buff" data-skill="BUFF_LND_SUPPLY" hidden>
+          <img class="skill__icon" alt="Lương thảo dồi dào" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span>
+        </div>
+{% endblock %}
+
+{% block skill_controls %}
+          <button class="control control--skill control--skill-1" data-control="skill1" data-skill="SK_LND_TO_LICH_SHIELD" aria-label="Khiên Tô Lịch" hidden><img class="control__icon" alt="" hidden><span class="control__label">KHIÊN</span></button>
+          <button class="control control--skill control--skill-2" data-control="skill2" data-skill="SK_LND_TIDE" aria-label="Triều Cường" hidden><img class="control__icon" alt="" hidden><span class="control__label">SÓNG</span></button>
+{% endblock %}
+
+{% block skill_help %}
+      <span data-skill="SK_LND_TO_LICH_SHIELD" hidden><kbd>K</kbd> Khiên Tô Lịch</span>
+      <span data-skill="SK_LND_TIDE" hidden><kbd>L</kbd> Triều Cường</span>
+{% endblock %}
 
 {% block chapter_script %}
   <script type="module" src="{{ url_for('static', filename='js/levels/ly-nam-de/main.js') }}"></script>

@@ -146,6 +146,49 @@
       "transition_width": 192,
       "transition_policy": "diagonal-alpha-blend",
       "qa_notes": "LND_ART_02 Gate B1; awaiting team visual review. Native1536x640 tile repeated twice,64 existing palette colors,binaryalpha,145px opaque bottom band. Wrap p95 32 <= internal75. No collision source. See meta/qa_b1.json."
+    },
+    {
+      "id": "BG_LND_MID_LONG_BIEN",
+      "category": "parallax",
+      "file": "bg/BG_LND_MID_LONG_BIEN/bg_lnd_mid_long_bien.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "surface_row_image": 256,
+      "surface_from_bottom_logic": 96,
+      "qa_notes": "Gate C1 candidate; native1536 repeat2,64 existing map colors; surface world152 with GROUND_Y248. See meta/gate_c1/qa.json."
+    },
+    {
+      "id": "PROP_LND_VAN_XUAN_FLAG",
+      "category": "prop",
+      "file": "props/PROP_LND_VAN_XUAN_FLAG/prop_lnd_van_xuan_flag_wave.png",
+      "w": 96,
+      "h": 32,
+      "frame_w": 24,
+      "frame_h": 32,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-left-at-flag_attach",
+      "pivot": {
+        "x": 0,
+        "y": 32
+      },
+      "frames": 4,
+      "fps": 6,
+      "loop": true,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "palette_ref": "../../sprites-32bit/ly-nam-de/palette_32_lnd.png",
+      "proposal_status": "chờ team chốt",
+      "qa_notes": "Gate C2 red cloth + gold border proposal, chờ team chốt. Character-attached prop uses existing chapter sprite palette98, no palette changes. No pole/writing. See sprite meta/gate_c2/final_qa.json."
     }
   ]
 }

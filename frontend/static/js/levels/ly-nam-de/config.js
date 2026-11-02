@@ -5,7 +5,8 @@
 // images/ly-nam-de/ (manifest_lnd.json, maps_lnd.json); mượn map của chương 1
 // (trời, tile, làng, đồng lúa, bia câu hỏi) và chương 2 (sách, cổng doanh trại,
 // nền màn 2–3 khung) qua BORROWED_MAPS. Không import file nào của chương 1–2.
-// Màn 2–3 vẫn là khung (LND-SKELETON) với lính Lương thật. Mọi số DESIGN_BASELINE.
+// LND-L2: màn 2 thật (LND_ART_02). LND-L3 (docs/SUTA_LND_TASK_L3_01.md): trận
+// boss Tiêu Tư + 3 kỹ năng + cutscene (LND_ART_03). Mọi số DESIGN_BASELINE.
 
 import { CHUNK_W } from '../../engine/config.js';
 
@@ -25,13 +26,10 @@ export const BORROWED_MAPS = [{
     'PROP_TT_QUIZ_STELE'
   ]
 }, {
-  // Sách, cổng doanh trại (màn 1), đồi xa đồng trũng (màn 2); PLACEHOLDER nền
-  // màn 3 khung (thay ở LND_ART_03).
+  // Sách, cổng doanh trại (màn 1), đồi xa đồng trũng (màn 2).
   root: '/static/assets/images/ba-trieu/maps-32bit/',
   manifest: 'maps_bt.json',
-  ids: [
-    'ITEM_BT_TINH_HOA', 'PROP_BT_CAMP_GATE', 'PROP_BT_CAMP_GATE_OPEN', 'BG_BT_FAR_PLAIN', 'BG_BT_MID_CAMP'
-  ]
+  ids: ['ITEM_BT_TINH_HOA', 'PROP_BT_CAMP_GATE', 'PROP_BT_CAMP_GATE_OPEN', 'BG_BT_FAR_PLAIN']
 }];
 // Mặt nước trong khe sông `'~'` (engine render/terrain.js drawWater): ảnh nước
 // trống 6 hàng trên -> nâng 6 px cho mặt nước sát mép đất (không hở dải giữa nền
@@ -43,8 +41,12 @@ export const TILES = {
 };
 export const FAR_HILLS = { id: 'BG_LND_FAR_MIDLANDS', parallax: 0.2, bottomY: 230, hiddenUnderSky: [] };
 
-// Ảnh DOM — chân dung Lý Bí (dẫn màn 1) + 3 NPC màn 2.
-export const PORTRAITS = ['PORTRAIT_LY_BI', 'PORTRAIT_PHAM_TU', 'PORTRAIT_TINH_THIEU', 'PORTRAIT_TRIEU_TUC'];
+// Ảnh DOM — chân dung Lý Bí (dẫn màn 1), 3 NPC màn 2, Tiêu Tư (cutscene màn 3)
+// + icon 3 ô kỹ năng màn 3.
+export const PORTRAITS = [
+  'PORTRAIT_LY_BI', 'PORTRAIT_PHAM_TU', 'PORTRAIT_TINH_THIEU', 'PORTRAIT_TRIEU_TUC', 'PORTRAIT_TIEU_TU',
+  'ICON_SK_LND_TO_LICH_SHIELD', 'ICON_SK_LND_SUPPLY', 'ICON_SK_LND_TIDE'
+];
 
 // Sprite canvas mỗi màn cần (chỉ nạp ảnh màn đang chơi dùng). Màn 1 gồm cả
 // layout thử ?layout=engine. ITEM_LND_HEAL ở mọi màn: engine drawPickups tra
@@ -60,7 +62,11 @@ export const LEVEL_SPRITES = {
     'EN_LUONG_WAR_BOAT', 'PJ_FIRE_ARROW', 'EN_LUONG_ARCHER', 'PROP_LUONG_WATCHTOWER', 'PJ_CROSSBOW_BOLT',
     'TR_BAMBOO_NET', 'EN_LUONG_HOUND', 'ITEM_LND_HEAL'
   ],
-  3: ['EN_LUONG_PATROL', 'ITEM_LND_HEAL']
+  3: [
+    'BOSS_TIEU_TU', 'EN_LUONG_SHIELD_GUARD', 'EN_LUONG_FIRE_CART', 'PROP_LUONG_CATAPULT', 'OB_BOULDER', 'EN_LUONG_PATROL',
+    'PJ_BT_GOLD_COIN', 'FX_BT_STUN', 'FX_BT_ARMOR_SPARK', 'FX_LND_TO_LICH_SHIELD', 'FX_LND_TIDE', 'NPC_LY_BI',
+    'ITEM_LND_HEAL'
+  ]
 };
 
 // URL trang từng màn (route ở backend/routes/pages.py).
@@ -157,21 +163,117 @@ export const CAPTORS = {
   trieuTuc: [{ dx: -100, patrol: [-170, -50] }, { dx: -160, patrol: [-230, -50] }]
 };
 
-// ---- Màn 3 "Công phá thành Long Biên" (khung) ----
-// Đấu trường 1 chunk, 3 đợt lính ra ở spawnX (engine makeSpawner). Nền doanh trại
-// tạm cho tường thành Long Biên.
-export const ARENA = { width: CHUNK_W, playerStartX: 170, spawnX: 700 };
+// ---- Màn 3 "Công phá thành Long Biên" (LND-L3) ----
+// Đấu trường 1 chunk, nền thành Long Biên (BG_LND_MID_LONG_BIEN): mặt thành
+// phẳng ở hàng ảnh 256/640 = `wallTop` px trên đáy ảnh -> y GROUND_Y − wallTop.
+// Tiêu Tư + máy bắn đá đứng trên mặt thành ở GĐ 1–2 (chỉ vẽ, không va chạm).
+export const ARENA = { width: CHUNK_W, playerStartX: 170, spawnX: 720, wallTop: 96 };
 export const LEVEL3_ZONES = [
-  { id: 'LND7', x0: 0, x1: ARENA.width, sky: 'BG_TT_SKY_DAY', mid: 'BG_BT_MID_CAMP' }
+  { id: 'LND7', x0: 0, x1: ARENA.width, sky: 'BG_TT_SKY_DAY', mid: 'BG_LND_MID_LONG_BIEN' }
 ];
-export const WAVES = {
-  gap: 1.5,
-  groups: [
-    [{ type: 'guard', at: 0, dx: 0 }],
-    [{ type: 'guard', at: 0, dx: 0 }, { type: 'guard', at: 0, dx: -40 }],
-    [{ type: 'guard', at: 0, dx: 0 }, { type: 'guard', at: 0, dx: -40 }, { type: 'guard', at: .8, dx: 0 }]
-  ]
+
+// Tiêu Tư BOSS_TIEU_TU (ô 48×48; attack_01 frame_w 80): thân thấy được ±11,
+// cao 37 -> hitbox 22×36. GĐ 1–2 đứng trên thành tại wallX, `command` mỗi
+// commandInterval giây (GĐ 2: commandIntervalP2), ra lệnh ở hit_frame 3.
+// GĐ 3 rơi xuống đất (gia tốc fallGravity) rồi thành enemy boss `hp` máu, chạm
+// thân vô hại (`passive`). Mũi kiếm attack_01 ô hit 4 cách pivot +32,5, cao
+// 24,5 trên chân -> ô chém `sword` [near, reach] × [low, high] trên chân; vung
+// khi khoảng mép tới người chơi ≤ swordRange, nghỉ swordCooldown. Xa hơn thì
+// `throw` mỗi throwInterval giây; tay ném ô hit 5 cách pivot +20, cao 26,5
+// (`hand`). Mỗi `panicEvery` đòn trúng thì `flee` sang đầu kia đấu trường
+// (panicSpeed, dừng cách tường panicMargin).
+export const BOSS_TT = {
+  id: 'BOSS_TIEU_TU', w: 22, h: 36, wallX: 660, commandInterval: 4, commandIntervalP2: 6, startDelay: 2,
+  fallGravity: 900, hp: 10, knockback: 10,
+  sword: { near: 10, reach: 33, low: 20, high: 29 }, swordRange: 18, swordCooldown: 1.6,
+  throwInterval: 2.5, hand: { x: 20, y: 26.5 },
+  panicEvery: 3, panicSpeed: 140, panicMargin: 90, defeatScore: 1000
 };
+
+// Máy bắn đá PROP_LUONG_CATAPULT (ô 64×48, khung đứng yên): trên thành tại `x`,
+// quay về người chơi. `fire` ô hit 5 đá rời rổ tại `release` (+23,5; 43,25 trên
+// chân). Đá OB_BOULDER (`roll`, thấy được 18×18, tâm cao `radius` trên chân ô)
+// bay vòng cung `flightTime` giây tới vạch báo (x người chơi lúc Tiêu Tư ra
+// lệnh), chạm đất phát `break`. Hitbox w×h, trúng −1 máu.
+export const CATAPULT = {
+  id: 'PROP_LUONG_CATAPULT', x: 540, release: { x: 23.5, y: 43.25 },
+  boulder: 'OB_BOULDER', flightTime: 1.1, w: 14, h: 14, radius: 9
+};
+
+// Cận vệ khiên sắt EN_LUONG_SHIELD_GUARD (ô 48×48; attack_01 frame_w 128): thân
+// ±9, sọ→chân 34 -> hitbox 20×34. `count` lượt, mỗi lượt 1 con ra ở
+// ARENA.spawnX, lượt sau `gap` giây sau khi lượt trước ngã. Đi `speed` px/s về
+// phía người chơi; KHIÊN chặn đòn chém từ phía đang quay mặt (`blocked` +
+// FX_BT_ARMOR_SPARK + gợi ý cách nhau hintInterval). Người chơi sang phía sau
+// thì đợi `turnDelay` giây mới quay lại. Mũi thương ô hit 4 cách pivot +53,5,
+// cao 32,25 trên chân -> ô đâm `spear` [near, reach] × [low, high]; vung khi
+// khoảng mép tới người chơi ≤ attackRange, nghỉ attackCooldown. Xác nằm
+// corpseTime giây. Triều Cường đẩy lùi `tidePush` px.
+export const SHIELD_GUARD = {
+  id: 'EN_LUONG_SHIELD_GUARD', count: 3, w: 20, h: 34, hp: 3, speed: 24, gap: 1.5, startDelay: 1.5,
+  turnDelay: .7, attackRange: 38, attackCooldown: 1.8,
+  spear: { near: 10, reach: 54, low: 28, high: 36 }, spark: 'FX_BT_ARMOR_SPARK', hintInterval: 4,
+  corpseTime: 2, tidePush: 24
+};
+
+// Xe hoả công EN_LUONG_FIRE_CART (ô 96×48; xe + lính đẩy thấy được ±42, lửa
+// cao 45): hitbox thân xe 80×26 (không tính lửa — nhảy qua được). `count` lượt,
+// ra ở ARENA.spawnX, `burn` chạy `speed` px/s về phía người chơi, chạm tường
+// quay đầu (ảnh lật theo hướng chạy). Đang cháy: chém bị chặn + gợi ý; chạm thân
+// −1 máu. Triều Cường -> `douse` -> `stalled` (đứng yên, vô hại), `hp` đòn ->
+// `death`, xác nằm lại. Lượt sau `gap` giây sau khi xe trước vỡ.
+export const FIRE_CART = {
+  id: 'EN_LUONG_FIRE_CART', count: 2, w: 80, h: 26, hp: 3, speed: 60, gap: 2, startDelay: 1.2, hintInterval: 4
+};
+
+// Lính tuần tiễu rải rác GĐ 1–2 (nguồn bình máu — Q4): mỗi `interval` giây ra
+// 1 lính ở mép trái (`x`) nếu đang có < `max` lính.
+export const ARENA_SOLDIERS = { interval: 9, max: 2, x: 40, startDelay: 5 };
+
+// Bình máu rơi khi hạ lính / cận vệ / xe (hooks.dropHeal): `base`, có buff
+// Lương thảo dồi dào thì `supply`. Boss không rơi.
+export const HEAL_DROP = { base: .15, supply: .4 };
+
+// Vòng choáng FX_BT_STUN (32×16, tâm vòng ở giữa ô) trên đỉnh đầu người chơi;
+// tiền vàng PJ_BT_GOLD_COIN (16×16, xoay 6@18): bay vòng cung tới chỗ người chơi
+// sau `flightTime` giây, trúng thì choáng `stun` giây (không mất máu). Đá máy
+// bắn đá dùng chung `gravity`.
+export const STUN_FX = { id: 'FX_BT_STUN', anim: 'loop', lift: 0 };
+export const GOLD_COIN = { id: 'PJ_BT_GOLD_COIN', anim: 'loop', flightTime: 1.1, gravity: 520, w: 8, h: 8, stun: 1.2 };
+
+// Câu thông báo trong trận (LND-L3 §5 — duyệt Q1 02/11/2026; guardContact dùng
+// lại câu va chạm lính Lương).
+export const BOSS_TEXT = {
+  guardHint: 'Khiên sắt chặn phía trước — hãy nhảy qua đầu, chém sau lưng!',
+  guardHit: 'Bạn bị cận vệ đâm thương trúng!',
+  guardContact: 'Bạn va phải lính Lương!',
+  boulderHit: 'Bạn trúng đá máy bắn đá!',
+  phase2: 'Tiêu Tư tung xe hoả công!',
+  cartHint: 'Lửa quá lớn — hãy gọi Triều Cường (L)!',
+  cartHit: 'Xe hoả công lao trúng bạn!',
+  phase3: 'Tiêu Tư hoảng loạn nhảy xuống thành!',
+  swordHit: 'Bạn trúng kiếm của Tiêu Tư!',
+  coinStun: 'Không nhận vàng giặc!'
+};
+
+// Cutscene kết chương (giây, px): Tiêu Tư trúng đòn cuối đứng `beatenHold`,
+// `bribe` rồi giữ ô cuối `bribeHold` -> cốt truyện câu 1 -> `flee` sang phải
+// `fleeSpeed` (camera theo), cách mép phải `fadeBeforeEdge` thì tối dần
+// `fadeTime`, sáng lại có Lý Bí trên thành tại `lyBiX` (người chơi về
+// `playerX`), `plant_flag` -> cờ PROP_LND_VAN_XUAN_FLAG (ô 24×32, pivot
+// bottom-left; vải chỉ ở 12,5 hàng dưới của ô, mép cán x 0) treo từ đầu cán
+// ô 8 (+10; 42,5 trên chân) buông dọc cán: pivot đặt tại (+dx; lift trên chân)
+// = đầu cán hạ 12,5 (người dùng chơi thử 02/11: neo pivot ở đầu cán thì cờ nằm
+// trên cán, tách khỏi cán). Đứng `victoryHold` -> cốt truyện câu 2 -> panel kết chương.
+export const LND_CUTSCENE = {
+  beatenHold: .8, bribeHold: .8, fleeSpeed: 180, fadeBeforeEdge: 140, fadeTime: .6, lyBiX: 384, playerX: 300,
+  victoryHold: 1,
+  flag: { id: 'PROP_LND_VAN_XUAN_FLAG', dx: 10, lift: 30 }
+};
+
+// Layout thử kỹ năng `?layout=skills` (màn 3): bao cát + 1 cận vệ + 1 xe hoả công
+// ra lặp (không boss, không máy bắn đá).
+export const SKILL_TEST = { dummyX: 380, dummyHp: 99, respawnGap: 3 };
 
 // ---- Môi trường ----
 // Không có vật cản tĩnh (OBSTACLE_TYPES rỗng — chướng ngại màn 1 đều là hazard/lính).
@@ -182,7 +284,8 @@ export const QUIZ_STELE_ID = 'PROP_TT_QUIZ_STELE';
 // Mỏm đá giữa sông: bục một chiều 64 px, mặt trên ở hàng 0 của ảnh.
 export const ROCK_LEDGE = { sprite: 'PROP_LND_ROCK_LEDGE', w: 64 };
 export const MAP_PROPS_IN_GAME = [
-  ITEM.sprite, QUIZ_STELE_ID, FINISH_GATE.closed, FINISH_GATE.open, ROCK_LEDGE.sprite, TILES.water
+  ITEM.sprite, QUIZ_STELE_ID, FINISH_GATE.closed, FINISH_GATE.open, ROCK_LEDGE.sprite, TILES.water,
+  LND_CUTSCENE.flag.id
 ];
 
 // ---- Quân địch, hazard, đạn ----
@@ -215,7 +318,23 @@ export const ENEMY_SPRITES = {
     anims: { idle: 'run', walk: 'run', attack: 'attack_01', death: 'death' },
     attackMessage: 'Chó săn quân Lương cắn trúng bạn!', contactMessage: 'Chó săn quân Lương cắn trúng bạn!',
     defeatMessage: 'Đã hạ chó săn.'
-  }
+  },
+  // ---- Màn 3 (boss.js — enemy `kind` riêng, animation do boss.js đặt) ----
+  shieldGuard: {
+    id: SHIELD_GUARD.id,
+    anims: { idle: 'idle', walk: 'walk', attack: 'attack_01', blocked: 'blocked', hurt: 'hurt', death: 'death' },
+    defeatMessage: 'Đã hạ cận vệ khiên sắt.'
+  },
+  fireCart: {
+    id: FIRE_CART.id, anims: { idle: 'burn', burn: 'burn', douse: 'douse', stalled: 'stalled', death: 'death' },
+    defeatMessage: 'Xe hoả công vỡ tan!'
+  },
+  tieuTu: {
+    id: BOSS_TT.id,
+    anims: { idle: 'idle', attack: 'attack_01', throw: 'throw', hurt: 'hurt', bribe: 'bribe', flee: 'flee' }
+  },
+  // Bao cát layout thử `?layout=skills` (không asset — hộp tạm + thanh máu).
+  dummy: { id: null, anims: {} }
 };
 export const HAZARD_SPRITES = {
   // Bẫy lưới trúc (snare — LND-ENGINE E3): lưới 40×12 (fall rộng 38,5–40,
@@ -309,11 +428,29 @@ export const NPC_SPRITES = {
 export const PICKUPS = { heal: { id: 'ITEM_LND_HEAL', anim: 'idle' } };
 
 // ---- Phần thưởng màn 2 (id khớp seed backend/migrations/007_ly_nam_de.sql) ----
-// Tên theo docs/SUTA_LND_TASK_00.md §3.4 (duyệt 31/10/2026); cơ chế ở LND-L3.
+// Tên theo docs/SUTA_LND_TASK_00.md §3.4 (duyệt 31/10/2026); cơ chế ở skills.js.
 export const REWARD_NAMES = {
   SK_LND_TO_LICH_SHIELD: 'Khiên Tô Lịch',
   BUFF_LND_SUPPLY: 'Lương thảo dồi dào',
   SK_LND_TIDE: 'Triều Cường'
+};
+
+// Kỹ năng màn 3 (LND-L3 §3, skills.js). Khiên Tô Lịch (K): FX_LND_TO_LICH_SHIELD
+// (ô 32×48) trước mặt `offsetX`, chặn `blocks` đòn hoặc hết `duration` giây thì
+// `break`, hồi `cooldown`. Triều Cường (L): FX_LND_TIDE (ô 128×96) ra sau lưng
+// người chơi, quét theo hướng mặt `speed` px/s qua hết khung nhìn, hộp trúng
+// w×h; lính thường −`damage`, cận vệ −1 xuyên khiên + đẩy lùi, xe đang cháy ->
+// douse, Tiêu Tư −`bossDamage`; hồi `cooldown`.
+export const SKILLS = {
+  SK_LND_TO_LICH_SHIELD: {
+    slot: 'skill1', duration: 6, blocks: 3, cooldown: 12, offsetX: 10,
+    fx: 'FX_LND_TO_LICH_SHIELD', icon: 'ICON_SK_LND_TO_LICH_SHIELD'
+  },
+  BUFF_LND_SUPPLY: { slot: null, icon: 'ICON_SK_LND_SUPPLY' },
+  SK_LND_TIDE: {
+    slot: 'skill2', cooldown: 14, speed: 320, w: 100, h: 70, damage: 2, bossDamage: 1,
+    fx: 'FX_LND_TIDE', icon: 'ICON_SK_LND_TIDE'
+  }
 };
 
 // ---- Câu chữ thông báo dùng trong engine (CHAPTER.text) ----

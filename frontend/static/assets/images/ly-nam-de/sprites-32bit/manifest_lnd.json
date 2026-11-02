@@ -31,6 +31,15 @@
           "fps": 8,
           "loop": true,
           "hit_frame": null
+        },
+        {
+          "name": "plant_flag",
+          "file": "npc/NPC_LY_BI/npc_ly_bi_plant_flag.png",
+          "frames": 8,
+          "fps": 10,
+          "loop": false,
+          "hit_frame": null,
+          "frame_w": 64
         }
       ],
       "qa_notes": "Gate A1 candidate; proposed ash faction palette; visual review pending. Fixed scale across actions. See meta/qa_a1.json."
@@ -541,7 +550,7 @@
       "density": 4,
       "pivot": "bottom-center",
       "facing": "right",
-      "status": "NORMALIZED",
+      "status": "IN_GAME",
       "animations": [
         {
           "name": "surge",
@@ -572,7 +581,7 @@
       "density": 4,
       "pivot": "bottom-center",
       "facing": "right",
-      "status": "NORMALIZED",
+      "status": "IN_GAME",
       "animations": [
         {
           "name": "raise",
@@ -619,7 +628,7 @@
       "density": 4,
       "pivot": "bottom-center",
       "facing": "right",
-      "status": "NORMALIZED",
+      "status": "IN_GAME",
       "animations": [
         {
           "name": "idle",
@@ -641,7 +650,7 @@
       "density": 4,
       "pivot": "bottom-center",
       "facing": "right",
-      "status": "NORMALIZED",
+      "status": "IN_GAME",
       "animations": [
         {
           "name": "idle",
@@ -663,7 +672,7 @@
       "density": 4,
       "pivot": "bottom-center",
       "facing": "right",
-      "status": "NORMALIZED",
+      "status": "IN_GAME",
       "animations": [
         {
           "name": "idle",
@@ -699,11 +708,11 @@
       "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json.",
       "design_baseline": true,
       "visible_bbox": {
-      "x": 3.5,
-      "y": 2.25,
-      "w": 9,
-      "h": 12.75
-    }
+        "x": 3.5,
+        "y": 2.25,
+        "w": 9,
+        "h": 12.75
+      }
     },
     {
       "id": "NPC_TINH_THIEU",
@@ -830,6 +839,310 @@
         }
       ],
       "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json."
+    },
+    {
+      "id": "BOSS_TIEU_TU",
+      "category": "boss",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "boss/BOSS_TIEU_TU/boss_tieu_tu_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "command",
+          "file": "boss/BOSS_TIEU_TU/boss_tieu_tu_command.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": 3
+        },
+        {
+          "name": "attack_01",
+          "file": "boss/BOSS_TIEU_TU/boss_tieu_tu_attack_01.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 80
+        },
+        {
+          "name": "throw",
+          "file": "boss/BOSS_TIEU_TU/boss_tieu_tu_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "boss/BOSS_TIEU_TU/boss_tieu_tu_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "bribe",
+          "file": "boss/BOSS_TIEU_TU/boss_tieu_tu_bribe.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "flee",
+          "file": "boss/BOSS_TIEU_TU/boss_tieu_tu_flee.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_03 Gate C1 candidate; fixed scale per actor, main-body contact187; see meta/gate_c1/final_qa.json. Awaiting team visual review."
+    },
+    {
+      "id": "EN_LUONG_SHIELD_GUARD",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_LUONG_SHIELD_GUARD/en_luong_shield_guard_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_LUONG_SHIELD_GUARD/en_luong_shield_guard_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_LUONG_SHIELD_GUARD/en_luong_shield_guard_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "blocked",
+          "file": "enemy/EN_LUONG_SHIELD_GUARD/en_luong_shield_guard_blocked.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_LUONG_SHIELD_GUARD/en_luong_shield_guard_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_LUONG_SHIELD_GUARD/en_luong_shield_guard_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_03 Gate C1 candidate; fixed scale per actor, main-body contact187; see meta/gate_c1/final_qa.json. Awaiting team visual review."
+    },
+    {
+      "id": "PORTRAIT_TIEU_TU",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_TIEU_TU/portrait_tieu_tu_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "design_baseline": true,
+      "qa_notes": "LND_ART_03 Gate C2 candidate; same source scale across actions, binary alpha. Code measurements and per-frame alpha QA in meta/gate_c2/final_qa.json. Await team review."
+    },
+    {
+      "id": "EN_LUONG_FIRE_CART",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 96,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "burn",
+          "file": "enemy/EN_LUONG_FIRE_CART/en_luong_fire_cart_burn.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "douse",
+          "file": "enemy/EN_LUONG_FIRE_CART/en_luong_fire_cart_douse.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "stalled",
+          "file": "enemy/EN_LUONG_FIRE_CART/en_luong_fire_cart_stalled.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_LUONG_FIRE_CART/en_luong_fire_cart_death.png",
+          "frames": 8,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "design_baseline": true,
+      "qa_notes": "LND_ART_03 Gate C2 candidate; same source scale across actions, binary alpha. Code measurements and per-frame alpha QA in meta/gate_c2/final_qa.json. Await team review."
+    },
+    {
+      "id": "PROP_LUONG_CATAPULT",
+      "category": "prop",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "prop/PROP_LUONG_CATAPULT/prop_luong_catapult_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "fire",
+          "file": "prop/PROP_LUONG_CATAPULT/prop_luong_catapult_fire.png",
+          "frames": 8,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": 5
+        }
+      ],
+      "design_baseline": true,
+      "qa_notes": "LND_ART_03 Gate C2 candidate; same source scale across actions, binary alpha. Code measurements and per-frame alpha QA in meta/gate_c2/final_qa.json. Await team review."
+    },
+    {
+      "id": "PJ_BT_GOLD_COIN",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "projectile/PJ_BT_GOLD_COIN/pj_bt_gold_coin_loop.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Copied without redraw or recolor from assets/sprites-32bit/ba-trieu; SHA256 exact source match, see meta/gate_c2/copy_hashes.json.",
+      "source_chapter": "ba-trieu"
+    },
+    {
+      "id": "FX_BT_STUN",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "fx/FX_BT_STUN/fx_bt_stun_loop.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Copied without redraw or recolor from assets/sprites-32bit/ba-trieu; SHA256 exact source match, see meta/gate_c2/copy_hashes.json.",
+      "source_chapter": "ba-trieu"
+    },
+    {
+      "id": "FX_BT_ARMOR_SPARK",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "impact",
+          "file": "fx/FX_BT_ARMOR_SPARK/fx_bt_armor_spark_impact.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Copied without redraw or recolor from assets/sprites-32bit/ba-trieu; SHA256 exact source match, see meta/gate_c2/copy_hashes.json.",
+      "source_chapter": "ba-trieu"
     }
   ]
 }

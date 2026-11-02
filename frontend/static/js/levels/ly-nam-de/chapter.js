@@ -1,6 +1,6 @@
 // Định nghĩa chương Lý Nam Đế (chương 3) cho engine màn chơi. Hợp đồng các
-// trường: engine/chapter.js. Màn 1 (LND-L1) và màn 2 (LND-L2) thật; màn 3 còn
-// khung (LND-SKELETON) — chưa có kỹ năng, boss.
+// trường: engine/chapter.js. Màn 1 (LND-L1), màn 2 (LND-L2: 3 NPC chiêu mộ),
+// màn 3 (LND-L3: boss Tiêu Tư + 3 kỹ năng + cutscene).
 
 import { CHUNK_W } from '../../engine/config.js';
 import { state } from '../../engine/state.js';
@@ -15,7 +15,10 @@ import { NPC_DIALOGUES, CHAPTER_END, STORY_LY_BI_INTRO } from './dialogue-data.j
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
 import { level1Content, level1Events } from './level1.js';
 import { level2Content } from './level2.js';
-import { level3Content, updateLevel3 } from './level3.js';
+import { level3Content } from './level3.js';
+import { updateBattle, updateCutscene, ENEMY_KINDS, updateBossHud, battleDebugEntities, dropHeal } from './boss.js';
+import { LND_SKILLS, skillDebugEntities } from './skills.js';
+import { DRAW_LAYERS } from './render-extras.js';
 
 export const LY_NAM_DE = {
   id: 3,
@@ -45,11 +48,17 @@ export const LY_NAM_DE = {
   chapterEnd: CHAPTER_END,
   text: TEXT,
   audio: { sfx: SFX, music: MUSIC, musicFiles: MUSIC_FILES },
-  stateFields: () => ({ restUsed: false }),
+  skills: LND_SKILLS,
+  enemyKinds: ENEMY_KINDS,
+  // Cờ nghỉ chân màn 1 (level1Events); tiến trình trận boss màn 3 (level3Content).
+  stateFields: () => ({ restUsed: false, battle: null }),
   hooks: {
-    // Bình máu rơi khi hạ địch (engine LND-ENGINE E4b): tạm chỉ bật ở layout thử
-    // `?layout=engine` (luôn rơi); tỉ lệ thật + buff Tinh Thiều làm ở LND-L3.
-    dropHeal: () => state.layoutTest === 'engine'
+    // Bình máu rơi khi hạ địch (engine LND-ENGINE E4b): layout thử `?layout=engine`
+    // luôn rơi; màn 3 theo tỉ lệ + buff Lương thảo dồi dào (boss.js dropHeal).
+    dropHeal: target => state.layoutTest === 'engine' || dropHeal(target),
+    updateHud: updateBossHud,
+    debugEntities: () => [...battleDebugEntities(), ...skillDebugEntities()],
+    draw: DRAW_LAYERS
   },
   // Tên màn + thông báo đầu màn: LND-00 §5.1 (nguyên văn, duyệt 31/10/2026).
   levels: {
@@ -82,8 +91,12 @@ export const LY_NAM_DE = {
       playerStartX: ARENA.playerStartX, gate: null,
       sprites: LEVEL_SPRITES[3],
       content: level3Content,
-      update: updateLevel3,
+      update: updateBattle,
+      cutscene: updateCutscene,
       introMessage: 'Màn 3: Công phá thành Long Biên',
+      // Layout thử kỹ năng: ?layout=skills (bao cát + cận vệ + xe hoả công lặp).
+      testLayout: 'skills',
+      skills: true,
       summary: state => `Bạn đạt ${state.score} điểm.`
     }
   }

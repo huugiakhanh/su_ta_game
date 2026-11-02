@@ -2,7 +2,7 @@
 # TASK CARD: LND-L2 — MÀN 2 "CHIÊU MỘ HIỀN TÀI" (BỐ CỤC THẬT + ASSET LND_ART_02)
 
 TASK_ID: LND-L2 • Version 1.0 • 02/11/2026 • **ĐÃ DUYỆT 02/11/2026** (Q1–Q4 theo đề xuất) • **XONG 02/11/2026** (chơi tay OK; report [REPORT_LND-L2.md](REPORT_LND-L2.md))
-Task card tổng: [SUTA_LND_TASK_00.md](../SUTA_LND_TASK_00.md) (§3.2, §4 — thoại 3 NPC đã duyệt 31/10) • Asset: [CODEX_PROMPT_LND_ART_02.md](../CODEX_PROMPT_LND_ART_02.md) (mục 10–12: Gate B1/B2 PASS, bảng màu 98 màu duyệt 02/11)
+Task card tổng: [SUTA_LND_TASK_00.md](../SUTA_LND_TASK_00.md) (§3.2, §4 — thoại 3 NPC đã duyệt 31/10) • Asset: `CODEX_PROMPT_LND_ART_02.md` — đã xoá khi xong LND-L3 (mục 10–12: Gate B1/B2 PASS, bảng màu 98 màu duyệt 02/11)
 Mẫu: màn 2 Bà Triệu (`js/levels/ba-trieu/level2.js` — 9 chunk cố định, NPC bị vây, bia câu hỏi trước NPC, phần thưởng) • Màn 1 chương này (`level1.js` — sông, thuyền, lưới, tháp canh)
 Rule: `ly-nam-de-gameplay.md`, `engine.md`, `assets-32bit.md`
 

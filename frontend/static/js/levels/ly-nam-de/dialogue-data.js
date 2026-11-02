@@ -77,6 +77,20 @@ export const CHAPTER_END = {
     + 'mong đất nước mãi trường tồn như vạn mùa xuân.'
 };
 
+// Cutscene màn 3 (boss.js updateCutscene). Nguyên văn docs/SUTA_LND_TASK_00.md
+// §5.3 (người dùng duyệt 31/10/2026).
+export const STORY_TIEU_TU_FLEES = {
+  portrait: 'PORTRAIT_TIEU_TU',
+  memorial: false,
+  lines: ['Tiêu Tư hoảng sợ, đem vàng bạc hối lộ xin tha mạng rồi bỏ chạy về Quảng Châu.']
+};
+
+export const STORY_LND_VICTORY = {
+  portrait: 'PORTRAIT_LY_BI',
+  memorial: false,
+  lines: ['Lý Bí cắm cờ trên thành Long Biên. Giao Châu được giải phóng.']
+};
+
 // Màn 1: Lý Bí chờ người chơi ở đầu màn (NPC dẫn — engine LEVEL.guide).
 // Nguyên văn docs/SUTA_LND_TASK_00.md §5.2 (người dùng duyệt 31/10/2026).
 export const STORY_LY_BI_INTRO = {
