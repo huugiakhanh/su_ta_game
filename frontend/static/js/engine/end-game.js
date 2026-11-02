@@ -79,6 +79,7 @@ const RECORD_STATUS = {
 
 // Vàng/KC + thành tựu mới server trả về khi lưu kỷ lục (SUTA-DB-01).
 // Vàng hiện icon (GOLD_ICON_URL) trước số; lỗi tải ảnh thì chữ "+N vàng".
+// Kim cương hiện 💎 trước số.
 function showRecordReward({ gold_gained: gold, gems_gained: gems, new_achievements: achievements = [] }) {
   if (!gold && !gems && !achievements.length) return;
   if (gold || gems) {
@@ -96,7 +97,15 @@ function showRecordReward({ gold_gained: gold, gems_gained: gems, new_achievemen
       icon.src = GOLD_ICON_URL;
       line.append(icon, amount);
     }
-    if (gems) line.append(`${gold ? ' · ' : ''}+${gems} kim cương`);
+    if (gems) {
+      // Chưa có ảnh icon kim cương — dùng 💎 như ô tài nguyên trang chủ.
+      const icon = document.createElement('span');
+      icon.className = 'end-time__gem';
+      icon.setAttribute('role', 'img');
+      icon.setAttribute('aria-label', 'Kim cương');
+      icon.textContent = '💎';
+      line.append(gold ? ' · ' : '', icon, `+${gems}`);
+    }
     ui.endTime.append(line);
   }
   achievements.forEach(({ icon, name }) => {

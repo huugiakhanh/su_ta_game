@@ -531,6 +531,7 @@ kbd {
 /* Thưởng khi lưu kỷ lục (SUTA-DB-01). */
 .panel .end-time__reward { color: var(--gold); font-size: 15px; font-weight: 800; }
 .end-time__gold { width: 18px; height: 18px; margin-right: 4px; vertical-align: -3px; }
+.end-time__gem { margin-right: 4px; font-size: 16px; }
 .panel .end-time__achievement { color: #f4e3c5; font-size: 14px; font-weight: 700; }
 
 /* ---- TT-HERO-01: dòng báo tải asset + bảng chọn nhân vật ---- */
