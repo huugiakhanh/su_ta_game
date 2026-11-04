@@ -79,7 +79,7 @@
           "hit_frame": null
         }
       ],
-      "qa_notes": "TT-HERO-01 Gate H2: 8 animations complete; alpha 0/255; <=32 chapter-palette colors; frame sizes and hit_frame validated; pending /asset-review and game integration | SCALE_FIX_01 luot 2: NORMALIZED from raw; baseline 187, centered foot root, no reach-lock translation. Head QA in meta/scale_fix_01_r2/qa.json. Deferred victory, PLAYER_FEMALE.run and PLAYER_TRUNG_TRAC.hurt retained."
+      "qa_notes": "PLAYER_SWORD v2 Gate B 2026-11-04: complete sword bundle; pending user approval. Canonical master/rotation, near N arm above torso and opposite F shoulder; death last frames release sword. Alpha 0/255; margins >=4; one 8-connected component/frame; zero colors outside chapter palette. Players 36 colors each, icon 32; baseline 187; jump exactly 3; attack 9@21 hit4, frame9 equals idle1. Male idle/attack byte-identical approved A R2. Per-frame angle/blade/shoulders/margins: meta/sword_v2/B/qa.json and verification.json. No frontend integration. | Approved by user 2026-11-04; integrated into frontend shared (IN_GAME)."
     },
     {
       "id": "PLAYER_FEMALE",
@@ -158,7 +158,7 @@
           "hit_frame": null
         }
       ],
-      "qa_notes": "TT-HERO-01 Gate H2: 8 animations complete; alpha 0/255; <=32 chapter-palette colors; frame sizes and hit_frame validated; pending /asset-review and game integration | SCALE_FIX_01 luot 2: NORMALIZED from raw; baseline 187, centered foot root, no reach-lock translation. Head QA in meta/scale_fix_01_r2/qa.json. Deferred victory, PLAYER_FEMALE.run and PLAYER_TRUNG_TRAC.hurt retained."
+      "qa_notes": "PLAYER_SWORD v2 Gate B 2026-11-04: complete sword bundle; pending user approval. Canonical master/rotation, near N arm above torso and opposite F shoulder; death last frames release sword. Alpha 0/255; margins >=4; one 8-connected component/frame; zero colors outside chapter palette. Players 36 colors each, icon 32; baseline 187; jump exactly 3; attack 9@21 hit4, frame9 equals idle1. Male idle/attack byte-identical approved A R2. Per-frame angle/blade/shoulders/margins: meta/sword_v2/B/qa.json and verification.json. No frontend integration. | Approved by user 2026-11-04; integrated into frontend shared (IN_GAME)."
     },
     {
       "id": "ICON_SK_DASH",
@@ -202,7 +202,7 @@
           "hit_frame": null
         }
       ],
-      "qa_notes": "TT-HIBIT-02 approved by user on 2026-10-02; pending integration"
+      "qa_notes": "PLAYER_SWORD v2 Gate B 2026-11-04: complete sword bundle; pending user approval. Canonical master/rotation, near N arm above torso and opposite F shoulder; death last frames release sword. Alpha 0/255; margins >=4; one 8-connected component/frame; zero colors outside chapter palette. Players 36 colors each, icon 32; baseline 187; jump exactly 3; attack 9@21 hit4, frame9 equals idle1. Male idle/attack byte-identical approved A R2. Per-frame angle/blade/shoulders/margins: meta/sword_v2/B/qa.json and verification.json. No frontend integration. | Approved by user 2026-11-04; integrated into frontend shared (IN_GAME)."
     },
     {
       "id": "ICON_HUD_HEART",

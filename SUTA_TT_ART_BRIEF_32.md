@@ -116,6 +116,9 @@ fantasy). **Asset 32-bit đang `IN_GAME` là chuẩn phong cách**: vẽ mới/v
 
 ### 3.3 Nhận diện nhân vật (ảnh 32-bit hiện có là chuẩn khi khác mô tả)
 
+- `PLAYER_MALE` / `PLAYER_FEMALE` — nghĩa sĩ dùng chung mọi chương: áo ngắn vải mộc, quần lửng/xà cạp, đai trán; **kiếm thẳng sắt**
+  hai lưỡi, lưỡi 18 px logic, chắn tay thanh ngang ngắn, chuôi quấn vải; **tay gần người xem** cầm kiếm, vẽ đè lên thân, hai tay
+  mọc từ hai vai riêng không chồng nhau. Nữ khác màu nam: áo chàm, đai lưng nâu, đai trán đỏ, tóc xõa dài (`docs/REPORT_PLAYER-SWORD-01.md`).
 - `PLAYER_TRUNG_TRAC` — nữ tướng trẻ, tóc búi cao + mũ lông chim trắng, áo ngắn kem, váy nâu đất có dải hoạ tiết đồng, **thắt lưng đỏ**
   dài, vòng đồng; **giáo đồng mũi lá** (team chốt 02/10).
 - `NPC_TRUNG_NHI` — trẻ hơn chị, khăn chàm 2 lông chim ngắn, tóc xõa vai, áo chàm váy kem. (Dạng "bóng" kỹ năng do code tô, không vẽ riêng.)
