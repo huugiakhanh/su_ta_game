@@ -102,9 +102,10 @@ export const PLAYER_ANIMATIONS = {
   death: { anim: 'death' },
   // Cutscene kết chương: phát 1 lần, giữ ô cuối.
   victory: { anim: 'victory' },
-  // Đòn bổ từ trên (TQP-ENGINE E5): strip `plunge` (Codex TQP_ART_01); manifest
-  // chưa có thì render dùng `fallback` — ô cuối của attack_01 (TQP-ENGINE Q2).
-  plunge: { anim: 'plunge', holdFrame: -1, fallback: { anim: 'attack_01', holdFrame: -1 } }
+  // Đòn bổ từ trên (TQP-ENGINE E5): strip `plunge` (Codex TQP_ART_01) phát 1 lần
+  // rồi giữ ô cuối (mũi kiếm chĩa xuống) tới khi chạm; manifest chưa có thì render
+  // dùng `fallback` — ô cuối của attack_01 (TQP-ENGINE Q2).
+  plunge: { anim: 'plunge', fallback: { anim: 'attack_01', holdFrame: -1 } }
 };
 // Ngưỡng vận tốc dọc (px logic/s) chọn ô `jump`: vy < -N ô 1 (bật lên),
 // |vy| <= N ô 2 (gần đỉnh), vy > N ô 3 (rơi). DESIGN_BASELINE.

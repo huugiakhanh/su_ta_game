@@ -166,7 +166,7 @@ export const HAZARD_SPRITES = {
   warBoat: {
     id: 'EN_LUONG_WAR_BOAT', w: 72, h: 28, muzzle: 27.5, muzzleX: 33,
     anims: { idle: 'idle', throw: 'throw' },
-    signalMessage: 'Thuyền tuần bắn pháo hiệu gọi quân!', breakMessage: 'Đã phá thuyền tuần!'
+    signalMessage: 'Thuyền tuần thổi tù và gọi quân!', breakMessage: 'Đã phá thuyền tuần!'
   },
   // Cung thủ chương 3 đứng đất (thrower `aim`).
   archer: {

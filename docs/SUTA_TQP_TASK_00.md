@@ -212,7 +212,7 @@ Câu chữ chốt ở TQP-L1 (không phải nội dung lịch sử — chỉ hư
 
 | Đợt | Nội dung |
 |---|---|
-| `TQP_ART_01` | NPC + chân dung TQP; bù nhìn rơm (đứng / vỡ), cọc tre; lính giáo dài + đội trưởng giáo dài; cung thủ trên cây (prop cây); bẫy chông ẩn; khói chướng khí trôi; rắn + bụi cỏ; cá sấu (bọt / ngoi / lặn); thuyền tuần tiễu + pháo tín hiệu; tile + cảnh sình lầy; nền bãi tập Chu Diên, bãi lau ven sông, đầm lầy; cổng đích |
+| `TQP_ART_01` | **Prompt giao Codex: [CODEX_PROMPT_TQP_ART_01.md](CODEX_PROMPT_TQP_ART_01.md)** (04/11; Gate A1 = `plunge` người chơi nam/nữ, `NPC_TQP`, lính giáo dài, nền đầm + mặt sình). Người dùng chốt 04/11: thuyền gọi quân bằng **tù và + cờ hiệu** (không pháo hiệu — thế kỷ 6 chưa có thuốc súng); `NPC_TQP` giữ nhận diện người con trong `NPC_TRIEU_TUC`, đổi mái chèo thành giáo. Nội dung gốc: NPC + chân dung TQP; bù nhìn rơm (đứng / vỡ), cọc tre; lính giáo dài + đội trưởng giáo dài; cung thủ trên cây (prop cây); bẫy chông ẩn; khói chướng khí trôi; rắn + bụi cỏ; cá sấu (bọt / ngoi / lặn); thuyền tuần tiễu + pháo tín hiệu; tile + cảnh sình lầy; nền bãi tập Chu Diên, bãi lau ven sông, đầm lầy; cổng đích |
 | `TQP_ART_02` | NPC + chân dung Triệu Túc (vẽ riêng), Lý Nam Đế (bệnh, ngồi), Chử Đồng Tử; bụi lau che + FX ẩn nấp; nền động Khuất Lão, Dạ Trạch đêm; FX + icon 3 kỹ năng |
 | `TQP_ART_03` | Dương Sàn (lao, chém đại đao, lún, hở gáy, cuồng nộ, ngã) + chân dung; lính đánh thuê, cung thủ; mỏm đất vỡ; thuyền độc mộc; nền Dạ Trạch nửa đêm + chớp đuốc |
 
