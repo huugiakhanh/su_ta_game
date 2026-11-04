@@ -7,7 +7,7 @@ paths:
 
 # Màn chơi chương Triệu Việt Vương (chương 4)
 
-Kế hoạch + quyết định đã chốt: [docs/SUTA_TQP_TASK_00.md](../../docs/SUTA_TQP_TASK_00.md). Lộ trình: TQP-SKELETON (xong 04/11, [REPORT_TQP-SKELETON.md](../../docs/REPORT_TQP-SKELETON.md)) → TQP-ENGINE → `TQP_ART_01` → TQP-L1 → `TQP_ART_02` → TQP-L2 → `TQP_ART_03` → TQP-L3. Cấu trúc theo mẫu chương Lý Nam Đế (rule `ly-nam-de-gameplay.md`); cơ chế chung ở engine (rule `engine.md`).
+Kế hoạch + quyết định đã chốt: [docs/SUTA_TQP_TASK_00.md](../../docs/SUTA_TQP_TASK_00.md). Lộ trình: TQP-SKELETON (xong 04/11, [REPORT_TQP-SKELETON.md](../../docs/REPORT_TQP-SKELETON.md)) → TQP-ENGINE (xong 04/11, [REPORT_TQP-ENGINE.md](../../docs/REPORT_TQP-ENGINE.md)) → `TQP_ART_01` → TQP-L1 → `TQP_ART_02` → TQP-L2 → `TQP_ART_03` → TQP-L3. Cấu trúc theo mẫu chương Lý Nam Đế (rule `ly-nam-de-gameplay.md`); cơ chế chung ở engine (rule `engine.md`).
 
 ## Trạng thái
 
@@ -17,6 +17,8 @@ Kế hoạch + quyết định đã chốt: [docs/SUTA_TQP_TASK_00.md](../../doc
   - Màn 1 "Tuổi trẻ rèn luyện": 6 chunk, chunk 3 là sông 2 khe (`RIVER`, mỏm đá giữa khe 2), 3 lính, 1 bẫy lưới, 5 sách cố định, 4 bia câu hỏi, đích cuối màn (không cổng).
   - Màn 2 "Hiền tài Dạ Trạch": 4 chunk, 2 lính, 1 bẫy lưới, 3 bia câu hỏi theo pool `trieuTuc` → `lyNamDe` → `chuDongTu` (chưa có NPC, chưa rải 10 sách).
   - Màn 3 "Đại phá Dương Sàn": đấu trường 1 chunk, 3 đợt lính (`WAVES`), hết quân → panel kết chương. Chưa có boss, kỹ năng.
+- Chương bật `plunge: {}` (đòn bổ — số mặc định engine `PLUNGE`) và `stealth: { ambush: 2 }` (đánh úp). `TEXT` có `mudSunk`, `plungeHint`, `npcLocked` (câu kỹ thuật).
+- Layout thử `?layout=engine` (màn 1, `ENGINE_TEST`, TQP-ENGINE) — asset mượn + hộp tạm (`id: null`): sình chunk 1 (local 160–320) + 1 lính; khói trôi thấp/cao chunk 2; cá sấu `lurker` khe 1 chunk 3; thuyền `hp` 3 + `callHelp` chunk 4; 2 lính giáo dài (`spearman`, `plungeOnly`) + bục chunk 5; vùng ẩn nấp + 2 lính + cung thủ, NPC hộp `testNpc` `requires: 2` + 2 sách treo cao chunk 6; máu tối đa 7 (`bonusHealth`).
 - **Không import file nào của chương khác** — bảng nào cần thì khai báo lại trong `config.js` chương này.
 
 ## Nội dung lịch sử

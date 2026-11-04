@@ -44,6 +44,10 @@ export const TRIEU_QUANG_PHUC = {
   chapterEnd: CHAPTER_END,
   text: TEXT,
   audio: { sfx: SFX, music: MUSIC, musicFiles: MUSIC_FILES },
+  // Đòn bổ từ trên (TQP-ENGINE E5 — số mặc định engine PLUNGE) + đánh úp khi ẩn
+  // nấp ×2 (E7). DESIGN_BASELINE.
+  plunge: {},
+  stealth: { ambush: 2 },
   // Tên màn: TQP-00 §5.1 (duyệt 04/11/2026); câu mô tả màn 1 còn chờ duyệt.
   levels: {
     1: {
@@ -52,6 +56,8 @@ export const TRIEU_QUANG_PHUC = {
       sprites: LEVEL_SPRITES[1],
       content: level1Content,
       introMessage: 'Màn 1: Tuổi trẻ rèn luyện',
+      // Layout thử cơ chế TQP-ENGINE: ?layout=engine.
+      testLayout: 'engine',
       summary: state => `Bạn thu thập ${state.itemsCollected}/5 Quyển Sách Tinh Hoa và đạt ${state.score} điểm.`
     },
     2: {

@@ -13,12 +13,13 @@
 //   mapRoot / mapManifest         manifest môi trường (nền, tile, prop)
 //   borrowedMaps? [{ root, manifest, ids }] — asset map mượn của chương khác (chỉ các
 //                 ID liệt kê; trùng ID thì manifest chương thắng)
-//   tiles         { ground, groundRegion, terrain?, water?, waterLift?, waterDeep? } — ID
+//   tiles         { ground, groundRegion, terrain?, water?, waterLift?, waterDeep?, mud?, mudLift? } — ID
 //                 tileset mặt đất, vùng tile dùng chung, bộ tile ghép địa hình; water =
 //                 prop mặt nước lát trong khe sông (cột '~' của lưới địa hình — LND-ENGINE
 //                 E1; có trong mapProps); waterLift = nâng ảnh nước lên bao nhiêu px (ảnh
 //                 có hàng trống ở trên); waterDeep = màu phủ khe phía dưới/sau ảnh nước
-//                 (mặc định vách bờ tối)
+//                 (mặc định vách bờ tối); mud = prop mặt sình lát trên dải sình (cột '='
+//                 — TQP-ENGINE E1), mudLift = nâng ảnh bao nhiêu px trên GROUND_Y
 //   farHills?     { id, parallax, bottomY, hiddenUnderSky: [id trời] }
 //   mapProps      ID prop môi trường cần nạp (vật cản, vật phẩm, cổng, cờ, bia)
 //   domSprites    ID ảnh DOM riêng chương (chân dung)
@@ -33,7 +34,18 @@
 //                 `stun` (giây choáng khi trúng), springMessage/hitMessage.
 //                 projectiles[…].speed? = tốc độ riêng (px/s). Hazard option `aim: true`
 //                 = đạn nhắm vào người chơi lúc nhả (E2, ảnh xoay theo góc bay)
+//                 TQP-ENGINE: kind `drift` (khói trôi — `lanes: { low, high }` px, option
+//                 lane/speed/travel/gap/triggerRange); kind `lurker` (cá sấu — `warnTime`,
+//                 `upTime`, `diveTime`, `leap` px, anims hidden?/warn/attack/dive/death;
+//                 option triggerRange/rest/hp, đặt trong khe sông như thuyền); hazard option
+//                 `callHelp: { after, range, spawnAt: [worldX], enemy?: { art, w, h, hp } }` +
+//                 sprite `signalMessage`/anims.signal/`signalTime` (thuyền gọi viện).
+//                 Cờ `plungeOnly` trên enemies[…]/hazards[…] = chỉ trúng đòn bổ (lính giáo dài)
 //   pickups?      { heal?: { id, anim } } — sprite bình máu rơi (E4b); thiếu = icon tim chung
+//   mud?          ghi đè số sình MUD { speed, jump, sink, limit } (TQP-ENGINE E1)
+//   plunge?       bật đòn bổ từ trên (TQP-ENGINE E5): đang rơi bấm Đánh = bổ; ghi đè số
+//                 PLUNGE { damage, bounce, speed, boxH, grace } ({} = mặc định)
+//   stealth?      { ambush } — đánh úp lính chưa phát hiện từ sau lưng × ambush (E7)
 //   item?         { sprite, fps } — vật phẩm thu thập (ô HUD + vẽ)
 //   quizStele?    ID prop bia câu hỏi chặn đường
 //   questions     bộ câu hỏi (stt -> câu); dialogues: thoại NPC (id -> thoại)
@@ -48,7 +60,8 @@
 //                 onPlayerHurt?(), onAttackStart?(),
 //                 blockHurt?(reason) -> true = chặn đòn/choáng này (BT-L3 E1 — damage.js),
 //                 attackDamage?(target) -> số | { damage, crit } — sát thương đòn chém
-//                 của người chơi (chí mạng); không có = 1 }
+//                 của người chơi (chí mạng); không có = 1,
+//                 bonusHealth?(owned) -> số máu tối đa cộng thêm ở màn bật kỹ năng (TQP-ENGINE E8) }
 //   enemyKinds?   { kind: { update(enemy, dt), blockStrike?(enemy) -> true = đòn bị chặn,
 //                 onStruck?(enemy, damage), onContact?(enemy, player), shake?(enemy),
 //                 debugLabel?(enemy, label) } } — enemy có `kind` riêng của chương
@@ -56,6 +69,7 @@
 //                 onCrit?(target) — đòn chém chí mạng (chương vẽ hiệu ứng; tiếng `crit`
 //                 phát nếu audio.sfx có),
 //                 dropHeal?(target) -> true = enemy/hazard vừa bị hạ rơi 1 bình máu (LND-ENGINE E4b),
+//                 onPlunge?(target) — đòn bổ trúng; onAmbush?(target) — đòn đánh úp trúng (TQP-ENGINE),
 //                 debugEntities?() -> [hộp], draw?: { beforeEnemies?(time),
 //                 beforePlayer?(time), afterPlayer?(time) } }
 //   levels        { [id]: LEVEL } — mỗi màn:
@@ -67,7 +81,10 @@
 //     farHills?    đồi xa riêng màn (cùng dạng CHAPTER.farHills, thay cho bản của chương)
 //     sprites      ID sprite canvas màn này cần nạp (ngoài sprite người chơi)
 //     content(options) -> { obstacles, hazards, holes, items, enemies, npcs, quizzes, platforms?, ...thêm }
-//                  (platforms: bục một chiều — entities.js makePlatform; bục lưng hazard `ride` tự thêm)
+//                  (platforms: bục một chiều — entities.js makePlatform; bục lưng hazard `ride` tự thêm;
+//                  covers?: [{ x, w }] vùng ẩn nấp — TQP-ENGINE E7; bonusHealth?: máu tối đa cộng thêm
+//                  (layout thử); npcs: makeNpc(id, chunk, localX, { requires }) — E6; dải sình tự lấy
+//                  từ địa hình)
 //                  (đặt địa hình bằng setTerrain/buildTerrain trước khi dựng nội dung)
 //     events?(player, dt)  sự kiện riêng mỗi frame (sau câu hỏi + gặp NPC)
 //     update?(dt)  chạy mỗi frame sau quân/đạn (trận boss)

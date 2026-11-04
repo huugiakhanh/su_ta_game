@@ -10,7 +10,7 @@ import { aabb } from './geometry.js';
 import { setAnim, tickAnim, getAnimMeta, hitTime, animLength } from './animation.js';
 import { CHAPTER, LEVEL } from './chapter.js';
 import { playSfx } from './audio.js';
-import { hurtPlayer, playerImmune } from './damage.js';
+import { hurtPlayer, playerImmune, playerHidden } from './damage.js';
 
 // Mũi kích/giáo của lính: dải rộng `reach` ngay trước mặt, cao boxH từ
 // boxY tính từ đỉnh hitbox.
@@ -64,7 +64,10 @@ function updateGuard(enemy, dt, art) {
   const toPlayer = p.x + p.w / 2 - center;
   let direction;
   // aggroRange riêng của từng lính (vd. lính đấu trường = cả đấu trường), mặc định rules.
-  if (Math.abs(toPlayer) <= (enemy.aggroRange ?? rules.aggroRange)) {
+  // Người chơi đang ẩn trong lau sậy (TQP-ENGINE E7) thì không phát hiện —
+  // `alerted` dùng cho đánh úp (player.js ambushMultiplier).
+  enemy.alerted = Math.abs(toPlayer) <= (enemy.aggroRange ?? rules.aggroRange) && !playerHidden(p);
+  if (enemy.alerted) {
     enemy.facing = Math.sign(toPlayer) || -1;
     const gap = Math.abs(toPlayer) - (p.w + enemy.w) / 2;
     if (gap <= rules.attackReach - 4) {
@@ -162,9 +165,12 @@ export function updateEnemies(dt) {
 // Quân chạm thân người chơi (không đang miễn thương): enemy `kind` riêng thì
 // chương quyết định (onContact); boss -> CHAPTER.text.bossContact; còn lại
 // `contactMessage` của sprite.
+// Người chơi đang ẩn nấp (TQP-ENGINE E7) thì lính tuần đi ngang không va trúng.
 export function touchEnemies(p) {
+  const hidden = playerHidden(p);
   state.enemies.forEach(enemy => {
     if (!enemy.alive || enemy.harmless || enemy.passive || playerImmune(p)) return;
+    if (hidden && !enemy.boss && !enemy.kind) return;
     if (!aabb(p, enemy)) return;
     const kind = CHAPTER.enemyKinds?.[enemy.kind];
     if (kind?.onContact) kind.onContact(enemy, p);

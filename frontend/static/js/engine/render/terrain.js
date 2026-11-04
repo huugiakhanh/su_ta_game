@@ -319,6 +319,40 @@ export function drawWaterBanks() {
   });
 }
 
+// Dải sình (TQP-ENGINE E1): ảnh `CHAPTER.tiles.mud` (prop map, có trong
+// mapProps) lát ngang theo toạ độ thế giới, đỉnh ảnh nâng `mudLift` px trên
+// GROUND_Y; chưa có asset (TODO_MISSING) thì dải bùn nâu dự phòng.
+const MUD_FALLBACK = { lift: 3, height: 10, body: 'rgba(78, 52, 30, .92)', crest: 'rgba(120, 92, 54, .95)' };
+
+export function drawMud() {
+  if (!state.mud?.length) return;
+  const camera = Math.round(state.cameraX);
+  const prop = images.maps.props?.[CHAPTER.tiles?.mud];
+  state.mud.forEach(span => {
+    const left = Math.round(span.x) - camera;
+    const width = Math.round(span.w);
+    if (left + width < -24 || left > VIEW_W + 24) return;
+    if (!prop?.image) {
+      ctx.fillStyle = MUD_FALLBACK.body;
+      ctx.fillRect(left, GROUND_Y - MUD_FALLBACK.lift, width, MUD_FALLBACK.height);
+      ctx.fillStyle = MUD_FALLBACK.crest;
+      ctx.fillRect(left, GROUND_Y - MUD_FALLBACK.lift, width, 2);
+      return;
+    }
+    const w = mapWidth(prop.image);
+    const h = mapHeight(prop.image);
+    const top = GROUND_Y - (CHAPTER.tiles.mudLift || 0);
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(left, top, width, h);
+    ctx.clip();
+    for (let x = Math.floor(span.x / w) * w; x < span.x + span.w; x += w) {
+      drawMapImage(ctx, prop.image, 0, 0, w, h, x - camera, top);
+    }
+    ctx.restore();
+  });
+}
+
 export function drawHoles() {
   const tileset = images.maps.tileset;
   const camera = Math.round(state.cameraX);

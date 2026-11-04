@@ -12,8 +12,18 @@ import { endGame } from './end-game.js';
 // Miễn sát thương từ lính, hazard và đạn: đang nhấp nháy sau khi trúng đòn,
 // hoặc đang dash (dash bất tử tạm thời — quyết định team 25/09). Vật cản tĩnh
 // (`obstacles`) KHÔNG dùng hàm này: dash vẫn chỉ xuyên được loại requiresDash.
+// Ngay sau đòn bổ trúng (TQP-ENGINE E5) cũng miễn va chạm `plungeGrace` giây.
 export function playerImmune(p) {
-  return p.invulnerable > 0 || p.dashing;
+  return p.invulnerable > 0 || p.dashing || p.plungeGrace > 0;
+}
+
+// Người chơi đang ẩn trong vùng ẩn nấp (TQP-ENGINE E7 — lau sậy): tâm thân
+// trong 1 vùng `state.covers`, đứng đất, không đánh/lướt/bổ và hết thời gian lộ.
+export function playerHidden(p = state.player) {
+  if (!state.covers?.length || !p.grounded || p.dashing || p.plunging) return false;
+  if (p.attackCooldown > 0 || p.revealTimer > 0) return false;
+  const center = p.x + p.w / 2;
+  return state.covers.some(cover => center >= cover.x && center <= cover.x + cover.w);
 }
 
 // `amount`: số máu mất (BT-ENGINE E3 — đòn nặng như búa lính đốn gỗ); thống kê

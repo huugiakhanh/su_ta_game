@@ -77,12 +77,24 @@ export function attackDamage(target) {
 // Đòn chém của người chơi trúng `target`: tính sát thương (có thể chí mạng),
 // trừ máu; chí mạng thì phát tiếng `crit` (nếu chương khai báo) và gọi
 // `CHAPTER.hooks.onCrit(target)` để chương tự vẽ hiệu ứng/chữ.
-export function playerStrike(target, strikeFn) {
+// `multiplier` > 1 = đánh úp (TQP-ENGINE E7): nhân sát thương, gọi
+// `CHAPTER.hooks.onAmbush(target)` để chương vẽ hiệu ứng.
+export function playerStrike(target, strikeFn, multiplier = 1) {
   const { damage, crit } = attackDamage(target);
-  strikeFn(target, damage);
+  strikeFn(target, damage * multiplier);
+  if (multiplier > 1) CHAPTER.hooks?.onAmbush?.(target);
   if (!crit) return;
   if (CHAPTER.audio?.sfx?.crit) playSfx('crit');
   CHAPTER.hooks?.onCrit?.(target);
+}
+
+// Mục tiêu chỉ trúng đòn bổ từ trên (TQP-ENGINE E5 — lính giáo dài): cờ
+// `plungeOnly` trên sprite enemy (CHAPTER.sprites.enemies[art]) hoặc hazard.
+export function plungeOnly(target) {
+  const spec = state.enemies.includes(target)
+    ? CHAPTER.sprites.enemies[enemyArtKey(target)]
+    : CHAPTER.sprites.hazards[target.sprite];
+  return Boolean(spec?.plungeOnly);
 }
 
 // Hazard hết máu: tắt va chạm/đạn/di chuyển NGAY, phát death (break) một lần.

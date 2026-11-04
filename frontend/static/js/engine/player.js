@@ -3,16 +3,18 @@
 
 import { state } from './state.js';
 import { keys, pressed } from './input.js';
-import { aabb, groundYAt, terrainLevelAt } from './geometry.js';
+import { aabb, groundYAt, terrainLevelAt, inMud } from './geometry.js';
 import { setAnim, tickAnim, getAnimMeta, hitTime } from './animation.js';
 import {
   FOOT_MARGIN, TERRAIN_CELL, GROUND_Y, MOVE_SPEED, GRAVITY, JUMP_FORCE, DASH_SPEED, DASH_TIME, DASH_COOLDOWN,
-  GROUND_SNAP_DISTANCE, ATTACK_COOLDOWN, ATTACK_ACTIVE_TIME, PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, RESPAWN_EDGE_MARGIN
+  GROUND_SNAP_DISTANCE, ATTACK_COOLDOWN, ATTACK_ACTIVE_TIME, PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, RESPAWN_EDGE_MARGIN,
+  MUD, STEALTH, PLUNGE
 } from './config.js';
 import { CHAPTER, LEVEL } from './chapter.js';
 import { playSfx } from './audio.js';
 import { hurtPlayer } from './damage.js';
-import { spearBox, strikeEnemy, strikeHazard, playerStrike } from './combat.js';
+import { spearBox, strikeEnemy, strikeHazard, playerStrike, plungeOnly } from './combat.js';
+import { showMessage } from './ui.js';
 import { platformActive } from './entities.js';
 
 export function pointHasGround(worldXPosition) {
@@ -86,16 +88,92 @@ function rememberSafeSpot(p) {
   if (safe) p.safeSpot = { x: p.x, feetY: p.y + p.h };
 }
 
+// Lún sình (TQP-ENGINE E1): ở trong sình cộng dồn `p.mudTime` (ra khỏi sình
+// thì về 0), hình chìm dần `p.mudSink` px; đủ `limit` giây -> −1 máu, bật ra.
+function updateMudSink(p, dt, mud) {
+  if (!p.grounded || !inMud(p.x + p.w / 2)) {
+    p.mudTime = 0;
+    p.mudSink = 0;
+    return;
+  }
+  p.mudTime = (p.mudTime || 0) + dt;
+  p.mudSink = Math.min(mud.sink, mud.sink * p.mudTime / mud.limit);
+  if (p.mudTime < mud.limit) return;
+  p.mudTime = 0;
+  p.mudSink = 0;
+  hurtPlayer(CHAPTER.text.mudSunk || CHAPTER.text.hazardHit);
+  // Đẩy ra mép dải sình gần nhất (phím đi đè vận tốc đẩy lùi của hurtPlayer
+  // nên đặt thẳng vị trí), bật nhẹ lên.
+  const center = p.x + p.w / 2;
+  const span = state.mud.find(item => center >= item.x && center <= item.x + item.w);
+  if (span) {
+    const toLeft = center - span.x <= span.x + span.w - center;
+    p.x = toLeft ? span.x - p.w - 2 : span.x + span.w + 2;
+  }
+  p.vy = -JUMP_FORCE * .45;
+}
+
 export function startAttack() {
   const p = state.player;
   if (p.attackCooldown > 0) return;
   playSfx('swing');
+  // Đánh úp (TQP-ENGINE E7) xét lúc BẮT ĐẦU vung: lính chưa phát hiện + đang
+  // quay lưng về người chơi. Đánh trong vùng ẩn nấp thì lộ.
+  p.ambushTargets = ambushTargets(p);
+  p.revealTimer = STEALTH.reveal;
   // Bấm đánh chỉ bắt đầu cú vung; sát thương tính ở updateAttack() khi
   // animation tới ô hit_frame (không còn gây sát thương ngay lúc bấm).
   p.attackCooldown = ATTACK_COOLDOWN;
   p.attackHits = new Set();
   // Kỹ năng của chương chém cùng lúc với người chơi (Trưng Trắc: bóng Trưng Nhị).
   if (state.skills) CHAPTER.skills.onAttackStart?.();
+}
+
+// Thông số đòn bổ của chương (TQP-ENGINE E5) hoặc null nếu chương không bật.
+function plungeSpec() {
+  return CHAPTER.plunge ? { ...PLUNGE, ...CHAPTER.plunge } : null;
+}
+
+// Đòn bổ từ trên (Q1): đang rơi (vy > 0) mà bấm Đánh thì bổ thẳng xuống thay
+// cho chém ngang. Đang bật lên, đang lướt, đang choáng thì không bổ.
+function canPlunge(p) {
+  return Boolean(plungeSpec()) && !p.grounded && p.vy > 0 && !p.dashing && !p.plunging && p.stun <= 0;
+}
+
+function startPlunge() {
+  const p = state.player;
+  playSfx('swing');
+  p.plunging = true;
+  p.plungeHits = new Set();
+  p.revealTimer = STEALTH.reveal;
+}
+
+// Hộp đánh của đòn bổ: dải dưới chân, rộng bằng thân.
+export function plungeBox(p) {
+  return { x: p.x, y: p.y + p.h - 4, w: p.w, h: plungeSpec()?.boxH ?? PLUNGE.boxH };
+}
+
+// Đòn bổ trúng mục tiêu có đỉnh ở dưới chân (đang rơi từ trên xuống): trừ máu
+// `damage` (không chí mạng), người chơi nảy lên `bounce`, miễn va chạm thân
+// `grace` giây. Mỗi mục tiêu trúng 1 lần mỗi cú bổ.
+function updatePlunge() {
+  const p = state.player;
+  const spec = plungeSpec();
+  if (!p.plunging || !spec) return;
+  const box = plungeBox(p);
+  const feet = p.y + p.h;
+  const hittable = target => !p.plungeHits.has(target) && target.hitTimer <= 0 && aabb(box, target)
+    && feet <= target.y + 16;
+  const target = state.enemies.find(enemy => enemy.alive && hittable(enemy))
+    || state.hazards.find(hazard => hazard.alive && hazard.hp > 0 && hazard.exposed !== false && hittable(hazard));
+  if (!target) return;
+  p.plungeHits.add(target);
+  if (state.enemies.includes(target)) strikeEnemy(target, spec.damage);
+  else strikeHazard(target, spec.damage);
+  CHAPTER.hooks?.onPlunge?.(target);
+  p.plunging = false;
+  p.vy = -spec.bounce;
+  p.plungeGrace = spec.grace;
 }
 
 // Giây kể từ lúc bấm đánh tới ô hit_frame của attack_01 (trải trên
@@ -110,6 +188,7 @@ function attackHitTime() {
 // trúng MỘT lần mỗi cú vung (p.attackHits).
 export function updateAttack() {
   const p = state.player;
+  updatePlunge();
   if (p.attackCooldown <= 0) {
     p.attacking = false;
     return;
@@ -124,14 +203,17 @@ export function updateAttack() {
   state.enemies.forEach(enemy => {
     if (!enemy.alive || !canHit(enemy)) return;
     p.attackHits.add(enemy);
-    playerStrike(enemy, strikeEnemy);
+    if (blockedByGuard(enemy)) return;
+    playerStrike(enemy, strikeEnemy, ambushMultiplier(enemy));
   });
 
   // Hazard có `hp` cũng chém được; loại hp = 0 (bẫy, tháp canh...) thì phải né
-  // chứ không phá được.
+  // chứ không phá được. Hazard đang ẩn (`exposed === false` — cá sấu dưới nước,
+  // TQP-ENGINE E3) cũng không chém được.
   state.hazards.forEach(hazard => {
-    if (!hazard.alive || hazard.hp <= 0 || !canHit(hazard)) return;
+    if (!hazard.alive || hazard.hp <= 0 || hazard.exposed === false || !canHit(hazard)) return;
     p.attackHits.add(hazard);
+    if (blockedByGuard(hazard)) return;
     playerStrike(hazard, strikeHazard);
   });
 
@@ -147,12 +229,44 @@ export function updateAttack() {
   });
 }
 
+// Mục tiêu `plungeOnly` (lính giáo dài — TQP-ENGINE E5) gạt đòn chém ngang:
+// không mất máu, nhắc `CHAPTER.text.plungeHint` (tối đa 1 lần mỗi 3 s).
+function blockedByGuard(target) {
+  if (!plungeOnly(target)) return false;
+  const p = state.player;
+  playSfx('hit');
+  if ((p.plungeHintTimer || 0) <= 0 && CHAPTER.text.plungeHint) {
+    p.plungeHintTimer = 3;
+    showMessage(CHAPTER.text.plungeHint);
+  }
+  return true;
+}
+
+// Đánh úp (TQP-ENGINE E7): chương bật CHAPTER.stealth.ambush — lúc bắt đầu vung,
+// lính CHƯA phát hiện người chơi (`alerted` false) và đang quay lưng về phía
+// người chơi thì đòn đó nhân sát thương (lính kịp quay lại trước ô hit_frame
+// vẫn tính).
+function ambushTargets(p) {
+  if (!CHAPTER.stealth?.ambush) return null;
+  const center = p.x + p.w / 2;
+  return new Set(state.enemies.filter(enemy => {
+    if (!enemy.alive || enemy.boss || enemy.alerted || enemy.facing === undefined) return false;
+    const side = Math.sign(center - (enemy.x + enemy.w / 2));
+    return side !== 0 && side === -enemy.facing;
+  }));
+}
+
+function ambushMultiplier(enemy) {
+  return state.player.ambushTargets?.has(enemy) ? CHAPTER.stealth.ambush : 1;
+}
+
 // Cơ chế lướt lấy theo level-test: một cú lao nhanh, có thời gian cố định,
 // không thu nhỏ nhân vật thành tư thế quỳ và có thể dùng cả khi đang ở trên không.
 export function startDash() {
   const p = state.player;
   if (p.dashing || p.dashCooldown > 0) return;
   playSfx('dash');
+  p.revealTimer = STEALTH.reveal;
   p.dashing = true;
   p.dashTimer = DASH_TIME;
   p.dashCooldown = DASH_COOLDOWN;
@@ -165,6 +279,7 @@ export function startDash() {
 function playerAnimationState(p) {
   if (p.hurtTimer > 0) return 'hurt';
   if (p.dashing) return 'dash';
+  if (p.plunging) return 'plunge';
   if (p.attackCooldown > 0) return 'attack';
   if (!p.grounded) return 'jump';
   return Math.abs(p.vx) > 1 ? 'run' : 'idle';
@@ -192,6 +307,9 @@ export function updatePlayerControl(dt) {
   p.attackCooldown = Math.max(0, p.attackCooldown - dt);
   p.dashCooldown = Math.max(0, (p.dashCooldown || 0) - dt);
   p.stun = Math.max(0, (p.stun || 0) - dt);
+  p.revealTimer = Math.max(0, (p.revealTimer || 0) - dt);
+  p.plungeGrace = Math.max(0, (p.plungeGrace || 0) - dt);
+  p.plungeHintTimer = Math.max(0, (p.plungeHintTimer || 0) - dt);
   state.enemies.forEach(enemy => { enemy.hitTimer = Math.max(0, enemy.hitTimer - dt); });
 
   // Đang choáng (BT-L3 E2 — damage.js stunPlayer): bỏ qua phím, vẫn rơi theo trọng lực.
@@ -206,25 +324,36 @@ export function updatePlayerControl(dt) {
   if (pressed.dash) startDash();
   pressed.dash = false;
 
+  // Sình lầy (TQP-ENGINE E1): đang đứng trên dải sình thì đi chậm, nhảy thấp.
+  const mud = { ...MUD, ...CHAPTER.mud };
+  const inMudNow = p.grounded && inMud(p.x + p.w / 2);
   if (p.dashing) {
     p.dashTimer -= dt;
     p.vx = p.facing * DASH_SPEED;
   } else {
-    p.vx = move * MOVE_SPEED;
+    p.vx = move * MOVE_SPEED * (inMudNow ? mud.speed : 1);
   }
 
   if (pressed.jump && p.grounded && !p.dashing) {
-    p.vy = -JUMP_FORCE;
+    p.vy = -JUMP_FORCE * (inMudNow ? mud.jump : 1);
     p.grounded = false;
     playSfx('jump');
   }
   pressed.jump = false;
 
-  if (pressed.attack) startAttack();
+  if (pressed.attack) {
+    if (canPlunge(p)) startPlunge();
+    else startAttack();
+  }
   pressed.attack = false;
 
   const wasGrounded = p.grounded;
   p.vy += GRAVITY * dt;
+  // Đang bổ: rơi thẳng nhanh, trôi ngang chậm lại (TQP-ENGINE E5).
+  if (p.plunging) {
+    p.vy = Math.max(p.vy, plungeSpec()?.speed ?? PLUNGE.speed);
+    p.vx *= .5;
+  }
   p.x += p.vx * dt;
   p.y += p.vy * dt;
   // Đấu trường: tường vô hình ở 0 và worldWidth.
@@ -281,6 +410,12 @@ export function updatePlayerControl(dt) {
   }
 
   if (!wasGrounded && p.grounded) playSfx('land');
+  // Bổ chạm đất: hết đòn bổ, rung nhẹ màn hình.
+  if (p.plunging && p.grounded) {
+    p.plunging = false;
+    state.cameraShake = { time: .12, total: .12, amp: 2 };
+  }
+  updateMudSink(p, dt, mud);
   rememberSafeSpot(p);
 
   // Nếu thời gian lướt vừa hết khi nhân vật còn nằm trong vùng vật cản,

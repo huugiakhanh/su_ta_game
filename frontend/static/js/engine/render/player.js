@@ -4,6 +4,7 @@ import { state } from '../state.js';
 import { getAnimMeta, frameIndex } from '../animation.js';
 import { PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, PLAYER_JUMP_APEX_VY } from '../config.js';
 import { ctx, debugLabels, drawSprite, spriteImage } from './canvas.js';
+import { playerHidden } from '../damage.js';
 
 // Ô của animation người chơi cần vẽ (0-based) theo cấu hình PLAYER_ANIMATIONS.
 function playerFrame(config, meta, p, animTime) {
@@ -27,25 +28,40 @@ export function drawPlayer(time) {
   // attack > jump > run > idle); thua thì phát `death` một lần.
   const key = dead ? 'death' : (p.anim?.name || 'idle');
   const animTime = dead ? Math.max(0, time - p.deathTime) : (p.anim?.time || 0);
-  const config = PLAYER_ANIMATIONS[key];
+  // Animation chưa có trong manifest (vd. `plunge` chờ Codex) -> `fallback`.
+  let config = PLAYER_ANIMATIONS[key];
+  if (config.fallback && !getAnimMeta(PLAYER_SPRITE_ID, config.anim)) config = config.fallback;
   const meta = getAnimMeta(PLAYER_SPRITE_ID, config.anim);
   const image = spriteImage(PLAYER_SPRITE_ID, config.anim);
+  // Lún sình (TQP-ENGINE E1) vẽ chìm xuống; đang ẩn nấp (E7) vẽ mờ.
+  const sink = Math.round(p.mudSink || 0);
+  const alpha = playerHidden(p) ? .55 : 1;
 
   if (meta && image) {
     const frame = playerFrame(config, meta, p, animTime);
     debugLabels.set(p, `${key}:${config.anim} ${frame + 1}/${meta.frames}`);
     if (blinkHidden) return;
     const pivotX = Math.round(p.x + p.w / 2 - state.cameraX);
-    const footY = Math.round(p.y + p.h);
+    const footY = Math.round(p.y + p.h) + sink;
     const facing = p.facing < 0 ? -1 : 1;
-    drawSprite(image, meta, frame, pivotX, footY, facing);
+    if (sink) {
+      // Phần chìm dưới mặt sình không vẽ.
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, ctx.canvas.width, Math.round(p.y + p.h));
+      ctx.clip();
+      drawSprite(image, meta, frame, pivotX, footY, facing, alpha);
+      ctx.restore();
+    } else {
+      drawSprite(image, meta, frame, pivotX, footY, facing, alpha);
+    }
     return;
   }
 
   // Thiếu manifest/strip: hộp placeholder đúng bằng hitbox (như Phase 1).
   debugLabels.set(p, `${key} (placeholder)`);
   if (blinkHidden) return;
-  const colors = { hurt: '#e0564a', dash: '#6fc3e8', attack: '#f0c859', jump: '#c9853f', run: '#a8322c', idle: '#8b2820', death: '#3a2a22' };
+  const colors = { hurt: '#e0564a', dash: '#6fc3e8', attack: '#f0c859', jump: '#c9853f', run: '#a8322c', idle: '#8b2820', death: '#3a2a22', plunge: '#f0c859' };
   ctx.fillStyle = '#2b1710';
   ctx.fillRect(x, y, p.w, p.h);
   ctx.fillStyle = colors[key];

@@ -101,7 +101,10 @@ export const PLAYER_ANIMATIONS = {
   dash: { anim: 'dash' },
   death: { anim: 'death' },
   // Cutscene kết chương: phát 1 lần, giữ ô cuối.
-  victory: { anim: 'victory' }
+  victory: { anim: 'victory' },
+  // Đòn bổ từ trên (TQP-ENGINE E5): strip `plunge` (Codex TQP_ART_01); manifest
+  // chưa có thì render dùng `fallback` — ô cuối của attack_01 (TQP-ENGINE Q2).
+  plunge: { anim: 'plunge', holdFrame: -1, fallback: { anim: 'attack_01', holdFrame: -1 } }
 };
 // Ngưỡng vận tốc dọc (px logic/s) chọn ô `jump`: vy < -N ô 1 (bật lên),
 // |vy| <= N ô 2 (gần đỉnh), vy > N ô 3 (rơi). DESIGN_BASELINE.
@@ -157,6 +160,16 @@ export const HEAL_PICKUP = { life: 10, blink: 2, w: 16, h: 16, heal: 1 };
 // Rơi xuống sông (LND-ENGINE E1): chỗ "đứng vững" để hiện lại phải có đất/bục
 // trải ra ít nhất chừng này px quanh tâm người chơi (không hiện lại sát mép khe).
 export const RESPAWN_EDGE_MARGIN = 20;
+// Sình lầy (TQP-ENGINE E1, DESIGN_BASELINE): trong sình đi ×speed, lực nhảy
+// ×jump, hình chìm dần tới `sink` px; ở trong sình đủ `limit` giây (Excel: 3 s)
+// thì lún: −1 máu, bật ra. Chương ghi đè qua CHAPTER.mud.
+export const MUD = { speed: .5, jump: .7, sink: 8, limit: 3 };
+// Ẩn nấp (TQP-ENGINE E7, DESIGN_BASELINE): đánh/lướt trong vùng ẩn thì lộ thêm `reveal` giây.
+export const STEALTH = { reveal: 1 };
+// Đòn bổ từ trên (TQP-ENGINE E5, DESIGN_BASELINE — chương bật bằng CHAPTER.plunge,
+// ghi đè được từng số): sát thương, vận tốc nảy lên khi trúng, vận tốc bổ xuống
+// (px/s); hộp đánh dưới chân cao `boxH`; `grace` giây miễn va chạm thân sau khi trúng.
+export const PLUNGE = { damage: 2, bounce: 330, speed: 520, boxH: 14, grace: .25 };
 
 // ---- NPC, câu hỏi (DESIGN_BASELINE) ----
 //   talkDistance  khoảng trống từ mép phải người chơi tới tâm NPC để mở hội thoại.

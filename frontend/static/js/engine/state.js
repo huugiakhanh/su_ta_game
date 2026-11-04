@@ -5,7 +5,7 @@
 // Phần khung (người chơi, máu, điểm, thống kê) chung mọi chương; nội dung màn
 // do chương dựng (LEVEL.content) bằng các hàm trong entities.js.
 
-import { setTerrain } from './geometry.js';
+import { setTerrain, terrainMud } from './geometry.js';
 import { GROUND_Y, INTRO, MAX_HEALTH, PLAYER_SIZE, PLAYER_START_X } from './config.js';
 import { CHAPTER, LEVEL } from './chapter.js';
 import { createAnim } from './animation.js';
@@ -49,6 +49,10 @@ export function createLevelState(options = {}) {
   setTerrain(null);
   const content = LEVEL.content(options);
   const startX = LEVEL.playerStartX ?? PLAYER_START_X;
+  const skills = LEVEL.skills && CHAPTER.skills ? createSkillState(options.rewards || []) : null;
+  // Máu tối đa của lượt (TQP-ENGINE E8): + phần thưởng của chương (chỉ màn bật
+  // khe kỹ năng) + `bonusHealth` của nội dung màn (layout thử).
+  const maxHealth = MAX_HEALTH + (skills ? CHAPTER.skills.bonusHealth?.(skills.owned) ?? 0 : 0) + (content.bonusHealth ?? 0);
   const guide = options.intro && LEVEL.guide ? makeNpc(LEVEL.guide.npc, 1, LEVEL.guide.localX) : null;
   return {
     // phase: walk -> talk (đang hội thoại với guide) -> done; onDone do main.js gán.
@@ -61,7 +65,8 @@ export function createLevelState(options = {}) {
     // Rung màn hình (BT-L3 E3 — level-flow.js shakeCamera): { time, amp } hoặc null.
     cameraShake: null,
     score: options.score ?? 0,
-    health: MAX_HEALTH,
+    maxHealth,
+    health: maxHealth,
     itemsCollected: 0,
     // Thống kê lượt chơi gửi kèm kỷ lục để xét thành tựu (SUTA-DB-01):
     // hitsTaken = lần mất máu do đòn/vật cản/hố (không tính trả lời sai);
@@ -70,7 +75,7 @@ export function createLevelState(options = {}) {
     // Mốc cốt truyện 1 lần của màn (sự kiện riêng chương đặt cờ này).
     storyShown: false,
     finishX: LEVEL.finishX,
-    skills: LEVEL.skills && CHAPTER.skills ? createSkillState(options.rewards || []) : null,
+    skills,
     // Cutscene (chương đặt, thay update() — LEVEL.cutscene); cổng mở trong cutscene.
     cutscene: null,
     gateOpen: false,
@@ -116,6 +121,10 @@ export function createLevelState(options = {}) {
     enemies: [],
     npcs: [],
     quizzes: [],
+    // Dải sình của địa hình (TQP-ENGINE E1) — LEVEL.content đã đặt địa hình.
+    mud: terrainMud(),
+    // Vùng ẩn nấp [{ x, w }] (TQP-ENGINE E7 — lau sậy), nội dung màn khai báo `covers`.
+    covers: [],
     ...(CHAPTER.stateFields?.() || {}),
     ...content,
     // Bục một chiều của màn + bục tự gắn trên hazard có `ride` (BT-ENGINE E6–E7).

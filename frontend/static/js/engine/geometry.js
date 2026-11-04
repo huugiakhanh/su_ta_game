@@ -28,9 +28,12 @@ const COLUMNS_PER_CHUNK = CHUNK_W / TERRAIN_CELL;
 // trên khoảng trống bị bỏ + cảnh báo. Chunk không khai báo = phẳng.
 // '~' ở hàng cuối = cột NƯỚC (sông — LND-ENGINE E1): hố có cờ nước, rơi xuống
 // thì hiện lại ở chỗ đứng vững cuối cùng (damage.js respawnAfterFall).
+// '=' ở hàng cuối = cột SÌNH (TQP-ENGINE E1): đất đi được, cao bằng mặt đất,
+// làm chậm + lún người chơi (player.js) — dải sình: terrainMud() / inMud().
 export function buildTerrain(placements, chunks) {
   const levels = new Int8Array(chunks * COLUMNS_PER_CHUNK);
   const water = new Uint8Array(chunks * COLUMNS_PER_CHUNK);
+  const mud = new Uint8Array(chunks * COLUMNS_PER_CHUNK);
   placements.forEach(({ chunk, rows, shift = 0 }) => {
     rows.forEach(row => {
       if (row.length !== COLUMNS_PER_CHUNK) console.warn(`terrain chunk ${chunk}: hàng dài ${row.length} ô, cần ${COLUMNS_PER_CHUNK}`, row);
@@ -43,15 +46,18 @@ export function buildTerrain(placements, chunks) {
       }
       const target = col + shift;
       if (target < 0 || target >= COLUMNS_PER_CHUNK) continue;
-      levels[(chunk - 1) * COLUMNS_PER_CHUNK + target] = height - 1;
-      water[(chunk - 1) * COLUMNS_PER_CHUNK + target] = rows[rows.length - 1][col] === '~' ? 1 : 0;
+      const bottom = rows[rows.length - 1][col];
+      // Cột sình: không có '#' nhưng vẫn là mặt đất (level 0).
+      levels[(chunk - 1) * COLUMNS_PER_CHUNK + target] = bottom === '=' ? 0 : height - 1;
+      water[(chunk - 1) * COLUMNS_PER_CHUNK + target] = bottom === '~' ? 1 : 0;
+      mud[(chunk - 1) * COLUMNS_PER_CHUNK + target] = bottom === '=' ? 1 : 0;
     }
   });
   for (let col = 1; col < levels.length; col++) {
     const step = Math.abs(Math.max(levels[col], 0) - Math.max(levels[col - 1], 0));
     if (step > TERRAIN_MAX_STEP) console.warn(`terrain x=${col * TERRAIN_CELL}: bậc chênh ${step} ô > ${TERRAIN_MAX_STEP}`);
   }
-  return { levels, water };
+  return { levels, water, mud };
 }
 
 // Độ cao (số ô) của cột chứa x; -1 = hố. Màn phẳng / ngoài màn -> 0.
@@ -73,6 +79,25 @@ export function terrainHoles() {
     else holes.push({ x: col * TERRAIN_CELL, w: TERRAIN_CELL, water });
   });
   return holes;
+}
+
+// Dải sình (TQP-ENGINE E1): chuỗi cột '=' liền nhau dạng { x, w } -> state.mud.
+export function terrainMud() {
+  const spans = [];
+  if (!terrain?.mud) return spans;
+  terrain.mud.forEach((flag, col) => {
+    if (!flag) return;
+    const last = spans[spans.length - 1];
+    if (last && last.x + last.w === col * TERRAIN_CELL) last.w += TERRAIN_CELL;
+    else spans.push({ x: col * TERRAIN_CELL, w: TERRAIN_CELL });
+  });
+  return spans;
+}
+
+// x nằm trên cột sình? Dùng cho người chơi và chương (boss lao vào sình thì kẹt).
+export function inMud(worldXPosition) {
+  if (!terrain?.mud) return false;
+  return Boolean(terrain.mud[Math.floor(worldXPosition / TERRAIN_CELL)]);
 }
 
 // Đoạn đất phẳng [x0, x1) chứa x (cùng độ cao, không hố) — kẹp đoạn tuần tra
@@ -137,7 +162,10 @@ export function makeHazard(kind, sprite, chunk, localX, options = {}) {
   // floatY > 0: vật nổi trên nước (thuyền) nên đáy nằm DƯỚI mặt đất.
   const groundY = (options.groundY ?? groundYAt(centerX)) + (options.floatY || 0);
   // Bẫy rơi (`snare` — LND-ENGINE E3) treo cao `dropHeight` px trên mặt đất.
-  const baseY = kind === 'snare' ? groundY - (options.dropHeight ?? 80) : groundY;
+  // Khói trôi (`drift` — TQP-ENGINE E2) làn `high` lơ lửng `lanes.high` px.
+  const lift = kind === 'snare' ? options.dropHeight ?? 80
+    : kind === 'drift' ? size.lanes?.[options.lane || 'low'] ?? (options.lane === 'high' ? 24 : 0) : 0;
+  const baseY = groundY - lift;
   const hp = options.hp ?? 0;
   return {
     kind,
@@ -162,7 +190,7 @@ export function makeHazard(kind, sprite, chunk, localX, options = {}) {
     alarmFor: options.alarmFor || null,
     alarmed: false,
     // Snare chỉ gây sát thương lúc rơi (hazards.js tự xử lý, không qua va chạm chung).
-    harmful: options.harmful ?? (kind !== 'prop' && kind !== 'snare'),
+    harmful: options.harmful ?? (kind !== 'prop' && kind !== 'snare' && kind !== 'drift' && kind !== 'lurker'),
     hp,
     maxHp: hp,
     hitTimer: 0,
@@ -181,6 +209,27 @@ export function makeHazard(kind, sprite, chunk, localX, options = {}) {
     // Vent (BT-ENGINE E8): giây lệch nhịp ban đầu / đồng hồ chu kỳ; trạng thái phun.
     phase: options.phase ?? 0,
     ventState: 'off',
+    // Drift (TQP-ENGINE E2 — khói trôi ngang): vào `triggerRange` thì trôi từ
+    // `originX` (mép trái lúc xuất phát) với `speed` hết quãng `travel` px, chờ
+    // `gap` giây rồi trôi lại. wait -> move -> gap. `invisible` = không vẽ.
+    // Lurker (E3 — cá sấu): hidden -> warn -> attack -> dive -> hidden, nghỉ `rest`.
+    triggerRange: options.triggerRange ?? 260,
+    originX: centerX - size.w / 2,
+    travel: options.travel ?? 320,
+    gap: options.gap ?? 1.5,
+    traveled: 0,
+    driftState: 'wait',
+    lurkState: 'hidden',
+    rest: options.rest ?? 1.5,
+    restTimer: 0,
+    lurkTimer: 0,
+    // Hazard đang ẩn: không chém/bổ được (E3) — undefined = như cũ.
+    exposed: kind === 'lurker' ? false : undefined,
+    invisible: kind === 'drift' || kind === 'lurker',
+    // Gọi viện (E4 — thuyền tuần tiễu): { after, range, spawnAt: [worldX], enemy: { art, w, h, hp } }.
+    callHelp: options.callHelp || null,
+    helpTimer: 0,
+    helpCalled: false,
     projectile: options.projectile || null,
     // Nhắm đạn vào thân người chơi lúc nhả (LND-ENGINE E2); false = bắn ngang.
     aim: Boolean(options.aim),

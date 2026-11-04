@@ -9,7 +9,7 @@ import { pressed } from './input.js';
 import { showMessage, tickMessage, updateHud } from './ui.js';
 import { aabb, groundYAt } from './geometry.js';
 import { setAnim, tickAnim } from './animation.js';
-import { VIEW_W, VIEW_H, NPC_RULES, NPC_RESCUE, INTRO, ITEM_HITBOX, GRAVITY, MAX_HEALTH, HEAL_PICKUP } from './config.js';
+import { VIEW_W, VIEW_H, NPC_RULES, NPC_RESCUE, INTRO, ITEM_HITBOX, GRAVITY, HEAL_PICKUP } from './config.js';
 import { CHAPTER, LEVEL } from './chapter.js';
 import { openNpcDialogue, openStory, openQuiz } from './dialogue.js';
 import { playSfx } from './audio.js';
@@ -192,9 +192,9 @@ function updatePickups(p, dt) {
       if (pickup.y + pickup.h >= floor) pickup.vy = 0;
     }
     if (pickup.y > VIEW_H) pickup.life = 0;
-    if (pickup.life > 0 && state.health < MAX_HEALTH && aabb(p, pickup)) {
+    if (pickup.life > 0 && state.health < state.maxHealth && aabb(p, pickup)) {
       pickup.life = 0;
-      state.health = Math.min(MAX_HEALTH, state.health + HEAL_PICKUP.heal);
+      state.health = Math.min(state.maxHealth, state.health + HEAL_PICKUP.heal);
       playSfx('heal');
     }
   });
@@ -238,13 +238,28 @@ function updateMeetings(p, dt) {
     p.vx = 0;
   }
   const distance = npc.centerX - (p.x + p.w);
+  // NPC khoá theo số vật phẩm (TQP-ENGINE E6): thiếu thì giữ lại + nhắc, không nói chuyện.
+  if (state.itemsCollected < (npc.requires || 0)) {
+    if (distance <= NPC_RESCUE.hintRange && state.rescueHintTimer <= 0 && CHAPTER.text.npcLocked) {
+      state.rescueHintTimer = NPC_RESCUE.hintInterval;
+      showMessage(CHAPTER.text.npcLocked(npc.requires, state.itemsCollected), 2400);
+    }
+    return false;
+  }
   // Quân vây = enemy hoặc hazard (thợ săn…) có `captorOf` còn sống.
   const captive = [...state.enemies, ...state.hazards].some(item => item.captorOf === npc.id && item.alive);
+  const dialogue = CHAPTER.dialogues[npc.id];
   if (captive && distance <= NPC_RESCUE.hintRange && state.rescueHintTimer <= 0) {
     state.rescueHintTimer = NPC_RESCUE.hintInterval;
-    showMessage(CHAPTER.text.rescueHint(CHAPTER.dialogues[npc.id].name), 2400);
+    showMessage(CHAPTER.text.rescueHint(dialogue?.name ?? npc.id), 2400);
   }
   if (!captive && distance <= talkDistance) {
+    // NPC chưa có thoại (TODO_MISSING — vd. NPC hộp của layout thử): coi như đã gặp.
+    if (!dialogue) {
+      console.warn(`NPC ${npc.id}: chưa có thoại trong CHAPTER.dialogues — bỏ qua hội thoại.`);
+      npc.met = true;
+      return false;
+    }
     openNpcDialogue(npc, () => { npc.met = true; });
     return true;
   }

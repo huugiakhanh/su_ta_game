@@ -3,6 +3,7 @@
 // Hộp riêng của chương (vd. hũ dầu, lửa, bóng kỹ năng): CHAPTER.hooks.debugEntities.
 
 import { state } from '../state.js';
+import { playerHidden } from '../damage.js';
 import { VIEW_W, GROUND_Y, ITEM_HITBOX } from '../config.js';
 import { CHAPTER, LEVEL } from '../chapter.js';
 import { ctx, debugLabels } from './canvas.js';
@@ -49,6 +50,40 @@ export function drawDebugOverlay() {
     const center = hazard.x + hazard.w / 2 - state.cameraX;
     ctx.fillRect(Math.round(center - hazard.triggerWidth / 2), Math.round(hazard.floorY) - 2, Math.round(hazard.triggerWidth), 2);
   });
+  // Dải sình (TQP-ENGINE E1): nâu; vùng ẩn nấp (E7): xanh lá.
+  ctx.strokeStyle = '#c8873a';
+  state.mud.forEach(span => {
+    ctx.strokeRect(Math.round(span.x - state.cameraX) + .5, GROUND_Y - 10.5, Math.round(span.w) - 1, 12);
+  });
+  ctx.strokeStyle = '#5fdc5f';
+  state.covers.forEach(cover => {
+    ctx.strokeRect(Math.round(cover.x - state.cameraX) + .5, GROUND_Y - 60.5, Math.round(cover.w) - 1, 60);
+  });
+  // Khói trôi (E2): vạch quãng trôi; cá sấu (E3): vạch tầm kích hoạt; gọi viện (E4): đồng hồ.
+  state.hazards.forEach(hazard => {
+    if (!hazard.alive) return;
+    if (hazard.kind === 'drift') {
+      const from = hazard.originX + hazard.w / 2 - state.cameraX;
+      const to = from + Math.sign(hazard.speed || -1) * hazard.travel;
+      ctx.fillStyle = '#9fd36b';
+      ctx.fillRect(Math.round(Math.min(from, to)), Math.round(hazard.baseY) + 1, Math.round(Math.abs(to - from)), 1);
+    }
+    if (hazard.kind === 'lurker') {
+      const center = hazard.x + hazard.w / 2 - state.cameraX;
+      ctx.fillStyle = '#4fd1ff';
+      ctx.fillRect(Math.round(center - hazard.triggerRange), GROUND_Y + 2, Math.round(hazard.triggerRange * 2), 1);
+    }
+    if (hazard.callHelp && !hazard.helpCalled) {
+      const left = (hazard.callHelp.after - hazard.helpTimer).toFixed(1);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(`viện ${left}s`, Math.round(hazard.x + hazard.w / 2 - state.cameraX), Math.round(hazard.y) - 14);
+    }
+  });
+  const p = state.player;
+  if (p.mudTime > 0 || playerHidden(p)) {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(playerHidden(p) ? 'ẨN' : `sình ${p.mudTime.toFixed(1)}s`, Math.round(p.x + p.w / 2 - state.cameraX), Math.round(p.y) - 14);
+  }
   // Bục một chiều (E6–E7): xanh lơ; bục gắn hazard chưa xuất hiện thì bỏ.
   ctx.strokeStyle = '#3ce0e0';
   state.platforms.forEach(platform => {

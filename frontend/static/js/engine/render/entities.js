@@ -185,21 +185,27 @@ export function drawHazards(time, submerged = false) {
     // Roller chưa được kích hoạt thì chưa xuất hiện trên màn — nó đang "chờ"
     // ngoài tầm nhìn, vẽ ra sẽ thành vật đứng im giữa đường.
     if (hazard.kind === 'roller' && !hazard.active) return;
+    // Khói đang nghỉ, cá sấu dưới nước (TQP-ENGINE E2–E3): không vẽ.
+    if (hazard.invisible && !hazard.dying) return;
     const sprite = CHAPTER.sprites.hazards[hazard.sprite];
     const centerX = hazard.x + hazard.w / 2;
     const pivotX = Math.round(centerX - state.cameraX);
     if (pivotX < -80 || pivotX > VIEW_W + 80) return;
-    const footY = Math.round(hazard.baseY + (sprite?.sink || 0));
+    // `lift`: cá sấu đang chồm lên (TQP-ENGINE E3).
+    const footY = Math.round(hazard.baseY + (sprite?.sink || 0) - (hazard.lift || 0));
     const facing = facingDirection(centerX, hazard.facing, hazard.kind === 'thrower');
     const drawn = sprite && drawAnimated(sprite.id, sprite.anims, sprite.durations, hazard, pivotX, footY, facing);
     if (!drawn) {
       if (hazard.kind === 'vent') drawVentFallback(hazard);
+      else if (hazard.kind === 'drift') drawDriftFallback(hazard);
+      else if (hazard.kind === 'lurker' && hazard.lurkState === 'warn') drawBubblesFallback(hazard, time);
       else drawPlaceholder(hazard);
-      debugLabels.set(hazard, `${hazard.sprite} (placeholder${hazard.kind === 'vent' ? ` ${hazard.ventState}` : ''})`);
+      const extra = hazard.kind === 'vent' ? ` ${hazard.ventState}` : hazard.kind === 'lurker' ? ` ${hazard.lurkState}` : '';
+      debugLabels.set(hazard, `${hazard.sprite} (placeholder${extra})`);
       return;
     }
     debugLabels.set(hazard, drawn.label);
-    if (hazard.alive && hazard.maxHp > 0 && hazard.hp > 0) {
+    if (hazard.alive && hazard.maxHp > 0 && hazard.hp > 0 && hazard.exposed !== false) {
       const barW = hazard.w + 8;
       drawHealthBar(pivotX - barW / 2, drawn.top - 5, barW, hazard.hp / hazard.maxHp, hazard.boss ? '#e34c36' : '#e2ad45');
     }
@@ -215,6 +221,22 @@ function drawVentFallback(hazard) {
   const alpha = hazard.ventState === 'active' ? .45 : hazard.ventState === 'warn' ? .35 + .25 * Math.sin(hazard.phase * 20) : .25;
   ctx.fillStyle = `rgba(150, 70, 190, ${alpha})`;
   ctx.fillRect(x, bottom - height, Math.round(hazard.w), height);
+}
+
+// Khói trôi thiếu asset (TODO_MISSING): mảng xám lục bán trong suốt.
+function drawDriftFallback(hazard) {
+  ctx.fillStyle = 'rgba(120, 150, 90, .55)';
+  ctx.fillRect(Math.round(hazard.x - state.cameraX), Math.round(hazard.y), Math.round(hazard.w), Math.round(hazard.h));
+}
+
+// Cá sấu sắp ngoi (`warn`) thiếu asset: chuỗi bọt nước nhấp nháy trên mặt nước.
+function drawBubblesFallback(hazard, time) {
+  ctx.fillStyle = 'rgba(220, 240, 250, .85)';
+  const left = Math.round(hazard.x - state.cameraX);
+  for (let i = 0; i < 4; i++) {
+    const bob = Math.round(Math.sin(time * 12 + i) * 2);
+    ctx.fillRect(left + 4 + i * Math.round((hazard.w - 8) / 3), GROUND_Y + 4 + bob, 3, 3);
+  }
 }
 
 // Bục một chiều tĩnh (BT-ENGINE E6): có `sprite` (prop trong map manifest) thì
@@ -315,13 +337,15 @@ export function drawNpcs(time) {
   // + NPC dẫn đầu màn (state.guide — TT-HERO-01), vẽ như NPC.
   [...state.npcs, state.guide].filter(Boolean).forEach(npc => {
     if (npc.fade <= 0) return;
+    // Chưa nhặt đủ vật phẩm để gặp (TQP-ENGINE E6): vẽ mờ.
+    const alpha = npc.fade * (state.itemsCollected < (npc.requires || 0) ? .45 : 1);
     const sprite = CHAPTER.sprites.npcs[npc.id];
     const pivotX = Math.round(npc.centerX - state.cameraX);
     if (pivotX < -60 || pivotX > VIEW_W + 60) return;
     const pose = { anim: { name: npc.talking ? 'talk' : 'idle', time } };
-    const drawn = sprite && drawAnimated(sprite.id, sprite.anims, null, pose, pivotX, npc.y + npc.h, facingDirection(npc.centerX, 0, true), npc.fade);
+    const drawn = sprite && drawAnimated(sprite.id, sprite.anims, null, pose, pivotX, npc.y + npc.h, facingDirection(npc.centerX, 0, true), alpha);
     if (!drawn) {
-      drawPlaceholder(npc, npc.fade);
+      drawPlaceholder(npc, alpha);
       debugLabels.set(npc, `${npc.id} (placeholder)`);
       return;
     }

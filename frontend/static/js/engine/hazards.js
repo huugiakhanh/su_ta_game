@@ -13,6 +13,12 @@
 //   snare   — bẫy rơi từ trên (lưới trúc — LND-ENGINE E3): công tắc ẩn trên mặt
 //             đất, chạm thì báo hiệu `warnTime` rồi rơi; trúng thì −máu + choáng
 //             `stun` giây; chạm đất thì nằm lại vô hại. Mỗi lượt 1 lần.
+//   drift   — khói trôi ngang (chướng khí — TQP-ENGINE E2): làn thấp/cao, vào tầm
+//             thì trôi hết quãng `travel`, nghỉ `gap` giây rồi trôi lại.
+//   lurker  — vật ngoi lên từ khe nước (cá sấu — TQP-ENGINE E3): báo bọt -> ngoi
+//             đớp (chỉ lúc này gây sát thương + chém được) -> lặn, nghỉ `rest`.
+// Tuỳ chọn `callHelp` (E4 — thuyền tuần tiễu): người chơi ở gần đủ lâu mà
+// hazard chưa bị phá thì phát tín hiệu, gọi lính lên bờ (1 lần mỗi lượt).
 // Hazard có `ride` (sprite) mang một bục một chiều trên lưng (E7 — voi rừng):
 // bục đi theo hazard; người chơi đứng trên lưng thì không bị va chạm thân.
 // Hazard đang chết (dying) chỉ phát nốt animation, không va chạm/di chuyển.
@@ -26,8 +32,9 @@ import {
 } from './config.js';
 import { CHAPTER } from './chapter.js';
 import { playSfx } from './audio.js';
-import { hurtPlayer, stunPlayer, playerImmune } from './damage.js';
+import { hurtPlayer, stunPlayer, playerImmune, playerHidden } from './damage.js';
 import { revealCarriedItems } from './combat.js';
+import { makeEnemy } from './entities.js';
 
 const spriteOf = hazard => CHAPTER.sprites.hazards[hazard.sprite];
 
@@ -71,8 +78,9 @@ function startAction(hazard, name) {
 function advanceAction(hazard, dt) {
   const action = hazard.action;
   action.time += dt;
-  if (action.name === 'alarm') {
-    if (action.time >= (spriteOf(hazard)?.alarmTime ?? 0)) hazard.action = null;
+  // Báo động (tù và) / phát tín hiệu gọi viện (E4): chỉ phát animation `<tên>Time` giây.
+  if (action.name === 'alarm' || action.name === 'signal') {
+    if (action.time >= (spriteOf(hazard)?.[`${action.name}Time`] ?? 0)) hazard.action = null;
     return;
   }
   const { meta, duration } = hazardAnim(hazard, 'throw');
@@ -100,6 +108,8 @@ function updateHazardAnimation(hazard, dt) {
   else if (hazard.sprung) next = 'sprung';
   else if (hazard.kind === 'vent') next = hazard.ventState === 'off' ? 'idle' : hazard.ventState;
   else if (hazard.kind === 'snare') next = hazard.snareState;
+  else if (hazard.kind === 'drift') next = 'move';
+  else if (hazard.kind === 'lurker') next = hazard.lurkState;
   else if (hazard.kind === 'patrol') next = hazard.walking ? 'move' : 'idle';
   else next = hazard.kind === 'roller' && hazard.active ? 'move' : 'idle';
   setAnim(hazard, next);
@@ -172,6 +182,102 @@ function updateSnare(hazard, dt, player) {
     hazard.snareState = 'landed';
     hazard.harmful = false;
   }
+}
+
+// Khói trôi (kind `drift` — TQP-ENGINE E2): `wait` (ẩn) tới khi người chơi
+// trong `triggerRange` quanh điểm xuất phát -> `move`: trôi theo `speed` (gây
+// sát thương — lướt miễn như hazard thường) hết quãng `travel` -> `gap`: ẩn
+// `gap` giây rồi về điểm xuất phát, xuất phát lại nếu người chơi còn trong tầm.
+function updateDrift(hazard, dt, playerCenter) {
+  const near = Math.abs(playerCenter - (hazard.originX + hazard.w / 2)) <= hazard.triggerRange;
+  if (hazard.driftState === 'gap') {
+    hazard.lurkTimer -= dt;
+    if (hazard.lurkTimer > 0) return;
+    hazard.x = hazard.originX;
+    hazard.traveled = 0;
+    hazard.driftState = 'wait';
+  }
+  if (hazard.driftState === 'wait') {
+    if (!near) return;
+    hazard.driftState = 'move';
+    hazard.anim.time = 0;
+  }
+  const step = hazard.speed * dt;
+  hazard.x += step;
+  hazard.traveled += Math.abs(step);
+  hazard.harmful = true;
+  hazard.invisible = false;
+  if (hazard.traveled >= hazard.travel) {
+    hazard.driftState = 'gap';
+    hazard.lurkTimer = hazard.gap;
+    hazard.harmful = false;
+    hazard.invisible = true;
+  }
+}
+
+// Vật ngoi từ khe nước (kind `lurker` — TQP-ENGINE E3): `hidden` (dưới nước,
+// không vẽ, vô hại, không chém được) -> người chơi trong `triggerRange` + hết
+// nghỉ -> `warn` (bọt, `warnTime`) -> `attack` (ngoi đớp `upTime` giây: gây sát
+// thương, chém được) -> `dive` (`diveTime`) -> `hidden`, nghỉ `rest` giây.
+function updateLurker(hazard, dt, playerCenter) {
+  const spec = spriteOf(hazard) || {};
+  hazard.lurkTimer -= dt;
+  // Lúc đớp chồm lên theo nửa sóng sin, cao nhất `leap` px (sprite) giữa `upTime`.
+  const upTime = spec.upTime ?? 1;
+  hazard.lift = hazard.lurkState === 'attack'
+    ? (spec.leap ?? 0) * Math.sin(Math.PI * Math.min(1, Math.max(0, 1 - hazard.lurkTimer / upTime)))
+    : 0;
+  hazard.y = hazard.baseY - hazard.lift - hazard.h;
+  if (hazard.lurkState === 'hidden') {
+    hazard.restTimer = Math.max(0, hazard.restTimer - dt);
+    const near = Math.abs(playerCenter - (hazard.x + hazard.w / 2)) <= hazard.triggerRange;
+    if (!near || hazard.restTimer > 0) return;
+    hazard.lurkState = 'warn';
+    hazard.lurkTimer = spec.warnTime ?? .6;
+    hazard.invisible = false;
+  } else if (hazard.lurkState === 'warn' && hazard.lurkTimer <= 0) {
+    hazard.lurkState = 'attack';
+    hazard.lurkTimer = spec.upTime ?? 1;
+    hazard.harmful = true;
+    hazard.exposed = true;
+    playSfx('trap');
+  } else if (hazard.lurkState === 'attack' && hazard.lurkTimer <= 0) {
+    hazard.lurkState = 'dive';
+    hazard.lurkTimer = spec.diveTime ?? .3;
+    hazard.harmful = false;
+    hazard.exposed = false;
+  } else if (hazard.lurkState === 'dive' && hazard.lurkTimer <= 0) {
+    hazard.lurkState = 'hidden';
+    hazard.restTimer = hazard.rest;
+    hazard.invisible = true;
+    return;
+  } else {
+    return;
+  }
+  hazard.anim.time = 0;
+}
+
+// Gọi viện (tuỳ chọn `callHelp` — TQP-ENGINE E4): người chơi ở trong `range`
+// LIÊN TỤC đủ `after` giây mà hazard còn sống -> phát tín hiệu (`signal`,
+// tiếng báo động, `signalMessage`) và sinh lính ở các vị trí `spawnAt`. 1 lần.
+function updateCallHelp(hazard, dt, playerCenter) {
+  const help = hazard.callHelp;
+  if (!help || hazard.helpCalled) return;
+  const near = Math.abs(playerCenter - (hazard.x + hazard.w / 2)) <= help.range;
+  hazard.helpTimer = near ? hazard.helpTimer + dt : 0;
+  if (hazard.helpTimer < help.after) return;
+  hazard.helpCalled = true;
+  const spec = spriteOf(hazard);
+  if (spec?.anims?.signal) startAction(hazard, 'signal');
+  playSfx('alarm');
+  if (spec?.signalMessage) showMessage(spec.signalMessage, 2600);
+  const enemy = help.enemy || {};
+  help.spawnAt.forEach(x => {
+    const w = enemy.w ?? 22;
+    const soldier = makeEnemy(x - w / 2, w, enemy.h ?? 34, enemy.hp ?? 2, false, { aggroRange: help.aggroRange });
+    if (enemy.art) soldier.art = enemy.art;
+    state.enemies.push(soldier);
+  });
 }
 
 // Người chơi đang đứng trên lưng hazard `ride` (chân không thấp hơn mặt bục
@@ -248,6 +354,9 @@ export function updateHazards(dt) {
 
     if (hazard.kind === 'patrol') updatePatrol(hazard, dt, playerCenter);
     if (hazard.kind === 'vent') updateVent(hazard, dt);
+    if (hazard.kind === 'drift') updateDrift(hazard, dt, playerCenter);
+    if (hazard.kind === 'lurker') updateLurker(hazard, dt, playerCenter);
+    updateCallHelp(hazard, dt, playerCenter);
     if (hazard.kind === 'snare') {
       updateSnare(hazard, dt, player);
       updateHazardAnimation(hazard, dt);
@@ -282,7 +391,8 @@ export function updateHazards(dt) {
     // tầm) để cú ném không bị cắt ngang giữa chừng.
     if (hazard.action) {
       advanceAction(hazard, dt);
-    } else if (hazard.projectile && distance <= hazard.fireRange) {
+    } else if (hazard.projectile && distance <= hazard.fireRange && !playerHidden(player)) {
+      // Người chơi đang ẩn trong lau sậy (TQP-ENGINE E7) thì không bắn.
       hazard.fireTimer -= dt;
       if (hazard.fireTimer <= 0) {
         startAction(hazard, 'throw');
