@@ -1,0 +1,13 @@
+{% extends "gameplay/base.html" %}
+{# Chương Triệu Việt Vương — dùng chung 3 màn. Khung chung ở gameplay/base.html.
+   TQP-SKELETON: chưa có khe kỹ năng (Hiệu triệu Vạn Xuân, Móng Rồng — TQP-L3). #}
+
+{% block chapter_name %}Triệu Việt Vương{% endblock %}
+{% block brand %}SUTA · TRIỆU VIỆT VƯƠNG{% endblock %}
+{% block canvas_label %}Màn chơi Triệu Việt Vương{% endblock %}
+{% block item_label %}Quyển Sách Tinh Hoa đã thu thập{% endblock %}
+{% block item_glyph %}📖{% endblock %}
+
+{% block chapter_script %}
+  <script type="module" src="{{ url_for('static', filename='js/levels/trieu-quang-phuc/main.js') }}"></script>
+{% endblock %}

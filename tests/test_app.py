@@ -60,6 +60,7 @@ def test_pages_render(client):
     assert client.get("/gameplay/levels/trung-trac/3").status_code == 200
     assert client.get("/gameplay/levels/ba-trieu/3").status_code == 200
     assert client.get("/gameplay/levels/ly-nam-de/3").status_code == 200
+    assert client.get("/gameplay/levels/trieu-quang-phuc/3").status_code == 200
 
 
 def test_migrations_are_idempotent(client):
@@ -67,7 +68,8 @@ def test_migrations_are_idempotent(client):
     with app.app_context():
         assert run_migrations() == []
     assert query("SELECT version FROM schema_migrations ORDER BY version") == [
-        ("001_baseline",), ("002_user_avatar",), ("003_quiz_results",), ("004_user_gender",)]
+        ("001_baseline",), ("002_user_avatar",), ("003_quiz_results",), ("004_user_gender",),
+        ("005_ba_trieu",), ("006_ba_trieu_rewards",), ("007_ly_nam_de",), ("008_trieu_quang_phuc",)]
 
 
 def test_password_is_hashed_and_login_works(client):
@@ -131,8 +133,8 @@ def test_leaderboard_uses_best_per_level(client):
     result = client.get("/api/game/leaderboard").json
     board = result["data"]
     assert [(row["rank"], row["total_score"], row["total_time"]) for row in board] == [(1, 800, 120.0), (2, 500, 90.0)]
-    # Toàn game: 3 màn mỗi chương — Trưng Trắc, Bà Triệu (005), Lý Nam Đế (007).
-    assert result["me"]["rank"] == 1 and result["levels_total"] == 9
+    # Toàn game: 3 màn mỗi chương — Trưng Trắc, Bà Triệu (005), Lý Nam Đế (007), Triệu Việt Vương (008).
+    assert result["me"]["rank"] == 1 and result["levels_total"] == 12
 
 
 def test_leaderboard_scopes_and_me_outside_top(client):
@@ -206,6 +208,23 @@ def test_ly_nam_de_rewards_and_achievements(client):
     assert {a["code"] for a in last["new_achievements"]} == {"LND_CHAPTER", "LND_SPEED"}
     gold, gems = query("SELECT gold, gems FROM users")[0]
     assert (gold, gems) == (144 + 216 + 288 + 72 + 72, 10 + 14 + 7)
+
+
+def test_trieu_quang_phuc_rewards_and_achievements(client):
+    # TQP-SKELETON (migration 008): qua 3 màn chương 4 -> 173/259/346 vàng + 12 KC, 4 thành tựu TQP_*.
+    assert query("SELECT id, first_clear_gold, first_clear_gems FROM levels WHERE chapter_id = 4 ORDER BY id") == [
+        (401, 173, 0), (402, 259, 0), (403, 346, 12)]
+    assert query("SELECT id FROM rewards WHERE chapter_id = 4 ORDER BY id") == [
+        ("BUFF_TQP_VITALITY",), ("SK_TQP_DRAGON_CLAW",), ("SK_TQP_RALLY",)]
+    register_and_login(client)
+    first = save_time(client, 401, 200, 500, {"hits_taken": 3})
+    assert first["gold_gained"] == 173 + 86
+    assert [a["code"] for a in first["new_achievements"]] == ["TQP_CLEAR_1"]
+    assert [a["code"] for a in save_time(client, 402, 300)["new_achievements"]] == ["TQP_CLEAR_2"]
+    last = save_time(client, 403, 350)
+    assert {a["code"] for a in last["new_achievements"]} == {"TQP_CHAPTER", "TQP_SPEED"}
+    gold, gems = query("SELECT gold, gems FROM users")[0]
+    assert (gold, gems) == (173 + 259 + 346 + 86 + 86, 12 + 17 + 8)
 
 
 def test_cleared_chapters(client):

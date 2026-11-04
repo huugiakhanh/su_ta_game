@@ -122,3 +122,19 @@ def ly_nam_de_level_2():
 @pages_bp.get("/gameplay/levels/ly-nam-de/3")
 def ly_nam_de_level_3():
     return render_chapter_level("ly-nam-de", 3, "Màn 3: Công phá thành Long Biên")
+
+
+# Chương Triệu Việt Vương (TQP-SKELETON): khung 3 màn bằng asset mượn, chưa mở trên trang chủ.
+@pages_bp.get("/gameplay/levels/trieu-quang-phuc")
+def trieu_quang_phuc():
+    return render_chapter_level("trieu-quang-phuc", 1, "Màn 1: Tuổi trẻ rèn luyện")
+
+
+@pages_bp.get("/gameplay/levels/trieu-quang-phuc/2")
+def trieu_quang_phuc_level_2():
+    return render_chapter_level("trieu-quang-phuc", 2, "Màn 2: Hiền tài Dạ Trạch")
+
+
+@pages_bp.get("/gameplay/levels/trieu-quang-phuc/3")
+def trieu_quang_phuc_level_3():
+    return render_chapter_level("trieu-quang-phuc", 3, "Màn 3: Đại phá Dương Sàn")

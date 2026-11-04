@@ -12,6 +12,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-c", "import os, runpy; os.environ['SUTA_PORT'] = '5057'; os.environ['SUTA_DEBUG'] = '0'; runpy.run_path('app.py', run_name='__main__')"],
       "port": 5057
+    },
+    {
+      "name": "su-ta-flask-5059",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-c", "import os, runpy; os.environ['SUTA_PORT'] = '5059'; os.environ['SUTA_DEBUG'] = '0'; runpy.run_path('app.py', run_name='__main__')"],
+      "port": 5059
     }
   ]
 }

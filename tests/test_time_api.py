@@ -83,6 +83,7 @@ def test_save_time_passes_stats(client):
     {"level_id": 1, "clear_time": 60},            # id cũ, không thuộc 101–103
     {"level_id": 204, "clear_time": 60},          # chương 2 chỉ có 201–203
     {"level_id": 304, "clear_time": 60},          # chương 3 chỉ có 301–303
+    {"level_id": 404, "clear_time": 60},          # chương 4 chỉ có 401–403
     {"level_id": "101", "clear_time": 60},        # sai kiểu
     {"level_id": 101, "clear_time": 0},
     {"level_id": 101, "clear_time": -5},
@@ -139,7 +140,7 @@ def test_progress_put_chapter_2(client, monkeypatch):
     data = {**GOOD_PROGRESS, "rewards": ["BUFF_BT_CRIT"]}
     assert client.put("/api/game/progress/2", json=data).status_code == 200
     assert client.progress_saved == [(USER["id"], 2, data)]
-    assert client.get("/api/game/progress/4").status_code == 404
+    assert client.get("/api/game/progress/5").status_code == 404
 
 
 def test_progress_put_normalizes(client):
@@ -178,6 +179,8 @@ def test_progress_put_rejects_bad_payload(client, patch):
     ("level-201", (None, 201)),
     ("chapter-3", (3, None)),
     ("level-303", (None, 303)),
+    ("chapter-4", (4, None)),
+    ("level-403", (None, 403)),
 ])
 def test_leaderboard_scope(client, monkeypatch, scope, expected):
     calls = []
@@ -189,7 +192,7 @@ def test_leaderboard_scope(client, monkeypatch, scope, expected):
     assert calls == [(*expected, USER["id"])]
 
 
-@pytest.mark.parametrize("scope", ["chapter-4", "level-104", "level-204", "level-304", "level-", "level-abc", "foo", "chapter-1x"])
+@pytest.mark.parametrize("scope", ["chapter-5", "level-104", "level-204", "level-304", "level-404", "level-", "level-abc", "foo", "chapter-1x"])
 def test_leaderboard_bad_scope(client, scope):
     assert client.get(f"/api/game/leaderboard?scope={scope}").status_code == 400
 
@@ -460,3 +463,50 @@ def test_ly_nam_de_achievement_rules():
     assert not rules["LND_SPEED"](ctx({**fast, 303: 400.0}))    # đúng 900 s -> chưa đạt
     assert not rules["LND_SPEED"](ctx({201: 100.0, 202: 100.0, 203: 100.0}))
     assert not rules["BT_SPEED"](ctx(fast))
+
+
+# TQP-SKELETON: 3 màn Triệu Việt Vương đi qua render_chapter_level().
+@pytest.mark.parametrize("url, level", [
+    ("/gameplay/levels/trieu-quang-phuc", 1),
+    ("/gameplay/levels/trieu-quang-phuc/2", 2),
+    ("/gameplay/levels/trieu-quang-phuc/3", 3),
+])
+def test_trieu_quang_phuc_level_routes(client, url, level):
+    response = client.get(url)
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert f'data-level="{level}"' in page
+    assert "js/levels/trieu-quang-phuc/main.js" in page
+    assert "ly-nam-de/main.js" not in page and "ba-trieu/main.js" not in page
+
+
+@pytest.mark.parametrize("level_id", [401, 402, 403])
+def test_save_time_accepts_trieu_quang_phuc_levels(client, level_id):
+    login(client)
+    response = client.post("/api/game/save-time", json={"level_id": level_id, "clear_time": 60})
+    assert response.status_code == 200
+    assert client.saved[-1][1] == level_id
+
+
+def test_progress_put_chapter_4(client, monkeypatch):
+    monkeypatch.setattr(api, "known_reward_ids", lambda chapter_id: {"SK_TQP_DRAGON_CLAW"} if chapter_id == 4 else set())
+    login(client)
+    data = {**GOOD_PROGRESS, "rewards": ["SK_TQP_DRAGON_CLAW"]}
+    assert client.put("/api/game/progress/4", json=data).status_code == 200
+    assert client.progress_saved == [(USER["id"], 4, data)]
+
+
+# TQP-SKELETON: luật thành tựu chương 4 (migration 008, TQP-00 mục 9).
+def test_trieu_quang_phuc_achievement_rules():
+    from backend.services.game_service import ACHIEVEMENT_RULES as rules
+
+    def ctx(best_times):
+        return {"best_times": best_times, "stats": {}}
+
+    fast = {401: 200.0, 402: 300.0, 403: 399.0}
+    assert rules["TQP_CLEAR_1"](ctx({401: 90.0})) and not rules["TQP_CLEAR_2"](ctx({401: 90.0}))
+    assert rules["TQP_CHAPTER"](ctx({403: 300.0}))
+    assert rules["TQP_SPEED"](ctx(fast))                        # 899 s < 15 phút
+    assert not rules["TQP_SPEED"](ctx({**fast, 403: 400.0}))    # đúng 900 s -> chưa đạt
+    assert not rules["TQP_SPEED"](ctx({301: 100.0, 302: 100.0, 303: 100.0}))
+    assert not rules["LND_SPEED"](ctx(fast))

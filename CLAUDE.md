@@ -8,6 +8,7 @@ Hướng dẫn cho Claude Code khi làm việc trong repo này. File này nạp 
 | [trung-trac-gameplay.md](.claude/rules/trung-trac-gameplay.md) | Phần riêng chương Trưng Trắc `js/levels/trung-trac/`, template + CSS chương |
 | [ba-trieu-gameplay.md](.claude/rules/ba-trieu-gameplay.md) | Chương Bà Triệu `js/levels/ba-trieu/`, script sinh câu hỏi |
 | [ly-nam-de-gameplay.md](.claude/rules/ly-nam-de-gameplay.md) | Chương Lý Nam Đế `js/levels/ly-nam-de/`, script sinh câu hỏi |
+| [trieu-quang-phuc-gameplay.md](.claude/rules/trieu-quang-phuc-gameplay.md) | Chương Triệu Việt Vương `js/levels/trieu-quang-phuc/`, script sinh câu hỏi |
 | [assets-32bit.md](.claude/rules/assets-32bit.md) | Asset (`assets/`, `static/assets/`), file JS vẽ/nạp asset, brief + prompt Codex, `tools/` |
 | [backend.md](.claude/rules/backend.md) | `backend/`, `tests/`, `app.py` |
 | [web-pages.md](.claude/rules/web-pages.md) | Trang chủ + cửa sổ, Thư viện lịch sử, `/quiz` |
@@ -84,5 +85,5 @@ su_ta_game/
 - Mật khẩu hash bằng werkzeug; đăng nhập giữ bằng Flask session (cookie ký bằng `SUTA_SECRET_KEY` — đổi giá trị mặc định khi chạy thật).
 - Thời gian, điểm, thống kê lượt, kết quả quiz do trình duyệt đo/gửi → **chưa chống gian lận** (ảnh hưởng BXH, thưởng).
 - Test: `pytest tests`. `test_app.py` cần `SUTA_TEST_DATABASE_URL` (PostgreSQL riêng), tự skip nếu thiếu — không phải lỗi.
-- Server dev cho preview: `.claude/launch.json` (`su-ta-flask-5057` chạy debug tắt → **template bị cache, sửa HTML phải khởi động lại server**).
+- Server dev cho preview: `.claude/launch.json` (`su-ta-flask-5057` — hoặc `su-ta-flask-5059` khi cổng 5057 bận — chạy debug tắt → **template bị cache, sửa HTML phải khởi động lại server**).
 - Kiến trúc chi tiết hơn: [docs/architecture.md](docs/architecture.md).

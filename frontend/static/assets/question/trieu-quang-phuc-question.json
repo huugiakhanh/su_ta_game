@@ -1,0 +1,602 @@
+[
+  {
+    "id": 1,
+    "question": "Triệu Quang Phục là vị vua của triều đại nào trong lịch sử Việt Nam?",
+    "options": [
+      "Nhà Đinh",
+      "Nhà Tiền Lý",
+      "Nhà Ngô",
+      "Nhà Lê sơ"
+    ],
+    "correct": 1,
+    "explanation": "Ông kế vị Lý Nam Đế, trị vì nước Vạn Xuân (thời Tiền Lý)."
+  },
+  {
+    "id": 2,
+    "question": "Triệu Quang Phục quê ở đâu?",
+    "options": [
+      "Chu Diên",
+      "Hoa Lư",
+      "Cổ Loa",
+      "Mê Linh"
+    ],
+    "correct": 0,
+    "explanation": "Ông sinh ra tại huyện Chu Diên."
+  },
+  {
+    "id": 3,
+    "question": "Cha của Triệu Quang Phục là ai?",
+    "options": [
+      "Triệu Túc",
+      "Triệu Đà",
+      "Triệu Việt",
+      "Triệu Lệ"
+    ],
+    "correct": 0,
+    "explanation": "Triệu Túc là một thủ lĩnh ở Chu Diên, theo Lý Nam Đế khởi nghĩa."
+  },
+  {
+    "id": 4,
+    "question": "Triệu Quang Phục theo ai khởi nghĩa chống giặc ngoại xâm?",
+    "options": [
+      "Mai Thúc Loan",
+      "Phùng Hưng",
+      "Lý Bí",
+      "Hai Bà Trưng"
+    ],
+    "correct": 2,
+    "explanation": "Ông cùng cha gia nhập cuộc khởi nghĩa của Lý Bí."
+  },
+  {
+    "id": 5,
+    "question": "Quốc hiệu nước ta dưới thời Lý Bí là gì?",
+    "options": [
+      "Đại Cồ Việt",
+      "Vạn Xuân",
+      "Đại Việt",
+      "Giao Chỉ"
+    ],
+    "correct": 1,
+    "explanation": "Lý Bí lên ngôi lập nước Vạn Xuân năm 544."
+  },
+  {
+    "id": 6,
+    "question": "Nhà Lương sai viên tướng nào sang đàn áp nước Vạn Xuân lần thứ nhất?",
+    "options": [
+      "Trần Bá Tiên",
+      "Tôn Toàn",
+      "Mã Viện",
+      "Ô Mã Nhi"
+    ],
+    "correct": 0,
+    "explanation": "Trần Bá Tiên là tướng tài nhà Lương được cử sang đánh Vạn Xuân."
+  },
+  {
+    "id": 7,
+    "question": "Khi quân Lương tấn công, Lý Nam Đế đã rút quân về đâu trước khi giao lại binh quyền?",
+    "options": [
+      "Động Khuất Lão",
+      "Đầm Dạ Trạch",
+      "Lãnh Khê",
+      "Núi Tản Viên"
+    ],
+    "correct": 0,
+    "explanation": "Lý Nam Đế bị bệnh nặng và rút vào động Khuất Lão."
+  },
+  {
+    "id": 8,
+    "question": "Sau khi được trao binh quyền, Triệu Quang Phục đã chọn nơi nào làm căn cứ chống giặc?",
+    "options": [
+      "Thành Cổ Loa",
+      "Đầm Dạ Trạch",
+      "Thành Luy Lâu",
+      "Hoa Lư"
+    ],
+    "correct": 1,
+    "explanation": "Đầm Dạ Trạch có địa hình hiểm trở, phù hợp lối đánh du kích."
+  },
+  {
+    "id": 9,
+    "question": "Đầm Dạ Trạch ngày nay thuộc tỉnh nào?",
+    "options": [
+      "Thái Bình",
+      "Nam Định",
+      "Hưng Yên",
+      "Hải Dương"
+    ],
+    "correct": 2,
+    "explanation": "Đầm Dạ Trạch thuộc huyện Khoái Châu, tỉnh Hưng Yên."
+  },
+  {
+    "id": 10,
+    "question": "Vì sao Triệu Quang Phục chọn Dạ Trạch làm căn cứ?",
+    "options": [
+      "Có thành lũy kiên cố",
+      "Gần biển dễ rút lui",
+      "Đầm lầy rộng, lau sậy rậm rạp",
+      "Đông dân cư dễ tuyển quân"
+    ],
+    "correct": 2,
+    "explanation": "Địa hình bùn lầy, lau sậy giúp quân ta dễ ẩn nấp và phòng thủ."
+  },
+  {
+    "id": 11,
+    "question": "Nhân dân đương thời suy tôn Triệu Quang Phục với danh xưng gì?",
+    "options": [
+      "Bố Cái Đại Vương",
+      "Dạ Trạch Vương",
+      "Nam Việt Đế",
+      "Vạn Xuân Vương"
+    ],
+    "correct": 1,
+    "explanation": "Vì ông lấy đầm Dạ Trạch làm căn cứ chống giặc lẫy lừng."
+  },
+  {
+    "id": 12,
+    "question": "Chiến thuật tác chiến chủ yếu của Triệu Quang Phục ở Dạ Trạch là gì?",
+    "options": [
+      "Đánh thành diệt viện",
+      "Thủy chiến trên sông lớn",
+      "Đánh du kích ban đêm",
+      "Dàn trận trực diện"
+    ],
+    "correct": 2,
+    "explanation": "Quân ta ẩn nấp ban ngày, ban đêm đi thuyền nhỏ ra đánh úp địch."
+  },
+  {
+    "id": 13,
+    "question": "Quân của Triệu Quang Phục di chuyển trong đầm Dạ Trạch bằng phương tiện gì?",
+    "options": [
+      "Thuyền độc mộc",
+      "Bè tre",
+      "Thuyền chiến lớn",
+      "Cưỡi ngựa"
+    ],
+    "correct": 0,
+    "explanation": "Thuyền độc mộc lướt nhẹ trên bãi cỏ nước, dễ dàng luồn lách."
+  },
+  {
+    "id": 14,
+    "question": "Lương thực chủ yếu của quân Triệu Quang Phục trong đầm lấy từ đâu?",
+    "options": [
+      "Cướp trại giặc, bắt tôm cá",
+      "Triều đình chi viện",
+      "Dân chúng gửi vào",
+      "Tự trồng lúa"
+    ],
+    "correct": 0,
+    "explanation": "Nghĩa quân cướp lương thực của giặc và tận dụng sản vật đầm lầy."
+  },
+  {
+    "id": 15,
+    "question": "Truyền thuyết kể rằng Triệu Quang Phục được vị thần nào giúp đỡ?",
+    "options": [
+      "Thánh Gióng",
+      "Sơn Tinh",
+      "Chử Đồng Tử",
+      "Lạc Long Quân"
+    ],
+    "correct": 2,
+    "explanation": "Tương truyền Chử Đồng Tử cưỡi rồng xuống ban cho ông móng rồng."
+  },
+  {
+    "id": 16,
+    "question": "Vật phẩm thần kỳ Triệu Quang Phục nhận được trong truyền thuyết dùng để làm gì?",
+    "options": [
+      "Làm gươm báu",
+      "Cắm lên ngọn giáo",
+      "Gắn vào mũ mâu",
+      "Làm khiên đỡ"
+    ],
+    "correct": 2,
+    "explanation": "Móng rồng gắn vào mũ mâu (mũ chiến) khiến quân địch khiếp sợ."
+  },
+  {
+    "id": 17,
+    "question": "Tướng giặc Trần Bá Tiên phải rút quân về nước vì lý do gì?",
+    "options": [
+      "Bị bệnh nặng",
+      "Trong nước có loạn Hầu Cảnh",
+      "Hết lương thảo",
+      "Vua Lương băng hà"
+    ],
+    "correct": 1,
+    "explanation": "Loạn Hầu Cảnh nổ ra, nhà Lương gọi Trần Bá Tiên về dẹp loạn."
+  },
+  {
+    "id": 18,
+    "question": "Sau khi Trần Bá Tiên về nước, ai là người thay thế chỉ huy quân Lương?",
+    "options": [
+      "Dương Sàn",
+      "Tôn Kiên",
+      "Hoàng Thao",
+      "Liễu Thăng"
+    ],
+    "correct": 0,
+    "explanation": "Tì tướng Dương Sàn ở lại tiếp tục vây hãm Dạ Trạch."
+  },
+  {
+    "id": 19,
+    "question": "Trận đánh quyết định tiêu diệt Dương Sàn diễn ra vào năm nào?",
+    "options": [
+      "548",
+      "550",
+      "938",
+      "544"
+    ],
+    "correct": 1,
+    "explanation": "Năm 550, Triệu Quang Phục phản công chém chết Dương Sàn."
+  },
+  {
+    "id": 20,
+    "question": "Sau khi đánh đuổi quân Lương, Triệu Quang Phục xưng hiệu là gì?",
+    "options": [
+      "Triệu Nam Vương",
+      "Triệu Việt Vương",
+      "Dạ Trạch Đế",
+      "Triệu Vũ Đế"
+    ],
+    "correct": 1,
+    "explanation": "Ông xưng là Triệu Việt Vương, khôi phục nước Vạn Xuân."
+  },
+  {
+    "id": 21,
+    "question": "Triệu Việt Vương đóng đô ở đâu sau khi giành chiến thắng?",
+    "options": [
+      "Cổ Loa",
+      "Dạ Trạch",
+      "Long Biên",
+      "Hoa Lư"
+    ],
+    "correct": 2,
+    "explanation": "Ông dời đô về thành Long Biên (Hà Nội ngày nay)."
+  },
+  {
+    "id": 22,
+    "question": "Người đã dấy binh tranh giành quyền lực với Triệu Việt Vương sau đó là ai?",
+    "options": [
+      "Lý Phật Tử",
+      "Khúc Thừa Dụ",
+      "Ngô Quyền",
+      "Lý Bí"
+    ],
+    "correct": 0,
+    "explanation": "Lý Phật Tử (người họ hàng của Lý Nam Đế) kéo quân đánh Triệu Việt Vương."
+  },
+  {
+    "id": 23,
+    "question": "Triệu Việt Vương đã xử lý thế nào khi Lý Phật Tử đánh mình lần đầu?",
+    "options": [
+      "Tiêu diệt tận gốc",
+      "Chia đất giảng hòa",
+      "Bỏ chạy",
+      "Đầu hàng"
+    ],
+    "correct": 1,
+    "explanation": "Vì không muốn cốt nhục tương tàn, ông chia bãi Quân Thần làm ranh giới."
+  },
+  {
+    "id": 24,
+    "question": "Để củng cố hòa bình, Triệu Việt Vương đã làm gì?",
+    "options": [
+      "Nộp cống phẩm",
+      "Gả con gái là Cảo Nương cho Nhã Lang",
+      "Xây thành lũy mới",
+      "Ký hiệp ước"
+    ],
+    "correct": 1,
+    "explanation": "Ông gả con gái cho con trai Lý Phật Tử là Nhã Lang."
+  },
+  {
+    "id": 25,
+    "question": "Câu chuyện Cảo Nương - Nhã Lang gợi nhớ đến truyền thuyết nào?",
+    "options": [
+      "Sơn Tinh Thủy Tinh",
+      "Trọng Thủy Mị Châu",
+      "Tấm Cám",
+      "Thạch Sanh"
+    ],
+    "correct": 1,
+    "explanation": "Mô típ con rể phản bội, trộm bí mật quân sự giống hệt Trọng Thủy Mị Châu."
+  },
+  {
+    "id": 26,
+    "question": "Bí mật quân sự mà Nhã Lang lấy cắp của Triệu Việt Vương là gì?",
+    "options": [
+      "Chiếc mũ mâu gắn móng rồng",
+      "Nỏ thần",
+      "Sơ đồ thành Long Biên",
+      "Bản đồ đầm Dạ Trạch"
+    ],
+    "correct": 0,
+    "explanation": "Nhã Lang đánh tráo chiếc móng rồng gắn trên mũ chiến của Triệu Việt Vương."
+  },
+  {
+    "id": 27,
+    "question": "Cuộc tấn công bất ngờ của Lý Phật Tử khiến Triệu Việt Vương phải tháo chạy về hướng nào?",
+    "options": [
+      "Phía Bắc",
+      "Phía Tây",
+      "Cửa biển Đại Nha (Nam)",
+      "Lên rừng"
+    ],
+    "correct": 2,
+    "explanation": "Ông thua trận và rút chạy về phía cửa biển Đại Nha (Nam Định)."
+  },
+  {
+    "id": 28,
+    "question": "Sự kiện Triệu Việt Vương mất diễn ra vào năm nào?",
+    "options": [
+      "571",
+      "550",
+      "544",
+      "602"
+    ],
+    "correct": 0,
+    "explanation": "Năm 571, ông thất thế và tự trầm mình xuống biển."
+  },
+  {
+    "id": 29,
+    "question": "Theo sử cũ, Triệu Việt Vương đã tự vẫn ở đâu?",
+    "options": [
+      "Sông Bạch Đằng",
+      "Đầm Dạ Trạch",
+      "Cửa biển Đại Nha",
+      "Hồ Tây"
+    ],
+    "correct": 2,
+    "explanation": "Bị truy cùng giết tận, ông nhảy xuống cửa biển Đại Nha tự vẫn."
+  },
+  {
+    "id": 30,
+    "question": "Ý nghĩa lớn nhất của khởi nghĩa Dạ Trạch là gì?",
+    "options": [
+      "Xây dựng được thành lũy lớn",
+      "Tạo ra vũ khí mới",
+      "Kế tục và bảo vệ thành công nước Vạn Xuân",
+      "Mở rộng lãnh thổ"
+    ],
+    "correct": 2,
+    "explanation": "Ông giữ vững được ngọn cờ độc lập của nước Vạn Xuân giữa vòng vây kẻ thù."
+  },
+  {
+    "id": 31,
+    "question": "Cuộc kháng chiến tại Dạ Trạch kéo dài trong khoảng bao lâu?",
+    "options": [
+      "Dưới 1 năm",
+      "Khoảng 3-4 năm",
+      "Hơn 10 năm",
+      "20 năm"
+    ],
+    "correct": 1,
+    "explanation": "Cuộc bám trụ tại Dạ Trạch diễn ra từ năm 547 đến 550."
+  },
+  {
+    "id": 32,
+    "question": "Triệu Túc (cha Triệu Quang Phục) từng giữ chức vụ gì trong triều Lý Nam Đế?",
+    "options": [
+      "Thái phó",
+      "Tướng quân",
+      "Tể tướng",
+      "Thái úy"
+    ],
+    "correct": 0,
+    "explanation": "Triệu Túc là Thái phó, một chức quan rất cao trong triều."
+  },
+  {
+    "id": 33,
+    "question": "Từ \"Dạ\" trong \"Dạ Trạch\" có nghĩa là gì?",
+    "options": [
+      "Lớn",
+      "Ban đêm",
+      "Sâu thẳm",
+      "Bùn lầy"
+    ],
+    "correct": 1,
+    "explanation": "\"Dạ\" là ban đêm, \"Trạch\" là đầm lầy, ý chỉ đầm lầy ban đêm (nhưng thực tế là tên địa danh)."
+  },
+  {
+    "id": 34,
+    "question": "Chiến thuật của Triệu Quang Phục được các nhà sử học quân sự đánh giá là hình thức sơ khai của nghệ thuật gì?",
+    "options": [
+      "Trận địa chiến",
+      "Thủy chiến",
+      "Chiến tranh du kích",
+      "Tâm lý chiến"
+    ],
+    "correct": 2,
+    "explanation": "Đánh lén, thoắt ẩn thoắt hiện dựa vào địa hình hiểm trở là nghệ thuật du kích."
+  },
+  {
+    "id": 35,
+    "question": "Đình thờ Triệu Việt Vương nổi tiếng nhất nằm ở xã nào của tỉnh Hưng Yên ngày nay?",
+    "options": [
+      "Xã Dạ Trạch",
+      "Xã Bãi Sậy",
+      "Xã Mễ Sở",
+      "Xã Tứ Dân"
+    ],
+    "correct": 0,
+    "explanation": "Đền Hóa Dạ Trạch, huyện Khoái Châu thờ cả Chử Đồng Tử và Triệu Việt Vương."
+  },
+  {
+    "id": 36,
+    "question": "Nhà Lương ở Trung Quốc lúc bấy giờ nằm trong thời kỳ lịch sử nào?",
+    "options": [
+      "Xuân Thu Chiến Quốc",
+      "Nam Bắc Triều",
+      "Hán Sở tranh hùng",
+      "Ngũ Đại Thập Quốc"
+    ],
+    "correct": 1,
+    "explanation": "Đây là thời Nam Bắc Triều, nhà Lương cai trị phía Nam Trung Quốc."
+  },
+  {
+    "id": 37,
+    "question": "Ai là người viết \"Đại Việt sử ký toàn thư\", trong đó có chép về kỷ Triệu Việt Vương?",
+    "options": [
+      "Lê Văn Hưu",
+      "Ngô Sĩ Liên",
+      "Trần Trọng Kim",
+      "Phan Huy Chú"
+    ],
+    "correct": 1,
+    "explanation": "Sử gia Ngô Sĩ Liên thời Lê sơ là người biên soạn bộ sử này."
+  },
+  {
+    "id": 38,
+    "question": "Đầm Dạ Trạch ngày xưa được hình thành do đâu?",
+    "options": [
+      "Do sông Hồng đổi dòng",
+      "Nhân tạo",
+      "Động đất",
+      "Sao băng rơi"
+    ],
+    "correct": 0,
+    "explanation": "Do một khúc của sông Hồng (sông Nhị) đổi dòng tạo thành đầm lầy rộng lớn."
+  },
+  {
+    "id": 39,
+    "question": "Triệu Việt Vương lên ngôi và trị vì nước Vạn Xuân trong khoảng bao nhiêu năm?",
+    "options": [
+      "10 năm",
+      "Hơn 20 năm",
+      "5 năm",
+      "30 năm"
+    ],
+    "correct": 1,
+    "explanation": "Ông trị vì từ năm 548 (hoặc 550) đến 571 (hơn 20 năm)."
+  },
+  {
+    "id": 40,
+    "question": "Lý Phật Tử sau khi cướp ngôi Triệu Việt Vương đã tự xưng là gì?",
+    "options": [
+      "Lý Nam Đế",
+      "Hậu Lý Nam Đế",
+      "Việt Vương",
+      "Lý Đế"
+    ],
+    "correct": 1,
+    "explanation": "Để nối tiếp Lý Bí, Lý Phật Tử tự xưng là Hậu Lý Nam Đế."
+  },
+  {
+    "id": 41,
+    "question": "Khuyết điểm lớn nhất trong trị nước của Triệu Việt Vương dẫn đến bi kịch cuối đời là gì?",
+    "options": [
+      "Bóc lột nhân dân",
+      "Không quan tâm binh bị",
+      "Quá tin người và nương tay với kẻ thù chính trị",
+      "Hàng giặc"
+    ],
+    "correct": 2,
+    "explanation": "Vì nể tình họ hàng với Lý Bí, ông đã nhân nhượng Lý Phật Tử và trả giá đắt."
+  },
+  {
+    "id": 42,
+    "question": "Đâu là câu thơ/nhận định đúng về chiến thắng của Triệu Quang Phục?",
+    "options": [
+      "Phá Tống bình Chiêm",
+      "Lấy yếu chống mạnh, lấy ít địch nhiều",
+      "Đóng cọc trên sông",
+      "Bảy lần bắt tướng"
+    ],
+    "correct": 1,
+    "explanation": "Đây là đặc trưng của chiến tranh du kích tại Dạ Trạch."
+  },
+  {
+    "id": 43,
+    "question": "Nhà nước Vạn Xuân tồn tại tổng cộng khoảng bao nhiêu năm (từ Lý Nam Đế đến hết thời Lý Phật Tử)?",
+    "options": [
+      "Gần 30 năm",
+      "Gần 60 năm",
+      "Gần 100 năm",
+      "Gần 10 năm"
+    ],
+    "correct": 1,
+    "explanation": "Từ 544 đến năm 602 khi nhà Tùy sang đánh phá."
+  },
+  {
+    "id": 44,
+    "question": "Chức vụ của Trần Bá Tiên - kẻ thù không đội trời chung của Triệu Quang Phục - về sau ở Trung Quốc là gì?",
+    "options": [
+      "Vua sáng lập nhà Trần (Nam triều)",
+      "Tể tướng nhà Tùy",
+      "Tướng quân nhà Đường",
+      "Dân thường"
+    ],
+    "correct": 0,
+    "explanation": "Trần Bá Tiên sau về nước dẹp loạn và phế vua Lương, lập ra nhà Trần ở Trung Quốc."
+  },
+  {
+    "id": 45,
+    "question": "Ngoài đầm Dạ Trạch, Hưng Yên còn gắn liền với căn cứ chống Pháp nổi tiếng nào sau này có địa hình tương tự?",
+    "options": [
+      "Ba Đình",
+      "Hương Khê",
+      "Bãi Sậy",
+      "Yên Thế"
+    ],
+    "correct": 2,
+    "explanation": "Khởi nghĩa Bãi Sậy (Nguyễn Thiện Thuật) cũng dựa vào địa hình lau sậy đầm lầy."
+  },
+  {
+    "id": 46,
+    "question": "Vũ khí của nghĩa quân Dạ Trạch thời kỳ đầu đa số làm từ vật liệu gì?",
+    "options": [
+      "Súng pháo",
+      "Tre, gỗ và một ít sắt",
+      "Đồng thau",
+      "Đá"
+    ],
+    "correct": 1,
+    "explanation": "Do bị bao vây, vũ khí chủ yếu được chế tác thô sơ từ vật liệu tại chỗ."
+  },
+  {
+    "id": 47,
+    "question": "Sau khi lên ngôi, Triệu Việt Vương chú trọng điều gì nhất?",
+    "options": [
+      "Đi xâm lược",
+      "Phục hồi sản xuất và an dân",
+      "Xây cung điện nguy nga",
+      "Đóng thuế cho nhà Lương"
+    ],
+    "correct": 1,
+    "explanation": "Ông tập trung hàn gắn vết thương chiến tranh và phát triển Vạn Xuân."
+  },
+  {
+    "id": 48,
+    "question": "Cuộc chiến tại Dạ Trạch chứng minh chân lý quân sự nào của dân tộc ta?",
+    "options": [
+      "Thành cao hào sâu là vô địch",
+      "Thủy chiến luôn thắng",
+      "Địa lợi và nhân hòa quyết định thắng lợi",
+      "Quân đông ắt thắng"
+    ],
+    "correct": 2,
+    "explanation": "Dựa vào nhân dân và tận dụng tốt địa hình hiểm trở sẽ đánh thắng địch."
+  },
+  {
+    "id": 49,
+    "question": "Nhân vật Nhã Lang trong lịch sử mang hình tượng gì?",
+    "options": [
+      "Anh hùng cứu nước",
+      "Kẻ gian tế, phản trắc",
+      "Người kiến tạo hòa bình",
+      "Tướng quân tài ba"
+    ],
+    "correct": 1,
+    "explanation": "Nhã Lang lợi dụng tình cảm của Cảo Nương để trộm cắp bí mật quốc gia."
+  },
+  {
+    "id": 50,
+    "question": "Ngày nay, lễ hội đền Dạ Trạch thường diễn ra vào thời gian nào trong năm để tưởng nhớ Chử Đồng Tử và Triệu Việt Vương?",
+    "options": [
+      "Mùa Xuân (tháng 2-3 Âm lịch)",
+      "Mùa Thu",
+      "Mùa Đông",
+      "Mùa Hè"
+    ],
+    "correct": 0,
+    "explanation": "Lễ hội thường diễn ra vào mùa Xuân, là lễ hội lớn của vùng đồng bằng Bắc Bộ."
+  }
+]

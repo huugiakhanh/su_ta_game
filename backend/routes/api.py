@@ -15,13 +15,13 @@ api_bp = Blueprint("api", __name__)
 
 # level_id = 100 × chương + màn (TT-TIME-01). Chương 1 = Trưng Trắc, 2 = Bà Triệu,
 # 3 = Lý Nam Đế (3 màn mỗi chương; seed ở migration 001 / 005 / 007).
-VALID_LEVEL_IDS = {101, 102, 103, 201, 202, 203, 301, 302, 303}
+VALID_LEVEL_IDS = {101, 102, 103, 201, 202, 203, 301, 302, 303, 401, 402, 403}
 # Thời gian qua 1 màn hợp lệ: (0, 24 giờ].
 MAX_CLEAR_TIME_SECONDS = 24 * 3600
 # `stats` tuỳ chọn của 1 lượt qua màn (SUTA-DB-01) — số nguyên ≥ 0, dùng xét thành tựu.
 STATS_KEYS = {"hits_taken", "quiz_correct", "quiz_total"}
 # Chương có trong bảng `chapters` (1 = Trưng Trắc, 2 = Bà Triệu, 3 = Lý Nam Đế).
-VALID_CHAPTER_IDS = {1, 2, 3}
+VALID_CHAPTER_IDS = {1, 2, 3, 4}
 LEADERBOARD_LIMIT = 10
 # Avatar người chơi (cột users.avatar, migration 002). Mặc định "male".
 VALID_AVATARS = {"male", "female"}
