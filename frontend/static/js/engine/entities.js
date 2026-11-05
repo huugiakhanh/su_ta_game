@@ -57,12 +57,15 @@ export function makeEnemy(x, w, h, hp, boss, options = {}) {
 // CHAPTER.sprites.npcs và CHAPTER.dialogues.
 // `requires` (TQP-ENGINE E6) = số vật phẩm phải nhặt đủ thì NPC mới gặp được
 // (chưa đủ: vẫn giữ người chơi lại, vẽ mờ, nhắc — level-flow.js updateMeetings).
-export function makeNpc(id, chunk, localX, { requires = 0 } = {}) {
+// `story` (TQP-L1) = cốt truyện ngắn (định dạng openStory) nói khi gặp, thay cho
+// hội thoại câu hỏi CHAPTER.dialogues[id]; `hint` = câu nhắc khi còn quân vây
+// (`captorOf`), thay CHAPTER.text.rescueHint (vd. bù nhìn tập võ chặn đường).
+export function makeNpc(id, chunk, localX, { requires = 0, story = null, hint = null } = {}) {
   const centerX = worldX(chunk, localX);
   return {
     id, centerX,
     x: centerX - NPC_RULES.w / 2, y: groundYAt(centerX) - NPC_RULES.h, w: NPC_RULES.w, h: NPC_RULES.h,
-    met: false, talking: false, fade: 1, requires
+    met: false, talking: false, fade: 1, requires, story, hint
   };
 }
 

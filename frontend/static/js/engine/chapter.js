@@ -40,11 +40,16 @@
 //                 option triggerRange/rest/hp, đặt trong khe sông như thuyền); hazard option
 //                 `callHelp: { after, range, spawnAt: [worldX], enemy?: { art, w, h, hp } }` +
 //                 sprite `signalMessage`/anims.signal/`signalTime` (thuyền gọi viện).
-//                 Cờ `plungeOnly` trên enemies[…]/hazards[…] = chỉ trúng đòn bổ (lính giáo dài)
+//                 Cờ `plungeOnly` trên enemies[…]/hazards[…] = chỉ trúng đòn bổ (lính giáo dài);
+//                 gạt đòn thì phát anims.blocked (nếu có) 0,2 s.
+//                 TQP-L1: enemies[art].behavior trên enemy `boss: true` = boss vẫn chạy hành
+//                 vi chung (mini-boss đội trưởng giáo dài); enemy có `id` = `carrier` của
+//                 vật phẩm — chết thì hiện vật phẩm (như hazard); `noBar` = không vẽ thanh máu.
 //   pickups?      { heal?: { id, anim } } — sprite bình máu rơi (E4b); thiếu = icon tim chung
 //   mud?          ghi đè số sình MUD { speed, jump, sink, limit } (TQP-ENGINE E1)
 //   plunge?       bật đòn bổ từ trên (TQP-ENGINE E5): đang rơi bấm Đánh = bổ; ghi đè số
-//                 PLUNGE { damage, bounce, speed, boxH, grace } ({} = mặc định)
+//                 PLUNGE { damage, bounce, speed, forward, boxH, grace } ({} = mặc định;
+//                 forward > 0 = bổ chéo về trước — TQP-L1)
 //   stealth?      { ambush } — đánh úp lính chưa phát hiện từ sau lưng × ambush (E7)
 //   item?         { sprite, fps } — vật phẩm thu thập (ô HUD + vẽ)
 //   quizStele?    ID prop bia câu hỏi chặn đường
@@ -83,7 +88,9 @@
 //     content(options) -> { obstacles, hazards, holes, items, enemies, npcs, quizzes, platforms?, ...thêm }
 //                  (platforms: bục một chiều — entities.js makePlatform; bục lưng hazard `ride` tự thêm;
 //                  covers?: [{ x, w }] vùng ẩn nấp — TQP-ENGINE E7; bonusHealth?: máu tối đa cộng thêm
-//                  (layout thử); npcs: makeNpc(id, chunk, localX, { requires }) — E6; dải sình tự lấy
+//                  (layout thử); npcs: makeNpc(id, chunk, localX, { requires, story, hint }) — E6
+//                  (`story` = cốt truyện ngắn thay hội thoại câu hỏi, `hint` = câu nhắc khi còn
+//                  quân vây `captorOf` — TQP-L1); dải sình tự lấy
 //                  từ địa hình)
 //                  (đặt địa hình bằng setTerrain/buildTerrain trước khi dựng nội dung)
 //     events?(player, dt)  sự kiện riêng mỗi frame (sau câu hỏi + gặp NPC)

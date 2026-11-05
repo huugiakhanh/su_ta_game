@@ -1,17 +1,17 @@
 // Màn 2 "Hiền tài Dạ Trạch" — TQP-SKELETON: chưa có NPC (thoại chờ team duyệt —
 // docs/SUTA_TQP_TASK_00.md §4), chưa rải 10 sách khoá NPC (TQP-ENGINE E6). Tạm:
 // 3 câu hỏi chặn đường rút lần lượt từ pool của Triệu Túc, Lý Nam Đế, Chử Đồng
-// Tử; 2 lính Lương, 1 bẫy lưới trúc. NPC + giải cứu làm ở TQP-L2. DESIGN_BASELINE.
+// Tử; 2 lính Lương, 1 bẫy chông tre. NPC + giải cứu làm ở TQP-L2. DESIGN_BASELINE.
 
 import { worldX, makeHazard } from '../../engine/geometry.js';
 import { makeEnemy, makeQuiz, pick, checkTerrainFootprints } from '../../engine/entities.js';
-import { QUIZ, SOLDIER, NET } from './config.js';
+import { QUIZ, SOLDIER } from './config.js';
 import { NPC_QUESTION_POOLS } from './questions-data.js';
 
 export function level2Content() {
   const content = {
     obstacles: [],
-    hazards: [makeHazard('snare', 'netTrap', 4, 300, { dropHeight: NET.dropHeight, triggerWidth: NET.triggerWidth })],
+    hazards: [makeHazard('trap', 'bambooPit', 4, 300, { harmful: false, triggerDistance: 58 })],
     holes: [],
     items: [],
     enemies: [

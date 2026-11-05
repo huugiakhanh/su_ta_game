@@ -49,7 +49,7 @@ Mẫu tham chiếu: chương Lý Nam Đế ([SUTA_LND_TASK_00.md](SUTA_LND_TASK_
 | **TQP-ART-BIBLE** | Phụ lục art bible giữa thế kỷ 6 trong `SUTA_TT_ART_BRIEF_32.md` (đầm Dạ Trạch, thuyền độc mộc, giáp Dương Sàn, Chử Đồng Tử, động Khuất Lão), tra cứu có nguồn bằng `/research` | — |
 | **TQP-SKELETON** | [SUTA_TQP_TASK_SKELETON_01.md](SUTA_TQP_TASK_SKELETON_01.md) — thư mục chương, `chapter.js`/`config.js`, template, route, migration `008` (chương 4, level 401–403, phần thưởng, thành tựu), `VALID_*`, thẻ trang chủ + timeline, JSON câu hỏi + `/quiz`, rule `.claude/rules/trieu-quang-phuc-gameplay.md` (+ thêm vào bảng rule trong `CLAUDE.md`). Chạy được bằng asset mượn | TQP-00 |
 | **TQP-ENGINE** | [SUTA_TQP_TASK_ENGINE_01.md](SUTA_TQP_TASK_ENGINE_01.md) — mục 3.5 (**xong 04/11/2026**, [REPORT_TQP-ENGINE.md](REPORT_TQP-ENGINE.md); E9 bỏ vì bẫy chông ẩn chương 2 đã có) | TQP-SKELETON |
-| **TQP-L1** + `TQP_ART_01` | Màn 1 (mục 3.1) | SKELETON, ENGINE |
+| **TQP-L1** + `TQP_ART_01` | Màn 1 (mục 3.1) — **xong 04/11** ([task card](archive/SUTA_TQP_TASK_L1_01.md), [report](archive/REPORT_TQP-L1.md)); `TQP_ART_01` Gate A1 + A2 PASS, `IN_GAME` | SKELETON, ENGINE |
 | **TQP-L2** + `TQP_ART_02` | Màn 2 (mục 3.2) | L1, TQP-00 duyệt |
 | **TQP-L3** + `TQP_ART_03` | Màn 3 boss Dương Sàn (mục 3.4) | L2 |
 | Nhạc | `GEMINI_PROMPT_TQP_MUSIC.md` → `audio/trieu-quang-phuc/level1–3.mp3` | — |
@@ -186,6 +186,7 @@ Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy nguyên văn Excel 
 ## 5. CÂU CHỮ KHÁC — CHỜ TEAM DUYỆT (nháp)
 
 ### 5.1 Thông báo đầu màn
+> Màn 1 + mục 5.2 **duyệt 04/11/2026** (TQP-L1 Q1) — đã chép nguyên văn vào code.
 - Màn 1: "Màn 1: Tuổi trẻ rèn luyện — Giữa thế kỷ 6, quân Lương đô hộ Giao Châu. Hãy cùng Triệu Quang Phục rèn võ nghệ ở Chu Diên, thu đủ 5 Quyển Sách Tinh Hoa."
 - Màn 2: "Màn 2: Hiền tài Dạ Trạch"
 - Màn 3: "Màn 3: Đại phá Dương Sàn"
@@ -212,7 +213,7 @@ Câu chữ chốt ở TQP-L1 (không phải nội dung lịch sử — chỉ hư
 
 | Đợt | Nội dung |
 |---|---|
-| `TQP_ART_01` | **Prompt giao Codex: [CODEX_PROMPT_TQP_ART_01.md](CODEX_PROMPT_TQP_ART_01.md)** (04/11; Gate A1 = `plunge` người chơi nam/nữ, `NPC_TQP`, lính giáo dài, nền đầm + mặt sình). Người dùng chốt 04/11: thuyền gọi quân bằng **tù và + cờ hiệu** (không pháo hiệu — thế kỷ 6 chưa có thuốc súng); `NPC_TQP` giữ nhận diện người con trong `NPC_TRIEU_TUC`, đổi mái chèo thành giáo. Nội dung gốc: NPC + chân dung TQP; bù nhìn rơm (đứng / vỡ), cọc tre; lính giáo dài + đội trưởng giáo dài; cung thủ trên cây (prop cây); bẫy chông ẩn; khói chướng khí trôi; rắn + bụi cỏ; cá sấu (bọt / ngoi / lặn); thuyền tuần tiễu + pháo tín hiệu; tile + cảnh sình lầy; nền bãi tập Chu Diên, bãi lau ven sông, đầm lầy; cổng đích |
+| `TQP_ART_01` | **Xong 04/11** — prompt đã xoá, kết quả soát trong [REPORT_TQP-L1.md](archive/REPORT_TQP-L1.md) (04/11; Gate A1 = `plunge` người chơi nam/nữ, `NPC_TQP`, lính giáo dài, nền đầm + mặt sình). Người dùng chốt 04/11: thuyền gọi quân bằng **tù và + cờ hiệu** (không pháo hiệu — thế kỷ 6 chưa có thuốc súng); `NPC_TQP` ~~giữ nhận diện người con trong `NPC_TRIEU_TUC`~~ → **đổi 04/11 (soát Gate A1): tạo hình theo ảnh thư viện `characters/avatar/thumb/trieu_quang_phuc.webp`** (giáp lá rêu, khăn choàng đỏ, giáo tua đỏ); đòn bổ của người chơi là **cú chém xuống** (không cắm kiếm); bảng màu sprite chương 4 = 101 màu (+3 màu cá sấu/rắn/khói). Nội dung gốc: NPC + chân dung TQP; bù nhìn rơm (đứng / vỡ), cọc tre; lính giáo dài + đội trưởng giáo dài; cung thủ trên cây (prop cây); bẫy chông ẩn; khói chướng khí trôi; rắn + bụi cỏ; cá sấu (bọt / ngoi / lặn); thuyền tuần tiễu + pháo tín hiệu; tile + cảnh sình lầy; nền bãi tập Chu Diên, bãi lau ven sông, đầm lầy; cổng đích |
 | `TQP_ART_02` | NPC + chân dung Triệu Túc (vẽ riêng), Lý Nam Đế (bệnh, ngồi), Chử Đồng Tử; bụi lau che + FX ẩn nấp; nền động Khuất Lão, Dạ Trạch đêm; FX + icon 3 kỹ năng |
 | `TQP_ART_03` | Dương Sàn (lao, chém đại đao, lún, hở gáy, cuồng nộ, ngã) + chân dung; lính đánh thuê, cung thủ; mỏm đất vỡ; thuyền độc mộc; nền Dạ Trạch nửa đêm + chớp đuốc |
 

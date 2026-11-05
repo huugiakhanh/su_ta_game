@@ -52,11 +52,12 @@
                     <div class="t-year">Năm 542</div>
                 </div>
 
-                <div class="t-item t-bottom">
+                {# HOME-UNLOCK: mở khi đã qua chương 3 (TQP-L1). #}
+                <div class="t-item t-bottom" data-unlock-after="3" data-hero="Triệu Quang Phục" data-route="/gameplay/levels/trieu-quang-phuc">
                     <div class="t-year">Năm 550</div>
                     <div class="t-dot"></div>
                     <div class="t-card locked">
-                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <div class="lock-overlay">🔒 Qua chương Lý Nam Đế</div>
                         <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/trieu_quang_phuc.webp') }}" alt="Triệu Quang Phục" loading="lazy" decoding="async">
                         <div class="t-info">
                             <h4>Triệu Quang Phục</h4>

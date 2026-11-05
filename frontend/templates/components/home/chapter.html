@@ -129,11 +129,13 @@
         <span class="btn-play-now">🔒 Qua chương Bà Triệu</span>
       </div>
 
-      <div class="hero-select-card locked" onclick="alert('Màn chơi Triệu Quang Phục đang phát triển!')">
+      {# HOME-UNLOCK: mở khi đã qua chương 3 (TQP-L1). #}
+      <div class="hero-select-card locked" data-unlock-after="3" data-route="/gameplay/levels/trieu-quang-phuc"
+           onclick="alert('Hoàn thành chương Lý Nam Đế để mở khóa Triệu Quang Phục!')">
         <span class="hero-badge-year">Năm 550</span>
         <strong class="hero-select-name">Triệu Quang Phục</strong>
         <small class="hero-select-sub">(Dạ Trạch Vương)</small>
-        <span class="btn-play-now">🔒 Sắp ra mắt</span>
+        <span class="btn-play-now">🔒 Qua chương Lý Nam Đế</span>
       </div>
 
       <div class="hero-select-card locked" onclick="alert('Màn chơi Mai Hắc Đế đang phát triển!')">

@@ -44,6 +44,8 @@ export function strikeEnemy(enemy, damage = 1) {
   enemy.action = null;
   setAnim(enemy, 'death');
   if (enemy.harmless) return;
+  // Vật phẩm `carrier` = id enemy (mini-boss rơi sách — TQP-L1).
+  if (enemy.id) revealCarriedItems(enemy);
   dropHeal(enemy);
   state.score += enemy.boss ? 700 : 250;
   // Quân ra thành đợt đông (art không có defeatMessage) — không thông báo từng con.

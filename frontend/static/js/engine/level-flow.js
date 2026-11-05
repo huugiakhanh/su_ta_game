@@ -251,9 +251,15 @@ function updateMeetings(p, dt) {
   const dialogue = CHAPTER.dialogues[npc.id];
   if (captive && distance <= NPC_RESCUE.hintRange && state.rescueHintTimer <= 0) {
     state.rescueHintTimer = NPC_RESCUE.hintInterval;
-    showMessage(CHAPTER.text.rescueHint(dialogue?.name ?? npc.id), 2400);
+    showMessage(npc.hint ?? CHAPTER.text.rescueHint(dialogue?.name ?? npc.id), 2400);
   }
   if (!captive && distance <= talkDistance) {
+    // NPC nói cốt truyện ngắn (`story` — TQP-L1) thay cho hội thoại câu hỏi.
+    if (!dialogue && npc.story) {
+      npc.talking = true;
+      openStory(npc.story, () => { npc.talking = false; npc.met = true; });
+      return true;
+    }
     // NPC chưa có thoại (TODO_MISSING — vd. NPC hộp của layout thử): coi như đã gặp.
     if (!dialogue) {
       console.warn(`NPC ${npc.id}: chưa có thoại trong CHAPTER.dialogues — bỏ qua hội thoại.`);

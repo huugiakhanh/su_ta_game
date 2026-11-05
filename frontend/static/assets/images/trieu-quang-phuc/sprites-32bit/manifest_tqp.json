@@ -1,0 +1,633 @@
+{
+  "chapter": "trieu-quang-phuc",
+  "version": "32.A2",
+  "density": 4,
+  "pivot": "bottom-center",
+  "facing": "right",
+  "assets": [
+    {
+      "id": "NPC_TQP",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_TQP/npc_tqp_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_TQP/npc_tqp_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A1 bản sửa1, section9.3: adult avatar identity, dark moss lamellar and red trim/cape/ribbon/tassel, same spear hand in talk. Pending visual review. See SPRITE_REPORT_TQP_32.md."
+    },
+    {
+      "id": "EN_LUONG_SPEARMAN",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_LUONG_SPEARMAN/en_luong_spearman_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_LUONG_SPEARMAN/en_luong_spearman_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_LUONG_SPEARMAN/en_luong_spearman_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "blocked",
+          "file": "enemy/EN_LUONG_SPEARMAN/en_luong_spearman_blocked.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_LUONG_SPEARMAN/en_luong_spearman_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_LUONG_SPEARMAN/en_luong_spearman_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A1 bản sửa1, section9: spear normalization240±8 image pixels, body scale preserved across attack and idle, attack9@18 hit4. Pending visual review. See report and meta/a1_r1."
+    },
+    {
+      "id": "EN_LUONG_WAR_BOAT",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 96,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_LUONG_WAR_BOAT/en_luong_war_boat_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_LUONG_WAR_BOAT/en_luong_war_boat_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "signal",
+          "file": "enemy\\EN_LUONG_WAR_BOAT\\en_luong_war_boat_signal.png",
+          "frames": 8,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "hurt",
+          "file": "enemy\\EN_LUONG_WAR_BOAT\\en_luong_war_boat_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy\\EN_LUONG_WAR_BOAT\\en_luong_war_boat_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_01 A2: ash-gray A; ImageGen action grids, fixed per-asset scale; visual review pending. See meta/qa_a2.json."
+    },
+    {
+      "id": "EN_LUONG_PATROL",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_LUONG_PATROL/en_luong_patrol_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_LUONG_PATROL/en_luong_patrol_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_LUONG_PATROL/en_luong_patrol_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_LUONG_PATROL/en_luong_patrol_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_LUONG_PATROL/en_luong_patrol_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A1 candidate; proposed ash faction palette; visual review pending. Fixed scale across actions. See meta/qa_a1.json."
+    },
+    {
+      "id": "EN_LUONG_ARCHER",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_LUONG_ARCHER/en_luong_archer_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_LUONG_ARCHER/en_luong_archer_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        }
+      ],
+      "qa_notes": "LND_ART_01 A2: ash-gray A; ImageGen action grids, fixed per-asset scale; visual review pending. See meta/qa_a2.json."
+    },
+    {
+      "id": "PJ_FIRE_ARROW",
+      "category": "projectile",
+      "priority": "P1",
+      "frame_w": 24,
+      "frame_h": 8,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "projectile/PJ_FIRE_ARROW/pj_fire_arrow_loop.png",
+          "frames": 6,
+          "fps": 24,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "PJ_CROSSBOW_BOLT",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 8,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "projectile/PJ_CROSSBOW_BOLT/pj_crossbow_bolt_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A2: short right-facing bolt with iron tip and feather tail."
+    },
+    {
+      "id": "ITEM_LND_HEAL",
+      "category": "item",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "item/ITEM_LND_HEAL/item_lnd_heal_idle.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json.",
+      "design_baseline": true,
+      "visible_bbox": {
+        "x": 3.5,
+        "y": 2.25,
+        "w": 9,
+        "h": 12.75
+      }
+    },
+    {
+      "id": "TR_BAMBOO_SPIKE_PIT",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "hidden",
+          "file": "obstacle/TR_BAMBOO_SPIKE_PIT/tr_bamboo_spike_pit_hidden.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "reveal",
+          "file": "obstacle/TR_BAMBOO_SPIKE_PIT/tr_bamboo_spike_pit_reveal.png",
+          "frames": 6,
+          "fps": 24,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A2: yellow-brown bamboo spikes rise from a shallow grass-covered slit."
+    },
+    {
+      "id": "EN_CROCODILE",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "warn",
+          "file": "enemy\\EN_CROCODILE\\en_crocodile_warn.png",
+          "frames": 4,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack",
+          "file": "enemy\\EN_CROCODILE\\en_crocodile_attack.png",
+          "frames": 8,
+          "fps": 8,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "dive",
+          "file": "enemy\\EN_CROCODILE\\en_crocodile_dive.png",
+          "frames": 3,
+          "fps": 10,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy\\EN_CROCODILE\\en_crocodile_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A2 candidate; image_gen sources and measured QA in meta/a2. Pending visual review. See SPRITE_REPORT_TQP_32.md."
+    },
+    {
+      "id": "EN_SWAMP_SNAKE",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "run",
+          "file": "enemy\\EN_SWAMP_SNAKE\\en_swamp_snake_run.png",
+          "frames": 6,
+          "fps": 14,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy\\EN_SWAMP_SNAKE\\en_swamp_snake_attack_01.png",
+          "frames": 6,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": 3
+        },
+        {
+          "name": "death",
+          "file": "enemy\\EN_SWAMP_SNAKE\\en_swamp_snake_death.png",
+          "frames": 5,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A2 candidate; image_gen sources and measured QA in meta/a2. Pending visual review. See SPRITE_REPORT_TQP_32.md."
+    },
+    {
+      "id": "FX_SWAMP_GAS",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 24,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "move",
+          "file": "fx\\FX_SWAMP_GAS\\fx_swamp_gas_move.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A2 candidate; image_gen sources and measured QA in meta/a2. Pending visual review. See SPRITE_REPORT_TQP_32.md."
+    },
+    {
+      "id": "OB_TQP_STRAW_DUMMY",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle\\OB_TQP_STRAW_DUMMY\\ob_tqp_straw_dummy_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "hit",
+          "file": "obstacle\\OB_TQP_STRAW_DUMMY\\ob_tqp_straw_dummy_hit.png",
+          "frames": 3,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "obstacle\\OB_TQP_STRAW_DUMMY\\ob_tqp_straw_dummy_break.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A2 candidate; image_gen sources and measured QA in meta/a2. Pending visual review. See SPRITE_REPORT_TQP_32.md."
+    },
+    {
+      "id": "OB_TQP_STRAW_SPEARMAN",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle\\OB_TQP_STRAW_SPEARMAN\\ob_tqp_straw_spearman_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "hit",
+          "file": "obstacle\\OB_TQP_STRAW_SPEARMAN\\ob_tqp_straw_spearman_hit.png",
+          "frames": 3,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "obstacle\\OB_TQP_STRAW_SPEARMAN\\ob_tqp_straw_spearman_break.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A2 candidate; image_gen sources and measured QA in meta/a2. Pending visual review. See SPRITE_REPORT_TQP_32.md."
+    },
+    {
+      "id": "PORTRAIT_TQP",
+      "category": "portrait",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait\\PORTRAIT_TQP\\portrait_tqp_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A2 candidate; image_gen sources and measured QA in meta/a2. Pending visual review. See SPRITE_REPORT_TQP_32.md."
+    },
+    {
+      "id": "PROP_TQP_ARCHER_TREE",
+      "category": "prop",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 112,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "prop\\PROP_TQP_ARCHER_TREE\\prop_tqp_archer_tree_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A2 candidate; image_gen sources and measured QA in meta/a2. Pending visual review. See SPRITE_REPORT_TQP_32.md."
+    },
+    {
+      "id": "EN_LUONG_SPEAR_CAPTAIN",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy\\EN_LUONG_SPEAR_CAPTAIN\\en_luong_spear_captain_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy\\EN_LUONG_SPEAR_CAPTAIN\\en_luong_spear_captain_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy\\EN_LUONG_SPEAR_CAPTAIN\\en_luong_spear_captain_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 160
+        },
+        {
+          "name": "blocked",
+          "file": "enemy\\EN_LUONG_SPEAR_CAPTAIN\\en_luong_spear_captain_blocked.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "hurt",
+          "file": "enemy\\EN_LUONG_SPEAR_CAPTAIN\\en_luong_spear_captain_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy\\EN_LUONG_SPEAR_CAPTAIN\\en_luong_spear_captain_death.png",
+          "frames": 8,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A2 candidate; image_gen sources and measured QA in meta/a2. Pending visual review. See SPRITE_REPORT_TQP_32.md."
+    }
+  ]
+}

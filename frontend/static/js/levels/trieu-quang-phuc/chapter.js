@@ -1,20 +1,21 @@
 // Định nghĩa chương Triệu Việt Vương (chương 4) cho engine màn chơi. Hợp đồng
-// các trường: engine/chapter.js. 3 màn khung (TQP-SKELETON) bằng asset chương 3
-// (config.js) — chưa có NPC, kỹ năng, boss.
+// các trường: engine/chapter.js. Màn 1 thật (TQP-L1: khu rèn luyện, chướng ngại
+// xáo, mini-boss đội trưởng giáo dài); màn 2–3 còn là khung TQP-SKELETON.
 
 import { CHUNK_W } from '../../engine/config.js';
 import {
   SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, BORROWED_MAPS, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
-  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
+  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, FINISH_GATE, GUIDE_LOCAL_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
   OBSTACLE_TYPES, QUIZ_STELE_ID, MAP_PROPS_IN_GAME, HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES, NPC_SPRITES,
   ITEM, PICKUPS, REWARD_NAMES, TEXT
 } from './config.js';
 import { QUESTIONS } from './questions-data.js';
-import { NPC_DIALOGUES, CHAPTER_END } from './dialogue-data.js';
+import { NPC_DIALOGUES, CHAPTER_END, STORY_TQP_INTRO } from './dialogue-data.js';
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
-import { level1Content } from './level1.js';
+import { level1Content, level1Events } from './level1.js';
 import { level2Content } from './level2.js';
 import { level3Content, updateLevel3 } from './level3.js';
+import { DRAW_LAYERS } from './render-extras.js';
 
 export const TRIEU_QUANG_PHUC = {
   id: 4,
@@ -44,18 +45,26 @@ export const TRIEU_QUANG_PHUC = {
   chapterEnd: CHAPTER_END,
   text: TEXT,
   audio: { sfx: SFX, music: MUSIC, musicFiles: MUSIC_FILES },
-  // Đòn bổ từ trên (TQP-ENGINE E5 — số mặc định engine PLUNGE) + đánh úp khi ẩn
-  // nấp ×2 (E7). DESIGN_BASELINE.
-  plunge: {},
+  // Đòn bổ từ trên (TQP-ENGINE E5): bổ chéo về trước — rơi `speed`, lao ngang
+  // `forward` px/s (người dùng chơi thử 04/11: rơi thẳng xuống quá nhanh). Đánh úp
+  // khi ẩn nấp ×2 (E7). DESIGN_BASELINE.
+  plunge: { speed: 280, forward: 260 },
   stealth: { ambush: 2 },
-  // Tên màn: TQP-00 §5.1 (duyệt 04/11/2026); câu mô tả màn 1 còn chờ duyệt.
+  // Cờ nghỉ chân + câu hướng dẫn khu rèn luyện màn 1 (level1Events).
+  stateFields: () => ({ restUsed: false, tipIndex: 0 }),
+  hooks: { draw: DRAW_LAYERS },
+  // Tên màn + thông báo đầu màn 1: TQP-00 §5.1 (duyệt 04/11/2026 — TQP-L1 Q1).
   levels: {
     1: {
       id: 1, title: 'Màn 1: Tuổi trẻ rèn luyện', url: LEVEL_URLS[1],
-      chunks: LEVEL1_CHUNKS, worldWidth: CHUNK_W * LEVEL1_CHUNKS, zones: LEVEL1_ZONES, finishX: LEVEL1_FINISH_X, gate: null,
+      chunks: LEVEL1_CHUNKS, worldWidth: CHUNK_W * LEVEL1_CHUNKS, zones: LEVEL1_ZONES, finishX: LEVEL1_FINISH_X, gate: FINISH_GATE,
       sprites: LEVEL_SPRITES[1],
       content: level1Content,
-      introMessage: 'Màn 1: Tuổi trẻ rèn luyện',
+      events: level1Events,
+      // Triệu Quang Phục chờ người chơi ở đầu màn (thoại TQP-00 §5.2, duyệt 04/11/2026).
+      guide: { npc: 'tqp', localX: GUIDE_LOCAL_X, story: STORY_TQP_INTRO },
+      introMessage: 'Màn 1: Tuổi trẻ rèn luyện — Giữa thế kỷ 6, quân Lương đô hộ Giao Châu. Hãy cùng Triệu Quang Phục rèn võ nghệ ở Chu Diên, thu đủ 5 Quyển Sách Tinh Hoa.',
+      introMessageTime: 4200,
       // Layout thử cơ chế TQP-ENGINE: ?layout=engine.
       testLayout: 'engine',
       summary: state => `Bạn thu thập ${state.itemsCollected}/5 Quyển Sách Tinh Hoa và đạt ${state.score} điểm.`

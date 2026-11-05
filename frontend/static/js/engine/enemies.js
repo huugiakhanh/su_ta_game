@@ -139,12 +139,17 @@ export function updateEnemies(dt) {
       return;
     }
     const art = CHAPTER.sprites.enemies[enemyArtKey(enemy)];
-    if (!enemy.boss && enemy.alive) {
+    // Boss có `behavior` trên sprite (mini-boss đội trưởng giáo dài — TQP-L1)
+    // chạy hành vi chung như lính thường; boss khác do chương lo.
+    if ((!enemy.boss || art.behavior) && enemy.alive) {
       if (art.behavior === 'rusher') updateRusher(enemy, dt, art);
       else if (!enemy.harmless) updateGuard(enemy, dt, art);
     }
+    enemy.blockTimer = Math.max(0, (enemy.blockTimer || 0) - dt);
     let next = 'idle';
     if (enemy.dying) next = 'death';
+    // Vừa gạt đòn chém ngang (plungeOnly — player.js blockedByGuard).
+    else if (enemy.blockTimer > 0 && art.anims.blocked) next = 'blocked';
     else if (enemy.hitTimer > 0 && art.anims.hurt) next = 'hurt';
     else if (enemy.action && art.anims.attack) next = 'attack';
     else if (enemy.walking && art.anims.walk) next = 'walk';

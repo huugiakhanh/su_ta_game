@@ -102,7 +102,10 @@ function advanceAction(hazard, dt) {
 function updateHazardAnimation(hazard, dt) {
   const anims = spriteOf(hazard)?.anims || {};
   let next;
+  hazard.blockTimer = Math.max(0, (hazard.blockTimer || 0) - dt);
   if (hazard.dying) next = 'death';
+  // Vừa gạt đòn chém ngang (plungeOnly — player.js blockedByGuard).
+  else if (hazard.blockTimer > 0 && anims.blocked) next = 'blocked';
   else if (hazard.hitTimer > 0 && anims.hurt) next = 'hurt';
   else if (hazard.action && anims[hazard.action.name]) next = hazard.action.name;
   else if (hazard.sprung) next = 'sprung';

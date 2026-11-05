@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "map_id": "TRIEU_QUANG_PHUC",
+  "chapter": "trieu-quang-phuc",
+  "pipeline": "parallax_layers",
+  "render_mode": "side_scroll_mode",
+  "engine_target": "project-native Canvas",
+  "stage": {
+    "canvas_w": 480,
+    "canvas_h": 270,
+    "stage_length": 9216,
+    "ground_y": 248,
+    "tile_size": 16
+  },
+  "design_baseline": true,
+  "assets": [
+    {
+      "id": "BG_TQP_MID_SWAMP",
+      "category": "parallax",
+      "file": "bg/BG_TQP_MID_SWAMP/bg_tqp_mid_swamp.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "Gate A1 bản sửa1 theo mục9: unique3072x640 painting from two distinct native panels, two image-generated seam repaints. No internal repeat, no upscale; inherited map palette64. Pending visual review; see MAP_REPORT_TQP_32.md."
+    },
+    {
+      "id": "PROP_TQP_MUD",
+      "category": "prop",
+      "file": "props/PROP_TQP_MUD/prop_tqp_mud.png",
+      "w": 64,
+      "h": 16,
+      "density": 4,
+      "transparent": true,
+      "anchor": "top-left",
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "surface_row_image": {
+        "min": 12,
+        "max": 15
+      },
+      "qa_notes": "A1 candidate; wet mud strip; full opaque lower band, inherited map palette only. See report."
+    },
+    {
+      "id": "BG_TQP_MID_TRAINING_YARD",
+      "category": "parallax",
+      "file": "bg/BG_TQP_MID_TRAINING_YARD/bg_tqp_mid_training_yard.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "Gate A2 candidate; unique image_gen artwork, inherited palette. Pending visual review. See MAP_REPORT_TQP_32.md."
+    },
+    {
+      "id": "BG_TQP_MID_REED_BANK",
+      "category": "parallax",
+      "file": "bg/BG_TQP_MID_REED_BANK/bg_tqp_mid_reed_bank.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "Gate A2 candidate; unique image_gen artwork, inherited palette. Pending visual review. See MAP_REPORT_TQP_32.md."
+    },
+    {
+      "id": "BG_TQP_MID_DA_TRACH",
+      "category": "parallax",
+      "file": "bg/BG_TQP_MID_DA_TRACH/bg_tqp_mid_da_trach.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "Gate A2 candidate; unique image_gen artwork, inherited palette. Pending visual review. See MAP_REPORT_TQP_32.md."
+    },
+    {
+      "id": "PROP_TQP_BAMBOO_POST",
+      "category": "prop",
+      "file": "props/PROP_TQP_BAMBOO_POST/prop_tqp_bamboo_post.png",
+      "w": 16,
+      "h": 48,
+      "density": 4,
+      "transparent": true,
+      "anchor": "top-left",
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "visible_bbox": {
+        "x": 0,
+        "y": 0,
+        "w": 16,
+        "h": 48
+      },
+      "qa_notes": "Gate A2 candidate; unique image_gen artwork, inherited palette. Pending visual review. See MAP_REPORT_TQP_32.md."
+    },
+    {
+      "id": "PROP_TQP_GRASS_TUFT",
+      "category": "prop",
+      "file": "props/PROP_TQP_GRASS_TUFT/prop_tqp_grass_tuft.png",
+      "w": 48,
+      "h": 24,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-center",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "visible_bbox": {
+        "x": 1,
+        "y": 4,
+        "w": 46,
+        "h": 20
+      },
+      "qa_notes": "Gate A2 candidate; unique image_gen artwork, inherited palette. Pending visual review. See MAP_REPORT_TQP_32.md."
+    },
+    {
+      "id": "PROP_TQP_REED_GATE",
+      "category": "prop",
+      "file": "props/PROP_TQP_REED_GATE/prop_tqp_reed_gate.png",
+      "w": 192,
+      "h": 176,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-center-at-GROUND_Y",
+      "pivot": {
+        "x": 96,
+        "y": 176
+      },
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "visible_bbox": {
+        "x": 1,
+        "y": 2,
+        "w": 190,
+        "h": 174
+      },
+      "qa_notes": "Gate A2 candidate; unique image_gen artwork, inherited palette. Pending visual review. See MAP_REPORT_TQP_32.md."
+    },
+    {
+      "id": "PROP_TQP_REED_GATE_OPEN",
+      "category": "prop",
+      "file": "props/PROP_TQP_REED_GATE_OPEN/prop_tqp_reed_gate_open.png",
+      "w": 192,
+      "h": 176,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-center-at-GROUND_Y",
+      "pivot": {
+        "x": 96,
+        "y": 176
+      },
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "visible_bbox": {
+        "x": 1,
+        "y": 2,
+        "w": 190,
+        "h": 174
+      },
+      "qa_notes": "Gate A2 candidate; unique image_gen artwork, inherited palette. Pending visual review. See MAP_REPORT_TQP_32.md."
+    }
+  ]
+}

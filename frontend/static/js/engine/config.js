@@ -169,8 +169,9 @@ export const MUD = { speed: .5, jump: .7, sink: 8, limit: 3 };
 export const STEALTH = { reveal: 1 };
 // Đòn bổ từ trên (TQP-ENGINE E5, DESIGN_BASELINE — chương bật bằng CHAPTER.plunge,
 // ghi đè được từng số): sát thương, vận tốc nảy lên khi trúng, vận tốc bổ xuống
-// (px/s); hộp đánh dưới chân cao `boxH`; `grace` giây miễn va chạm thân sau khi trúng.
-export const PLUNGE = { damage: 2, bounce: 330, speed: 520, boxH: 14, grace: .25 };
+// (px/s); `forward` = vận tốc lao ngang về hướng mặt lúc bấm (0 = rơi thẳng); hộp
+// đánh dưới chân cao `boxH`; `grace` giây miễn va chạm thân sau khi trúng.
+export const PLUNGE = { damage: 2, bounce: 330, speed: 520, forward: 0, boxH: 14, grace: .25 };
 
 // ---- NPC, câu hỏi (DESIGN_BASELINE) ----
 //   talkDistance  khoảng trống từ mép phải người chơi tới tâm NPC để mở hội thoại.

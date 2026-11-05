@@ -145,6 +145,8 @@ function startPlunge() {
   playSfx('swing');
   p.plunging = true;
   p.plungeHits = new Set();
+  // Hướng lao (TQP-L1 — bổ chéo về trước): hướng mặt lúc bấm, giữ suốt cú bổ.
+  p.plungeDir = p.facing || 1;
   p.revealTimer = STEALTH.reveal;
 }
 
@@ -234,6 +236,8 @@ export function updateAttack() {
 function blockedByGuard(target) {
   if (!plungeOnly(target)) return false;
   const p = state.player;
+  // Phát animation `blocked` (nếu sprite có) — enemies.js / hazards.js.
+  target.blockTimer = .2;
   playSfx('hit');
   if ((p.plungeHintTimer || 0) <= 0 && CHAPTER.text.plungeHint) {
     p.plungeHintTimer = 3;
@@ -349,10 +353,18 @@ export function updatePlayerControl(dt) {
 
   const wasGrounded = p.grounded;
   p.vy += GRAVITY * dt;
-  // Đang bổ: rơi thẳng nhanh, trôi ngang chậm lại (TQP-ENGINE E5).
+  // Đang bổ (TQP-ENGINE E5): `forward` > 0 thì lao chéo về trước theo đường
+  // thẳng đều (rơi đúng `speed`, ngang `forward`, không điều khiển được — TQP-L1);
+  // = 0 thì rơi thẳng ít nhất `speed`, trôi ngang chậm lại.
   if (p.plunging) {
-    p.vy = Math.max(p.vy, plungeSpec()?.speed ?? PLUNGE.speed);
-    p.vx *= .5;
+    const spec = plungeSpec() || PLUNGE;
+    if (spec.forward > 0) {
+      p.vy = spec.speed;
+      p.vx = p.plungeDir * spec.forward;
+    } else {
+      p.vy = Math.max(p.vy, spec.speed);
+      p.vx *= .5;
+    }
   }
   p.x += p.vx * dt;
   p.y += p.vy * dt;
