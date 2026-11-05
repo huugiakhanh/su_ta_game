@@ -628,6 +628,318 @@
         }
       ],
       "qa_notes": "Gate A2 candidate; image_gen sources and measured QA in meta/a2. Pending visual review. See SPRITE_REPORT_TQP_32.md."
+    },
+    {
+      "id": "NPC_TQP_TRIEU_TUC",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_TQP_TRIEU_TUC/npc_tqp_trieu_tuc_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_TQP_TRIEU_TUC/npc_tqp_trieu_tuc_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_02 Gate B1 candidate. See meta/b1/qa.json and report; visual approval pending."
+    },
+    {
+      "id": "NPC_TQP_LY_NAM_DE",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_TQP_LY_NAM_DE/npc_tqp_ly_nam_de_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_TQP_LY_NAM_DE/npc_tqp_ly_nam_de_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_02 Gate B1 candidate. See meta/b1/qa.json and report; visual approval pending."
+    },
+    {
+      "id": "NPC_CHU_DONG_TU",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_CHU_DONG_TU/npc_chu_dong_tu_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_CHU_DONG_TU/npc_chu_dong_tu_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_02 Gate B1 candidate. See meta/b1/qa.json and report; visual approval pending."
+    },
+    {
+      "id": "FX_TQP_GOLDEN_DRAGON",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 128,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "fx/FX_TQP_GOLDEN_DRAGON/fx_tqp_golden_dragon_idle.png",
+          "frames": 8,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "appear",
+          "file": "fx/FX_TQP_GOLDEN_DRAGON/fx_tqp_golden_dragon_appear.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_02 Gate B1 candidate. See meta/b1/qa.json and report; visual approval pending."
+    },
+    {
+      "id": "PORTRAIT_CHU_DONG_TU",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_CHU_DONG_TU/portrait_chu_dong_tu_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_02 Gate B1 candidate. See meta/b1/qa.json and report; visual approval pending."
+    },
+    {
+      "id": "PORTRAIT_TQP_LY_NAM_DE",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_TQP_LY_NAM_DE/portrait_tqp_ly_nam_de_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_02 Gate B2 candidate; see reports and meta/b2/validation.json; pending review."
+    },
+    {
+      "id": "PORTRAIT_TQP_TRIEU_TUC",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_TQP_TRIEU_TUC/portrait_tqp_trieu_tuc_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_02 Gate B2 candidate; see reports and meta/b2/validation.json; pending review."
+    },
+    {
+      "id": "FX_TQP_RALLY",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 96,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "burst",
+          "file": "fx/FX_TQP_RALLY/fx_tqp_rally_burst.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 3
+        }
+      ],
+      "qa_notes": "TQP_ART_02 Gate B2 candidate; see reports and meta/b2/validation.json; pending review."
+    },
+    {
+      "id": "FX_TQP_DRAGON_CLAW",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "on",
+          "file": "fx/FX_TQP_DRAGON_CLAW/fx_tqp_dragon_claw_on.png",
+          "frames": 4,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "hold",
+          "file": "fx/FX_TQP_DRAGON_CLAW/fx_tqp_dragon_claw_hold.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "strike",
+          "file": "fx/FX_TQP_DRAGON_CLAW/fx_tqp_dragon_claw_strike.png",
+          "frames": 5,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_02 Gate B2 candidate; see reports and meta/b2/validation.json; pending review."
+    },
+    {
+      "id": "ICON_SK_TQP_RALLY",
+      "category": "icon",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_SK_TQP_RALLY/icon_sk_tqp_rally_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_02 Gate B2 candidate; see reports and meta/b2/validation.json; pending review."
+    },
+    {
+      "id": "ICON_SK_TQP_DRAGON_CLAW",
+      "category": "icon",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_SK_TQP_DRAGON_CLAW/icon_sk_tqp_dragon_claw_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_02 Gate B2 candidate; see reports and meta/b2/validation.json; pending review."
+    },
+    {
+      "id": "ICON_BUFF_TQP_VITALITY",
+      "category": "icon",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_BUFF_TQP_VITALITY/icon_buff_tqp_vitality_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_02 Gate B2 candidate; see reports and meta/b2/validation.json; pending review."
     }
   ]
 }

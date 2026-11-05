@@ -8,7 +8,7 @@ Mẫu tham chiếu: chương Lý Nam Đế ([SUTA_LND_TASK_00.md](SUTA_LND_TASK_
 > Task card này **chỉ là tài liệu**. Mỗi giai đoạn code ở mục 2 có task card riêng, duyệt trước khi làm.
 > Kế hoạch tổng **ĐÃ DUYỆT 04/11/2026** (người dùng). Khi lập TQP-SKELETON, người dùng **duyệt luôn** chia pool 3.3,
 > tên 3 phần thưởng 3.4, tên 3 màn 5.1 và thưởng/thành tựu mục 9 (04/11/2026) để seed migration `008`.
-> Mục 4 và phần còn lại của mục 5 **CHỜ TEAM DUYỆT** — sau khi duyệt mới thành
+> **Mục 4 team đã duyệt (người dùng báo 05/11/2026)**; mục 5.1–5.2 duyệt 04/11 (TQP-L1). Phần còn lại của mục 5 **CHỜ TEAM DUYỆT** — sau khi duyệt mới thành
 > Source of Truth, chép nguyên văn vào `dialogue-data.js` / `config.js` (rule `history-content.md`).
 
 ---
@@ -46,7 +46,7 @@ Mẫu tham chiếu: chương Lý Nam Đế ([SUTA_LND_TASK_00.md](SUTA_LND_TASK_
 | Mã | Nội dung | Phụ thuộc |
 |---|---|---|
 | **TQP-00** | Task card này + team duyệt mục 3.3, 4, 5, 9 | — |
-| **TQP-ART-BIBLE** | Phụ lục art bible giữa thế kỷ 6 trong `SUTA_TT_ART_BRIEF_32.md` (đầm Dạ Trạch, thuyền độc mộc, giáp Dương Sàn, Chử Đồng Tử, động Khuất Lão), tra cứu có nguồn bằng `/research` | — |
+| **TQP-ART-BIBLE** | Tra cứu có nguồn (`/research`, 05/11): đầm Dạ Trạch, thuyền độc mộc, Chử Đồng Tử (rồng vàng, móng rồng — lời truyền; dáng người không có nguồn → tạo hình tiên ông người dùng duyệt 05/11), động Khuất Lão (trung du Tam Nông, bệnh lam chướng) — lưu ở [archive/RESEARCH_TQP_ART_BIBLE.md](archive/RESEARCH_TQP_ART_BIBLE.md); giáp Dương Sàn tra ở `TQP_ART_03` | — |
 | **TQP-SKELETON** | [SUTA_TQP_TASK_SKELETON_01.md](SUTA_TQP_TASK_SKELETON_01.md) — thư mục chương, `chapter.js`/`config.js`, template, route, migration `008` (chương 4, level 401–403, phần thưởng, thành tựu), `VALID_*`, thẻ trang chủ + timeline, JSON câu hỏi + `/quiz`, rule `.claude/rules/trieu-quang-phuc-gameplay.md` (+ thêm vào bảng rule trong `CLAUDE.md`). Chạy được bằng asset mượn | TQP-00 |
 | **TQP-ENGINE** | [SUTA_TQP_TASK_ENGINE_01.md](SUTA_TQP_TASK_ENGINE_01.md) — mục 3.5 (**xong 04/11/2026**, [REPORT_TQP-ENGINE.md](REPORT_TQP-ENGINE.md); E9 bỏ vì bẫy chông ẩn chương 2 đã có) | TQP-SKELETON |
 | **TQP-L1** + `TQP_ART_01` | Màn 1 (mục 3.1) — **xong 04/11** ([task card](archive/SUTA_TQP_TASK_L1_01.md), [report](archive/REPORT_TQP-L1.md)); `TQP_ART_01` Gate A1 + A2 PASS, `IN_GAME` | SKELETON, ENGINE |
@@ -125,7 +125,7 @@ Layout thử `?layout=engine` màn 1 chương 4 chạy đủ E1–E7, E9.
 
 ---
 
-## 4. NỘI DUNG MÀN 2 — CHỜ TEAM DUYỆT
+## 4. NỘI DUNG MÀN 2 — ĐÃ DUYỆT (team, người dùng báo 05/11/2026)
 
 Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy nguyên văn Excel ô A1, còn lại Claude soạn nháp. Thoại xưng hô với Triệu Quang Phục.
 
@@ -214,7 +214,7 @@ Câu chữ chốt ở TQP-L1 (không phải nội dung lịch sử — chỉ hư
 | Đợt | Nội dung |
 |---|---|
 | `TQP_ART_01` | **Xong 04/11** — prompt đã xoá, kết quả soát trong [REPORT_TQP-L1.md](archive/REPORT_TQP-L1.md) (04/11; Gate A1 = `plunge` người chơi nam/nữ, `NPC_TQP`, lính giáo dài, nền đầm + mặt sình). Người dùng chốt 04/11: thuyền gọi quân bằng **tù và + cờ hiệu** (không pháo hiệu — thế kỷ 6 chưa có thuốc súng); `NPC_TQP` ~~giữ nhận diện người con trong `NPC_TRIEU_TUC`~~ → **đổi 04/11 (soát Gate A1): tạo hình theo ảnh thư viện `characters/avatar/thumb/trieu_quang_phuc.webp`** (giáp lá rêu, khăn choàng đỏ, giáo tua đỏ); đòn bổ của người chơi là **cú chém xuống** (không cắm kiếm); bảng màu sprite chương 4 = 101 màu (+3 màu cá sấu/rắn/khói). Nội dung gốc: NPC + chân dung TQP; bù nhìn rơm (đứng / vỡ), cọc tre; lính giáo dài + đội trưởng giáo dài; cung thủ trên cây (prop cây); bẫy chông ẩn; khói chướng khí trôi; rắn + bụi cỏ; cá sấu (bọt / ngoi / lặn); thuyền tuần tiễu + pháo tín hiệu; tile + cảnh sình lầy; nền bãi tập Chu Diên, bãi lau ven sông, đầm lầy; cổng đích |
-| `TQP_ART_02` | NPC + chân dung Triệu Túc (vẽ riêng), Lý Nam Đế (bệnh, ngồi), Chử Đồng Tử; bụi lau che + FX ẩn nấp; nền động Khuất Lão, Dạ Trạch đêm; FX + icon 3 kỹ năng |
+| `TQP_ART_02` | **XONG 05/11 — 17 asset `IN_GAME`** (prompt đã xoá; tư liệu ở [archive/RESEARCH_TQP_ART_BIBLE.md](archive/RESEARCH_TQP_ART_BIBLE.md)) (05/11; Gate B1 = 3 NPC + rồng vàng + chân dung Chử Đồng Tử + trời đêm + Dạ Trạch đêm). Nội dung gốc: NPC + chân dung Triệu Túc (vẽ riêng), Lý Nam Đế (bệnh, ngồi), Chử Đồng Tử; bụi lau che + FX ẩn nấp; nền động Khuất Lão, Dạ Trạch đêm; FX + icon 3 kỹ năng. Người dùng chốt 05/11: Triệu Túc **một người** (ID mới, giữ nhận diện chương 3; ô cha con `NPC_TRIEU_TUC` không dùng vì người con theo tạo hình TQP cũ); **thêm** trời đêm `BG_TQP_SKY_NIGHT` + nước đầm xanh rêu `PROP_TQP_SWAMP_WATER`; tạo hình Chử Đồng Tử **tra cứu trước** (TQP-ART-BIBLE). **Gate B1 soát 05/11, người dùng duyệt:** PASS 3 NPC, rồng vàng, chân dung Chử Đồng Tử, Dạ Trạch đêm; `BG_TQP_SKY_NIGHT` NEED_REDRAW (3 dải phẳng mép cứng y≈37/152 logic → ramp chàm 6 màu thay 6 xanh trời ngày, dither, thêm sao). Chốt cho B2: 1–2 đốm đuốc xa ở Dạ Trạch; Khuất Lão = cửa hang nhỏ một bên vùng trung du. **Gate B2 soát 05/11, người dùng duyệt:** PASS cả 12 asset mới + trời đêm vẽ lại (chênh hàng kề ≤ 2,6) + Dạ Trạch thêm 2 đuốc; palette map đổi 6 ô xanh trời ngày → chàm (192 màu). Đã chép PNG + 2 manifest sang `images/trieu-quang-phuc/`, chưa khai báo `config.js` (để TQP-L2/L3). Ghi chú cho code: bụi lau giữ vàng rơm sáng ở cảnh đêm để đọc rõ chỗ nấp; `FX_TQP_DRAGON_CLAW.hold` căn theo kiếm tư thế idle → TQP-L3 chỉ vẽ `hold` khi đứng yên, ra đòn dùng `strike` |
 | `TQP_ART_03` | Dương Sàn (lao, chém đại đao, lún, hở gáy, cuồng nộ, ngã) + chân dung; lính đánh thuê, cung thủ; mỏm đất vỡ; thuyền độc mộc; nền Dạ Trạch nửa đêm + chớp đuốc |
 
 Mượn trong lúc chờ (qua `BORROWED_MAPS` hoặc chép cùng ID): lính Lương, cung thủ, thuyền chiến, tháp canh, sách `ITEM_BT_TINH_HOA`, bia câu hỏi, bình máu `ITEM_LND_HEAL` (chương 2–3).

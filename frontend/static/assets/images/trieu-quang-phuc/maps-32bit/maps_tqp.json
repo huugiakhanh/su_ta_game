@@ -205,6 +205,105 @@
         "h": 174
       },
       "qa_notes": "Gate A2 candidate; unique image_gen artwork, inherited palette. Pending visual review. See MAP_REPORT_TQP_32.md."
+    },
+    {
+      "id": "BG_TQP_SKY_NIGHT",
+      "category": "parallax",
+      "file": "bg/BG_TQP_SKY_NIGHT/bg_tqp_sky_night.png",
+      "w": 480,
+      "h": 270,
+      "density": 4,
+      "transparent": false,
+      "anchor": "canvas-origin",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.05,
+      "qa_notes": "B1 NEED_REDRAW addressed in B2: approved six indigo colors, image-generated clustered dither, more stars, preserved crescent/horizon. Pending B2 review."
+    },
+    {
+      "id": "BG_TQP_MID_DA_TRACH_NIGHT",
+      "category": "parallax",
+      "file": "bg/BG_TQP_MID_DA_TRACH_NIGHT/bg_tqp_mid_da_trach_night.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "B1 approved base; B2 adds exactly two distant tiny torch dots authorized by user. Other pixels retained. Pending B2 review of torch addition."
+    },
+    {
+      "id": "BG_TQP_MID_KHUAT_LAO",
+      "category": "parallax",
+      "file": "bg/BG_TQP_MID_KHUAT_LAO/bg_tqp_mid_khuat_lao.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "tileable_x": true,
+      "qa_notes": "TQP_ART_02 Gate B2 candidate; see report and meta/b2/validation.json."
+    },
+    {
+      "id": "PROP_TQP_SWAMP_WATER",
+      "category": "prop",
+      "file": "props/PROP_TQP_SWAMP_WATER/prop_tqp_swamp_water.png",
+      "w": 64,
+      "h": 24,
+      "density": 4,
+      "transparent": true,
+      "anchor": "top-left",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "tileable_x": true,
+      "surface_row_image": 24,
+      "qa_notes": "TQP_ART_02 Gate B2 candidate; see report and meta/b2/validation.json."
+    },
+    {
+      "id": "PROP_TQP_REED_COVER",
+      "category": "prop",
+      "file": "props/PROP_TQP_REED_COVER/prop_tqp_reed_cover.png",
+      "w": 64,
+      "h": 48,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-center",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "pivot": {
+        "x": 32,
+        "y": 48
+      },
+      "visible_bbox": {
+        "x": 2.25,
+        "y": 4.25,
+        "w": 59.5,
+        "h": 43.75
+      },
+      "qa_notes": "TQP_ART_02 Gate B2 candidate; see report and meta/b2/validation.json."
     }
   ]
 }
