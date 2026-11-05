@@ -75,7 +75,7 @@
 //                 phát nếu audio.sfx có),
 //                 dropHeal?(target) -> true = enemy/hazard vừa bị hạ rơi 1 bình máu (LND-ENGINE E4b),
 //                 onPlunge?(target) — đòn bổ trúng; onAmbush?(target) — đòn đánh úp trúng (TQP-ENGINE),
-//                 debugEntities?() -> [hộp], draw?: { beforeEnemies?(time),
+//                 debugEntities?() -> [hộp], draw?: { beforeNpcs?(time) (vd. rồng sau lưng NPC — TQP-L2), beforeEnemies?(time),
 //                 beforePlayer?(time), afterPlayer?(time) } }
 //   levels        { [id]: LEVEL } — mỗi màn:
 //     id, title, url, chunks, worldWidth, zones, finishX
@@ -83,6 +83,7 @@
 //                  sink = px chìm thêm xuống đất khi đáy hình cách đáy ảnh
 //     arena?       true = đấu trường: tường 2 đầu, không về đích, camera neo tâm
 //     playerStartX? mép trái hitbox người chơi lúc vào màn (mặc định PLAYER_START_X)
+//     tiles?       ghi đè từng khoá của CHAPTER.tiles cho riêng màn này (vd. ảnh nước — TQP-L2)
 //     farHills?    đồi xa riêng màn (cùng dạng CHAPTER.farHills, thay cho bản của chương)
 //     sprites      ID sprite canvas màn này cần nạp (ngoài sprite người chơi)
 //     content(options) -> { obstacles, hazards, holes, items, enemies, npcs, quizzes, platforms?, ...thêm }
@@ -108,11 +109,17 @@ export let LEVEL = null;
 
 export function setChapter(definition) {
   CHAPTER = definition;
+  chapterTiles = null;
   return CHAPTER;
 }
 
+// Bản `tiles` gốc của chương: màn có `tiles` riêng chỉ ghi đè khoá của nó.
+let chapterTiles = null;
+
 export function setLevel(id) {
   LEVEL = CHAPTER.levels[id] || CHAPTER.levels[1];
+  chapterTiles ??= CHAPTER.tiles;
+  CHAPTER.tiles = LEVEL.tiles ? { ...chapterTiles, ...LEVEL.tiles } : chapterTiles;
   return LEVEL;
 }
 

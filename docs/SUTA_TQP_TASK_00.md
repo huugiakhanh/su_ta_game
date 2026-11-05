@@ -50,7 +50,7 @@ Mẫu tham chiếu: chương Lý Nam Đế ([SUTA_LND_TASK_00.md](SUTA_LND_TASK_
 | **TQP-SKELETON** | [SUTA_TQP_TASK_SKELETON_01.md](SUTA_TQP_TASK_SKELETON_01.md) — thư mục chương, `chapter.js`/`config.js`, template, route, migration `008` (chương 4, level 401–403, phần thưởng, thành tựu), `VALID_*`, thẻ trang chủ + timeline, JSON câu hỏi + `/quiz`, rule `.claude/rules/trieu-quang-phuc-gameplay.md` (+ thêm vào bảng rule trong `CLAUDE.md`). Chạy được bằng asset mượn | TQP-00 |
 | **TQP-ENGINE** | [SUTA_TQP_TASK_ENGINE_01.md](SUTA_TQP_TASK_ENGINE_01.md) — mục 3.5 (**xong 04/11/2026**, [REPORT_TQP-ENGINE.md](REPORT_TQP-ENGINE.md); E9 bỏ vì bẫy chông ẩn chương 2 đã có) | TQP-SKELETON |
 | **TQP-L1** + `TQP_ART_01` | Màn 1 (mục 3.1) — **xong 04/11** ([task card](archive/SUTA_TQP_TASK_L1_01.md), [report](archive/REPORT_TQP-L1.md)); `TQP_ART_01` Gate A1 + A2 PASS, `IN_GAME` | SKELETON, ENGINE |
-| **TQP-L2** + `TQP_ART_02` | Màn 2 (mục 3.2) | L1, TQP-00 duyệt |
+| **TQP-L2** + `TQP_ART_02` | Màn 2 (mục 3.2) — **XONG 05/11** (chơi tay OK): [archive/SUTA_TQP_TASK_L2_01.md](archive/SUTA_TQP_TASK_L2_01.md), [archive/REPORT_TQP-L2.md](archive/REPORT_TQP-L2.md) | L1, TQP-00 duyệt |
 | **TQP-L3** + `TQP_ART_03` | Màn 3 boss Dương Sàn (mục 3.4) | L2 |
 | Nhạc | `GEMINI_PROMPT_TQP_MUSIC.md` → `audio/trieu-quang-phuc/level1–3.mp3` | — |
 

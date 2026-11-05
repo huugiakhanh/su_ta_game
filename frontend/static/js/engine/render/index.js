@@ -1,6 +1,6 @@
 // Vẽ 1 frame lên canvas: nền parallax, mặt đất, cổng đích, vật cản, vật phẩm,
 // quân, nhân vật, lớp debug. Chương chèn lớp vẽ riêng qua CHAPTER.hooks.draw
-// (beforeEnemies / beforePlayer / afterPlayer) — dùng công cụ trong canvas.js.
+// (beforeNpcs / beforeEnemies / beforePlayer / afterPlayer) — dùng công cụ trong canvas.js.
 
 import { state } from '../state.js';
 import { debug } from '../input.js';
@@ -40,6 +40,7 @@ export function draw(time = 0) {
   drawPickups(time);
   drawObstacles();
   drawPlatforms();
+  layers.beforeNpcs?.(time);
   drawNpcs(time);
   drawHazards(time);
   layers.beforeEnemies?.(time);

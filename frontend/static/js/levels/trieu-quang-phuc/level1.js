@@ -30,30 +30,30 @@ const FIRST_CHUNK = 3;
 const LAST_CHUNK = 10;
 
 // Lính Lương (hành vi guard của engine) đứng tâm tại worldX(chunk, localX).
-function makeSoldier(chunk, localX, art = null) {
+export function makeSoldier(chunk, localX, art = null) {
   const enemy = makeEnemy(worldX(chunk, localX) - SOLDIER.w / 2, SOLDIER.w, SOLDIER.h, SOLDIER.hp, false);
   return art ? { ...enemy, art } : enemy;
 }
 
 // Rắn (rusher) nằm im (`rest` vô hạn) trong bụi cỏ tới khi người chơi tới gần
 // (level1Events đánh thức). Lúc phục không vẽ thanh máu (`noBar`) để khỏi lộ.
-function makeSnake(chunk, localX) {
+export function makeSnake(chunk, localX) {
   return {
     ...makeEnemy(worldX(chunk, localX) - SNAKE.w / 2, SNAKE.w, SNAKE.h, SNAKE.hp, false),
     art: 'snake', facing: -1, direction: -1, rest: Infinity, walking: false, ambush: true, noBar: true
   };
 }
 
-function makeSpikePit(chunk, localX) {
+export function makeSpikePit(chunk, localX) {
   return makeHazard('trap', 'bambooPit', chunk, localX, { harmful: false, triggerDistance: 58 });
 }
 
 // Bục một chiều có ảnh (mặt trên ở hàng 0 của ảnh).
-function makeLedge(chunk, localX, height) {
+export function makeLedge(chunk, localX, height) {
   return makePlatform(chunk, localX, height, ROCK_LEDGE.w, { sprite: ROCK_LEDGE.sprite });
 }
 // Cọc tre (vật cản `blocking`): tâm tại localX.
-function makePost(chunk, localX) {
+export function makePost(chunk, localX) {
   return { ...makeObstacle('bambooPost', chunk, localX - BAMBOO_POST.w / 2, BAMBOO_POST.w, BAMBOO_POST.h), blocking: true };
 }
 
@@ -274,14 +274,9 @@ export function level1Content(options = {}) {
   return content;
 }
 
-// Sự kiện mỗi frame: câu hướng dẫn khu rèn luyện (1 lần mỗi câu, theo thứ tự);
-// rắn trong bụi cỏ lao ra khi người chơi tới gần; nghỉ chân hồi 1 máu (1 lần).
-export function level1Events(p) {
-  const tip = TRAINING.tips[state.tipIndex];
-  if (tip && p.x > worldX(tip[0], tip[1])) {
-    state.tipIndex += 1;
-    showMessage(tip[2], 3200);
-  }
+// Rắn phục trong bụi cỏ lao ra khi người chơi cách dưới SNAKE_AMBUSH.ambushRange
+// (dùng chung màn 1–2).
+export function wakeAmbushers(p) {
   const center = p.x + p.w / 2;
   state.enemies.forEach(enemy => {
     if (!enemy.ambush || !enemy.alive) return;
@@ -290,6 +285,17 @@ export function level1Events(p) {
     enemy.noBar = false;
     enemy.rest = .01;
   });
+}
+
+// Sự kiện mỗi frame: câu hướng dẫn khu rèn luyện (1 lần mỗi câu, theo thứ tự);
+// rắn trong bụi cỏ lao ra khi người chơi tới gần; nghỉ chân hồi 1 máu (1 lần).
+export function level1Events(p) {
+  const tip = TRAINING.tips[state.tipIndex];
+  if (tip && p.x > worldX(tip[0], tip[1])) {
+    state.tipIndex += 1;
+    showMessage(tip[2], 3200);
+  }
+  wakeAmbushers(p);
   if (!state.restUsed && p.x > worldX(REST.chunk, REST.localX)) {
     state.restUsed = true;
     state.health = Math.min(state.maxHealth, state.health + 1);

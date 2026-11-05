@@ -1,11 +1,12 @@
 // Định nghĩa chương Triệu Việt Vương (chương 4) cho engine màn chơi. Hợp đồng
 // các trường: engine/chapter.js. Màn 1 thật (TQP-L1: khu rèn luyện, chướng ngại
-// xáo, mini-boss đội trưởng giáo dài); màn 2–3 còn là khung TQP-SKELETON.
+// xáo, mini-boss đội trưởng giáo dài); màn 2 thật (TQP-L2: 3 NPC khoá theo sách,
+// ngày -> đêm, bụi lau ẩn nấp); màn 3 còn là khung TQP-SKELETON.
 
 import { CHUNK_W } from '../../engine/config.js';
 import {
   SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, BORROWED_MAPS, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
-  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, FINISH_GATE, GUIDE_LOCAL_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
+  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, FINISH_GATE, GUIDE_LOCAL_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, LEVEL2_FAR_HILLS, LEVEL2_TILES, ARENA, LEVEL3_ZONES,
   OBSTACLE_TYPES, QUIZ_STELE_ID, MAP_PROPS_IN_GAME, HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES, NPC_SPRITES,
   ITEM, PICKUPS, REWARD_NAMES, TEXT
 } from './config.js';
@@ -13,7 +14,7 @@ import { QUESTIONS } from './questions-data.js';
 import { NPC_DIALOGUES, CHAPTER_END, STORY_TQP_INTRO } from './dialogue-data.js';
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
 import { level1Content, level1Events } from './level1.js';
-import { level2Content } from './level2.js';
+import { level2Content, level2Events } from './level2.js';
 import { level3Content, updateLevel3 } from './level3.js';
 import { DRAW_LAYERS } from './render-extras.js';
 
@@ -50,8 +51,9 @@ export const TRIEU_QUANG_PHUC = {
   // khi ẩn nấp ×2 (E7). DESIGN_BASELINE.
   plunge: { speed: 280, forward: 260 },
   stealth: { ambush: 2 },
-  // Cờ nghỉ chân + câu hướng dẫn khu rèn luyện màn 1 (level1Events).
-  stateFields: () => ({ restUsed: false, tipIndex: 0 }),
+  // Cờ nghỉ chân + câu hướng dẫn khu rèn luyện màn 1 (level1Events); giây từ lúc
+  // rồng vàng hiện ở màn 2 (null = chưa hiện — level2Events).
+  stateFields: () => ({ restUsed: false, tipIndex: 0, dragonTime: null }),
   hooks: { draw: DRAW_LAYERS },
   // Tên màn + thông báo đầu màn 1: TQP-00 §5.1 (duyệt 04/11/2026 — TQP-L1 Q1).
   levels: {
@@ -72,10 +74,15 @@ export const TRIEU_QUANG_PHUC = {
     2: {
       id: 2, title: 'Màn 2: Hiền tài Dạ Trạch', url: LEVEL_URLS[2],
       chunks: LEVEL2_CHUNKS, worldWidth: CHUNK_W * LEVEL2_CHUNKS, zones: LEVEL2_ZONES, finishX: LEVEL2_FINISH_X, gate: null,
+      farHills: LEVEL2_FAR_HILLS,
+      // Nước đầm xanh rêu riêng màn 2 (engine ghi đè CHAPTER.tiles).
+      tiles: LEVEL2_TILES,
       sprites: LEVEL_SPRITES[2],
       content: level2Content,
+      events: level2Events,
+      // Tên màn TQP-00 §5.1 (nháp — chưa duyệt).
       introMessage: 'Màn 2: Hiền tài Dạ Trạch',
-      summary: state => `Bạn đạt ${state.score} điểm.`
+      summary: state => `Bạn thu thập ${state.itemsCollected}/10 Quyển Sách Tinh Hoa và đạt ${state.score} điểm.`
     },
     3: {
       id: 3, title: 'Màn 3: Đại phá Dương Sàn', url: LEVEL_URLS[3],

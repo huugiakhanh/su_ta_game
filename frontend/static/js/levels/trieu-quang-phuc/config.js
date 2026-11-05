@@ -5,8 +5,10 @@
 // images/trieu-quang-phuc/ (manifest_tqp.json, maps_tqp.json); mượn map chương 1
 // (trời, tile, bia câu hỏi), chương 2 (sách, đồi xa) và chương 3 (làng Chu Diên,
 // mặt nước, mỏm đá) qua BORROWED_MAPS. Không import file nào của chương 1–3.
-// Màn 2–3 vẫn là khung TQP-SKELETON (PLACEHOLDER tới TQP-L2/L3). Mọi số
-// DESIGN_BASELINE.
+// TQP-L2 (docs/SUTA_TQP_TASK_L2_01.md): asset TQP_ART_02 (3 NPC + chân dung,
+// rồng vàng, trời đêm, Dạ Trạch đêm, Khuất Lão, nước đầm, bụi lau); đồi xa
+// trung du mượn chương 3. Màn 3 vẫn là khung TQP-SKELETON (PLACEHOLDER tới
+// TQP-L3). Mọi số DESIGN_BASELINE.
 
 import { CHUNK_W } from '../../engine/config.js';
 
@@ -29,7 +31,7 @@ export const BORROWED_MAPS = [{
 }, {
   root: '/static/assets/images/ly-nam-de/maps-32bit/',
   manifest: 'maps_lnd.json',
-  ids: ['BG_LND_MID_CHU_DIEN', 'BG_LND_MID_RED_RIVER', 'PROP_LND_RIVER_WATER', 'PROP_LND_ROCK_LEDGE']
+  ids: ['BG_LND_MID_CHU_DIEN', 'BG_LND_MID_RED_RIVER', 'PROP_LND_RIVER_WATER', 'PROP_LND_ROCK_LEDGE', 'BG_LND_FAR_MIDLANDS']
 }];
 // Mặt nước khe sông `'~'` — số như chương 3 (ảnh nước PROP_LND_RIVER_WATER).
 // Mặt sình PROP_TQP_MUD (TQP-ENGINE E1): mặt bùn ở hàng ảnh 12–15 -> đỉnh ảnh
@@ -40,8 +42,8 @@ export const TILES = {
 };
 export const FAR_HILLS = { id: 'BG_BT_FAR_PLAIN', parallax: 0.2, bottomY: 230, hiddenUnderSky: [] };
 
-// Ảnh DOM riêng chương (chân dung) — Triệu Quang Phục dẫn màn 1.
-export const PORTRAITS = ['PORTRAIT_TQP'];
+// Ảnh DOM riêng chương (chân dung): Triệu Quang Phục dẫn màn 1 + 3 NPC màn 2.
+export const PORTRAITS = ['PORTRAIT_TQP', 'PORTRAIT_TQP_TRIEU_TUC', 'PORTRAIT_TQP_LY_NAM_DE', 'PORTRAIT_CHU_DONG_TU'];
 
 // Sprite canvas mỗi màn cần (chỉ nạp ảnh màn đang chơi dùng). Màn 1 gồm cả
 // layout thử ?layout=engine. ITEM_LND_HEAL ở mọi màn: engine drawPickups tra
@@ -53,8 +55,13 @@ export const LEVEL_SPRITES = {
     'EN_LUONG_WAR_BOAT', 'PJ_FIRE_ARROW', 'FX_SWAMP_GAS', 'OB_TQP_STRAW_DUMMY', 'OB_TQP_STRAW_SPEARMAN',
     'ITEM_LND_HEAL'
   ],
-  // PLACEHOLDER tới TQP-L2/L3.
-  2: ['EN_LUONG_PATROL', 'TR_BAMBOO_SPIKE_PIT', 'ITEM_LND_HEAL'],
+  2: [
+    'NPC_TQP_TRIEU_TUC', 'NPC_TQP_LY_NAM_DE', 'NPC_CHU_DONG_TU', 'FX_TQP_GOLDEN_DRAGON',
+    'EN_LUONG_PATROL', 'EN_LUONG_SPEARMAN', 'EN_LUONG_ARCHER', 'PROP_TQP_ARCHER_TREE', 'PJ_CROSSBOW_BOLT',
+    'TR_BAMBOO_SPIKE_PIT', 'EN_SWAMP_SNAKE', 'EN_CROCODILE', 'EN_LUONG_WAR_BOAT', 'PJ_FIRE_ARROW', 'FX_SWAMP_GAS',
+    'ITEM_LND_HEAL'
+  ],
+  // PLACEHOLDER tới TQP-L3.
   3: ['EN_LUONG_PATROL', 'ITEM_LND_HEAL']
 };
 
@@ -153,21 +160,78 @@ export const SPEARMAN_POST = { postDx: -90 };
 //   level1Spots  [chunk, localX] — chạm x này thì hỏi (theo thứ tự); giữa 2 ô
 //                nhóm (420); chunk 5 ở 720 (sau khe thuyền tới 624 kể cả lệch).
 //   level2Spots  [chunk, localX] — câu hỏi về NPC sắp gặp (pool cùng tên, thứ
-//                tự Triệu Túc -> Lý Nam Đế -> Chử Đồng Tử, TQP-00 §3.2).
+//                tự Triệu Túc -> Lý Nam Đế -> Chử Đồng Tử, TQP-00 §3.2), cùng
+//                chunk với NPC, trước 2 lính vây (lính trái tuần từ local 390).
 export const QUIZ = {
   level1Count: 4,
   level1Spots: [[3, 420], [5, 720], [8, 420], [10, 420]],
-  level2Spots: { trieuTuc: [1, 600], lyNamDe: [2, 600], chuDongTu: [3, 600] }
+  level2Spots: { trieuTuc: [3, 280], lyNamDe: [6, 280], chuDongTu: [10, 280] }
 };
 
-// ---- Màn 2 "Hiền tài Dạ Trạch" (khung) ----
-// 4 chunk nền phẳng: sông -> sông nước Chu Diên (tạm cho đầm Dạ Trạch).
-export const LEVEL2_CHUNKS = 4;
+// ---- Màn 2 "Hiền tài Dạ Trạch" (TQP-L2) ----
+// 10 chunk ĐẶT CỐ ĐỊNH (TQP-00 §3.2): bờ sông Chu Diên 1–3 (Triệu Túc) -> trung
+// du động Khuất Lão 4–6 (Lý Nam Đế) -> đầm Dạ Trạch ban đêm 7–10 (Chử Đồng Tử).
+// Engine hoà trời ngày -> đêm và nền giữa ở ranh giới vùng. Đồi xa trung du
+// (chương 3) tắt dưới trời đêm (trời đêm có sẵn chân trời).
+export const LEVEL2_CHUNKS = 10;
 export const LEVEL2_ZONES = [
-  { id: 'TQP2', x0: 0, x1: CHUNK_W * 2, sky: 'BG_TT_SKY_DAY', mid: 'BG_LND_MID_RED_RIVER' },
-  { id: 'TQP3', x0: CHUNK_W * 2, x1: CHUNK_W * LEVEL2_CHUNKS, sky: 'BG_TT_SKY_DAY', mid: 'BG_LND_MID_CHU_DIEN' }
+  { id: 'TQP2A', x0: 0, x1: CHUNK_W, sky: 'BG_TT_SKY_DAY', mid: 'BG_LND_MID_CHU_DIEN' },
+  { id: 'TQP2B', x0: CHUNK_W, x1: CHUNK_W * 3, sky: 'BG_TT_SKY_DAY', mid: 'BG_TQP_MID_REED_BANK' },
+  { id: 'TQP2C', x0: CHUNK_W * 3, x1: CHUNK_W * 6, sky: 'BG_TT_SKY_DAY', mid: 'BG_TQP_MID_KHUAT_LAO' },
+  { id: 'TQP2D', x0: CHUNK_W * 6, x1: CHUNK_W * LEVEL2_CHUNKS, sky: 'BG_TQP_SKY_NIGHT', mid: 'BG_TQP_MID_DA_TRACH_NIGHT' }
 ];
+export const LEVEL2_FAR_HILLS = { id: 'BG_LND_FAR_MIDLANDS', parallax: 0.2, bottomY: 230, hiddenUnderSky: ['BG_TQP_SKY_NIGHT'] };
+// Nước đầm xanh rêu PROP_TQP_SWAMP_WATER (6 hàng trên trong suốt như nước chương
+// 3) cho riêng màn 2 (`levels[2].tiles`); vách khe màu rêu tối.
+export const LEVEL2_TILES = { water: 'PROP_TQP_SWAMP_WATER', waterLift: 6, waterDeep: '#2c3820' };
+// Đích: cuối chunk 10, sau Chử Đồng Tử (không cổng).
 export const LEVEL2_FINISH_X = CHUNK_W * LEVEL2_CHUNKS - 96;
+// NPC [chunk, localX tâm, số sách cần (E6)] — sách chia 3 / 3 / 4 giữa các đoạn.
+export const LEVEL2_NPCS = {
+  trieuTuc: [3, 560, 3],
+  lyNamDe: [6, 560, 6],
+  chuDongTu: [10, 560, 10]
+};
+// 2 lính Lương vây mỗi NPC (giải cứu — engine đếm `captorOf`): tâm lệch `dx`,
+// tuần trong [patrol] so với tâm NPC (như chương 3).
+export const CAPTORS = [{ dx: -100, patrol: [-170, -30] }, { dx: 48, patrol: [-60, 80] }];
+// 10 Quyển Sách Tinh Hoa [chunk, localX, độ cao trên mặt đất]; sách do lính
+// mang (`carrier`) khai báo ở LEVEL2_CARRIERS.
+//   ch1: trên đất + trên cọc tre (cao 48); ch2: trên mỏm đá giữa khe thuyền;
+//   ch4: trên mỏm đá; ch6: trên đất; ch7: giữa bụi lau; ch8: sau khe cá sấu;
+//   ch9: trên đất.
+export const LEVEL2_ITEMS = [
+  [1, 150, 56], [1, 440, 70], [2, 488, 52],
+  [4, 412, 76], [6, 100, 56],
+  [7, 296, 30], [8, 440, 56], [9, 90, 56]
+];
+// Lính mang sách: [chunk, localX, art] — hạ mới rơi sách (`carrier` = id lính).
+export const LEVEL2_CARRIERS = [[5, 600, 'spearman'], [9, 500, null]];
+// Chướng ngại cố định từng chunk (level2.js). Số đều DESIGN_BASELINE.
+//   ch1: lính tuần 600, chông ẩn 300, cọc tre 440 (sách trên đỉnh).
+//   ch2: khe thuyền tuần (BOAT_RIVER) + mỏm đá.
+//   ch4: rắn trong bụi cỏ 240, mỏm đá [localX trái, cao], cung thủ trên cây 620.
+//   ch5: 2 lính giáo dài 260 / 600 (+ cọc tre trước mặt — SPEARMAN_POST).
+//   ch7: bụi lau ẩn nấp [localX trái, rộng] + 2 lính tuần đi xuyên bụi.
+//   ch8: khe cá sấu (CROC_RIVER) + khói 2 làn ở ô b.
+//   ch9: sình ô a, bụi lau ẩn nấp, lính tuần mang sách, cung thủ trên cây 700.
+export const LEVEL2_LAYOUT = {
+  patrol: [1, 600], spike: [1, 300], post: [1, 440],
+  snake: [4, 240], ledge: [4, 380, 48], tree: [4, 620],
+  spearmen: [[5, 260], [5, 600]],
+  covers: [[7, 200, 192], [9, 400, 192]],
+  coverGuards: [[7, 300], [7, 560]],
+  smoke: [8, 600],
+  tree2: [9, 700]
+};
+// Bụi lau ẩn nấp PROP_TQP_REED_COVER (64×48, pivot giữa đáy): vẽ lặp mỗi 64 px
+// trong vùng `covers`, TRƯỚC người chơi (render-extras.js); người chơi đứng
+// trong vùng thì vẽ mờ `insideAlpha` để còn thấy nhân vật.
+export const REED_COVER = { prop: 'PROP_TQP_REED_COVER', w: 64, insideAlpha: .55 };
+// Rồng vàng FX_TQP_GOLDEN_DRAGON (128×64, pivot giữa đáy) hiện sau lưng Chử Đồng
+// Tử khi đủ sách: `appear` (1 lần) rồi `idle` lặp; bắt đầu khi người chơi cách
+// NPC dưới `range` px. Mờ theo NPC khi gặp xong.
+export const DRAGON = { id: 'FX_TQP_GOLDEN_DRAGON', npc: 'chuDongTu', range: 420 };
 
 // ---- Màn 3 "Đại phá Dương Sàn" (khung) ----
 // Đấu trường 1 chunk, 3 đợt lính ra ở spawnX (engine makeSpawner). Nền sông nước
@@ -200,7 +264,7 @@ export const ROCK_LEDGE = { sprite: 'PROP_LND_ROCK_LEDGE', w: 64 };
 export const BAMBOO_POST = { sprite: 'PROP_TQP_BAMBOO_POST', w: 16, h: 48 };
 export const MAP_PROPS_IN_GAME = [
   ITEM.sprite, QUIZ_STELE_ID, ROCK_LEDGE.sprite, BAMBOO_POST.sprite, TILES.water, TILES.mud,
-  FINISH_GATE.closed, FINISH_GATE.open, SNAKE_AMBUSH.tuft
+  FINISH_GATE.closed, FINISH_GATE.open, SNAKE_AMBUSH.tuft, LEVEL2_TILES.water, REED_COVER.prop
 ];
 
 // ---- Quân địch, hazard, đạn ----
@@ -315,8 +379,16 @@ export const PROJECTILE_SPRITES = {
 };
 // NPC: Triệu Quang Phục dẫn màn 1 (`tqp`) + đứng chặn cuối bãi tập (`tqpYard`,
 // cùng ảnh). `testNpc`: NPC hộp tạm của layout thử (khoá theo sách — E6).
-const TQP_NPC = { id: 'NPC_TQP', portrait: 'PORTRAIT_TQP', anims: { idle: 'idle', talk: 'talk' } };
-export const NPC_SPRITES = { tqp: TQP_NPC, tqpYard: TQP_NPC, testNpc: { id: null, anims: {} } };
+// Màn 2: Lý Nam Đế ngồi phản tre (bbox 11–37) và Chử Đồng Tử trên mây (10–39)
+// rộng hơn thân người -> `holdGap` 16 để người chơi đứng ngoài hình.
+const NPC_ANIMS = { idle: 'idle', talk: 'talk' };
+const TQP_NPC = { id: 'NPC_TQP', portrait: 'PORTRAIT_TQP', anims: NPC_ANIMS };
+export const NPC_SPRITES = {
+  tqp: TQP_NPC, tqpYard: TQP_NPC, testNpc: { id: null, anims: {} },
+  trieuTuc: { id: 'NPC_TQP_TRIEU_TUC', portrait: 'PORTRAIT_TQP_TRIEU_TUC', anims: NPC_ANIMS },
+  lyNamDe: { id: 'NPC_TQP_LY_NAM_DE', portrait: 'PORTRAIT_TQP_LY_NAM_DE', anims: NPC_ANIMS, holdGap: 16 },
+  chuDongTu: { id: 'NPC_CHU_DONG_TU', portrait: 'PORTRAIT_CHU_DONG_TU', anims: NPC_ANIMS, holdGap: 16 }
+};
 
 // Layout thử `?layout=engine` (màn 1 — TQP-ENGINE): mỗi chunk thử một cơ chế mới.
 //   mud      chunk 1: lưới địa hình (cột '=' = sình, local 160–320) + lính sau dải.
