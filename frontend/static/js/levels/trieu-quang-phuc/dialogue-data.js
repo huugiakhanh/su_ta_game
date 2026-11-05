@@ -1,7 +1,7 @@
 // Thoại chương Triệu Việt Vương — chép NGUYÊN VĂN từ docs/SUTA_TQP_TASK_00.md
 // (Source of Truth, không tự sửa). Đã duyệt: §5.1–5.2 (TQP-L1 Q1, 04/11/2026),
 // §4 thoại NPC màn 2 (team duyệt, người dùng báo 05/11/2026). Cutscene, câu kết
-// chương còn chờ team duyệt (§5.4–5.5).
+// chương còn chờ team duyệt (§5.4–5.5) — đang dùng bản nháp (TQP-L3 Q6).
 
 // Màn 2 — 3 NPC (§4.1–4.3): đáp án đúng đứng đầu (engine tự xáo khi hiện).
 // name/title tách từ tiêu đề mục §4.x (phần trong ngoặc = title).
@@ -91,9 +91,25 @@ export const STORY_TQP_YARD = {
   lines: ['Đã luyện xong, lên đường!']
 };
 
-// TODO_MISSING: dòng điểm + kết cục lịch sử (TQP-00 §5.5, chờ duyệt).
-// Tạm chỉ báo điểm.
+// Cutscene màn 3 — nguyên văn TQP-00 §5.4 (BẢN NHÁP, CHỜ TEAM DUYỆT — dùng tạm
+// theo TQP-L3 Q6). Câu 1 lệch Toàn thư (chỉ ghi Dương Sàn "chống đánh, thua rồi
+// chết", không nói Triệu Quang Phục tự tay giết) — chờ team chốt.
+export const STORY_TQP_FINISH = {
+  portrait: 'PORTRAIT_TQP',
+  memorial: false,
+  lines: ['Triệu Quang Phục tung đòn kết liễu. Tướng giặc Dương Sàn tử trận.']
+};
+
+export const STORY_TQP_VICTORY = {
+  portrait: 'PORTRAIT_TQP',
+  memorial: false,
+  lines: ['Quân Lương tan vỡ, nghĩa quân Dạ Trạch tiến về Long Biên.']
+};
+
+// Panel kết chương — nguyên văn TQP-00 §5.5 (BẢN NHÁP, CHỜ TEAM DUYỆT — dùng tạm
+// theo TQP-L3 Q6). Dòng 2 lấy từ giải thích câu 19, 20, 21.
 export const CHAPTER_END = {
   title: 'Hoàn thành chương Triệu Việt Vương',
-  text: score => `Điểm: ${score}.`
+  text: score => `Bạn đã cùng Triệu Quang Phục đánh tan quân Lương và đạt ${score} điểm. `
+    + 'Năm 550, Triệu Quang Phục chém tướng Dương Sàn, xưng Triệu Việt Vương, khôi phục nước Vạn Xuân và đóng đô ở Long Biên.'
 };

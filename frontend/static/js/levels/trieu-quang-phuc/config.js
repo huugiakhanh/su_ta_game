@@ -5,10 +5,12 @@
 // images/trieu-quang-phuc/ (manifest_tqp.json, maps_tqp.json); mượn map chương 1
 // (trời, tile, bia câu hỏi), chương 2 (sách, đồi xa) và chương 3 (làng Chu Diên,
 // mặt nước, mỏm đá) qua BORROWED_MAPS. Không import file nào của chương 1–3.
-// TQP-L2 (docs/SUTA_TQP_TASK_L2_01.md): asset TQP_ART_02 (3 NPC + chân dung,
-// rồng vàng, trời đêm, Dạ Trạch đêm, Khuất Lão, nước đầm, bụi lau); đồi xa
-// trung du mượn chương 3. Màn 3 vẫn là khung TQP-SKELETON (PLACEHOLDER tới
-// TQP-L3). Mọi số DESIGN_BASELINE.
+// TQP-L2 (docs/archive/SUTA_TQP_TASK_L2_01.md): asset TQP_ART_02 (3 NPC + chân
+// dung, rồng vàng, trời đêm, Dạ Trạch đêm, Khuất Lão, nước đầm, bụi lau); đồi
+// xa trung du mượn chương 3.
+// TQP-L3 (docs/archive/SUTA_TQP_TASK_L3_01.md): asset TQP_ART_03 (Dương Sàn, lính đánh
+// thuê, trại Lương đêm, mỏm đất, thuyền độc mộc, FX gáy/sóng đất/đuốc) + FX/icon
+// 3 phần thưởng (TQP_ART_02). Mọi số DESIGN_BASELINE.
 
 import { CHUNK_W } from '../../engine/config.js';
 
@@ -43,7 +45,11 @@ export const TILES = {
 export const FAR_HILLS = { id: 'BG_BT_FAR_PLAIN', parallax: 0.2, bottomY: 230, hiddenUnderSky: [] };
 
 // Ảnh DOM riêng chương (chân dung): Triệu Quang Phục dẫn màn 1 + 3 NPC màn 2.
-export const PORTRAITS = ['PORTRAIT_TQP', 'PORTRAIT_TQP_TRIEU_TUC', 'PORTRAIT_TQP_LY_NAM_DE', 'PORTRAIT_CHU_DONG_TU'];
+// Màn 3: chân dung Dương Sàn + icon 3 phần thưởng (ô kỹ năng HUD).
+export const PORTRAITS = [
+  'PORTRAIT_TQP', 'PORTRAIT_TQP_TRIEU_TUC', 'PORTRAIT_TQP_LY_NAM_DE', 'PORTRAIT_CHU_DONG_TU', 'PORTRAIT_DUONG_SAN',
+  'ICON_SK_TQP_RALLY', 'ICON_SK_TQP_DRAGON_CLAW', 'ICON_BUFF_TQP_VITALITY'
+];
 
 // Sprite canvas mỗi màn cần (chỉ nạp ảnh màn đang chơi dùng). Màn 1 gồm cả
 // layout thử ?layout=engine. ITEM_LND_HEAL ở mọi màn: engine drawPickups tra
@@ -61,8 +67,11 @@ export const LEVEL_SPRITES = {
     'TR_BAMBOO_SPIKE_PIT', 'EN_SWAMP_SNAKE', 'EN_CROCODILE', 'EN_LUONG_WAR_BOAT', 'PJ_FIRE_ARROW', 'FX_SWAMP_GAS',
     'ITEM_LND_HEAL'
   ],
-  // PLACEHOLDER tới TQP-L3.
-  3: ['EN_LUONG_PATROL', 'ITEM_LND_HEAL']
+  3: [
+    'BOSS_DUONG_SAN', 'EN_LUONG_MERCENARY', 'EN_LUONG_ARCHER', 'PJ_CROSSBOW_BOLT', 'OB_TQP_DIRT_MOUND',
+    'OB_TQP_DUGOUT_CANOE', 'FX_TQP_NAPE_GLOW', 'FX_TQP_GROUND_SLAM', 'FX_BT_ARMOR_SPARK', 'FX_TQP_TORCH',
+    'FX_TQP_RALLY', 'FX_TQP_DRAGON_CLAW', 'ITEM_LND_HEAL'
+  ]
 };
 
 // URL trang từng màn (route ở backend/routes/pages.py).
@@ -233,20 +242,119 @@ export const REED_COVER = { prop: 'PROP_TQP_REED_COVER', w: 64, insideAlpha: .55
 // NPC dưới `range` px. Mờ theo NPC khi gặp xong.
 export const DRAGON = { id: 'FX_TQP_GOLDEN_DRAGON', npc: 'chuDongTu', range: 420 };
 
-// ---- Màn 3 "Đại phá Dương Sàn" (khung) ----
-// Đấu trường 1 chunk, 3 đợt lính ra ở spawnX (engine makeSpawner). Nền sông nước
-// Chu Diên tạm cho bãi lầy Dạ Trạch.
-export const ARENA = { width: CHUNK_W, playerStartX: 170, spawnX: 700 };
+// ---- Màn 3 "Đại phá Dương Sàn" (TQP-L3) ----
+// Đấu trường 1 chunk (Q2) ban đêm: trời đêm + trại Lương bên đầm. Nước đầm xanh
+// rêu như màn 2 (GĐ 3 đoạn giữa hoá nước).
+export const ARENA = { width: CHUNK_W, playerStartX: 96 };
 export const LEVEL3_ZONES = [
-  { id: 'TQP3', x0: 0, x1: ARENA.width, sky: 'BG_TT_SKY_DAY', mid: 'BG_LND_MID_CHU_DIEN' }
+  { id: 'TQP3', x0: 0, x1: ARENA.width, sky: 'BG_TQP_SKY_NIGHT', mid: 'BG_TQP_MID_LUONG_CAMP_NIGHT' }
 ];
-export const WAVES = {
-  gap: 1.5,
-  groups: [
-    [{ type: 'guard', at: 0, dx: 0 }],
-    [{ type: 'guard', at: 0, dx: 0 }, { type: 'guard', at: 0, dx: -40 }],
-    [{ type: 'guard', at: 0, dx: 0 }, { type: 'guard', at: 0, dx: -40 }, { type: 'guard', at: .8, dx: 0 }]
-  ]
+export const LEVEL3_FAR_HILLS = { id: 'BG_BT_FAR_PLAIN', parallax: 0.2, bottomY: 230, hiddenUnderSky: ['BG_TQP_SKY_NIGHT'] };
+// Địa hình (ô 16 px, 48 cột): GĐ 1–2 hai dải sình 176–240 / 528–592; GĐ 3 đoạn
+// 176–592 thành nước, bờ phải còn dải sình 592–656 (Dương Sàn sa vào sau mỗi
+// cú cuồng nộ).
+export const LEVEL3_TERRAIN = {
+  battle: ['###########====##################====###########'],
+  flood: ['###########~~~~~~~~~~~~~~~~~~~~~~~~~~====#######']
+};
+// Mỏm đất OB_TQP_DIRT_MOUND (ô 64×32; mặt đứng hàng 2, đáy hàng 30): hazard
+// `prop` có bục trên lưng (`ride`) — bệ nhảy để bổ gáy (Q3). [tâm x].
+export const MOUNDS = [269, 499];
+// Thuyền độc mộc OB_TQP_DUGOUT_CANOE (ô 64×24; mặt nước hàng 20, pivot = mặt nước
+// +4; mép lòng thuyền hàng 8–10, trung tính 9): hazard `prop` nổi (`floatY`) có
+// bục trên lưng. Nhấp nhô ±1 logic chỉ có trong ảnh — bục giữ hàng 9. [tâm x].
+export const CANOES = { x: [250, 384, 518], floatY: 4 };
+// Đuốc tiền cảnh FX_TQP_TORCH (16×32, gốc cán ở đáy) — trên đất cả 2 giai đoạn.
+export const TORCHES = [40, 150, 720];
+
+// Dương Sàn BOSS_DUONG_SAN (ô 128×128; attack_01/rage frame_w 192). Thân đo C1:
+// cao ~102 logic -> hitbox 40×100; đang lún (`stuck`) hitbox hạ còn `stuckH` (đỉnh
+// = khe gáy, đo C2 −70…−76,5). `hp` 12 (Q5: 3 lượt + kết liễu, mỗi lượt 3).
+//   walk `speed`; khoảng mép tới người chơi ≤ `reach` -> attack_01 (ô hit 5,
+//   đao [blade.near, blade.reach] từ tâm × [low, high] trên chân), nghỉ
+//   attackCooldown. Xa hơn `chargeRange` và hết chargeCooldown -> lao
+//   `chargeSpeed` theo 1 hướng, dừng khi qua người chơi `overshoot` px / chạm
+//   tường (nghỉ `wallRest`) / tâm vào sình -> lún `stuckTime` (GĐ 3:
+//   `stuckTimeP3`). Lao trúng: −1 máu, đẩy `push`.
+//   Máu về mốc `thresholds` thì thoát lún, hurt, lùi `retreat` px; mốc cuối -> GĐ 3.
+//   Gáy từng ô `stuck`/`hurt` (tương đối pivot, đo C2): FX_TQP_NAPE_GLOW pivot =
+//   gáy + (0, +8). Bổ gáy: có Móng Rồng `clawDamage`, không có `plainDamage`.
+//   GĐ 3 đứng `p3HomeX`, mỗi `rageInterval` giây `rage` (ô hit 6, mũi đao
+//   `rageTip` -> sóng đất), rồi đi tới `p3StuckX` (dải sình bờ phải) lún.
+export const BOSS = {
+  id: 'BOSS_DUONG_SAN', w: 40, h: 100, stuckH: 70, hp: 12, startX: 640, startDelay: 1.5,
+  speed: 40, reach: 40, attackCooldown: 1.8, blade: { near: 10, reach: 62, low: 8, high: 70 },
+  chargeRange: 180, chargeCooldown: 3, chargeSpeed: 230, overshoot: 120, wallRest: 1, push: 40,
+  stuckTime: 4, stuckTimeP3: 3, thresholds: [9, 6, 3], retreat: 60,
+  clawDamage: 3, plainDamage: 1, hintInterval: 4,
+  napeStuck: [[-1, -70.25], [-2.5, -73.5], [-3.5, -76.5], [-3.75, -75.75], [-2.75, -70.75], [-1.5, -70]],
+  napeHurt: [[-2.5, -82.75], [-2.5, -76.25], [-2.25, -85]],
+  p3HomeX: 704, p3StuckX: 624, rageInterval: 6, rageTip: { x: 50.25, y: -2 },
+  defeatScore: 1500
+};
+// Sóng đất FX_TQP_GROUND_SLAM (ô 96×32): phát tại mũi đao ô 6 của `rage`; GĐ 3
+// sóng chạy về phía mép nước `speed` px/s, hộp w×h trên mặt đất, trúng người
+// đứng đất bờ phải −1 máu (đứng trên thuyền thì an toàn).
+export const SLAM = { id: 'FX_TQP_GROUND_SLAM', anim: 'burst', speed: 260, w: 40, h: 22 };
+// Gọi viện (`command` ô 3): mỗi `interval` giây khi boss không lao/lún. Lượt n
+// (= số lượt đã bổ trúng) ra `waves[n]` = { mercs, archer }; tối đa `max` lính
+// sống. Lính ra ở mép xa người chơi (`edgeX` từ tường). Cung thủ đứng ở mép đó.
+export const REINFORCE = {
+  interval: 10, startDelay: 4, max: 3, edgeX: 30,
+  waves: [{ mercs: 1, archer: false }, { mercs: 2, archer: false }, { mercs: 2, archer: true }],
+  // Tầm bắn 260 < tầm bay tên của engine (PROJECTILE_MAX_RANGE 276): cung thủ
+  // đứng mép khống chế phía đấu trường đó.
+  archer: { fireInterval: 2.5, fireRange: 260, hp: 1 }
+};
+// Bình máu rơi khi hạ lính / cung thủ (hooks.dropHeal — Q5). Boss không rơi.
+export const HEAL_DROP = { chance: .25 };
+// Tóe lửa trên giáp (FX_BT_ARMOR_SPARK 16×16, chép chương 3).
+export const SPARK = { id: 'FX_BT_ARMOR_SPARK', anim: 'impact' };
+// Gáy sáng FX_TQP_NAPE_GLOW (16×16, lõi ở giữa ô — pivot = lõi + 8).
+export const NAPE_GLOW = { id: 'FX_TQP_NAPE_GLOW', anim: 'loop', lift: 8 };
+// Đuốc FX_TQP_TORCH.
+export const TORCH = { id: 'FX_TQP_TORCH', anim: 'loop' };
+
+// Kỹ năng (phần thưởng màn 2 — TQP-L3 §3):
+//   Thể lực cường tráng: máu tối đa +`bonus` (engine bonusHealth).
+//   Hiệu triệu (K): FX_TQP_RALLY (ô 96×64) quanh người chơi; ô hit 3 -> lính /
+//   cung thủ trong bán kính `radius` −`damage` + đẩy `push`; đạn trong bán kính
+//   tan; Dương Sàn không mất máu nhưng bị ngắt cú lao. Hồi `cooldown`.
+//   Móng Rồng (L): `on` rồi bật `duration` giây — bổ gáy gây BOSS.clawDamage;
+//   `hold` chỉ vẽ khi người chơi đứng yên (FX căn theo kiếm tư thế idle — Gate
+//   B2), `strike` tại gáy khi trúng. Hồi `cooldown` tính từ lúc bật.
+export const SKILLS = {
+  BUFF_TQP_VITALITY: { slot: null, bonus: 2, icon: 'ICON_BUFF_TQP_VITALITY' },
+  SK_TQP_RALLY: {
+    slot: 'skill1', cooldown: 12, radius: 40, damage: 2, push: 30,
+    fx: 'FX_TQP_RALLY', icon: 'ICON_SK_TQP_RALLY'
+  },
+  SK_TQP_DRAGON_CLAW: {
+    slot: 'skill2', duration: 6, cooldown: 10,
+    fx: 'FX_TQP_DRAGON_CLAW', icon: 'ICON_SK_TQP_DRAGON_CLAW'
+  }
+};
+// Layout thử `?layout=skills` (màn 3; `?debug=1` cho đủ 3 phần thưởng): boss lún
+// mãi ở dải sình trái (máu không giảm), lính đánh thuê ra lặp (tối đa 2).
+export const SKILL_TEST = { bossX: 208, respawnGap: 3 };
+
+// Cutscene kết chương (giây): boss trúng đòn cuối `hurt` beatenHold -> `death`
+// rồi nằm deathHold -> cốt truyện 1 -> tối dần fadeTime -> sáng lại -> cốt
+// truyện 2 -> panel kết chương.
+export const TQP_CUTSCENE = { beatenHold: .6, deathHold: .8, fadeTime: .6 };
+
+// Câu thông báo trong trận (TQP-L3 §5 — Claude soạn, không phải nội dung lịch
+// sử, duyệt Q1 05/11/2026).
+export const BOSS_TEXT = {
+  armorHint: 'Giáp Dương Sàn quá dày — hãy nhử hắn lao vào bãi sình!',
+  napeHint: 'Dương Sàn bị lún — nhảy lên bổ vào gáy!',
+  noClaw: 'Gáy chưa đủ hở — bật Móng Rồng (L) để đánh mạnh hơn!',
+  bladeHit: 'Bạn trúng đại đao của Dương Sàn!',
+  chargeHit: 'Dương Sàn lao trúng bạn!',
+  command: 'Dương Sàn gọi lính đánh thuê!',
+  phase3: 'Dương Sàn cuồng nộ đập vỡ bờ đầm!',
+  slamHit: 'Sóng đất hất ngã bạn!',
+  canoeHint: 'Nhảy qua thuyền độc mộc để áp sát!'
 };
 
 // ---- Môi trường ----
@@ -266,6 +374,8 @@ export const MAP_PROPS_IN_GAME = [
   ITEM.sprite, QUIZ_STELE_ID, ROCK_LEDGE.sprite, BAMBOO_POST.sprite, TILES.water, TILES.mud,
   FINISH_GATE.closed, FINISH_GATE.open, SNAKE_AMBUSH.tuft, LEVEL2_TILES.water, REED_COVER.prop
 ];
+// Nước đầm xanh rêu (như màn 2) cho màn 3 GĐ 3.
+export const LEVEL3_TILES = LEVEL2_TILES;
 
 // ---- Quân địch, hazard, đạn ----
 // Hitbox (w, h) tính từ pivot bottom-center, đo từ strip TQP_ART_01 (report
@@ -314,6 +424,21 @@ export const ENEMY_SPRITES = {
   captain: {
     id: 'EN_LUONG_SPEAR_CAPTAIN', behavior: 'guard', rules: CAPTAIN_GUARD, plungeOnly: true, anims: SPEAR_ANIMS,
     attackMessage: 'Bạn bị đội trưởng giáo dài đâm trúng!', contactMessage: 'Bạn va phải đội trưởng giáo dài!'
+  },
+  // Lính đánh thuê EN_LUONG_MERCENARY (màn 3): cùng cỡ + nhịp lính tuần (C2 đo
+  // sọ–chân 34, attack_01 ô hit 4 rộng 128) — dùng luật GUARD.
+  mercenary: {
+    id: 'EN_LUONG_MERCENARY', behavior: 'guard', rules: GUARD,
+    anims: { idle: 'idle', walk: 'walk', attack: 'attack_01', hurt: 'hurt', death: 'death' },
+    attackMessage: 'Bạn trúng rìu lính đánh thuê!', contactMessage: 'Bạn va phải lính đánh thuê!'
+  },
+  // Dương Sàn (enemy `kind` duongSan — boss.js đặt animation).
+  duongSan: {
+    id: 'BOSS_DUONG_SAN',
+    anims: {
+      idle: 'idle', walk: 'walk', charge: 'charge', attack: 'attack_01', command: 'command', blocked: 'blocked',
+      hurt: 'hurt', stuck: 'stuck', rage: 'rage', death: 'death'
+    }
   },
   // Không có `idle` riêng: đứng ở ô 1 của `run` (idleHold).
   snake: {
@@ -367,7 +492,12 @@ export const HAZARD_SPRITES = {
   },
   // Cây cho cung thủ (hazard `prop` — chỉ vẽ), đặt TRƯỚC cung thủ để vẽ phía sau.
   archerTree: { id: 'PROP_TQP_ARCHER_TREE', w: 28, h: 110, anims: { idle: 'idle' } },
-  // Cung thủ đứng đất của layout thử.
+  // Mỏm đất (màn 3): hazard `prop`, bục trên lưng (mặt hàng 2 của ô 32 cao); GĐ 3
+  // `crack` rồi biến mất (alive = false -> death).
+  dirtMound: { id: 'OB_TQP_DIRT_MOUND', w: 58, h: 30, ride: { top: 2, inset: 2 }, anims: { idle: 'idle', death: 'crack' } },
+  // Thuyền độc mộc (màn 3 GĐ 3): hazard `prop` nổi; ô 24 cao, mép lòng hàng 9.
+  canoe: { id: 'OB_TQP_DUGOUT_CANOE', w: 56, h: 24, ride: { top: 9, inset: 4 }, anims: { idle: 'idle' } },
+  // Cung thủ đứng đất của layout thử + màn 3.
   archer: {
     id: 'EN_LUONG_ARCHER', w: 20, h: 34, muzzle: 23, muzzleX: 11,
     anims: { idle: 'idle', throw: 'throw' }, hitMessage: 'Bạn va phải cung thủ!'
@@ -416,11 +546,11 @@ export const ENGINE_TEST = {
   npcItems: [[6, 470, 60], [6, 530, 60]],
   bonusHealth: 2
 };
-// Bình hồi máu (chương 3) — chưa có quân nào rơi (hook dropHeal ở TQP-L3).
+// Bình hồi máu (chương 3) — màn 3 lính rơi theo HEAL_DROP (boss.js dropHeal).
 export const PICKUPS = { heal: { id: 'ITEM_LND_HEAL', anim: 'idle' } };
 
 // ---- Phần thưởng màn 2 (id khớp seed backend/migrations/008_trieu_quang_phuc.sql) ----
-// Tên theo docs/SUTA_TQP_TASK_00.md §3.4 (duyệt 04/11/2026); cơ chế ở TQP-L3.
+// Tên theo docs/SUTA_TQP_TASK_00.md §3.4 (duyệt 04/11/2026); cơ chế ở skills.js.
 export const REWARD_NAMES = {
   BUFF_TQP_VITALITY: 'Thể lực cường tráng',
   SK_TQP_RALLY: 'Hiệu triệu Vạn Xuân',

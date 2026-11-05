@@ -1,12 +1,14 @@
 // Định nghĩa chương Triệu Việt Vương (chương 4) cho engine màn chơi. Hợp đồng
 // các trường: engine/chapter.js. Màn 1 thật (TQP-L1: khu rèn luyện, chướng ngại
 // xáo, mini-boss đội trưởng giáo dài); màn 2 thật (TQP-L2: 3 NPC khoá theo sách,
-// ngày -> đêm, bụi lau ẩn nấp); màn 3 còn là khung TQP-SKELETON.
+// ngày -> đêm, bụi lau ẩn nấp); màn 3 thật (TQP-L3: boss Dương Sàn 3 giai đoạn,
+// 3 kỹ năng, cutscene).
 
 import { CHUNK_W } from '../../engine/config.js';
 import {
   SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, BORROWED_MAPS, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
   LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, FINISH_GATE, GUIDE_LOCAL_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, LEVEL2_FAR_HILLS, LEVEL2_TILES, ARENA, LEVEL3_ZONES,
+  LEVEL3_FAR_HILLS, LEVEL3_TILES,
   OBSTACLE_TYPES, QUIZ_STELE_ID, MAP_PROPS_IN_GAME, HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES, NPC_SPRITES,
   ITEM, PICKUPS, REWARD_NAMES, TEXT
 } from './config.js';
@@ -15,7 +17,9 @@ import { NPC_DIALOGUES, CHAPTER_END, STORY_TQP_INTRO } from './dialogue-data.js'
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
 import { level1Content, level1Events } from './level1.js';
 import { level2Content, level2Events } from './level2.js';
-import { level3Content, updateLevel3 } from './level3.js';
+import { level3Content } from './level3.js';
+import { updateBattle, updateCutscene, ENEMY_KINDS, dropHeal, updateBossHud, battleDebugEntities } from './boss.js';
+import { TQP_SKILLS } from './skills.js';
 import { DRAW_LAYERS } from './render-extras.js';
 
 export const TRIEU_QUANG_PHUC = {
@@ -51,10 +55,19 @@ export const TRIEU_QUANG_PHUC = {
   // khi ẩn nấp ×2 (E7). DESIGN_BASELINE.
   plunge: { speed: 280, forward: 260 },
   stealth: { ambush: 2 },
+  skills: TQP_SKILLS,
+  enemyKinds: ENEMY_KINDS,
   // Cờ nghỉ chân + câu hướng dẫn khu rèn luyện màn 1 (level1Events); giây từ lúc
-  // rồng vàng hiện ở màn 2 (null = chưa hiện — level2Events).
-  stateFields: () => ({ restUsed: false, tipIndex: 0, dragonTime: null }),
-  hooks: { draw: DRAW_LAYERS },
+  // rồng vàng hiện ở màn 2 (null = chưa hiện — level2Events); tiến trình trận
+  // boss màn 3 (level3Content).
+  stateFields: () => ({ restUsed: false, tipIndex: 0, dragonTime: null, battle: null }),
+  hooks: {
+    // Bình máu rơi khi hạ địch: chỉ màn 3, theo tỉ lệ HEAL_DROP (boss.js dropHeal).
+    dropHeal,
+    updateHud: updateBossHud,
+    debugEntities: battleDebugEntities,
+    draw: DRAW_LAYERS
+  },
   // Tên màn + thông báo đầu màn 1: TQP-00 §5.1 (duyệt 04/11/2026 — TQP-L1 Q1).
   levels: {
     1: {
@@ -88,10 +101,18 @@ export const TRIEU_QUANG_PHUC = {
       id: 3, title: 'Màn 3: Đại phá Dương Sàn', url: LEVEL_URLS[3],
       chunks: 1, worldWidth: ARENA.width, zones: LEVEL3_ZONES, finishX: ARENA.width, arena: true,
       playerStartX: ARENA.playerStartX, gate: null,
+      farHills: LEVEL3_FAR_HILLS,
+      // Nước đầm xanh rêu (GĐ 3 đoạn giữa hoá nước).
+      tiles: LEVEL3_TILES,
       sprites: LEVEL_SPRITES[3],
       content: level3Content,
-      update: updateLevel3,
+      update: updateBattle,
+      cutscene: updateCutscene,
+      // Tên màn TQP-00 §5.1 (nháp — chưa duyệt).
       introMessage: 'Màn 3: Đại phá Dương Sàn',
+      // Layout thử kỹ năng: ?layout=skills (boss lún sẵn + lính đánh thuê lặp).
+      testLayout: 'skills',
+      skills: true,
       summary: state => `Bạn đạt ${state.score} điểm.`
     }
   }

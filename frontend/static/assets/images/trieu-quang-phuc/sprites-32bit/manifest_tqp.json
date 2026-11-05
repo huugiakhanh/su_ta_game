@@ -1035,7 +1035,7 @@
           "hit_frame": null
         }
       ],
-      "qa_notes": "TQP_ART_03 Gate C2 candidate. C1 four animations byte-preserved; command/blocked/hurt/stuck/rage/death appended. NORMALIZED, pending C2 review. See report."
+      "qa_notes": "TQP_ART_03 — FIX-COLOR: region-only clothing recolor to this asset idle; geometry/alpha/timing and Gate C2 shield repair preserved. See meta/fix_color/validation.json and preview/fix_color/index.html. Death coverage ratio and original flying sash geometry noted in report. Pending review."
     },
     {
       "id": "PORTRAIT_DUONG_SAN",
@@ -1112,7 +1112,7 @@
           "hit_frame": null
         }
       ],
-      "qa_notes": "TQP_ART_03 C1 shield repair: all five animations corrected so left shield-hand is behind wicker shield. Body/axe/feet outside shield ROIs unchanged; timing/fw/hit unchanged. Pending review; meta/c2/merc_repair_qa.json."
+      "qa_notes": "TQP_ART_03 — FIX-COLOR: region-only clothing recolor to this asset idle; geometry/alpha/timing and Gate C2 shield repair preserved. See meta/fix_color/validation.json and preview/fix_color/index.html. Death coverage ratio and original flying sash geometry noted in report. Pending review."
     },
     {
       "id": "FX_TQP_NAPE_GLOW",

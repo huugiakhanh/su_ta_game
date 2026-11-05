@@ -1,12 +1,37 @@
 {% extends "gameplay/base.html" %}
-{# Chương Triệu Việt Vương — dùng chung 3 màn. Khung chung ở gameplay/base.html.
-   TQP-SKELETON: chưa có khe kỹ năng (Hiệu triệu Vạn Xuân, Móng Rồng — TQP-L3). #}
+{# Chương Triệu Việt Vương — dùng chung 3 màn. Khung chung ở gameplay/base.html. #}
 
 {% block chapter_name %}Triệu Việt Vương{% endblock %}
 {% block brand %}SUTA · TRIỆU VIỆT VƯƠNG{% endblock %}
 {% block canvas_label %}Màn chơi Triệu Việt Vương{% endblock %}
 {% block item_label %}Quyển Sách Tinh Hoa đã thu thập{% endblock %}
 {% block item_glyph %}📖{% endblock %}
+
+{# Khe kỹ năng màn 3 = phần thưởng màn 2 (skills.js, TQP-L3) — chỉ hiện phần thưởng đã nhận. #}
+{% block skill_slots %}
+        <div class="skill" data-skill="SK_TQP_RALLY" hidden>
+          <img class="skill__icon" alt="Hiệu triệu Vạn Xuân" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">K</kbd>
+        </div>
+        <div class="skill" data-skill="SK_TQP_DRAGON_CLAW" hidden>
+          <img class="skill__icon" alt="Móng Rồng" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">L</kbd>
+        </div>
+        <div class="skill skill--buff" data-skill="BUFF_TQP_VITALITY" hidden>
+          <img class="skill__icon" alt="Thể lực cường tráng" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span>
+        </div>
+{% endblock %}
+
+{% block skill_controls %}
+          <button class="control control--skill control--skill-1" data-control="skill1" data-skill="SK_TQP_RALLY" aria-label="Hiệu triệu Vạn Xuân" hidden><img class="control__icon" alt="" hidden><span class="control__label">HIỆU</span></button>
+          <button class="control control--skill control--skill-2" data-control="skill2" data-skill="SK_TQP_DRAGON_CLAW" aria-label="Móng Rồng" hidden><img class="control__icon" alt="" hidden><span class="control__label">RỒNG</span></button>
+{% endblock %}
+
+{% block skill_help %}
+      <span data-skill="SK_TQP_RALLY" hidden><kbd>K</kbd> Hiệu triệu Vạn Xuân</span>
+      <span data-skill="SK_TQP_DRAGON_CLAW" hidden><kbd>L</kbd> Móng Rồng</span>
+{% endblock %}
 
 {% block chapter_script %}
   <script type="module" src="{{ url_for('static', filename='js/levels/trieu-quang-phuc/main.js') }}"></script>
