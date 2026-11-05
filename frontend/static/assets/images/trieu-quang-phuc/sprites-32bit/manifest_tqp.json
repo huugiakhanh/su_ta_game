@@ -940,6 +940,320 @@
         }
       ],
       "qa_notes": "TQP_ART_02 Gate B2 candidate; see reports and meta/b2/validation.json; pending review."
+    },
+    {
+      "id": "BOSS_DUONG_SAN",
+      "category": "boss",
+      "priority": "P0",
+      "frame_w": 128,
+      "frame_h": 128,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "boss/BOSS_DUONG_SAN/boss_duong_san_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "boss/BOSS_DUONG_SAN/boss_duong_san_walk.png",
+          "frames": 8,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "charge",
+          "file": "boss/BOSS_DUONG_SAN/boss_duong_san_charge.png",
+          "frames": 6,
+          "fps": 14,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "boss/BOSS_DUONG_SAN/boss_duong_san_attack_01.png",
+          "frames": 8,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": 5,
+          "frame_w": 192
+        },
+        {
+          "name": "command",
+          "file": "boss/BOSS_DUONG_SAN/boss_duong_san_command.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": 3
+        },
+        {
+          "name": "blocked",
+          "file": "boss/BOSS_DUONG_SAN/boss_duong_san_blocked.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "hurt",
+          "file": "boss/BOSS_DUONG_SAN/boss_duong_san_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "stuck",
+          "file": "boss/BOSS_DUONG_SAN/boss_duong_san_stuck.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "rage",
+          "file": "boss/BOSS_DUONG_SAN/boss_duong_san_rage.png",
+          "frames": 8,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": 6,
+          "frame_w": 192
+        },
+        {
+          "name": "death",
+          "file": "boss/BOSS_DUONG_SAN/boss_duong_san_death.png",
+          "frames": 8,
+          "fps": 10,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_03 Gate C2 candidate. C1 four animations byte-preserved; command/blocked/hurt/stuck/rage/death appended. NORMALIZED, pending C2 review. See report."
+    },
+    {
+      "id": "PORTRAIT_DUONG_SAN",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_DUONG_SAN/portrait_duong_san_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_03 — Gate C1; pending team review. See reports and meta/c1/validation.json."
+    },
+    {
+      "id": "EN_LUONG_MERCENARY",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_LUONG_MERCENARY/en_luong_mercenary_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_LUONG_MERCENARY/en_luong_mercenary_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_LUONG_MERCENARY/en_luong_mercenary_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_LUONG_MERCENARY/en_luong_mercenary_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_LUONG_MERCENARY/en_luong_mercenary_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_03 C1 shield repair: all five animations corrected so left shield-hand is behind wicker shield. Body/axe/feet outside shield ROIs unchanged; timing/fw/hit unchanged. Pending review; meta/c2/merc_repair_qa.json."
+    },
+    {
+      "id": "FX_TQP_NAPE_GLOW",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "fx/FX_TQP_NAPE_GLOW/fx_tqp_nape_glow_loop.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_03 Gate C2 candidate; pending review. See reports and meta/c2/validation.json."
+    },
+    {
+      "id": "FX_TQP_GROUND_SLAM",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 96,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "burst",
+          "file": "fx/FX_TQP_GROUND_SLAM/fx_tqp_ground_slam_burst.png",
+          "frames": 6,
+          "fps": 14,
+          "loop": false,
+          "hit_frame": 2
+        }
+      ],
+      "qa_notes": "TQP_ART_03 Gate C2 candidate; pending review. See reports and meta/c2/validation.json."
+    },
+    {
+      "id": "OB_TQP_DIRT_MOUND",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_TQP_DIRT_MOUND/ob_tqp_dirt_mound_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "crack",
+          "file": "obstacle/OB_TQP_DIRT_MOUND/ob_tqp_dirt_mound_crack.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_03 Gate C2 candidate; pending review. See reports and meta/c2/validation.json."
+    },
+    {
+      "id": "OB_TQP_DUGOUT_CANOE",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 24,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_TQP_DUGOUT_CANOE/ob_tqp_dugout_canoe_idle.png",
+          "frames": 6,
+          "fps": 6,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_03 Gate C2 candidate; pending review. See reports and meta/c2/validation.json."
+    },
+    {
+      "id": "FX_TQP_TORCH",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "fx/FX_TQP_TORCH/fx_tqp_torch_loop.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_03 Gate C2 candidate; pending review. See reports and meta/c2/validation.json."
+    },
+    {
+      "id": "FX_BT_ARMOR_SPARK",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "impact",
+          "file": "fx/FX_BT_ARMOR_SPARK/fx_bt_armor_spark_impact.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Copied without redraw or recolor from assets/sprites-32bit/ba-trieu; SHA256 exact source match, see meta/gate_c2/copy_hashes.json.",
+      "source_chapter": "ba-trieu"
     }
   ]
 }

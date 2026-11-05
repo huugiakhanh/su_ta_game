@@ -304,6 +304,24 @@
         "h": 43.75
       },
       "qa_notes": "TQP_ART_02 Gate B2 candidate; see report and meta/b2/validation.json."
+    },
+    {
+      "id": "BG_TQP_MID_LUONG_CAMP_NIGHT",
+      "category": "parallax",
+      "file": "bg/BG_TQP_MID_LUONG_CAMP_NIGHT/bg_tqp_mid_luong_camp_night.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "TQP_ART_03 — Gate C1. Unique native two-panel painting; 6 opaque torches. Pending review; see MAP_REPORT_TQP_32.md."
     }
   ]
 }
