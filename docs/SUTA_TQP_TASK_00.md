@@ -1,5 +1,5 @@
 # SỬ TA — CHƯƠNG 4: TRIỆU VIỆT VƯƠNG (TRIỆU QUANG PHỤC)
-# TASK CARD TỔNG: KẾ HOẠCH CHƯƠNG + NỘI DUNG CHỜ TEAM DUYỆT
+# TASK CARD TỔNG: KẾ HOẠCH CHƯƠNG + NỘI DUNG ĐÃ DUYỆT
 
 TASK_ID: TQP-00 • Version 1.0 • 04/11/2026
 Nguồn: Excel của team `DATA các nhân vật.xlsx`, sheet "4 Triệu Việt Vương" (ô A1 = bối cảnh + thiết kế, A2:H52 = 50 câu hỏi).
@@ -8,7 +8,7 @@ Mẫu tham chiếu: chương Lý Nam Đế ([SUTA_LND_TASK_00.md](SUTA_LND_TASK_
 > Task card này **chỉ là tài liệu**. Mỗi giai đoạn code ở mục 2 có task card riêng, duyệt trước khi làm.
 > Kế hoạch tổng **ĐÃ DUYỆT 04/11/2026** (người dùng). Khi lập TQP-SKELETON, người dùng **duyệt luôn** chia pool 3.3,
 > tên 3 phần thưởng 3.4, tên 3 màn 5.1 và thưởng/thành tựu mục 9 (04/11/2026) để seed migration `008`.
-> **Mục 4 team đã duyệt (người dùng báo 05/11/2026)**; mục 5.1–5.2 duyệt 04/11 (TQP-L1). Phần còn lại của mục 5 **CHỜ TEAM DUYỆT** — sau khi duyệt mới thành
+> **Mục 3.3, 4, 5, 9 đã duyệt** (3.3, 5.1–5.2, 9: 04/11/2026; 4, 5.2–5.5: người dùng duyệt 05/11/2026) — là **Source of Truth**, đã chép nguyên văn vào code. Câu hỏi: team tự sửa JSON (mục 7).
 > Source of Truth, chép nguyên văn vào `dialogue-data.js` / `config.js` (rule `history-content.md`).
 
 ---
@@ -52,7 +52,7 @@ Mẫu tham chiếu: chương Lý Nam Đế ([SUTA_LND_TASK_00.md](SUTA_LND_TASK_
 | **TQP-L1** + `TQP_ART_01` | Màn 1 (mục 3.1) — **xong 04/11** ([task card](archive/SUTA_TQP_TASK_L1_01.md), [report](archive/REPORT_TQP-L1.md)); `TQP_ART_01` Gate A1 + A2 PASS, `IN_GAME` | SKELETON, ENGINE |
 | **TQP-L2** + `TQP_ART_02` | Màn 2 (mục 3.2) — **XONG 05/11** (chơi tay OK): [archive/SUTA_TQP_TASK_L2_01.md](archive/SUTA_TQP_TASK_L2_01.md), [archive/REPORT_TQP-L2.md](archive/REPORT_TQP-L2.md) | L1, TQP-00 duyệt |
 | **TQP-L3** + `TQP_ART_03` | Màn 3 boss Dương Sàn (mục 3.4) — **XONG 05/11** (chơi tay OK): [archive/SUTA_TQP_TASK_L3_01.md](archive/SUTA_TQP_TASK_L3_01.md) (Q1–Q8 duyệt 05/11), [archive/REPORT_TQP-L3.md](archive/REPORT_TQP-L3.md); `TQP_ART_03` Gate C1 + C2 PASS, `IN_GAME` | L2 |
-| Nhạc | `GEMINI_PROMPT_TQP_MUSIC.md` → `audio/trieu-quang-phuc/level1–3.mp3` | — |
+| Nhạc | **Xong 05/11** — [archive/GEMINI_PROMPT_TQP_MUSIC.md](archive/GEMINI_PROMPT_TQP_MUSIC.md) → `audio/trieu-quang-phuc/level1–3.mp3` | — |
 
 Mỗi giai đoạn: kế hoạch → duyệt → code → `pytest tests` + `/verify-ui` → `/task-report`. Thay đổi engine phải chơi lại 3 màn Trưng Trắc + 3 màn Bà Triệu + 3 màn Lý Nam Đế và các layout thử (`?layout=p2`, `?layout=skills`, `?layout=engine`, `?viewer=1`).
 
@@ -85,7 +85,7 @@ Mỗi giai đoạn: kế hoạch → duyệt → code → `pytest tests` + `/ver
 - Đoạn Dạ Trạch: bụi lau là **vùng ẩn nấp** (E7) — lính không phát hiện; đánh úp sau lưng lính chưa phát hiện ×2 sát thương.
 - Chướng ngại dùng lại màn 1 (sình, khói trôi, cá sấu, thuyền, rắn, lính giáo).
 
-### 3.3 Câu hỏi — CHỜ TEAM DUYỆT
+### 3.3 Câu hỏi — ĐÃ DUYỆT (chia pool 04/11/2026; nội dung câu do team tự sửa trong JSON — mục 7)
 
 Giữ đủ **50 câu**. Chia pool (theo số thứ tự Excel):
 
@@ -183,7 +183,7 @@ Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy nguyên văn Excel 
 
 ---
 
-## 5. CÂU CHỮ KHÁC — CHỜ TEAM DUYỆT (nháp)
+## 5. CÂU CHỮ KHÁC — ĐÃ DUYỆT (5.1 ngày 04/11/2026; 5.2–5.5 người dùng duyệt 05/11/2026)
 
 ### 5.1 Thông báo đầu màn
 > Màn 1 + mục 5.2 **duyệt 04/11/2026** (TQP-L1 Q1) — đã chép nguyên văn vào code.
@@ -199,6 +199,7 @@ Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy nguyên văn Excel 
 Câu chữ chốt ở TQP-L1 (không phải nội dung lịch sử — chỉ hướng dẫn phím).
 
 ### 5.4 Cutscene màn 3
+> Duyệt 05/11/2026 sau khi người dùng đã được báo câu 1 lệch Toàn thư (sử chỉ ghi Dương Sàn "chống đánh, thua rồi chết", không nói Triệu Quang Phục tự tay giết) — giữ nguyên câu.
 1. "Triệu Quang Phục tung đòn kết liễu. Tướng giặc Dương Sàn tử trận."
 2. "Quân Lương tan vỡ, nghĩa quân Dạ Trạch tiến về Long Biên."
 
@@ -215,7 +216,7 @@ Câu chữ chốt ở TQP-L1 (không phải nội dung lịch sử — chỉ hư
 |---|---|
 | `TQP_ART_01` | **Xong 04/11** — prompt đã xoá, kết quả soát trong [REPORT_TQP-L1.md](archive/REPORT_TQP-L1.md) (04/11; Gate A1 = `plunge` người chơi nam/nữ, `NPC_TQP`, lính giáo dài, nền đầm + mặt sình). Người dùng chốt 04/11: thuyền gọi quân bằng **tù và + cờ hiệu** (không pháo hiệu — thế kỷ 6 chưa có thuốc súng); `NPC_TQP` ~~giữ nhận diện người con trong `NPC_TRIEU_TUC`~~ → **đổi 04/11 (soát Gate A1): tạo hình theo ảnh thư viện `characters/avatar/thumb/trieu_quang_phuc.webp`** (giáp lá rêu, khăn choàng đỏ, giáo tua đỏ); đòn bổ của người chơi là **cú chém xuống** (không cắm kiếm); bảng màu sprite chương 4 = 101 màu (+3 màu cá sấu/rắn/khói). Nội dung gốc: NPC + chân dung TQP; bù nhìn rơm (đứng / vỡ), cọc tre; lính giáo dài + đội trưởng giáo dài; cung thủ trên cây (prop cây); bẫy chông ẩn; khói chướng khí trôi; rắn + bụi cỏ; cá sấu (bọt / ngoi / lặn); thuyền tuần tiễu + pháo tín hiệu; tile + cảnh sình lầy; nền bãi tập Chu Diên, bãi lau ven sông, đầm lầy; cổng đích |
 | `TQP_ART_02` | **XONG 05/11 — 17 asset `IN_GAME`** (prompt đã xoá; tư liệu ở [archive/RESEARCH_TQP_ART_BIBLE.md](archive/RESEARCH_TQP_ART_BIBLE.md)) (05/11; Gate B1 = 3 NPC + rồng vàng + chân dung Chử Đồng Tử + trời đêm + Dạ Trạch đêm). Nội dung gốc: NPC + chân dung Triệu Túc (vẽ riêng), Lý Nam Đế (bệnh, ngồi), Chử Đồng Tử; bụi lau che + FX ẩn nấp; nền động Khuất Lão, Dạ Trạch đêm; FX + icon 3 kỹ năng. Người dùng chốt 05/11: Triệu Túc **một người** (ID mới, giữ nhận diện chương 3; ô cha con `NPC_TRIEU_TUC` không dùng vì người con theo tạo hình TQP cũ); **thêm** trời đêm `BG_TQP_SKY_NIGHT` + nước đầm xanh rêu `PROP_TQP_SWAMP_WATER`; tạo hình Chử Đồng Tử **tra cứu trước** (TQP-ART-BIBLE). **Gate B1 soát 05/11, người dùng duyệt:** PASS 3 NPC, rồng vàng, chân dung Chử Đồng Tử, Dạ Trạch đêm; `BG_TQP_SKY_NIGHT` NEED_REDRAW (3 dải phẳng mép cứng y≈37/152 logic → ramp chàm 6 màu thay 6 xanh trời ngày, dither, thêm sao). Chốt cho B2: 1–2 đốm đuốc xa ở Dạ Trạch; Khuất Lão = cửa hang nhỏ một bên vùng trung du. **Gate B2 soát 05/11, người dùng duyệt:** PASS cả 12 asset mới + trời đêm vẽ lại (chênh hàng kề ≤ 2,6) + Dạ Trạch thêm 2 đuốc; palette map đổi 6 ô xanh trời ngày → chàm (192 màu). Đã chép PNG + 2 manifest sang `images/trieu-quang-phuc/`, chưa khai báo `config.js` (để TQP-L2/L3). Ghi chú cho code: bụi lau giữ vàng rơm sáng ở cảnh đêm để đọc rõ chỗ nấp; `FX_TQP_DRAGON_CLAW.hold` căn theo kiếm tư thế idle → TQP-L3 chỉ vẽ `hold` khi đứng yên, ra đòn dùng `strike` |
-| `TQP_ART_03` | **Xong 05/11** (prompt Codex đã xoá; tư liệu Dương Sàn chuyển vào [archive/RESEARCH_TQP_ART_BIBLE.md](archive/RESEARCH_TQP_ART_BIBLE.md); số đo cho code ở `SPRITE_REPORT_TQP_32.md` / `MAP_REPORT_TQP_32.md` vùng Codex) ( Gate C1 = Dương Sàn concept + idle/walk/charge/attack_01, chân dung, lính đánh thuê, nền trại Lương nửa đêm). Người dùng chốt 05/11: Dương Sàn **tướng Lương giáp nặng** (giáp lưỡng đương/lá ghép, mũ chỏm, đại đao — diễn giải, sử không tả), **gấp 3 người chơi** (ô 128×128); nền **vẽ mới** `BG_TQP_MID_LUONG_CAMP_NIGHT`; lính đánh thuê **vẽ mới** `EN_LUONG_MERCENARY`; cung thủ dùng lại `EN_LUONG_ARCHER`, tóe lửa chép `FX_BT_ARMOR_SPARK`. Tra cứu: Toàn thư ghi Dương Sàn (楊孱) là **tì tướng**, "chống đánh, thua rồi chết" — không nói Triệu Quang Phục tự tay giết (liên quan câu cutscene §5.4, chờ team). **Gate C1 soát 05/11, người dùng duyệt:** PASS `BOSS_DUONG_SAN` idle/walk/charge/attack_01 (cao ~102 logic, đao ~112), `PORTRAIT_DUONG_SAN`, `BG_TQP_MID_LUONG_CAMP_NIGHT` (6 đuốc, nối 3,12 ≤ p95 6,38); tạo hình Dương Sàn, lính đánh thuê, trại Lương duyệt theo bản Codex; `EN_LUONG_MERCENARY` **NEED_REDRAW** cả 5 animation — nắm tay trái vẽ đè lên mặt ngoài khiên (người dùng phát hiện), phải nắm quai mặt trong, bị khiên che. Sau đó làm Gate C2. **Gate C2 soát 05/11, người dùng duyệt; 10 ID chép sang game, status `IN_GAME` (khai báo `config.js` làm ở TQP-L3):** `EN_LUONG_MERCENARY` sửa đủ 5 strip — mặt ngoài khiên trơn (mây đan + núm), chỉ vùng khiên đổi, cỡ/nhịp/baseline 187 giữ nguyên → PASS; `BOSS_DUONG_SAN` command/blocked/hurt/stuck/rage/death đúng cỡ (rage 192), baseline 507 mọi ô, 40 màu → PASS (blocked chỉ giật nhẹ, dựa vào tóe lửa); `FX_TQP_NAPE_GLOW`, `FX_TQP_GROUND_SLAM`, `OB_TQP_DIRT_MOUND`, `OB_TQP_DUGOUT_CANOE` (bob ±1 logic), `FX_TQP_TORCH`, `FX_BT_ARMOR_SPARK` (byte trùng chương 3) → PASS. **Chơi thử TQP-L3 05/11:** người dùng phát hiện màu quần áo lệch giữa các animation của `BOSS_DUONG_SAN` (walk/charge/attack_01 đỏ tươi) và `EN_LUONG_MERCENARY` (walk/attack_01/hurt/death) → `NEED_REDRAW` chỉ màu, chuẩn = `idle` (người dùng chốt) (prompt `CODEX_PROMPT_TQP_ART_03_FIX_COLOR.md` đã xoá). **Gate FIX-COLOR soát 05/11, người dùng duyệt:** PASS cả 2 (boss đỏ tươi ≤ 1,0 %, lính áo xám + quần nâu đỏ mọi animation; chỉ đổi RGB, alpha/cỡ/baseline giữ nguyên) — đã chép 7 strip vào game, `IN_GAME`. Nội dung gốc: Dương Sàn (lao, chém đại đao, lún, hở gáy, cuồng nộ, ngã) + chân dung; lính đánh thuê, cung thủ; mỏm đất vỡ; thuyền độc mộc; nền Dạ Trạch nửa đêm + chớp đuốc |
+| `TQP_ART_03` | **Xong 05/11** (prompt Codex đã xoá; tư liệu Dương Sàn chuyển vào [archive/RESEARCH_TQP_ART_BIBLE.md](archive/RESEARCH_TQP_ART_BIBLE.md); số đo cho code ở `SPRITE_REPORT_TQP_32.md` / `MAP_REPORT_TQP_32.md` vùng Codex) ( Gate C1 = Dương Sàn concept + idle/walk/charge/attack_01, chân dung, lính đánh thuê, nền trại Lương nửa đêm). Người dùng chốt 05/11: Dương Sàn **tướng Lương giáp nặng** (giáp lưỡng đương/lá ghép, mũ chỏm, đại đao — diễn giải, sử không tả), **gấp 3 người chơi** (ô 128×128); nền **vẽ mới** `BG_TQP_MID_LUONG_CAMP_NIGHT`; lính đánh thuê **vẽ mới** `EN_LUONG_MERCENARY`; cung thủ dùng lại `EN_LUONG_ARCHER`, tóe lửa chép `FX_BT_ARMOR_SPARK`. Tra cứu: Toàn thư ghi Dương Sàn (楊孱) là **tì tướng**, "chống đánh, thua rồi chết" — không nói Triệu Quang Phục tự tay giết (liên quan câu cutscene §5.4 — người dùng vẫn duyệt giữ câu, 05/11). **Gate C1 soát 05/11, người dùng duyệt:** PASS `BOSS_DUONG_SAN` idle/walk/charge/attack_01 (cao ~102 logic, đao ~112), `PORTRAIT_DUONG_SAN`, `BG_TQP_MID_LUONG_CAMP_NIGHT` (6 đuốc, nối 3,12 ≤ p95 6,38); tạo hình Dương Sàn, lính đánh thuê, trại Lương duyệt theo bản Codex; `EN_LUONG_MERCENARY` **NEED_REDRAW** cả 5 animation — nắm tay trái vẽ đè lên mặt ngoài khiên (người dùng phát hiện), phải nắm quai mặt trong, bị khiên che. Sau đó làm Gate C2. **Gate C2 soát 05/11, người dùng duyệt; 10 ID chép sang game, status `IN_GAME` (khai báo `config.js` làm ở TQP-L3):** `EN_LUONG_MERCENARY` sửa đủ 5 strip — mặt ngoài khiên trơn (mây đan + núm), chỉ vùng khiên đổi, cỡ/nhịp/baseline 187 giữ nguyên → PASS; `BOSS_DUONG_SAN` command/blocked/hurt/stuck/rage/death đúng cỡ (rage 192), baseline 507 mọi ô, 40 màu → PASS (blocked chỉ giật nhẹ, dựa vào tóe lửa); `FX_TQP_NAPE_GLOW`, `FX_TQP_GROUND_SLAM`, `OB_TQP_DIRT_MOUND`, `OB_TQP_DUGOUT_CANOE` (bob ±1 logic), `FX_TQP_TORCH`, `FX_BT_ARMOR_SPARK` (byte trùng chương 3) → PASS. **Chơi thử TQP-L3 05/11:** người dùng phát hiện màu quần áo lệch giữa các animation của `BOSS_DUONG_SAN` (walk/charge/attack_01 đỏ tươi) và `EN_LUONG_MERCENARY` (walk/attack_01/hurt/death) → `NEED_REDRAW` chỉ màu, chuẩn = `idle` (người dùng chốt) (prompt `CODEX_PROMPT_TQP_ART_03_FIX_COLOR.md` đã xoá). **Gate FIX-COLOR soát 05/11, người dùng duyệt:** PASS cả 2 (boss đỏ tươi ≤ 1,0 %, lính áo xám + quần nâu đỏ mọi animation; chỉ đổi RGB, alpha/cỡ/baseline giữ nguyên) — đã chép 7 strip vào game, `IN_GAME`. Nội dung gốc: Dương Sàn (lao, chém đại đao, lún, hở gáy, cuồng nộ, ngã) + chân dung; lính đánh thuê, cung thủ; mỏm đất vỡ; thuyền độc mộc; nền Dạ Trạch nửa đêm + chớp đuốc |
 
 Mượn trong lúc chờ (qua `BORROWED_MAPS` hoặc chép cùng ID): lính Lương, cung thủ, thuyền chiến, tháp canh, sách `ITEM_BT_TINH_HOA`, bia câu hỏi, bình máu `ITEM_LND_HEAL` (chương 2–3).
 
@@ -224,9 +225,9 @@ Mượn trong lúc chờ (qua `BORROWED_MAPS` hoặc chép cùng ID): lính Lư�
 - [x] Duyệt chia pool câu hỏi (mục 3.3) — 04/11/2026 (người dùng).
 - [x] Duyệt tên 3 màn (5.1), tên 3 phần thưởng (3.4) — 04/11/2026 (người dùng).
 - [x] Duyệt thưởng vàng / thành tựu (mục 9) — 04/11/2026 (người dùng).
-- [ ] Duyệt mục 4 và 5.2–5.5 (thoại, đáp án sai, gợi ý, cutscene, panel kết chương).
-- [ ] Nhạc nền riêng chương (Gemini Pro).
-- [ ] **Câu nghi vấn** — vẫn giữ trong game, nhờ team xem lại Excel; sửa Excel thì Claude đồng bộ lại JSON:
+- [x] Duyệt mục 4 và 5.2–5.5 (thoại, đáp án sai, gợi ý, cutscene, panel kết chương) — 05/11/2026 (người dùng). Code đã khớp nguyên văn (TQP-L2, TQP-L3).
+- [x] Nhạc nền riêng chương (Gemini Pro) — team nộp 05/11/2026, đã tích hợp `audio/trieu-quang-phuc/level1–3.mp3`; kết quả kiểm trong [archive/GEMINI_PROMPT_TQP_MUSIC.md](archive/GEMINI_PROMPT_TQP_MUSIC.md) (`level1` to/nhỏ dần đầu–cuối, `level2` nhỏ dần cuối — chấp nhận như chương 3).
+- [x] **Câu hỏi** — người dùng chốt 05/11/2026: **team tự sửa file JSON** `frontend/static/assets/question/trieu-quang-phuc-question.json` khi cần chỉnh câu hỏi sau này (Claude không sửa nội dung câu). `/quiz` đọc JSON trực tiếp; màn chơi đọc `questions-data.js` sinh từ JSON, nên **sửa JSON xong phải chạy** `python tools/make_question_data.py trieu-quang-phuc`. Thêm/bớt câu thì báo Claude chỉnh chia pool (mục 3.3, `CHAPTERS` trong script). Các câu nghi vấn dưới đây vẫn giữ trong game, để team xem khi sửa:
 
 | # | Câu | Vấn đề |
 |---|---|---|
@@ -238,10 +239,10 @@ Mượn trong lúc chờ (qua `BORROWED_MAPS` hoặc chép cùng ID): lính Lư�
 | 6 | 46 | "Vũ khí đa số tre, gỗ và một ít sắt" khó kiểm chứng |
 
 ## 8. GATE TQP-00
-1. Team duyệt mục 3.3, 4, 5, 9.
+1. Team duyệt mục 3.3, 4, 5, 9. — **xong 05/11/2026**.
 2. Sau khi duyệt, nội dung mục 4–5 thành **Source of Truth**, chép nguyên văn vào `dialogue-data.js` ở TQP-L1/L2/L3.
 
-## 9. THƯỞNG VÀNG / THÀNH TỰU CHƯƠNG 4 — CHỜ TEAM DUYỆT (`DESIGN_BASELINE`)
+## 9. THƯỞNG VÀNG / THÀNH TỰU CHƯƠNG 4 — ĐÃ DUYỆT 04/11/2026 (`DESIGN_BASELINE`)
 
 Nguyên tắc như chương 3 (LND-00 mục 9): chương sau thưởng cao hơn chương trước ~20%; cùng khuôn thành tựu; chỉ dùng dữ liệu server đã có.
 

@@ -1,7 +1,7 @@
 // Thoại chương Triệu Việt Vương — chép NGUYÊN VĂN từ docs/SUTA_TQP_TASK_00.md
 // (Source of Truth, không tự sửa). Đã duyệt: §5.1–5.2 (TQP-L1 Q1, 04/11/2026),
-// §4 thoại NPC màn 2 (team duyệt, người dùng báo 05/11/2026). Cutscene, câu kết
-// chương còn chờ team duyệt (§5.4–5.5) — đang dùng bản nháp (TQP-L3 Q6).
+// §4 thoại NPC màn 2 (team duyệt, người dùng báo 05/11/2026), §4 + §5.2–5.5 gồm
+// cutscene và câu kết chương (người dùng duyệt 05/11/2026).
 
 // Màn 2 — 3 NPC (§4.1–4.3): đáp án đúng đứng đầu (engine tự xáo khi hiện).
 // name/title tách từ tiêu đề mục §4.x (phần trong ngoặc = title).
@@ -27,8 +27,8 @@ export const NPC_DIALOGUES = {
       text: 'Thể lực cường tráng. Trong trận đánh, máu tối đa tăng thêm 2.'
     }
   },
-  // 4.2 Lý Nam Đế (Lý Bí — Quân vương). `why` giữ nguyên văn đã duyệt; nghi vấn
-  // "Dạ Trạch Vương" chờ team (TQP-00 mục 7 dòng 5).
+  // 4.2 Lý Nam Đế (Lý Bí — Quân vương). `why` giữ nguyên văn đã duyệt (người
+  // dùng duyệt lại §4 ngày 05/11/2026 sau khi nêu nghi vấn "Dạ Trạch Vương").
   lyNamDe: {
     name: 'Lý Nam Đế',
     title: 'Lý Bí — Quân vương',
@@ -91,9 +91,9 @@ export const STORY_TQP_YARD = {
   lines: ['Đã luyện xong, lên đường!']
 };
 
-// Cutscene màn 3 — nguyên văn TQP-00 §5.4 (BẢN NHÁP, CHỜ TEAM DUYỆT — dùng tạm
-// theo TQP-L3 Q6). Câu 1 lệch Toàn thư (chỉ ghi Dương Sàn "chống đánh, thua rồi
-// chết", không nói Triệu Quang Phục tự tay giết) — chờ team chốt.
+// Cutscene màn 3 — nguyên văn TQP-00 §5.4 (người dùng duyệt 05/11/2026, sau khi
+// đã được báo câu 1 lệch Toàn thư: sử chỉ ghi Dương Sàn "chống đánh, thua rồi
+// chết").
 export const STORY_TQP_FINISH = {
   portrait: 'PORTRAIT_TQP',
   memorial: false,
@@ -106,8 +106,8 @@ export const STORY_TQP_VICTORY = {
   lines: ['Quân Lương tan vỡ, nghĩa quân Dạ Trạch tiến về Long Biên.']
 };
 
-// Panel kết chương — nguyên văn TQP-00 §5.5 (BẢN NHÁP, CHỜ TEAM DUYỆT — dùng tạm
-// theo TQP-L3 Q6). Dòng 2 lấy từ giải thích câu 19, 20, 21.
+// Panel kết chương — nguyên văn TQP-00 §5.5 (người dùng duyệt 05/11/2026). Dòng 2
+// lấy từ giải thích câu 19, 20, 21.
 export const CHAPTER_END = {
   title: 'Hoàn thành chương Triệu Việt Vương',
   text: score => `Bạn đã cùng Triệu Quang Phục đánh tan quân Lương và đạt ${score} điểm. `

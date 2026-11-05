@@ -93,7 +93,7 @@ export const TRIEU_QUANG_PHUC = {
       sprites: LEVEL_SPRITES[2],
       content: level2Content,
       events: level2Events,
-      // Tên màn TQP-00 §5.1 (nháp — chưa duyệt).
+      // Tên màn TQP-00 §5.1 (duyệt 04/11/2026 — TQP-00 mục 7).
       introMessage: 'Màn 2: Hiền tài Dạ Trạch',
       summary: state => `Bạn thu thập ${state.itemsCollected}/10 Quyển Sách Tinh Hoa và đạt ${state.score} điểm.`
     },
@@ -108,7 +108,7 @@ export const TRIEU_QUANG_PHUC = {
       content: level3Content,
       update: updateBattle,
       cutscene: updateCutscene,
-      // Tên màn TQP-00 §5.1 (nháp — chưa duyệt).
+      // Tên màn TQP-00 §5.1 (duyệt 04/11/2026 — TQP-00 mục 7).
       introMessage: 'Màn 3: Đại phá Dương Sàn',
       // Layout thử kỹ năng: ?layout=skills (boss lún sẵn + lính đánh thuê lặp).
       testLayout: 'skills',
