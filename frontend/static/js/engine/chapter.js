@@ -45,7 +45,15 @@
 //                 TQP-L1: enemies[art].behavior trên enemy `boss: true` = boss vẫn chạy hành
 //                 vi chung (mini-boss đội trưởng giáo dài); enemy có `id` = `carrier` của
 //                 vật phẩm — chết thì hiện vật phẩm (như hazard); `noBar` = không vẽ thanh máu.
+//                 MHD-ENGINE: kind `pounce` (thú vồ — `warnTime`, `leapTime`, `leapHeight`, `leapRange`,
+//                 `recoverTime`, anims warn/leap/recover/hurt/death; option triggerRange/span/hp);
+//                 hazards[…].blocking = chặn ngang người chơi như obstacle `blocking`, chém được;
+//                 hazards[…].life/maxLanded = vật nằm lại; projectiles[…].lob = { flightTime, gravity }
+//                 đạn vòng cung, `landAs` = khoá hazard sinh ra khi chạm đất; option hazard `frees`.
 //   pickups?      { heal?: { id, anim } } — sprite bình máu rơi (E4b); thiếu = icon tim chung
+//   carry?        { kind: { sprite, anim, w, h, pickup: { w, h, life }, range, flightTime, gravity, damage?,
+//                 impact?: { id, anim, w, h, time } } } — vật nhặt và ném (MHD-ENGINE E1)
+//   rescue?       { max, score, runner: { id, anim, speed, life, w?, h? } } — giải cứu (MHD-ENGINE E5)
 //   mud?          ghi đè số sình MUD { speed, jump, sink, limit } (TQP-ENGINE E1)
 //   plunge?       bật đòn bổ từ trên (TQP-ENGINE E5): đang rơi bấm Đánh = bổ; ghi đè số
 //                 PLUNGE { damage, bounce, speed, forward, boxH, grace } ({} = mặc định;
@@ -75,6 +83,9 @@
 //                 phát nếu audio.sfx có),
 //                 dropHeal?(target) -> true = enemy/hazard vừa bị hạ rơi 1 bình máu (LND-ENGINE E4b),
 //                 onPlunge?(target) — đòn bổ trúng; onAmbush?(target) — đòn đánh úp trúng (TQP-ENGINE),
+//                 dropCarry?(target) -> kind | null, onThrownHit?(thrown, target) -> true = chương đã xử lý,
+//                 onThrownLand?(thrown), onBurdenAttack?(player) -> true = đập sọt, hết gánh,
+//                 onHazardBroken?(hazard) (MHD-ENGINE),
 //                 debugEntities?() -> [hộp], draw?: { beforeNpcs?(time) (vd. rồng sau lưng NPC — TQP-L2), beforeEnemies?(time),
 //                 beforePlayer?(time), afterPlayer?(time) } }
 //   levels        { [id]: LEVEL } — mỗi màn:
@@ -101,6 +112,7 @@
 //     introMessage, introMessageTime?  thông báo nhiệm vụ đầu màn
 //     testLayout?  tên layout thử `?layout=` của màn
 //     skills?      true = bật khe kỹ năng (phần thưởng đã nhận) ở màn này
+//     burden?      { speed?, jump? } — vào màn đang gánh nặng (MHD-ENGINE E4; content.burden ghi đè cho layout thử)
 //     summary(state)  câu tổng kết panel qua màn
 //     blockedMessage?(state)  thông báo khi chạm đích mà boss còn sống
 

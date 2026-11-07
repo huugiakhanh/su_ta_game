@@ -61,6 +61,7 @@ def test_pages_render(client):
     assert client.get("/gameplay/levels/ba-trieu/3").status_code == 200
     assert client.get("/gameplay/levels/ly-nam-de/3").status_code == 200
     assert client.get("/gameplay/levels/trieu-quang-phuc/3").status_code == 200
+    assert client.get("/gameplay/levels/mai-hac-de/3").status_code == 200
 
 
 def test_migrations_are_idempotent(client):
@@ -69,7 +70,7 @@ def test_migrations_are_idempotent(client):
         assert run_migrations() == []
     assert query("SELECT version FROM schema_migrations ORDER BY version") == [
         ("001_baseline",), ("002_user_avatar",), ("003_quiz_results",), ("004_user_gender",),
-        ("005_ba_trieu",), ("006_ba_trieu_rewards",), ("007_ly_nam_de",), ("008_trieu_quang_phuc",)]
+        ("005_ba_trieu",), ("006_ba_trieu_rewards",), ("007_ly_nam_de",), ("008_trieu_quang_phuc",), ("009_mai_hac_de",), ("010_mai_hac_de_rename",)]
 
 
 def test_password_is_hashed_and_login_works(client):
@@ -134,7 +135,7 @@ def test_leaderboard_uses_best_per_level(client):
     board = result["data"]
     assert [(row["rank"], row["total_score"], row["total_time"]) for row in board] == [(1, 800, 120.0), (2, 500, 90.0)]
     # Toàn game: 3 màn mỗi chương — Trưng Trắc, Bà Triệu (005), Lý Nam Đế (007), Triệu Việt Vương (008).
-    assert result["me"]["rank"] == 1 and result["levels_total"] == 12
+    assert result["me"]["rank"] == 1 and result["levels_total"] == 15
 
 
 def test_leaderboard_scopes_and_me_outside_top(client):
@@ -227,6 +228,34 @@ def test_trieu_quang_phuc_rewards_and_achievements(client):
     assert (gold, gems) == (173 + 259 + 346 + 86 + 86, 12 + 17 + 8)
 
 
+def test_mai_hac_de_rewards_and_achievements(client):
+    # MHD-SKELETON (migration 009): qua 3 màn chương 5 -> 208/311/415 vàng + 14 KC, 4 thành tựu MHD_*.
+    # Migration 010 đổi tên màn 1 + thành tựu MHD_CLEAR_1.
+    assert query("SELECT title FROM levels WHERE id = 501") == [("Gánh cống Hoan Châu",)]
+    assert query("SELECT name FROM achievements WHERE code = 'MHD_CLEAR_1'") == [("Gánh cống Hoan Châu",)]
+    assert query("SELECT id, first_clear_gold, first_clear_gems FROM levels WHERE chapter_id = 5 ORDER BY id") == [
+        (501, 208, 0), (502, 311, 0), (503, 415, 14)]
+    assert query("SELECT id FROM rewards WHERE chapter_id = 5 ORDER BY id") == [
+        ("BUFF_MHD_POWER",), ("SK_MHD_REINFORCE",), ("SK_MHD_VAN_AN_SHELL",)]
+    register_and_login(client)
+    first = save_time(client, 501, 200, 500, {"hits_taken": 3})
+    assert first["gold_gained"] == 208 + 103
+    assert [a["code"] for a in first["new_achievements"]] == ["MHD_CLEAR_1"]
+    assert [a["code"] for a in save_time(client, 502, 300)["new_achievements"]] == ["MHD_CLEAR_2"]
+    last = save_time(client, 503, 350)
+    assert {a["code"] for a in last["new_achievements"]} == {"MHD_CHAPTER", "MHD_SPEED"}
+    gold, gems = query("SELECT gold, gems FROM users")[0]
+    assert (gold, gems) == (208 + 311 + 415 + 103 + 103, 14 + 20 + 10)
+
+
+def test_mai_hac_de_progress_keeps_rescued(client):
+    # MHD-SKELETON: số dân phu cứu được lưu rồi đọc lại đúng (cột rescued, migration 009).
+    register_and_login(client)
+    data = {"score": 100, "books": 5, "rescued": 4, "level1Complete": True, "rewards": [], "times": {"1": 90.5}}
+    assert client.put("/api/game/progress/5", json=data).status_code == 200
+    assert client.get("/api/game/progress/5").get_json()["progress"]["rescued"] == 4
+
+
 def test_cleared_chapters(client):
     # HOME-UNLOCK: chương 1 chỉ tính đã qua khi qua màn cuối (103).
     register_and_login(client)
@@ -251,7 +280,7 @@ def test_progress_roundtrip(client):
     # T6
     register_and_login(client)
     assert client.get("/api/game/progress/1").json["progress"] is None
-    data = {"score": 3000, "books": 5, "level1Complete": True, "level2Complete": True, "level3Complete": False,
+    data = {"score": 3000, "books": 5, "rescued": 0, "level1Complete": True, "level2Complete": True, "level3Complete": False,
             "rewards": ["SK_TRUNG_NHI_SHADOW", "BUFF_Y_CHI_KIEN_CUONG"], "times": {"1": 80.5, "2": 120}}
     assert client.put("/api/game/progress/1", json=data).status_code == 200
     got = client.get("/api/game/progress/1").json["progress"]

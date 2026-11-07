@@ -138,3 +138,19 @@ def trieu_quang_phuc_level_2():
 @pages_bp.get("/gameplay/levels/trieu-quang-phuc/3")
 def trieu_quang_phuc_level_3():
     return render_chapter_level("trieu-quang-phuc", 3, "Màn 3: Đại phá Dương Sàn")
+
+
+# Chương Mai Hắc Đế (MHD-SKELETON): khung 3 màn bằng asset mượn, chưa mở trên trang chủ.
+@pages_bp.get("/gameplay/levels/mai-hac-de")
+def mai_hac_de():
+    return render_chapter_level("mai-hac-de", 1, "Màn 1: Gánh cống Hoan Châu")
+
+
+@pages_bp.get("/gameplay/levels/mai-hac-de/2")
+def mai_hac_de_level_2():
+    return render_chapter_level("mai-hac-de", 2, "Màn 2: Dựng cờ Vạn An")
+
+
+@pages_bp.get("/gameplay/levels/mai-hac-de/3")
+def mai_hac_de_level_3():
+    return render_chapter_level("mai-hac-de", 3, "Màn 3: Công phá Tống Bình")

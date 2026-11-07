@@ -1,0 +1,602 @@
+[
+  {
+    "id": 1,
+    "question": "Mai Hắc Đế có tên thường gọi là gì?",
+    "options": [
+      "Mai Thúc Huy",
+      "Mai Kỳ Sơn",
+      "Phùng Hưng",
+      "Mai Thúc Loan"
+    ],
+    "correct": 3,
+    "explanation": "Sử Việt và sách giáo khoa gọi ông là Mai Thúc Loan."
+  },
+  {
+    "id": 2,
+    "question": "Cựu Đường thư, phần truyện Dương Tư Húc, chép tên thủ lĩnh An Nam xưng Hắc Đế là gì?",
+    "options": [
+      "Mai Thúc Huy",
+      "Mai Kỳ Sơn",
+      "Mai Huyền Thành",
+      "Mai Hoàn"
+    ],
+    "correct": 2,
+    "explanation": "Sử nhà Đường chép nhiều tên khác nhau: Mai Huyền Thành, Mai Thúc Loan."
+  },
+  {
+    "id": 3,
+    "question": "Mai Thúc Loan tự xưng danh hiệu gì?",
+    "options": [
+      "Dạ Trạch Vương",
+      "Hắc Đế",
+      "Bố Cái Đại Vương",
+      "Nam Việt Đế"
+    ],
+    "correct": 1,
+    "explanation": "Cả sử Trung Hoa và sử Việt đều chép ông xưng Hắc Đế."
+  },
+  {
+    "id": 4,
+    "question": "Danh hiệu \"Hắc Đế\" có nghĩa là gì?",
+    "options": [
+      "Vua Biển",
+      "Vua Đen",
+      "Vua Núi",
+      "Vua Rồng"
+    ],
+    "correct": 1,
+    "explanation": "\"Hắc\" là màu đen, \"Đế\" là vua."
+  },
+  {
+    "id": 5,
+    "question": "Sử triều Nguyễn giải thích tên \"Hắc Đế\" là do đâu?",
+    "options": [
+      "Vì ông có nước da đen",
+      "Vì ông hay đánh ban đêm",
+      "Vì quân Đường đặt tên",
+      "Vì ông sinh ở núi đá đen"
+    ],
+    "correct": 0,
+    "explanation": "Sử triều Nguyễn liên hệ tên gọi này với nước da đen của ông."
+  },
+  {
+    "id": 6,
+    "question": "Khi Mai Thúc Loan khởi nghĩa, nước ta đang bị triều đại nào đô hộ?",
+    "options": [
+      "Nhà Hán",
+      "Nhà Lương",
+      "Nhà Minh",
+      "Nhà Đường"
+    ],
+    "correct": 3,
+    "explanation": "Khởi nghĩa chống ách đô hộ của nhà Đường."
+  },
+  {
+    "id": 7,
+    "question": "Vua nhà Đường sai tướng đi đánh Mai Thúc Loan là ai?",
+    "options": [
+      "Đường Thái Tông",
+      "Đường Cao Tông",
+      "Đường Huyền Tông",
+      "Đường Trung Tông"
+    ],
+    "correct": 2,
+    "explanation": "Việc này chép trong bản kỷ Huyền Tông của Cựu Đường thư."
+  },
+  {
+    "id": 8,
+    "question": "Sử nhà Đường chép cuộc nổi dậy của Mai Thúc Loan vào niên hiệu nào?",
+    "options": [
+      "Trinh Quán",
+      "Vĩnh Huy",
+      "Khai Nguyên",
+      "Thiên Bảo"
+    ],
+    "correct": 2,
+    "explanation": "Sử Đường ghi \"đầu niên hiệu Khai Nguyên\" và năm Khai Nguyên thứ 10."
+  },
+  {
+    "id": 9,
+    "question": "Sử nhà Đường gọi vùng đất nước ta khi đó là gì?",
+    "options": [
+      "Vạn Xuân",
+      "An Nam",
+      "Đại Cồ Việt",
+      "Văn Lang"
+    ],
+    "correct": 1,
+    "explanation": "Sử Đường chép Mai Thúc Loan là thủ lĩnh ở An Nam."
+  },
+  {
+    "id": 10,
+    "question": "Trị sở của An Nam đô hộ phủ thời đó ở đâu?",
+    "options": [
+      "Tống Bình",
+      "Luy Lâu",
+      "Cổ Loa",
+      "Mê Linh"
+    ],
+    "correct": 0,
+    "explanation": "Tống Bình là trị sở chính quyền đô hộ, nay thuộc Hà Nội."
+  },
+  {
+    "id": 11,
+    "question": "Thành Tống Bình ngày nay thuộc thành phố nào?",
+    "options": [
+      "Vinh",
+      "Huế",
+      "Hải Phòng",
+      "Hà Nội"
+    ],
+    "correct": 3,
+    "explanation": "Tống Bình nằm ở vùng Hà Nội ngày nay."
+  },
+  {
+    "id": 12,
+    "question": "Theo Tân Đường thư, quan An Nam đại đô hộ thời đó là ai?",
+    "options": [
+      "Tô Định",
+      "Tiêu Tư",
+      "Mã Viện",
+      "Quang Sở Khách"
+    ],
+    "correct": 3,
+    "explanation": "Tân Đường thư chép Dương Tư Húc hợp quân với đại đô hộ Quang Sở Khách."
+  },
+  {
+    "id": 13,
+    "question": "Theo sách Lịch sử 6 (Kết nối tri thức), khởi nghĩa Mai Thúc Loan bùng nổ năm nào?",
+    "options": [
+      "722",
+      "766",
+      "713",
+      "938"
+    ],
+    "correct": 2,
+    "explanation": "Sách ghi bùng nổ năm 713. Sử cũ như Toàn thư chép việc này ở năm 722."
+  },
+  {
+    "id": 14,
+    "question": "Nhà Đường đem quân đàn áp, khiến khởi nghĩa thất bại vào năm nào?",
+    "options": [
+      "713",
+      "722",
+      "766",
+      "791"
+    ],
+    "correct": 1,
+    "explanation": "Cựu Đường thư chép việc sai Dương Tư Húc đi đánh vào năm Khai Nguyên 10 (722)."
+  },
+  {
+    "id": 15,
+    "question": "Đại Việt sử ký toàn thư chép việc Mai Thúc Loan xưng Hắc Đế vào năm nào?",
+    "options": [
+      "722",
+      "713",
+      "544",
+      "938"
+    ],
+    "correct": 0,
+    "explanation": "Toàn thư ghi năm Nhâm Tuất, Khai Nguyên 10, tức năm 722."
+  },
+  {
+    "id": 16,
+    "question": "Theo sách Lịch sử 6, chính quyền độc lập của Mai Thúc Loan giữ được bao lâu?",
+    "options": [
+      "Gần 10 năm",
+      "Khoảng 1 năm",
+      "Hơn 20 năm",
+      "Khoảng 50 năm"
+    ],
+    "correct": 0,
+    "explanation": "Từ 713 đến 722, gần 10 năm."
+  },
+  {
+    "id": 17,
+    "question": "Sau khi làm chủ Hoan Châu, nghĩa quân tiến ra Bắc làm chủ thành nào?",
+    "options": [
+      "Long Biên",
+      "Luy Lâu",
+      "Cổ Loa",
+      "Tống Bình"
+    ],
+    "correct": 3,
+    "explanation": "Nghĩa quân đánh đuổi chính quyền đô hộ, làm chủ Tống Bình."
+  },
+  {
+    "id": 18,
+    "question": "Tướng nhà Đường được sai đi đàn áp Mai Thúc Loan là ai?",
+    "options": [
+      "Trần Bá Tiên",
+      "Lục Dận",
+      "Dương Tư Húc",
+      "Tô Định"
+    ],
+    "correct": 2,
+    "explanation": "Sử Đường và sách giáo khoa đều nêu Dương Tư Húc."
+  },
+  {
+    "id": 19,
+    "question": "Dương Tư Húc vốn là người thế nào trong triều Đường?",
+    "options": [
+      "Một thư sinh đỗ đạt",
+      "Một hoạn quan cầm quân",
+      "Một hoàng tử",
+      "Một thương nhân"
+    ],
+    "correct": 1,
+    "explanation": "Ông là hoạn quan, giữ chức kiêm Nội thị."
+  },
+  {
+    "id": 20,
+    "question": "Theo Cựu Đường thư, Dương Tư Húc chiêu mộ được bao nhiêu quân ở Lĩnh Nam?",
+    "options": [
+      "Khoảng 1 vạn",
+      "Hơn 10 vạn",
+      "Khoảng 3 vạn",
+      "Hơn 50 vạn"
+    ],
+    "correct": 1,
+    "explanation": "Ông mộ con em các thủ lĩnh địa phương, được hơn mười vạn người."
+  },
+  {
+    "id": 21,
+    "question": "Quân Dương Tư Húc đi theo đường cũ của vị tướng nào để đánh bất ngờ?",
+    "options": [
+      "Mã Viện",
+      "Triệu Đà",
+      "Lưu Phương",
+      "Trần Bá Tiên"
+    ],
+    "correct": 0,
+    "explanation": "Sử Đường chép đi theo đường cũ của Phục Ba tướng quân Mã Viện."
+  },
+  {
+    "id": 22,
+    "question": "Dương Tư Húc hợp quân với ai để đánh Mai Thúc Loan?",
+    "options": [
+      "Tiêu Tư",
+      "Lục Dận",
+      "Trương Phụ",
+      "Quang Sở Khách"
+    ],
+    "correct": 3,
+    "explanation": "Tân Đường thư chép ông hợp quân với đại đô hộ Quang Sở Khách."
+  },
+  {
+    "id": 23,
+    "question": "Sau khi thắng, quân Đường làm gì với xác nghĩa quân?",
+    "options": [
+      "Thả trôi xuống sông",
+      "Đem về Trường An",
+      "Chất thành gò kinh quan để thị uy",
+      "Trả lại cho gia đình"
+    ],
+    "correct": 2,
+    "explanation": "Sử Đường đều chép việc chất xác thành gò gọi là kinh quan."
+  },
+  {
+    "id": 24,
+    "question": "Theo Cựu Đường thư, thủ lĩnh Mai Huyền Thành có kết cục thế nào?",
+    "options": [
+      "Chạy sang Lâm Ấp",
+      "Đầu hàng và được phong quan",
+      "Bị bắt và chém trước trận",
+      "Mất tích trên biển"
+    ],
+    "correct": 2,
+    "explanation": "Đây là ghi chép của sử nhà Đường. Dân gian Việt lại kể khác."
+  },
+  {
+    "id": 25,
+    "question": "Dân gian Việt kể Mai Hắc Đế mất như thế nào?",
+    "options": [
+      "Tử trận trên sông Hồng",
+      "Lui vào rừng rồi lâm bệnh qua đời",
+      "Tự vẫn ở thành Tống Bình",
+      "Chết già ở quê nhà"
+    ],
+    "correct": 1,
+    "explanation": "Đây là lời truyền của dân gian, khác với sử nhà Đường."
+  },
+  {
+    "id": 26,
+    "question": "Tương truyền ai nối ngôi Mai Hắc Đế để tiếp tục chống Đường?",
+    "options": [
+      "Mai Thúc Huy (Mai Thiếu Đế)",
+      "Khúc Thừa Dụ",
+      "Phùng Hưng",
+      "Dương Đình Nghệ"
+    ],
+    "correct": 0,
+    "explanation": "Tương truyền con ông là Mai Thúc Huy được tôn lên, gọi là Mai Thiếu Đế."
+  },
+  {
+    "id": 27,
+    "question": "Đại Việt sử ký toàn thư gọi Mai Thúc Loan là gì?",
+    "options": [
+      "Thánh vương",
+      "Đại vương",
+      "Quốc công",
+      "Tướng giặc"
+    ],
+    "correct": 3,
+    "explanation": "Toàn thư dùng chữ này vì chép theo sử nhà Đường."
+  },
+  {
+    "id": 28,
+    "question": "Sử gia nào phản đối việc gọi Mai Thúc Loan là \"tướng giặc\"?",
+    "options": [
+      "Lê Văn Hưu",
+      "Ngô Sĩ Liên",
+      "Tư Mã Quang",
+      "Ngô Thì Sĩ"
+    ],
+    "correct": 3,
+    "explanation": "Ngô Thì Sĩ, tác giả Đại Việt sử ký tiền biên, cho cách gọi đó là sai."
+  },
+  {
+    "id": 29,
+    "question": "GS Phan Huy Lê nhận định thế nào về chuyện cống vải gây ra khởi nghĩa?",
+    "options": [
+      "Đã được sử nhà Đường xác nhận",
+      "Có ghi trong Đại Việt sử ký toàn thư",
+      "Chưa có bằng chứng tin cậy",
+      "Do chính Mai Thúc Loan kể lại"
+    ],
+    "correct": 2,
+    "explanation": "Ông cho rằng nguyên nhân sâu xa là sự bóc lột của ách đô hộ."
+  },
+  {
+    "id": 30,
+    "question": "Chuyện dân phu gánh vải cống nạp trong khởi nghĩa Mai Thúc Loan thuộc loại tư liệu nào?",
+    "options": [
+      "Chép trong Cựu Đường thư",
+      "Truyền thuyết dân gian",
+      "Chép trong Toàn thư",
+      "Khắc trên bia đời Đường"
+    ],
+    "correct": 1,
+    "explanation": "Các quốc sử không chép chuyện này, nhiều nhà sử học không công nhận."
+  },
+  {
+    "id": 31,
+    "question": "Theo GS Phan Huy Lê, nguyên nhân sâu xa của khởi nghĩa là gì?",
+    "options": [
+      "Sự áp bức, bóc lột của chính quyền đô hộ",
+      "Tranh chấp giữa các dòng họ",
+      "Mất mùa do hạn hán",
+      "Nhà Đường đổi tên nước"
+    ],
+    "correct": 0,
+    "explanation": "Ông bác nguyên nhân cống vải và nhấn vào ách bóc lột nói chung."
+  },
+  {
+    "id": 32,
+    "question": "Theo sách Lịch sử 6, ý nghĩa của khởi nghĩa Mai Thúc Loan là gì?",
+    "options": [
+      "Cổ vũ tinh thần giành độc lập hoàn toàn đầu thế kỉ X",
+      "Chấm dứt vĩnh viễn thời Bắc thuộc",
+      "Lập ra nhà Đinh",
+      "Mở đầu nhà Lý"
+    ],
+    "correct": 0,
+    "explanation": "Khởi nghĩa để lại kinh nghiệm cho các cuộc đấu tranh sau này."
+  },
+  {
+    "id": 33,
+    "question": "Lễ hội đền Vua Mai ở Nam Đàn tổ chức vào dịp nào?",
+    "options": [
+      "Rằm tháng Tám",
+      "Mùng 10 tháng Ba",
+      "Tết Đoan Ngọ",
+      "Rằm tháng Giêng"
+    ],
+    "correct": 3,
+    "explanation": "Lễ hội thường diễn ra từ 13 đến 15 tháng Giêng âm lịch."
+  },
+  {
+    "id": 34,
+    "question": "Đền thờ Vua Mai Hắc Đế được xếp hạng di tích nào?",
+    "options": [
+      "Di sản thiên nhiên thế giới",
+      "Di tích cấp huyện",
+      "Di tích quốc gia đặc biệt",
+      "Bảo tàng tư nhân"
+    ],
+    "correct": 2,
+    "explanation": "Lễ đón bằng xếp hạng tổ chức đầu năm 2023."
+  },
+  {
+    "id": 35,
+    "question": "Ở lễ hội đền Vua Mai có môn thi truyền thống nào dưới chân núi Đụn?",
+    "options": [
+      "Đua thuyền",
+      "Đấu vật",
+      "Chọi trâu",
+      "Bắn nỏ"
+    ],
+    "correct": 1,
+    "explanation": "Sới vật dưới chân núi Đụn thu hút đông người xem."
+  },
+  {
+    "id": 36,
+    "question": "Sách cũ chép gốc gia đình Mai Thúc Loan ở vùng nào?",
+    "options": [
+      "Mê Linh (Hà Nội)",
+      "Mai Phụ (Hà Tĩnh)",
+      "Chu Diên (Hưng Yên)",
+      "Đường Lâm (Hà Nội)"
+    ],
+    "correct": 1,
+    "explanation": "Mai Phụ là vùng ven biển Hà Tĩnh ngày nay."
+  },
+  {
+    "id": 37,
+    "question": "Tương truyền gia đình bên mẹ Mai Thúc Loan ở Mai Phụ làm nghề gì?",
+    "options": [
+      "Làm muối",
+      "Đúc đồng",
+      "Dệt lụa",
+      "Làm gốm"
+    ],
+    "correct": 0,
+    "explanation": "Mai Phụ là vùng làm muối ven biển."
+  },
+  {
+    "id": 38,
+    "question": "Tương truyền Mai Thúc Loan lớn lên ở vùng nào?",
+    "options": [
+      "Thạch Hà (Hà Tĩnh)",
+      "Hoa Lư (Ninh Bình)",
+      "Chu Diên (Hưng Yên)",
+      "Nam Đàn (Nghệ An)"
+    ],
+    "correct": 3,
+    "explanation": "Tương truyền mẹ con ông dời về Ngọc Trừng, vùng Nam Đàn."
+  },
+  {
+    "id": 39,
+    "question": "Tương truyền ai nuôi Mai Thúc Loan sau khi ông mồ côi?",
+    "options": [
+      "Phùng Hạp Khanh",
+      "Tiết Anh",
+      "Đinh Thế",
+      "Hoắc Đan"
+    ],
+    "correct": 2,
+    "explanation": "Đinh Thế là bạn của cha ông, sau gả con gái cho ông."
+  },
+  {
+    "id": 40,
+    "question": "Tương truyền thuở trẻ Mai Thúc Loan nổi tiếng với môn võ nào?",
+    "options": [
+      "Bắn cung",
+      "Đấu kiếm",
+      "Đô vật",
+      "Cưỡi ngựa"
+    ],
+    "correct": 2,
+    "explanation": "Tương truyền ông mở lò vật để tập hợp trai tráng."
+  },
+  {
+    "id": 41,
+    "question": "Khởi nghĩa Mai Thúc Loan bắt đầu từ vùng nào?",
+    "options": [
+      "Giao Châu",
+      "Hoan Châu",
+      "Phong Châu",
+      "Ái Châu"
+    ],
+    "correct": 1,
+    "explanation": "Quân khởi nghĩa nhanh chóng làm chủ vùng Hoan Châu."
+  },
+  {
+    "id": 42,
+    "question": "Vùng Hoan Châu nay thuộc địa phương nào?",
+    "options": [
+      "Nghệ An – Hà Tĩnh",
+      "Thanh Hóa – Ninh Bình",
+      "Quảng Nam – Đà Nẵng",
+      "Hà Nội – Bắc Ninh"
+    ],
+    "correct": 0,
+    "explanation": "Sách giáo khoa ghi Hoan Châu nay thuộc Nghệ An – Hà Tĩnh."
+  },
+  {
+    "id": 43,
+    "question": "Mai Thúc Loan xây thành nào làm quốc đô?",
+    "options": [
+      "Thành Cổ Loa",
+      "Thành Hoa Lư",
+      "Thành Đại La",
+      "Thành Vạn An"
+    ],
+    "correct": 3,
+    "explanation": "Ông xưng đế và xây thành Vạn An làm quốc đô."
+  },
+  {
+    "id": 44,
+    "question": "Tên kinh đô Vạn An được cho là để đối chọi với kinh đô nào của nhà Đường?",
+    "options": [
+      "Lạc Dương",
+      "Kiến Khang",
+      "Biện Kinh",
+      "Trường An"
+    ],
+    "correct": 3,
+    "explanation": "Một số nghiên cứu cho rằng tên này đối lại với Trường An."
+  },
+  {
+    "id": 45,
+    "question": "Dãy núi nào được nhắc đến là căn cứ cuối cùng của nghĩa quân?",
+    "options": [
+      "Tam Đảo",
+      "Lam Sơn",
+      "Hùng Sơn",
+      "Yên Tử"
+    ],
+    "correct": 2,
+    "explanation": "Hùng Sơn còn gọi là núi Đụn, ở Nam Đàn."
+  },
+  {
+    "id": 46,
+    "question": "Sử nhà Đường chép Mai Thúc Loan liên kết với hai nước nào?",
+    "options": [
+      "Nam Chiếu và Lâm Ấp",
+      "Lâm Ấp và Chân Lạp",
+      "Chân Lạp và Nam Hán",
+      "Nam Hán và Nam Chiếu"
+    ],
+    "correct": 1,
+    "explanation": "Cựu Đường thư, Tân Đường thư và Toàn thư đều nêu hai nước này."
+  },
+  {
+    "id": 47,
+    "question": "Ngoài Lâm Ấp và Chân Lạp, Tân Đường thư còn nêu tên nước nào?",
+    "options": [
+      "Kim Lân",
+      "Nam Chiếu",
+      "Phù Nam",
+      "Cao Ly"
+    ],
+    "correct": 0,
+    "explanation": "Tân Đường thư thêm nước Kim Lân."
+  },
+  {
+    "id": 48,
+    "question": "Theo Tân Đường thư, Mai Thúc Loan huy động dân chúng của bao nhiêu châu?",
+    "options": [
+      "32 châu",
+      "5 châu",
+      "12 châu",
+      "64 châu"
+    ],
+    "correct": 0,
+    "explanation": "Sách chép ông tập hợp dân 32 châu."
+  },
+  {
+    "id": 49,
+    "question": "Hai bộ sử ghi số quân của Mai Thúc Loan khác nhau thế nào?",
+    "options": [
+      "Tân Đường thư 10 vạn, Toàn thư 5 vạn",
+      "Cả hai đều ghi 32 vạn",
+      "Cả hai đều ghi 100 vạn",
+      "Tân Đường thư 40 vạn, Toàn thư 30 vạn"
+    ],
+    "correct": 3,
+    "explanation": "GS Phan Huy Lê cho rằng các con số này có thể bị thổi phồng."
+  },
+  {
+    "id": 50,
+    "question": "Theo Việt điện u linh bản tân đính, ai được cử đi liên lạc với hai nước phiên?",
+    "options": [
+      "Phùng Hưng và Phùng Hải",
+      "Mai Thúc Huy và Mai Kỳ Sơn",
+      "Tiết Anh và Hoắc Đan",
+      "Đinh Thế và Thôi Thặng"
+    ],
+    "correct": 2,
+    "explanation": "Bài của Lê Thái Dũng dẫn tư liệu này, sử nhà Đường không chép."
+  }
+]

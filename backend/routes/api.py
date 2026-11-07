@@ -15,19 +15,21 @@ api_bp = Blueprint("api", __name__)
 
 # level_id = 100 × chương + màn (TT-TIME-01). Chương 1 = Trưng Trắc, 2 = Bà Triệu,
 # 3 = Lý Nam Đế (3 màn mỗi chương; seed ở migration 001 / 005 / 007).
-VALID_LEVEL_IDS = {101, 102, 103, 201, 202, 203, 301, 302, 303, 401, 402, 403}
+VALID_LEVEL_IDS = {101, 102, 103, 201, 202, 203, 301, 302, 303, 401, 402, 403, 501, 502, 503}
 # Thời gian qua 1 màn hợp lệ: (0, 24 giờ].
 MAX_CLEAR_TIME_SECONDS = 24 * 3600
 # `stats` tuỳ chọn của 1 lượt qua màn (SUTA-DB-01) — số nguyên ≥ 0, dùng xét thành tựu.
 STATS_KEYS = {"hits_taken", "quiz_correct", "quiz_total"}
 # Chương có trong bảng `chapters` (1 = Trưng Trắc, 2 = Bà Triệu, 3 = Lý Nam Đế).
-VALID_CHAPTER_IDS = {1, 2, 3, 4}
+VALID_CHAPTER_IDS = {1, 2, 3, 4, 5}
 LEADERBOARD_LIMIT = 10
 # Avatar người chơi (cột users.avatar, migration 002). Mặc định "male".
 VALID_AVATARS = {"male", "female"}
 # Giới tính -> nhân vật nam/nữ trong màn chơi (users.gender, migration 004 — TT-HERO-01).
 VALID_GENDERS = {"male", "female"}
 MAX_BOOKS = 99
+# Số dân phu cứu được ở màn 1 chương 5 (cột chapter_progress.rescued, migration 009).
+MAX_RESCUED = 5
 # Số câu tối đa 1 lượt trắc nghiệm ở /quiz (ngân hàng câu hiện có 50 câu) — SUTA-QUIZ-LB.
 MAX_QUIZ_QUESTIONS = 200
 
@@ -54,9 +56,9 @@ def parse_progress(data, reward_ids):
     """Object tiến trình của progress.js đã chuẩn hoá, hoặc None nếu sai dạng."""
     if not isinstance(data, dict):
         return None
-    score, books = data.get("score", 0), data.get("books", 0)
+    score, books, rescued = data.get("score", 0), data.get("books", 0), data.get("rescued", 0)
     rewards, times = data.get("rewards", []), data.get("times", {})
-    if not is_int(score) or not is_int(books, high=MAX_BOOKS):
+    if not is_int(score) or not is_int(books, high=MAX_BOOKS) or not is_int(rescued, high=MAX_RESCUED):
         return None
     if (not isinstance(rewards, list) or len(set(rewards)) != len(rewards)
             or not all(isinstance(r, str) and r in reward_ids for r in rewards)):
@@ -71,7 +73,7 @@ def parse_progress(data, reward_ids):
         if not isinstance(flag, bool):
             return None
         flags[f"level{level}Complete"] = flag
-    return {"score": score, "books": books, "rewards": rewards, "times": times, **flags}
+    return {"score": score, "books": books, "rescued": rescued, "rewards": rewards, "times": times, **flags}
 
 
 def is_avatar(value):

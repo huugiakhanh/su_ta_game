@@ -17,6 +17,7 @@ import { respawnAfterFall } from './damage.js';
 import { updatePlayerControl, updateAttack, updatePlayerAnimation } from './player.js';
 import { updateEnemies, updateSpawner, touchEnemies } from './enemies.js';
 import { updateHazards, updateProjectiles } from './hazards.js';
+import { updateThrown } from './carry.js';
 import { endGame } from './end-game.js';
 
 // Cảnh vào màn (TT-HERO-01), người chơi không điều khiển: tự chạy từ ngoài mép
@@ -123,6 +124,8 @@ export function update(dt) {
   updateEnemies(dt);
   updateHazards(dt);
   updateProjectiles(dt);
+  updateThrown(dt);
+  updateRunners(dt);
   updateSpawner(dt);
   LEVEL.update?.(dt);
   if (state.cutscene) {
@@ -178,6 +181,17 @@ function collectItems(p) {
   });
 }
 
+// Người được giải cứu chạy thoát (MHD-ENGINE E5): chỉ vẽ, hết `life` thì mất.
+function updateRunners(dt) {
+  const spec = CHAPTER.rescue?.runner;
+  if (!spec) return;
+  state.runners.forEach(runner => {
+    runner.age += dt;
+    runner.x += runner.direction * spec.speed * dt;
+  });
+  state.runners = state.runners.filter(runner => runner.age < spec.life);
+}
+
 // Bình máu (LND-ENGINE E4b): rơi tới mặt đất (rơi vào hố thì mất), nằm `life`
 // giây rồi mất. Chạm khi còn thiếu máu: +HEAL_PICKUP.heal máu; đầy máu thì để lại.
 function updatePickups(p, dt) {
@@ -192,6 +206,15 @@ function updatePickups(p, dt) {
       if (pickup.y + pickup.h >= floor) pickup.vy = 0;
     }
     if (pickup.y > VIEW_H) pickup.life = 0;
+    // Vật để ném (MHD-ENGINE E1): tay trống thì tự nhặt, đang cầm thì để nguyên.
+    if (pickup.carry) {
+      if (pickup.life > 0 && !p.carrying && aabb(p, pickup)) {
+        p.carrying = pickup.carry;
+        pickup.life = 0;
+        playSfx('item');
+      }
+      return;
+    }
     if (pickup.life > 0 && state.health < state.maxHealth && aabb(p, pickup)) {
       pickup.life = 0;
       state.health = Math.min(state.maxHealth, state.health + HEAL_PICKUP.heal);

@@ -105,7 +105,10 @@ export const PLAYER_ANIMATIONS = {
   // Đòn bổ từ trên (TQP-ENGINE E5): strip `plunge` (Codex TQP_ART_01) phát 1 lần
   // rồi giữ ô cuối (mũi kiếm chĩa xuống) tới khi chạm; manifest chưa có thì render
   // dùng `fallback` — ô cuối của attack_01 (TQP-ENGINE Q2).
-  plunge: { anim: 'plunge', fallback: { anim: 'attack_01', holdFrame: -1 } }
+  plunge: { anim: 'plunge', fallback: { anim: 'attack_01', holdFrame: -1 } },
+  // Gánh nặng (MHD-ENGINE E4): strip riêng của đợt MHD_ART_01, chưa có thì dùng idle/run.
+  burdenIdle: { anim: 'burden_idle', fallback: { anim: 'idle' } },
+  burdenRun: { anim: 'burden_run', fallback: { anim: 'run' } }
 };
 // Ngưỡng vận tốc dọc (px logic/s) chọn ô `jump`: vy < -N ô 1 (bật lên),
 // |vy| <= N ô 2 (gần đỉnh), vy > N ô 3 (rơi). DESIGN_BASELINE.
@@ -158,6 +161,9 @@ export const ITEM_BOB_AMPLITUDE = 3;
 // Bình máu rơi khi hạ địch (LND-ENGINE E4b, DESIGN_BASELINE): nằm `life` giây
 // (nháy `blink` giây cuối) rồi mất; hitbox nhặt w×h; nhặt +`heal` máu.
 export const HEAL_PICKUP = { life: 10, blink: 2, w: 16, h: 16, heal: 1 };
+// Gánh nặng (MHD-ENGINE E4, DESIGN_BASELINE): đi ×speed, lực nhảy ×jump; `hintInterval`
+// = giây tối thiểu giữa 2 lần nhắc khi bấm Đánh mà chưa đập được sọt.
+export const BURDEN = { speed: .6, jump: .7, hintInterval: 3 };
 // Rơi xuống sông (LND-ENGINE E1): chỗ "đứng vững" để hiện lại phải có đất/bục
 // trải ra ít nhất chừng này px quanh tâm người chơi (không hiện lại sát mép khe).
 export const RESPAWN_EDGE_MARGIN = 20;

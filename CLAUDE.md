@@ -9,6 +9,7 @@ Hướng dẫn cho Claude Code khi làm việc trong repo này. File này nạp 
 | [ba-trieu-gameplay.md](.claude/rules/ba-trieu-gameplay.md) | Chương Bà Triệu `js/levels/ba-trieu/`, script sinh câu hỏi |
 | [ly-nam-de-gameplay.md](.claude/rules/ly-nam-de-gameplay.md) | Chương Lý Nam Đế `js/levels/ly-nam-de/`, script sinh câu hỏi |
 | [trieu-quang-phuc-gameplay.md](.claude/rules/trieu-quang-phuc-gameplay.md) | Chương Triệu Việt Vương `js/levels/trieu-quang-phuc/`, script sinh câu hỏi |
+| [mai-hac-de-gameplay.md](.claude/rules/mai-hac-de-gameplay.md) | Chương Mai Hắc Đế `js/levels/mai-hac-de/`, script sinh câu hỏi |
 | [assets-32bit.md](.claude/rules/assets-32bit.md) | Asset (`assets/`, `static/assets/`), file JS vẽ/nạp asset, brief + prompt Codex, `tools/` |
 | [backend.md](.claude/rules/backend.md) | `backend/`, `tests/`, `app.py` |
 | [web-pages.md](.claude/rules/web-pages.md) | Trang chủ + cửa sổ, Thư viện lịch sử, `/quiz` |

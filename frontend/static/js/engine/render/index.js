@@ -11,7 +11,7 @@ import { drawBackdrops } from './backdrop.js';
 import { drawGround, drawHoles, drawWaterBanks, drawMud, drawTerrainDebug } from './terrain.js';
 import {
   drawFinishGate, drawQuizSteles, drawItems, drawPickups, drawObstacles, drawPlatforms, drawHazards, drawProjectiles, drawEnemies,
-  drawNpcs
+  drawNpcs, drawCarried, drawRunners
 } from './entities.js';
 import { drawPlayer } from './player.js';
 import { drawDebugOverlay } from './debug.js';
@@ -46,8 +46,10 @@ export function draw(time = 0) {
   layers.beforeEnemies?.(time);
   drawEnemies();
   drawProjectiles();
+  drawRunners();
   layers.beforePlayer?.(time);
   drawPlayer(time);
+  drawCarried(time);
   layers.afterPlayer?.(time);
   state.cameraX -= shakeX;
   // Cutscene: tối dần/sáng lại (fade 0..1).

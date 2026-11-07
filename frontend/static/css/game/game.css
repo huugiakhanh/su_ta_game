@@ -462,6 +462,8 @@ kbd {
 }
 .skill--active { border-color: #7f86ff; box-shadow: 0 0 6px #5b62e0; }
 .skill--active .skill__cd { background: rgba(70, 76, 200, .45); }
+/* Đang gánh nặng: chưa lướt được (MHD-ENGINE E4). */
+.skill--locked { opacity: .4; }
 .skill__time {
   position: absolute;
   inset: 0;

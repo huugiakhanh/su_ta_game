@@ -32,7 +32,7 @@ export function endGame(won) {
   if (won && LEVEL.id === 1) {
     const flags = Object.fromEntries(levelIds().map(id => [`level${id}Complete`, id === 1]));
     progress = saveProgress({
-      score: state.score, books: state.itemsCollected, ...flags, rewards: [],
+      score: state.score, books: state.itemsCollected, rescued: state.rescued, ...flags, rewards: [],
       times: { 1: seconds }
     });
   } else if (won) {

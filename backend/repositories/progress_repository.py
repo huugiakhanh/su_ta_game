@@ -8,8 +8,8 @@ LEVELS_PER_CHAPTER = 3
 
 
 def _to_dict(row, rewards):
-    score, books, cleared_level, times = row
-    data = {"score": score, "books": books, "rewards": rewards, "times": times or {}}
+    score, books, rescued, cleared_level, times = row
+    data = {"score": score, "books": books, "rescued": rescued, "rewards": rewards, "times": times or {}}
     for level in range(1, LEVELS_PER_CHAPTER + 1):
         data[f"level{level}Complete"] = cleared_level >= level
     return data
@@ -33,7 +33,7 @@ def get_progress(user_id, chapter_id):
     """Object tiến trình, hoặc None nếu chưa có."""
     with db_cursor() as (_, cursor):
         cursor.execute(
-            "SELECT score, books, cleared_level, times FROM chapter_progress "
+            "SELECT score, books, rescued, cleared_level, times FROM chapter_progress "
             "WHERE user_id = %s AND chapter_id = %s",
             (user_id, chapter_id),
         )
@@ -54,12 +54,13 @@ def save_progress(user_id, chapter_id, data):
 
     with db_cursor(commit=True) as (_, cursor):
         cursor.execute(
-            "INSERT INTO chapter_progress (user_id, chapter_id, score, books, cleared_level, times) "
-            "VALUES (%s, %s, %s, %s, %s, %s) "
+            "INSERT INTO chapter_progress (user_id, chapter_id, score, books, rescued, cleared_level, times) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s) "
             "ON CONFLICT (user_id, chapter_id) DO UPDATE SET score = EXCLUDED.score, "
-            "books = EXCLUDED.books, cleared_level = EXCLUDED.cleared_level, "
+            "books = EXCLUDED.books, rescued = EXCLUDED.rescued, cleared_level = EXCLUDED.cleared_level, "
             "times = EXCLUDED.times, updated_at = NOW()",
-            (user_id, chapter_id, data["score"], data["books"], cleared_level_of(data), Json(data["times"])),
+            (user_id, chapter_id, data["score"], data["books"], data["rescued"], cleared_level_of(data),
+             Json(data["times"])),
         )
         # Giữ obtained_at của phần thưởng vẫn còn; bỏ cái không còn trong data.
         cursor.execute(

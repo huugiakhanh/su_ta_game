@@ -73,6 +73,18 @@ export function drawDebugOverlay() {
       ctx.fillStyle = '#4fd1ff';
       ctx.fillRect(Math.round(center - hazard.triggerRange), GROUND_Y + 2, Math.round(hazard.triggerRange * 2), 1);
     }
+    // Thú vồ (MHD-ENGINE E2): vạch tầm kích hoạt, chấm điểm rơi.
+    if (hazard.kind === 'pounce') {
+      const center = hazard.x + hazard.w / 2 - state.cameraX;
+      ctx.fillStyle = '#ffb347';
+      ctx.fillRect(Math.round(center - hazard.triggerRange), GROUND_Y + 2, Math.round(hazard.triggerRange * 2), 1);
+      if (hazard.pounceState === 'leap') ctx.fillRect(Math.round(hazard.leapTo - state.cameraX) - 2, GROUND_Y - 3, 4, 4);
+    }
+    // Vật nằm lại (E3): giây còn lại.
+    if (hazard.life !== undefined) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(`${hazard.life.toFixed(1)}s`, Math.round(hazard.x + hazard.w / 2 - state.cameraX), Math.round(hazard.y) - 4);
+    }
     if (hazard.callHelp && !hazard.helpCalled) {
       const left = (hazard.callHelp.after - hazard.helpTimer).toFixed(1);
       ctx.fillStyle = '#ffffff';

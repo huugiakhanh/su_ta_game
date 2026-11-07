@@ -34,6 +34,7 @@ const QUIZ_BANKS = {
     'ly-nam-de': { url: '/static/assets/question/ly-nam-de-question.json', excluded: [] },
     // Triệu Việt Vương: giữ đủ 50 câu (người dùng chốt 03/11, docs/SUTA_TQP_TASK_00.md §3.3).
     'trieu-quang-phuc': { url: '/static/assets/question/trieu-quang-phuc-question.json', excluded: [] },
+    'mai-hac-de': { url: '/static/assets/question/mai-hac-de-question.json', excluded: [] },
 };
 const DEFAULT_CHAPTER = 'trung-trac';
 let currentChapter = null;

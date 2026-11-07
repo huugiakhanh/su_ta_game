@@ -47,6 +47,7 @@ export function strikeEnemy(enemy, damage = 1) {
   // Vật phẩm `carrier` = id enemy (mini-boss rơi sách — TQP-L1).
   if (enemy.id) revealCarriedItems(enemy);
   dropHeal(enemy);
+  dropCarry(enemy);
   state.score += enemy.boss ? 700 : 250;
   // Quân ra thành đợt đông (art không có defeatMessage) — không thông báo từng con.
   const message = enemy.boss ? CHAPTER.text.bossDefeated : CHAPTER.sprites.enemies[enemyArtKey(enemy)]?.defeatMessage;
@@ -114,6 +115,9 @@ export function breakHazard(hazard) {
   setAnim(hazard, 'death');
   revealCarriedItems(hazard);
   dropHeal(hazard);
+  dropCarry(hazard);
+  freePeople(hazard);
+  CHAPTER.hooks?.onHazardBroken?.(hazard);
   const spec = CHAPTER.sprites.hazards[hazard.sprite];
   if (hazard.boss && !spec?.corpse) playSfx('bossDefeat');
   showMessage(spec?.breakMessage ?? CHAPTER.text.hazardDefeated);
@@ -128,6 +132,35 @@ export function revealCarriedItems(hazard) {
     item.x = Math.max(24, Math.min(state.finishX - 24, hazard.x + hazard.w / 2));
     item.y = groundYAt(item.x) - item.lift;
   });
+}
+
+// Giải cứu (MHD-ENGINE E5): hazard có `frees` bị phá thì cộng state.rescued (kẹp
+// CHAPTER.rescue.max), cộng điểm, thêm người chạy thoát (chỉ vẽ).
+function freePeople(hazard) {
+  const spec = CHAPTER.rescue;
+  if (!spec || !hazard.frees) return;
+  const freed = Math.min(hazard.frees, spec.max - state.rescued);
+  if (freed <= 0) return;
+  state.rescued += freed;
+  state.score += freed * (spec.score ?? 0);
+  const center = hazard.x + hazard.w / 2;
+  const direction = center >= state.player.x + state.player.w / 2 ? 1 : -1;
+  for (let i = 0; i < freed; i++) {
+    state.runners.push({ x: center + i * 12, footY: groundYAt(center), direction, age: 0 });
+  }
+}
+
+// Vật để nhặt rơi ra ở tâm (x, y) (MHD-ENGINE E1). Chương gọi thẳng được khi
+// enemy có `onStruck` riêng; rơi tới đất như bình máu.
+export function spawnCarry(kind, x, y) {
+  const { w, h, life } = CHAPTER.carry[kind].pickup;
+  state.pickups.push({ x: x - w / 2, y: y - h / 2, w, h, vy: 0, life, carry: kind });
+}
+
+// `CHAPTER.hooks.dropCarry(target)` trả loại vật rơi, không rơi thì null.
+function dropCarry(target) {
+  const kind = CHAPTER.hooks?.dropCarry?.(target);
+  if (kind) spawnCarry(kind, target.x + target.w / 2, target.y + target.h / 2);
 }
 
 // Bình máu rơi khi hạ địch (LND-ENGINE E4b): chương quyết qua

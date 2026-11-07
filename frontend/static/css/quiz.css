@@ -211,6 +211,11 @@ body {
     margin-bottom: 25px;
 }
 
+/* Nút chương tăng theo số chương: xuống hàng để không bị cắt ở điện thoại dọc (MHD-SKELETON). */
+.chapter-buttons {
+    flex-wrap: wrap;
+}
+
 .btn-preset {
     background: #fff8e1;
     border: 2px solid #ffca28;

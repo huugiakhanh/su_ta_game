@@ -6,7 +6,7 @@
 // do chương dựng (LEVEL.content) bằng các hàm trong entities.js.
 
 import { setTerrain, terrainMud } from './geometry.js';
-import { GROUND_Y, INTRO, MAX_HEALTH, PLAYER_SIZE, PLAYER_START_X } from './config.js';
+import { BURDEN, GROUND_Y, INTRO, MAX_HEALTH, PLAYER_SIZE, PLAYER_START_X } from './config.js';
 import { CHAPTER, LEVEL } from './chapter.js';
 import { createAnim } from './animation.js';
 import { makeNpc, makeRidePlatform } from './entities.js';
@@ -54,6 +54,8 @@ export function createLevelState(options = {}) {
   // khe kỹ năng) + `bonusHealth` của nội dung màn (layout thử).
   const maxHealth = MAX_HEALTH + (skills ? CHAPTER.skills.bonusHealth?.(skills.owned) ?? 0 : 0) + (content.bonusHealth ?? 0);
   const guide = options.intro && LEVEL.guide ? makeNpc(LEVEL.guide.npc, 1, LEVEL.guide.localX) : null;
+  // Gánh nặng (MHD-ENGINE E4): LEVEL.burden hoặc nội dung màn (layout thử) khai báo.
+  const burdenSpec = content.burden ?? LEVEL.burden;
   return {
     // phase: walk -> talk (đang hội thoại với guide) -> done; onDone do main.js gán.
     intro: options.intro ? { phase: 'walk', targetX: startX, onDone: null } : null,
@@ -102,6 +104,9 @@ export function createLevelState(options = {}) {
       invulnerable: 0,
       // Giây choáng còn lại (BT-L3 E2 — damage.js stunPlayer).
       stun: 0,
+      // Đang gánh (MHD-ENGINE E4) / loại vật đang cầm trên tay (E1).
+      burden: Boolean(burdenSpec),
+      carrying: null,
       // Chỗ đứng vững cuối cùng { x, feetY } — rơi sông thì hiện lại ở đây (LND-ENGINE E1).
       safeSpot: null,
       // Animation đang phát { name, time } — xem animation.js.
@@ -118,6 +123,12 @@ export function createLevelState(options = {}) {
     items: [],
     // Bình máu rơi khi hạ địch (LND-ENGINE E4b — combat.js dropHeal).
     pickups: [],
+    // Vật người chơi ném đang bay, hiệu ứng lúc vỡ (MHD-ENGINE E1 — carry.js).
+    thrown: [],
+    impacts: [],
+    // Số người giải cứu trong lượt, người đang chạy thoát (MHD-ENGINE E5).
+    rescued: 0,
+    runners: [],
     enemies: [],
     npcs: [],
     quizzes: [],
@@ -127,6 +138,7 @@ export function createLevelState(options = {}) {
     covers: [],
     ...(CHAPTER.stateFields?.() || {}),
     ...content,
+    burden: burdenSpec ? { ...BURDEN, ...burdenSpec } : null,
     // Bục một chiều của màn + bục tự gắn trên hazard có `ride` (BT-ENGINE E6–E7).
     platforms: [
       ...(content.platforms || []),

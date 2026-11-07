@@ -183,6 +183,7 @@ function updateDashHud() {
   }
   const left = state.player.dashCooldown || 0;
   slot.classList.toggle('skill--active', state.player.dashing);
+  slot.classList.toggle('skill--locked', Boolean(state.player.burden));
   slot.querySelector('.skill__cd').style.height = `${left > 0 ? left / DASH_COOLDOWN * 100 : 0}%`;
   slot.querySelector('.skill__time').textContent = left > 0 ? Math.ceil(left) : '';
 }

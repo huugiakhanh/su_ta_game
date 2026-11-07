@@ -4,7 +4,7 @@ Nguồn: frontend/static/assets/question/<chương>-question.json — bản JSON
 Excel team (đã đối chiếu khớp Excel, xem docs/SUTA_BT_TASK_00.md). Nội dung câu hỏi
 là Source of Truth: script chỉ chép, không sửa chữ.
 
-Chạy:  python tools/make_question_data.py ba-trieu   (hoặc ly-nam-de, trieu-quang-phuc)
+Chạy:  python tools/make_question_data.py ba-trieu   (hoặc ly-nam-de, trieu-quang-phuc, mai-hac-de)
 Chỉ dùng cho chương có cấu hình trong CHAPTERS bên dưới (Trưng Trắc giữ file cũ).
 """
 
@@ -50,6 +50,16 @@ CHAPTERS = {
             "trieuTuc": [2, 3, 8, 10, 32],
             "lyNamDe": [1, 4, 5, 7, 43],
             "chuDongTu": [12, 13, 15, 16, 33],
+        },
+    },
+    "mai-hac-de": {
+        "task": "docs/SUTA_MHD_TASK_00.md §3.3",
+        "excluded": [],
+        "level1": list(range(1, 36)),
+        "npc": {
+            "maThi": [36, 37, 38, 39, 40],
+            "thucBao": [41, 42, 43, 44, 45],
+            "suGia": [46, 47, 48, 49, 50],
         },
     },
 }

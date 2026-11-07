@@ -1,0 +1,13 @@
+{% extends "gameplay/base.html" %}
+{# Chương Mai Hắc Đế — dùng chung 3 màn. Khung chung ở gameplay/base.html.
+   MHD-SKELETON: chưa có khe kỹ năng (Vỏ Bọc Vạn An, Viện Binh — MHD-L3). #}
+
+{% block chapter_name %}Mai Hắc Đế{% endblock %}
+{% block brand %}SUTA · MAI HẮC ĐẾ{% endblock %}
+{% block canvas_label %}Màn chơi Mai Hắc Đế{% endblock %}
+{% block item_label %}Quyển Sách Tinh Hoa đã thu thập{% endblock %}
+{% block item_glyph %}📖{% endblock %}
+
+{% block chapter_script %}
+  <script type="module" src="{{ url_for('static', filename='js/levels/mai-hac-de/main.js') }}"></script>
+{% endblock %}

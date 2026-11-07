@@ -17,18 +17,23 @@
 //             thì trôi hết quãng `travel`, nghỉ `gap` giây rồi trôi lại.
 //   lurker  — vật ngoi lên từ khe nước (cá sấu — TQP-ENGINE E3): báo bọt -> ngoi
 //             đớp (chỉ lúc này gây sát thương + chém được) -> lặn, nghỉ `rest`.
+//   pounce  — thú vồ từ chỗ ẩn (hổ — MHD-ENGINE E2): báo trước -> bay vòng cung tới
+//             chỗ người chơi -> đứng nghỉ -> vồ tiếp nếu người chơi còn trong tầm.
 // Tuỳ chọn `callHelp` (E4 — thuyền tuần tiễu): người chơi ở gần đủ lâu mà
 // hazard chưa bị phá thì phát tín hiệu, gọi lính lên bờ (1 lần mỗi lượt).
+// Đạn có `lob` (MHD-ENGINE E3) bay vòng cung, có `landAs` thì chạm đất thành hazard
+// `prop` nằm lại (`life` giây, tối đa `maxLanded` vật). Sprite `blocking`: chặn ngang
+// người chơi (player.js).
 // Hazard có `ride` (sprite) mang một bục một chiều trên lưng (E7 — voi rừng):
 // bục đi theo hazard; người chơi đứng trên lưng thì không bị va chạm thân.
 // Hazard đang chết (dying) chỉ phát nốt animation, không va chạm/di chuyển.
 
 import { state } from './state.js';
 import { showMessage } from './ui.js';
-import { aabb, groundYAt, makeProjectile } from './geometry.js';
+import { aabb, groundYAt, makeHazard, makeProjectile } from './geometry.js';
 import { setAnim, tickAnim, getAnimMeta, hitTime, animLength } from './animation.js';
 import {
-  VIEW_W, VIEW_H, GRAVITY, PROJECTILE_SPEED, PROJECTILE_MAX_RANGE, HAZARD_DESPAWN_MARGIN, GROUND_SNAP_DISTANCE
+  CHUNK_W, VIEW_W, VIEW_H, GRAVITY, PROJECTILE_SPEED, PROJECTILE_MAX_RANGE, HAZARD_DESPAWN_MARGIN, GROUND_SNAP_DISTANCE
 } from './config.js';
 import { CHAPTER } from './chapter.js';
 import { playSfx } from './audio.js';
@@ -57,13 +62,28 @@ function fireProjectile(hazard) {
   playSfx('throw');
   // `aim` (LND-ENGINE E2 — cung thủ tháp canh, thuyền): bay thẳng tới tâm thân người chơi.
   const aim = hazard.aim ? { x: player.x + player.w / 2, y: player.y + player.h / 2 } : null;
-  state.projectiles.push(makeProjectile(
+  const projectile = makeProjectile(
     hazard.projectile,
     originX + direction * (spec?.muzzleX ?? hazard.w / 2 + 4),
     hazard.baseY - muzzle,
     direction,
     aim
-  ));
+  );
+  const lob = CHAPTER.sprites.projectiles[hazard.projectile]?.lob;
+  if (lob) startLob(projectile, lob, player.x + player.w / 2);
+  state.projectiles.push(projectile);
+}
+
+// Đạn vòng cung (MHD-ENGINE E3): rơi đúng `targetX` sau `flightTime` giây.
+function startLob(projectile, lob, targetX) {
+  const time = lob.flightTime;
+  const centerX = projectile.x + projectile.w / 2;
+  const centerY = projectile.y + projectile.h / 2;
+  projectile.lob = {
+    gravity: lob.gravity,
+    vx: (targetX - centerX) / time,
+    vy: (groundYAt(targetX) - centerY - .5 * lob.gravity * time * time) / time
+  };
 }
 
 // Bắt đầu hành động của lính: 'throw' (ném) hoặc 'alarm' (thổi tù và).
@@ -113,6 +133,7 @@ function updateHazardAnimation(hazard, dt) {
   else if (hazard.kind === 'snare') next = hazard.snareState;
   else if (hazard.kind === 'drift') next = 'move';
   else if (hazard.kind === 'lurker') next = hazard.lurkState;
+  else if (hazard.kind === 'pounce') next = hazard.pounceState;
   else if (hazard.kind === 'patrol') next = hazard.walking ? 'move' : 'idle';
   else next = hazard.kind === 'roller' && hazard.active ? 'move' : 'idle';
   setAnim(hazard, next);
@@ -260,6 +281,67 @@ function updateLurker(hazard, dt, playerCenter) {
   hazard.anim.time = 0;
 }
 
+// Điểm rơi của cú vồ (tâm): về phía người chơi, xa nhất `leapRange`, kẹp trong
+// `span`. Trúng khe hố thì rút về mép đất gần chỗ xuất phát.
+function pounceTarget(hazard, playerCenter, range) {
+  const center = hazard.x + hazard.w / 2;
+  const direction = Math.sign(playerCenter - center) || -1;
+  let target = center + direction * Math.min(range, Math.abs(playerCenter - center));
+  if (hazard.span) target = Math.max(hazard.span[0], Math.min(hazard.span[1], target));
+  const hole = state.holes.find(item => target > item.x - hazard.w / 2 && target < item.x + item.w + hazard.w / 2);
+  if (hole) target = direction > 0 ? hole.x - hazard.w / 2 - 2 : hole.x + hole.w + hazard.w / 2 + 2;
+  return target;
+}
+
+function startLeap(hazard, playerCenter, spec) {
+  const center = hazard.x + hazard.w / 2;
+  hazard.pounceState = 'leap';
+  hazard.pounceTimer = spec.leapTime ?? .7;
+  hazard.leapFrom = center;
+  hazard.leapTo = pounceTarget(hazard, playerCenter, spec.leapRange ?? 200);
+  hazard.facing = Math.sign(hazard.leapTo - center) || hazard.facing || -1;
+  hazard.harmful = true;
+  hazard.exposed = true;
+  hazard.anim.time = 0;
+  playSfx('trap');
+}
+
+// Thú vồ (kind `pounce` — MHD-ENGINE E2): `hidden` (không vẽ, vô hại, không chém
+// được) -> người chơi trong `triggerRange` -> `warn` (`warnTime`) -> `leap` (bay
+// vòng cung `leapTime` giây, cao `leapHeight`, gây sát thương) -> `recover`
+// (`recoverTime`, vô hại, chém được) -> vồ tiếp nếu người chơi còn trong tầm.
+function updatePounce(hazard, dt, playerCenter) {
+  const spec = spriteOf(hazard) || {};
+  const near = Math.abs(playerCenter - (hazard.x + hazard.w / 2)) <= hazard.triggerRange;
+  hazard.pounceTimer -= dt;
+  if (hazard.pounceState === 'hidden') {
+    if (!near) return;
+    hazard.pounceState = 'warn';
+    hazard.pounceTimer = spec.warnTime ?? .6;
+    hazard.invisible = false;
+    hazard.anim.time = 0;
+  } else if (hazard.pounceState === 'warn') {
+    if (hazard.pounceTimer <= 0) startLeap(hazard, playerCenter, spec);
+  } else if (hazard.pounceState === 'leap') {
+    const total = spec.leapTime ?? .7;
+    const t = Math.min(1, Math.max(0, 1 - hazard.pounceTimer / total));
+    const center = hazard.leapFrom + (hazard.leapTo - hazard.leapFrom) * t;
+    hazard.x = center - hazard.w / 2;
+    hazard.baseY = groundYAt(center);
+    hazard.lift = (spec.leapHeight ?? 60) * Math.sin(Math.PI * t);
+    hazard.y = hazard.baseY - hazard.lift - hazard.h;
+    if (hazard.pounceTimer > 0) return;
+    hazard.lift = 0;
+    hazard.y = hazard.baseY - hazard.h;
+    hazard.pounceState = 'recover';
+    hazard.pounceTimer = spec.recoverTime ?? 1;
+    hazard.harmful = false;
+    hazard.anim.time = 0;
+  } else if (hazard.pounceTimer <= 0 && near) {
+    startLeap(hazard, playerCenter, spec);
+  }
+}
+
 // Gọi viện (tuỳ chọn `callHelp` — TQP-ENGINE E4): người chơi ở trong `range`
 // LIÊN TỤC đủ `after` giây mà hazard còn sống -> phát tín hiệu (`signal`,
 // tiếng báo động, `signalMessage`) và sinh lính ở các vị trí `spawnAt`. 1 lần.
@@ -337,6 +419,14 @@ export function updateHazards(dt) {
       if (hazard.dying) updateDyingHazard(hazard, dt);
       return;
     }
+    // Vật nằm lại (E3) hết giờ thì mất, không điểm, không rơi đồ.
+    if (hazard.life !== undefined) {
+      hazard.life -= dt;
+      if (hazard.life <= 0) {
+        hazard.alive = false;
+        return;
+      }
+    }
 
     if (hazard.kind === 'roller') {
       if (!hazard.active) {
@@ -359,6 +449,7 @@ export function updateHazards(dt) {
     if (hazard.kind === 'vent') updateVent(hazard, dt);
     if (hazard.kind === 'drift') updateDrift(hazard, dt, playerCenter);
     if (hazard.kind === 'lurker') updateLurker(hazard, dt, playerCenter);
+    if (hazard.kind === 'pounce') updatePounce(hazard, dt, playerCenter);
     updateCallHelp(hazard, dt, playerCenter);
     if (hazard.kind === 'snare') {
       updateSnare(hazard, dt, player);
@@ -418,10 +509,54 @@ export function updateHazards(dt) {
   syncRidePlatforms();
 }
 
+// Đạn chạm đất có `landAs`: sinh hazard `prop` tại tâm rơi; đủ `maxLanded` vật cùng
+// loại thì vật cũ nhất mất trước.
+function landProjectile(sprite, centerX) {
+  const key = CHAPTER.sprites.projectiles[sprite]?.landAs;
+  const spec = CHAPTER.sprites.hazards[key];
+  if (!spec) return;
+  const landed = state.hazards.filter(hazard => hazard.alive && hazard.sprite === key && hazard.life !== undefined);
+  if (spec.maxLanded && landed.length >= spec.maxLanded) landed[0].alive = false;
+  const chunk = Math.floor(centerX / CHUNK_W) + 1;
+  const hazard = makeHazard('prop', key, chunk, centerX - (chunk - 1) * CHUNK_W, {
+    id: `${key}-${state.hazards.length}-${Math.round(centerX)}`, hp: spec.hp ?? 1
+  });
+  hazard.life = spec.life ?? 8;
+  state.hazards.push(hazard);
+}
+
+// Đạn vòng cung (E3): bay theo trọng lực riêng, không xét tầm bay. Chạm đất thì
+// tan hoặc thành vật nằm lại; rơi vào khe hố thì tan ở đáy màn hình.
+function updateLob(projectile, dt) {
+  const lob = projectile.lob;
+  projectile.x += lob.vx * dt;
+  projectile.y += lob.vy * dt + .5 * lob.gravity * dt * dt;
+  lob.vy += lob.gravity * dt;
+  projectile.age += dt;
+  const centerX = projectile.x + projectile.w / 2;
+  if (projectile.y > VIEW_H) {
+    projectile.alive = false;
+    return;
+  }
+  const overHole = state.holes.some(hole => centerX > hole.x && centerX < hole.x + hole.w);
+  if (!overHole && projectile.y + projectile.h / 2 >= groundYAt(centerX)) {
+    projectile.alive = false;
+    landProjectile(projectile.sprite, centerX);
+  }
+}
+
 export function updateProjectiles(dt) {
   const player = state.player;
   state.projectiles.forEach(projectile => {
     if (!projectile.alive) return;
+    if (projectile.lob) {
+      updateLob(projectile, dt);
+      if (projectile.alive && !playerImmune(player) && aabb(player, projectile)) {
+        projectile.alive = false;
+        hurtPlayer(CHAPTER.text.projectileHit, CHAPTER.sprites.projectiles[projectile.sprite]?.damage ?? 1);
+      }
+      return;
+    }
     // Đạn nhắm (E2) bay theo vector (vx, vy); đạn ngang vx = ±1, vy = 0.
     const speed = CHAPTER.sprites.projectiles[projectile.sprite]?.speed ?? PROJECTILE_SPEED;
     projectile.x += projectile.vx * speed * dt;

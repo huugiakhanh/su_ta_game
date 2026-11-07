@@ -112,16 +112,52 @@ export function drawItems(time) {
 // Bình máu rơi (LND-ENGINE E4b): sprite `CHAPTER.pickups.heal` ({ id, anim }) nếu
 // chương có, không thì icon tim chung ICON_HUD_HEART; nháy HEAL_PICKUP.blink giây cuối.
 export function drawPickups(time) {
-  const art = CHAPTER.pickups?.heal || { id: HEART_ICON, anim: 'idle' };
-  const meta = getAnimMeta(art.id, art.anim);
-  const image = meta ? spriteImage(art.id, art.anim) : null;
+  const heal = CHAPTER.pickups?.heal || { id: HEART_ICON, anim: 'idle' };
   state.pickups.forEach(pickup => {
+    // Vật để ném (MHD-ENGINE E1) dùng ảnh của loại đó.
+    const art = pickup.carry ? { id: CHAPTER.carry[pickup.carry].sprite, anim: CHAPTER.carry[pickup.carry].anim } : heal;
+    const meta = getAnimMeta(art.id, art.anim);
+    const image = meta ? spriteImage(art.id, art.anim) : null;
     const centerX = Math.round(pickup.x + pickup.w / 2 - state.cameraX);
     if (centerX < -24 || centerX > VIEW_W + 24) return;
     if (pickup.life < HEAL_PICKUP.blink && Math.floor(time * 8) % 2) return;
     const footY = Math.round(pickup.y + pickup.h) - 1;
     if (meta && image) drawSprite(image, meta, frameIndex(meta, time), centerX, footY, 1);
     else drawPlaceholder(pickup);
+  });
+}
+
+// 1 ảnh hoạt hình theo `age`, tâm ngang `x`, chân `footY` (toạ độ world); thiếu ảnh
+// thì hộp dự phòng w×h.
+function drawPiece(id, anim, age, x, footY, w, h, facing = 1) {
+  const pivotX = Math.round(x - state.cameraX);
+  if (pivotX < -40 || pivotX > VIEW_W + 40) return;
+  const meta = getAnimMeta(id, anim);
+  const image = meta ? spriteImage(id, anim) : null;
+  if (meta && image) drawSprite(image, meta, frameIndex(meta, age), pivotX, Math.round(footY), facing);
+  else drawPlaceholder({ x: x - w / 2, y: footY - h, w, h });
+}
+
+// Vật người chơi đang cầm trên đầu, vật bay, hiệu ứng vỡ (MHD-ENGINE E1).
+export function drawCarried(time) {
+  const p = state.player;
+  const held = p.carrying && CHAPTER.carry?.[p.carrying];
+  if (held) drawPiece(held.sprite, held.anim, time, p.x + p.w / 2, p.y - 2, held.w, held.h);
+  state.thrown.forEach(item => {
+    const spec = CHAPTER.carry[item.kind];
+    drawPiece(spec.sprite, spec.anim, item.age, item.x, item.y + item.h / 2, item.w, item.h, item.facing);
+  });
+  state.impacts.forEach(impact => {
+    drawPiece(impact.id, impact.anim, impact.age, impact.x, impact.footY, impact.w, impact.h);
+  });
+}
+
+// Người được giải cứu chạy thoát (MHD-ENGINE E5).
+export function drawRunners() {
+  const spec = CHAPTER.rescue?.runner;
+  if (!spec) return;
+  state.runners.forEach(runner => {
+    drawPiece(spec.id, spec.anim, runner.age, runner.x, runner.footY, spec.w ?? 16, spec.h ?? 32, runner.direction);
   });
 }
 

@@ -35,7 +35,8 @@
 /* Các nút Tab phía trên */
 .leaderboard-tabs {
     display: flex;
-    /* 6 tab (TQP-SKELETON) vừa một hàng ở điện thoại ngang và màn 1024 px. */
+    /* Tab theo chương chỉ còn nhiều thêm (MHD-SKELETON): xuống hàng; điện thoại cuộn ngang (@media dưới). */
+    flex-wrap: wrap;
     gap: 6px;
     margin-bottom: 15px;
     overflow-x: auto;
@@ -174,6 +175,7 @@
         font-size: 14px;
     }
     .leaderboard-tabs {
+        flex-wrap: nowrap;
         margin-bottom: 8px;
     }
     .tab-btn {

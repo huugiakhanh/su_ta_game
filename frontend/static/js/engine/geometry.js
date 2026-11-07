@@ -190,7 +190,7 @@ export function makeHazard(kind, sprite, chunk, localX, options = {}) {
     alarmFor: options.alarmFor || null,
     alarmed: false,
     // Snare chỉ gây sát thương lúc rơi (hazards.js tự xử lý, không qua va chạm chung).
-    harmful: options.harmful ?? (kind !== 'prop' && kind !== 'snare' && kind !== 'drift' && kind !== 'lurker'),
+    harmful: options.harmful ?? (kind !== 'prop' && kind !== 'snare' && kind !== 'drift' && kind !== 'lurker' && kind !== 'pounce'),
     hp,
     maxHp: hp,
     hitTimer: 0,
@@ -224,8 +224,15 @@ export function makeHazard(kind, sprite, chunk, localX, options = {}) {
     restTimer: 0,
     lurkTimer: 0,
     // Hazard đang ẩn: không chém/bổ được (E3) — undefined = như cũ.
-    exposed: kind === 'lurker' ? false : undefined,
-    invisible: kind === 'drift' || kind === 'lurker',
+    exposed: kind === 'lurker' || kind === 'pounce' ? false : undefined,
+    invisible: kind === 'drift' || kind === 'lurker' || kind === 'pounce',
+    // Pounce (MHD-ENGINE E2 — hổ vồ): hidden -> warn -> leap -> recover -> leap...
+    // `span` = [minX, maxX] kẹp điểm rơi (tâm); null = không kẹp.
+    pounceState: 'hidden',
+    pounceTimer: 0,
+    span: options.span ?? null,
+    // Số người được thả khi hazard bị phá (MHD-ENGINE E5).
+    frees: options.frees ?? 0,
     // Gọi viện (E4 — thuyền tuần tiễu): { after, range, spawnAt: [worldX], enemy: { art, w, h, hp } }.
     callHelp: options.callHelp || null,
     helpTimer: 0,

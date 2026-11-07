@@ -8,12 +8,13 @@ import { setAnim, tickAnim, getAnimMeta, hitTime } from './animation.js';
 import {
   FOOT_MARGIN, TERRAIN_CELL, GROUND_Y, MOVE_SPEED, GRAVITY, JUMP_FORCE, DASH_SPEED, DASH_TIME, DASH_COOLDOWN,
   GROUND_SNAP_DISTANCE, ATTACK_COOLDOWN, ATTACK_ACTIVE_TIME, PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, RESPAWN_EDGE_MARGIN,
-  MUD, STEALTH, PLUNGE
+  MUD, STEALTH, PLUNGE, BURDEN
 } from './config.js';
 import { CHAPTER, LEVEL } from './chapter.js';
 import { playSfx } from './audio.js';
 import { hurtPlayer } from './damage.js';
 import { spearBox, strikeEnemy, strikeHazard, playerStrike, plungeOnly } from './combat.js';
+import { throwCarried } from './carry.js';
 import { showMessage } from './ui.js';
 import { platformActive } from './entities.js';
 
@@ -124,9 +125,28 @@ export function startAttack() {
   // Bấm đánh chỉ bắt đầu cú vung; sát thương tính ở updateAttack() khi
   // animation tới ô hit_frame (không còn gây sát thương ngay lúc bấm).
   p.attackCooldown = ATTACK_COOLDOWN;
+  p.throwSwing = false;
   p.attackHits = new Set();
   // Kỹ năng của chương chém cùng lúc với người chơi (Trưng Trắc: bóng Trưng Nhị).
   if (state.skills) CHAPTER.skills.onAttackStart?.();
+}
+
+// Hết gánh (MHD-ENGINE E4): chương gọi được ngoài cú đập sọt (vd. sau cảnh thoại).
+export function releaseBurden() {
+  state.player.burden = false;
+}
+
+// Đang gánh mà bấm Đánh: chương trả true (đứng gần xe cống) thì đập sọt, hết gánh,
+// vung đòn như thường; không thì chỉ nhắc, tối đa 1 lần mỗi `hintInterval` giây.
+function attackWhileBurdened(p) {
+  if (CHAPTER.hooks?.onBurdenAttack?.(p)) {
+    releaseBurden();
+    startAttack();
+    return;
+  }
+  if (p.burdenHintTimer > 0 || !CHAPTER.text.burdenHint) return;
+  p.burdenHintTimer = state.burden?.hintInterval ?? BURDEN.hintInterval;
+  showMessage(CHAPTER.text.burdenHint);
 }
 
 // Thông số đòn bổ của chương (TQP-ENGINE E5) hoặc null nếu chương không bật.
@@ -191,7 +211,8 @@ function attackHitTime() {
 export function updateAttack() {
   const p = state.player;
   updatePlunge();
-  if (p.attackCooldown <= 0) {
+  // Cú ném (MHD-ENGINE E1) chỉ mượn animation `attack`, không có hộp chém.
+  if (p.attackCooldown <= 0 || p.throwSwing) {
     p.attacking = false;
     return;
   }
@@ -286,7 +307,9 @@ function playerAnimationState(p) {
   if (p.plunging) return 'plunge';
   if (p.attackCooldown > 0) return 'attack';
   if (!p.grounded) return 'jump';
-  return Math.abs(p.vx) > 1 ? 'run' : 'idle';
+  const moving = Math.abs(p.vx) > 1;
+  if (p.burden) return moving ? 'burdenRun' : 'burdenIdle';
+  return moving ? 'run' : 'idle';
 }
 
 export function updatePlayerAnimation(dt) {
@@ -296,6 +319,20 @@ export function updatePlayerAnimation(dt) {
   // Đòn đánh chạy theo đúng đồng hồ của cú vung (khớp thời điểm gây sát
   // thương), kể cả khi vừa hết cú trước đã bấm cú mới (cùng tên animation).
   if (p.anim.name === 'attack') p.anim.time = ATTACK_COOLDOWN - p.attackCooldown;
+}
+
+// Rơi xuống đỉnh vật: đứng lên.
+function standOn(p, body) {
+  p.y = body.y - p.h;
+  p.vy = 0;
+  p.grounded = true;
+  p.standingOn = body;
+}
+
+// Vật chặn (cột đá — Q1): va ngang thì bị đẩy ra mép gần nhất, không mất máu.
+function pushOut(p, body) {
+  p.x = p.x + p.w / 2 < body.x + body.w / 2 ? body.x - p.w : body.x + body.w;
+  p.vx = 0;
 }
 
 // 1 bước điều khiển + vật lý người chơi: hồi chiêu, phím, trọng lực, kẹp màn/hố,
@@ -314,6 +351,7 @@ export function updatePlayerControl(dt) {
   p.revealTimer = Math.max(0, (p.revealTimer || 0) - dt);
   p.plungeGrace = Math.max(0, (p.plungeGrace || 0) - dt);
   p.plungeHintTimer = Math.max(0, (p.plungeHintTimer || 0) - dt);
+  p.burdenHintTimer = Math.max(0, (p.burdenHintTimer || 0) - dt);
   state.enemies.forEach(enemy => { enemy.hitTimer = Math.max(0, enemy.hitTimer - dt); });
 
   // Đang choáng (BT-L3 E2 — damage.js stunPlayer): bỏ qua phím, vẫn rơi theo trọng lực.
@@ -325,7 +363,7 @@ export function updatePlayerControl(dt) {
   const move = p.stun > 0 ? 0 : Number(keys.right) - Number(keys.left);
   if (!p.dashing && move !== 0) p.facing = move;
 
-  if (pressed.dash) startDash();
+  if (pressed.dash && !p.burden) startDash();
   pressed.dash = false;
 
   // Sình lầy (TQP-ENGINE E1): đang đứng trên dải sình thì đi chậm, nhảy thấp.
@@ -335,18 +373,20 @@ export function updatePlayerControl(dt) {
     p.dashTimer -= dt;
     p.vx = p.facing * DASH_SPEED;
   } else {
-    p.vx = move * MOVE_SPEED * (inMudNow ? mud.speed : 1);
+    p.vx = move * MOVE_SPEED * (inMudNow ? mud.speed : 1) * (p.burden ? state.burden.speed : 1);
   }
 
   if (pressed.jump && p.grounded && !p.dashing) {
-    p.vy = -JUMP_FORCE * (inMudNow ? mud.jump : 1);
+    p.vy = -JUMP_FORCE * (inMudNow ? mud.jump : 1) * (p.burden ? state.burden.jump : 1);
     p.grounded = false;
     playSfx('jump');
   }
   pressed.jump = false;
 
   if (pressed.attack) {
-    if (canPlunge(p)) startPlunge();
+    if (p.burden) attackWhileBurdened(p);
+    else if (p.carrying) throwCarried();
+    else if (canPlunge(p)) startPlunge();
     else startAttack();
   }
   pressed.attack = false;
@@ -408,17 +448,18 @@ export function updatePlayerControl(dt) {
     // Chướng ngại vật bắt buộc lướt không gây sát thương trong suốt cú dash.
     if (obstacle.requiresDash && p.dashing) continue;
     if (!obstacle.overhead && !obstacle.harmful && p.vy >= 0 && previousBottom <= obstacle.y + 5) {
-      p.y = obstacle.y - p.h;
-      p.vy = 0;
-      p.grounded = true;
-      p.standingOn = obstacle;
+      standOn(p, obstacle);
     } else if (obstacle.blocking) {
-      // Vật chặn (cột đá — Q1): va ngang thì bị đẩy ra mép gần nhất, không mất máu.
-      p.x = p.x + p.w / 2 < obstacle.x + obstacle.w / 2 ? obstacle.x - p.w : obstacle.x + obstacle.w;
-      p.vx = 0;
+      pushOut(p, obstacle);
     } else {
       hurtPlayer(obstacle.harmful ? CHAPTER.text.trapHit : CHAPTER.text.obstacleHit);
     }
+  }
+  // Hazard `blocking` (MHD-ENGINE E3 — xe cống, hòm rỗng) theo cùng luật vật chặn.
+  for (const hazard of state.hazards) {
+    if (!hazard.alive || !CHAPTER.sprites.hazards[hazard.sprite]?.blocking || !aabb(p, hazard)) continue;
+    if (p.vy >= 0 && previousBottom <= hazard.y + 5) standOn(p, hazard);
+    else pushOut(p, hazard);
   }
 
   if (!wasGrounded && p.grounded) playSfx('land');

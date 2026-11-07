@@ -84,6 +84,7 @@ def test_save_time_passes_stats(client):
     {"level_id": 204, "clear_time": 60},          # chương 2 chỉ có 201–203
     {"level_id": 304, "clear_time": 60},          # chương 3 chỉ có 301–303
     {"level_id": 404, "clear_time": 60},          # chương 4 chỉ có 401–403
+    {"level_id": 504, "clear_time": 60},          # chương 5 chỉ có 501–503
     {"level_id": "101", "clear_time": 60},        # sai kiểu
     {"level_id": 101, "clear_time": 0},
     {"level_id": 101, "clear_time": -5},
@@ -104,9 +105,65 @@ def test_save_time_rejects_bad_payload(client, payload):
     assert client.saved == []
 
 
+# MHD-SKELETON: 3 màn Mai Hắc Đế đi qua render_chapter_level().
+@pytest.mark.parametrize("url, level", [
+    ("/gameplay/levels/mai-hac-de", 1),
+    ("/gameplay/levels/mai-hac-de/2", 2),
+    ("/gameplay/levels/mai-hac-de/3", 3),
+])
+def test_mai_hac_de_level_routes(client, url, level):
+    response = client.get(url)
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert f'data-level="{level}"' in page
+    assert "js/levels/mai-hac-de/main.js" in page
+    assert "trieu-quang-phuc/main.js" not in page and "ly-nam-de/main.js" not in page
+    assert "Gánh vải" not in page
+
+
+@pytest.mark.parametrize("level_id", [501, 502, 503])
+def test_save_time_accepts_mai_hac_de_levels(client, level_id):
+    login(client)
+    response = client.post("/api/game/save-time", json={"level_id": level_id, "clear_time": 60})
+    assert response.status_code == 200
+    assert client.saved[-1][1] == level_id
+
+
+def test_progress_put_chapter_5_keeps_rescued(client, monkeypatch):
+    monkeypatch.setattr(api, "known_reward_ids", lambda chapter_id: {"SK_MHD_REINFORCE"} if chapter_id == 5 else set())
+    login(client)
+    data = {**GOOD_PROGRESS, "rescued": 5, "rewards": ["SK_MHD_REINFORCE"]}
+    assert client.put("/api/game/progress/5", json=data).status_code == 200
+    assert client.progress_saved == [(USER["id"], 5, data)]
+
+
+def test_progress_put_without_rescued_defaults_to_zero(client):
+    # Tiến trình chương cũ (tab mở từ trước migration 009) không có trường này.
+    login(client)
+    data = {key: value for key, value in GOOD_PROGRESS.items() if key != "rescued"}
+    assert client.put("/api/game/progress/1", json=data).status_code == 200
+    assert client.progress_saved == [(USER["id"], 1, GOOD_PROGRESS)]
+
+
+# MHD-SKELETON: luật thành tựu chương 5 (migration 009, MHD-00 mục 9).
+def test_mai_hac_de_achievement_rules():
+    from backend.services.game_service import ACHIEVEMENT_RULES as rules
+
+    def ctx(best_times):
+        return {"best_times": best_times, "stats": {}}
+
+    fast = {501: 200.0, 502: 300.0, 503: 399.0}
+    assert rules["MHD_CLEAR_1"](ctx({501: 90.0})) and not rules["MHD_CLEAR_2"](ctx({501: 90.0}))
+    assert rules["MHD_CHAPTER"](ctx({503: 300.0}))
+    assert rules["MHD_SPEED"](ctx(fast))                        # 899 s < 15 phút
+    assert not rules["MHD_SPEED"](ctx({**fast, 503: 400.0}))    # đúng 900 s -> chưa đạt
+    assert not rules["MHD_SPEED"](ctx({401: 100.0, 402: 100.0, 403: 100.0}))
+    assert not rules["TQP_SPEED"](ctx(fast))
+
+
 # ---- Tiến trình chương (SUTA-DB-01) ----
 
-GOOD_PROGRESS = {"score": 2500, "books": 5, "level1Complete": True, "level2Complete": False,
+GOOD_PROGRESS = {"score": 2500, "books": 5, "rescued": 0, "level1Complete": True, "level2Complete": False,
                  "level3Complete": False, "rewards": ["SK_LE_CHAN_ARROW_RAIN"], "times": {"1": 83.2}}
 
 
@@ -140,7 +197,7 @@ def test_progress_put_chapter_2(client, monkeypatch):
     data = {**GOOD_PROGRESS, "rewards": ["BUFF_BT_CRIT"]}
     assert client.put("/api/game/progress/2", json=data).status_code == 200
     assert client.progress_saved == [(USER["id"], 2, data)]
-    assert client.get("/api/game/progress/5").status_code == 404
+    assert client.get("/api/game/progress/6").status_code == 404
 
 
 def test_progress_put_normalizes(client):
@@ -154,6 +211,10 @@ def test_progress_put_normalizes(client):
     {"score": -1},
     {"score": 1.5},
     {"books": 100},
+    {"rescued": 6},
+    {"rescued": -1},
+    {"rescued": "3"},
+    {"rescued": True},
     {"level2Complete": 1},
     {"rewards": ["KHONG_CO"]},
     {"rewards": ["SK_LE_CHAN_ARROW_RAIN", "SK_LE_CHAN_ARROW_RAIN"]},
@@ -181,6 +242,8 @@ def test_progress_put_rejects_bad_payload(client, patch):
     ("level-303", (None, 303)),
     ("chapter-4", (4, None)),
     ("level-403", (None, 403)),
+    ("chapter-5", (5, None)),
+    ("level-503", (None, 503)),
 ])
 def test_leaderboard_scope(client, monkeypatch, scope, expected):
     calls = []
@@ -192,7 +255,7 @@ def test_leaderboard_scope(client, monkeypatch, scope, expected):
     assert calls == [(*expected, USER["id"])]
 
 
-@pytest.mark.parametrize("scope", ["chapter-5", "level-104", "level-204", "level-304", "level-404", "level-", "level-abc", "foo", "chapter-1x"])
+@pytest.mark.parametrize("scope", ["chapter-6", "level-104", "level-204", "level-304", "level-404", "level-504", "level-", "level-abc", "foo", "chapter-1x"])
 def test_leaderboard_bad_scope(client, scope):
     assert client.get(f"/api/game/leaderboard?scope={scope}").status_code == 400
 
