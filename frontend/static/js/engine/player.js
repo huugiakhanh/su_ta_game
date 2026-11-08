@@ -301,7 +301,11 @@ export function startDash() {
 // Trạng thái animation của người chơi, theo thứ tự ưu tiên:
 // trúng đòn > lướt > đánh > nhảy > chạy > đứng yên. Dùng attackCooldown (cả
 // cú vung) chứ không phải `attacking` (chỉ cửa sổ gây sát thương).
+// Đang gánh (MHD-ENGINE E4): chưa có strip nhảy/trúng đòn khi gánh — các strip
+// `jump`, `hurt` cầm kiếm — nên trên không hoặc trúng đòn vẫn giữ `burdenIdle`
+// (nhấp nháy bất tử vẫn báo trúng đòn). Cú vung lúc đập sọt đã hết gánh.
 function playerAnimationState(p) {
+  if (p.burden && (p.hurtTimer > 0 || !p.grounded)) return 'burdenIdle';
   if (p.hurtTimer > 0) return 'hurt';
   if (p.dashing) return 'dash';
   if (p.plunging) return 'plunge';

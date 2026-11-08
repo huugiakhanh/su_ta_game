@@ -1,29 +1,66 @@
-// Màn 3 "Công phá Tống Bình" — MHD-SKELETON: đấu trường 1 chunk, 3 đợt lính ra ở
-// ARENA.spawnX (engine makeSpawner); hết đợt cuối + hết quân thì thắng chương.
-// Boss Quang Sở Khách 3 giai đoạn + kỹ năng làm ở MHD-L3.
+// Màn 3 "Công phá Tống Bình" (MHD-L3, docs/SUTA_MHD_TASK_L3_01.md): đấu trường 1
+// chunk trước cổng phủ Đô hộ. Dựng nội dung + quân; diễn biến trận ở boss.js.
+// Mọi số DESIGN_BASELINE.
 
-import { makeEnemy, makeSpawner } from '../../engine/entities.js';
-import { state } from '../../engine/state.js';
-import { endGame } from '../../engine/end-game.js';
-import { ARENA, WAVES, SOLDIER } from './config.js';
+import { makeEnemy } from '../../engine/entities.js';
+import { readProgress } from '../../engine/progress.js';
+import { BOSS, CART, GUARDS, SCOUTS } from './config.js';
 
-// Lính đấu trường: tuần tra cả đấu trường, thấy người chơi ở mọi chỗ.
-function makeArenaGuard(entry, centerX) {
-  return makeEnemy(centerX - SOLDIER.w / 2, SOLDIER.w, SOLDIER.h, SOLDIER.hp, false, {
-    patrolMin: 40, patrolMax: ARENA.width - 40, aggroRange: ARENA.width
-  });
-}
-
-export function level3Content() {
+// Vệ sĩ khiên sắt: `shieldGuard` -> `burningGuard` -> `bareGuard` (boss.js đổi `art`).
+function makeShieldGuard(centerX) {
   return {
-    obstacles: [], hazards: [], holes: [], items: [], enemies: [], npcs: [], quizzes: [],
-    spawner: makeSpawner(WAVES.groups, WAVES.gap, false, { spawn: makeArenaGuard, x: ARENA.spawnX })
+    ...makeEnemy(centerX - GUARDS.w / 2, GUARDS.w, GUARDS.h, GUARDS.hp, false, {
+      patrolMin: GUARDS.patrol[0], patrolMax: GUARDS.patrol[1], aggroRange: GUARDS.aggroRange
+    }),
+    art: 'shieldGuard', noBar: true
   };
 }
 
-// LEVEL.update: hết đợt cuối và không còn quân sống -> thắng (panel hết chương).
-export function updateLevel3() {
-  if (state.won || !state.spawner?.done) return;
-  if (state.enemies.some(enemy => enemy.alive)) return;
-  endGame(true);
+// Lính trinh sát (hành vi `rusher` của engine): chạy về phía người chơi.
+export function makeScout(centerX, direction) {
+  return {
+    ...makeEnemy(centerX - SCOUTS.w / 2, SCOUTS.w, SCOUTS.h, SCOUTS.hp, false, {}),
+    art: 'scout', noBar: true, direction, facing: direction, rest: 0
+  };
+}
+
+// Quang Sở Khách: enemy kind `quangSoKhach`; GĐ 1–2 không mất máu, ẩn thanh máu.
+function makeBoss(centerX) {
+  return {
+    ...makeEnemy(centerX - BOSS.w / 2, BOSS.w, BOSS.h, BOSS.hp, true),
+    art: 'quangSoKhach', kind: 'quangSoKhach', facing: -1, noBar: true,
+    mode: 'idle', modeTime: 0, hit: false, combo: 0, swing: 0, waitTime: 0, blockedTime: 0, hurtTime: 0
+  };
+}
+
+// Xe bắn tiễn: enemy kind `arrowCart`, máu do lượt đánh cần (boss.js), không dùng `hp`.
+function makeCart(centerX) {
+  return {
+    ...makeEnemy(centerX - CART.w / 2, CART.w, CART.h, 1, false, {}),
+    art: 'arrowCart', kind: 'arrowCart', facing: -1, noBar: true,
+    mode: 'idle', modeTime: 0, fired: false, dir: -1, stallLeft: 0, leverTime: 0, leverHits: 0, deck: null, aim: null
+  };
+}
+
+// `options.layout === 'skills'` -> layout thử: vào thẳng GĐ 2, xe chạy lặp không
+// vỡ, trinh sát ra lặp. `battle` = tiến trình trận (boss.js).
+export function level3Content(options) {
+  const test = options.layout === 'skills';
+  const boss = makeBoss(test ? BOSS.phase2X : BOSS.phase1X);
+  const cart = makeCart(CART.startX);
+  const guards = test ? [] : GUARDS.centers.map(makeShieldGuard);
+  return {
+    obstacles: [], hazards: [], holes: [], items: [], npcs: [], quizzes: [],
+    enemies: [cart, ...guards, boss],
+    battle: {
+      test, phase: test ? 2 : 1, boss, cart, guards,
+      // Số dân phu cứu ở màn 1 (0–5) -> số giây Viện Binh chặn xe.
+      rescued: readProgress().rescued || 0,
+      // Số lượt đã đánh xong cần điều khiển (0–3).
+      round: 0,
+      volleyTimer: 1.5, scoutTimer: 1.5, hintTimer: 0, phaseDelay: test ? CART.phase2Delay : 0, jarHintShown: false,
+      // FX: tóe lửa; người phi ngựa + cờ trong cutscene.
+      sparks: [], rider: null, flagTime: null
+    }
+  };
 }

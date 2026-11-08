@@ -66,9 +66,10 @@
                     </div>
                 </div>
 
-                <div class="t-item t-top">
+                {# HOME-UNLOCK: mở khi đã qua chương 4 (MHD-L1). #}
+                <div class="t-item t-top" data-unlock-after="4" data-hero="Mai Hắc Đế" data-route="/gameplay/levels/mai-hac-de">
                     <div class="t-card locked">
-                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <div class="lock-overlay">🔒 Qua chương Triệu Việt Vương</div>
                         <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/mai_hac_de.webp') }}" alt="Mai Hắc Đế" loading="lazy" decoding="async">
                         <div class="t-info">
                             <h4>Mai Hắc Đế</h4>

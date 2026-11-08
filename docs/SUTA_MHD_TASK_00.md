@@ -49,10 +49,10 @@ Mẫu tham chiếu: chương Triệu Việt Vương ([SUTA_TQP_TASK_00.md](SUTA_
 | **MHD-ART-BIBLE** | `/research`: giáp lính Đường, xe bắn tiễn, Sa Nam, Hùng Sơn, Tống Bình, trang phục dân phu Hoan Châu | — |
 | **MHD-SKELETON** | **Xong 07/11** ([task card](SUTA_MHD_TASK_SKELETON_01.md), [report](REPORT_MHD-SKELETON.md)) — thư mục chương, `chapter.js`/`config.js`, template, route, migration `009`, `VALID_*`, thẻ trang chủ + timeline, JSON câu hỏi + `/quiz`, rule `.claude/rules/mai-hac-de-gameplay.md` (+ bảng rule `CLAUDE.md`), test. Chạy được bằng asset mượn | MHD-00 |
 | **MHD-ENGINE** | **Xong 07/11** ([task card](SUTA_MHD_TASK_ENGINE_01.md), [report](REPORT_MHD-ENGINE.md)) — mục 3.5 | MHD-SKELETON |
-| **MHD-L1** + `MHD_ART_01` | Màn 1 (mục 3.1) | SKELETON, ENGINE |
-| **MHD-L2** + `MHD_ART_02` | Màn 2 (mục 3.2) | L1, mục 4 đã duyệt |
-| **MHD-L3** + `MHD_ART_03` | Màn 3 boss Quang Sở Khách (mục 3.4) | L2 |
-| Nhạc | Prompt Gemini 3 màn → team nộp `audio/mai-hac-de/level1–3.mp3` | — |
+| **MHD-L1** + `MHD_ART_01` | **Xong 08/11** ([task card](SUTA_MHD_TASK_L1_01.md), [report](REPORT_MHD-L1.md)); asset `MHD_ART_01` đã qua Gate A1 + A2 — màn 1 (mục 3.1) | SKELETON, ENGINE |
+| **MHD-L2** + `MHD_ART_02` | **Xong 08/11** ([task card](SUTA_MHD_TASK_L2_01.md), [report](REPORT_MHD-L2.md)); asset `MHD_ART_02` đã qua Gate B1 + B2 — màn 2 (mục 3.2) | L1, mục 4 đã duyệt |
+| **MHD-L3** + `MHD_ART_03` | **Xong 08/11** ([task card](SUTA_MHD_TASK_L3_01.md), [report](REPORT_MHD-L3.md)); asset `MHD_ART_03` đã qua Gate C1, C2, C2-R1, C3-R1 — màn 3 boss Quang Sở Khách (mục 3.4) | L2 |
+| Nhạc | **Xong 08/11** — team nộp `audio/mai-hac-de/level1–3.mp3` ([kết quả kiểm](archive/GEMINI_PROMPT_MHD_MUSIC.md)) | — |
 
 Mỗi giai đoạn: kế hoạch → duyệt → code → `pytest tests` + `/verify-ui` → `/task-report`. Thay đổi engine phải chơi lại các màn 4 chương trước và các layout thử (`?layout=p2`, `?layout=skills`, `?layout=engine`, `?viewer=1`).
 
@@ -120,7 +120,7 @@ Layout thử `?layout=engine` màn 1 chương 5 chạy đủ E1–E5.
 
 ---
 
-## 4. NỘI DUNG MÀN 2 — CHỜ TEAM DUYỆT (tên phần thưởng đã duyệt)
+## 4. NỘI DUNG MÀN 2 — ĐÃ DUYỆT 08/11/2026 (người dùng duyệt nguyên văn)
 
 Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy từ Excel ô A1 (mục 4.1 và lý do đúng 4.3 đã sửa chữ theo tra cứu 07/11), còn lại Claude soạn nháp. Thoại xưng hô với Mai Thúc Loan.
 
@@ -141,9 +141,9 @@ Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy từ Excel ô A1 (m
 
 **Phần thưởng:** Ý chí dân nghèo. Trong trận đánh, sức mạnh đòn đánh cơ bản tăng 20%.
 
-### 4.2 Hào kiệt Thúc Bảo (Người bạn chiến đấu đắc lực)
+### 4.2 Thúc Bảo (Người bạn chiến đấu đắc lực)
 
-> **Chờ team cho biết nguồn** về Thúc Bảo (mục 7). Không có nguồn trước MHD-L2 thì đổi NPC, xem RESEARCH_MHD_QUESTIONS.md mục 2.
+> Chốt 08/11/2026 (người dùng): dùng lại nhân vật **Thúc Bảo**, đúng với trang thư viện. Trước đó đã tạm đổi thành "Hào kiệt Sa Nam". Lưu ý: Claude chưa tra được nguồn sử về tên này (RESEARCH_MHD_QUESTIONS.md mục 2); thoại giữ nguyên, chỉ đổi người nói.
 
 **Thoại**
 1. Thúc Bảo: "Anh em đã tụ về đông lắm, nhưng chưa có chỗ đứng chân."
@@ -182,7 +182,7 @@ Quy ước: ✅ đáp án đúng; câu **in nghiêng** lấy từ Excel ô A1 (m
 
 ---
 
-## 5. CÂU CHỮ KHÁC — CHỜ TEAM DUYỆT, TRỪ 5.1 TÊN MÀN (Claude soạn nháp từ A1)
+## 5. CÂU CHỮ KHÁC — ĐÃ DUYỆT (5.1–5.2 ngày 08/11 qua MHD-L1; 5.3–5.4 duyệt nguyên văn 08/11/2026)
 
 ### 5.1 Thông báo đầu màn
 - Màn 1: "Màn 1: Gánh cống Hoan Châu — Năm 713, nhà Đường đô hộ nước ta. Hãy cùng Mai Thúc Loan phá đoàn cống phẩm, thu đủ 5 Quyển Sách Tinh Hoa."
@@ -214,19 +214,20 @@ Thoại hướng dẫn phím đoạn gánh cống phẩm chốt ở MHD-L1 (khô
 
 | Đợt | Nội dung |
 |---|---|
-| `MHD_ART_01` | [Prompt](CODEX_PROMPT_MHD_ART_01.md) (chờ giao Codex). NPC + chân dung Mai Thúc Loan (theo avatar thư viện, nước da đen); animation gánh cống phẩm cho `PLAYER_MALE`/`PLAYER_FEMALE` (`manifest_shared.json`); lính áp giải cầm roi; dân phu; cung thủ, lính ném lao, kỵ binh Đường; quan thu thuế + hòm rỗng; `pounce` cho `EN_TIGER`; cửa hang; nền Hoan Châu + đèo |
-| `MHD_ART_02` | 3 NPC + chân dung (mẹ, Thúc Bảo, sứ giả); nền Sa Nam / sông Lam; FX + icon 3 phần thưởng |
-| `MHD_ART_03` | Quang Sở Khách (đứng, đại đao, lên ngựa) + chân dung; xe bắn tiễn; vệ sĩ khiên sắt; lính trinh sát; cờ đen; nền cổng Tống Bình; dân quân Viện Binh |
+| `MHD_ART_01` | **Xong, `IN_GAME` 08/11** (kết quả soát trong [REPORT_MHD-L1.md](REPORT_MHD-L1.md); prompt đã xoá). NPC + chân dung Mai Thúc Loan (theo avatar thư viện, nước da đen); animation gánh cống phẩm cho `PLAYER_MALE`/`PLAYER_FEMALE` (`manifest_shared.json`); lính áp giải cầm roi; dân phu; cung thủ, lính ném lao, kỵ binh Đường; quan thu thuế + hòm rỗng; `pounce` cho `EN_TIGER`; cửa hang; nền Hoan Châu + đèo |
+| `MHD_ART_02` | **Xong, `IN_GAME` 08/11** (kết quả soát trong [REPORT_MHD-L2.md](REPORT_MHD-L2.md); prompt đã xoá). 3 NPC + chân dung (mẹ, Thúc Bảo, sứ giả); nền Sa Nam / sông Lam; FX + icon 3 phần thưởng |
+| `MHD_ART_03` | **Xong, `IN_GAME` 08/11** (kết quả soát trong [REPORT_MHD-L3.md](REPORT_MHD-L3.md); prompt đã xoá). Quang Sở Khách (đứng, đại đao, lên ngựa) + chân dung; xe bắn tiễn; vệ sĩ khiên sắt; lính trinh sát; cờ đen; nền cổng Tống Bình; dân quân Viện Binh |
 
 ## 7. VIỆC CHỜ TEAM
 
 - [x] Duyệt chia pool câu hỏi (mục 3.3) — 07/11/2026 (người dùng).
 - [x] Duyệt tên 3 màn (5.1), tên 3 phần thưởng (3.4) — 07/11/2026 (người dùng).
-- [ ] Duyệt mục 4 và 5.1 (câu mô tả màn 1), 5.2–5.4 (thoại, đáp án sai, gợi ý, cutscene, panel kết chương).
+- [x] Duyệt 5.1 câu mô tả màn 1, 5.2 thoại dẫn màn 1 (MHD-L1 Q1, 08/11/2026) và mục 4 thoại NPC màn 2 (08/11/2026, người dùng).
+- [x] Duyệt 5.3–5.4 (cutscene, panel kết chương) — nguyên văn, 08/11/2026 (người dùng).
 - [x] Duyệt thưởng vàng / thành tựu (mục 9) — 07/11/2026 (người dùng).
 - [x] Câu hỏi: bộ Excel đã thay bằng 50 câu có nguồn (07/11/2026). Số câu trong bảng dưới là **số Excel cũ**, bảng giữ lại để tra lý do; đối chiếu đầy đủ ở RESEARCH_MHD_QUESTIONS.md mục 4.
 - [x] 4 điểm thiết kế ở RESEARCH_MHD_QUESTIONS.md mục 2 chốt theo đề xuất (07/11/2026).
-- [ ] **Team cho biết nguồn về Thúc Bảo** trước MHD-L2 (cả trang thư viện đang nhắc tên này).
+- [x] NPC thứ 2 màn 2 là Thúc Bảo, khớp trang thư viện (người dùng chốt lại 08/11/2026; chưa có nguồn sử cho tên này).
 
 | # | Câu/ô | Vấn đề |
 |---|---|---|

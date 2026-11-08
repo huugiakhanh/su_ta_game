@@ -1,0 +1,1315 @@
+{
+  "chapter": "mai-hac-de",
+  "version": "32.A2",
+  "density": 4,
+  "pivot": "bottom-center",
+  "facing": "right",
+  "assets": [
+    {
+      "id": "NPC_MAI_THUC_LOAN",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_MAI_THUC_LOAN/npc_mai_thuc_loan_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_MAI_THUC_LOAN/npc_mai_thuc_loan_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_FIX_MTL_01. Library-avatar redraw, normalized and pending review. See SPRITE_REPORT_MHD_32.md."
+    },
+    {
+      "id": "EN_TANG_ESCORT",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_TANG_ESCORT/en_tang_escort_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_TANG_ESCORT/en_tang_escort_walk.png",
+          "frames": 8,
+          "fps": 14,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_TANG_ESCORT/en_tang_escort_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_TANG_ESCORT/en_tang_escort_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_TANG_ESCORT/en_tang_escort_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_01 Gate A1 candidate. Pending team review. See SPRITE_REPORT_MHD_32.md and meta/sprite_qa.json."
+    },
+    {
+      "id": "PORTRAIT_MAI_THUC_LOAN",
+      "category": "portrait",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_MAI_THUC_LOAN/portrait_mai_thuc_loan_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_FIX_MTL_01. Library-avatar redraw, normalized and pending review. See SPRITE_REPORT_MHD_32.md."
+    },
+    {
+      "id": "NPC_MHD_PORTER",
+      "category": "npc",
+      "priority": "P1",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_MHD_PORTER/npc_mhd_porter_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "run",
+          "file": "npc/NPC_MHD_PORTER/npc_mhd_porter_run.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_01 A2. See sprite report and QA."
+    },
+    {
+      "id": "EN_TANG_ARCHER",
+      "category": "enemy",
+      "priority": "P1",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_TANG_ARCHER/en_tang_archer_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_TANG_ARCHER/en_tang_archer_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_TANG_ARCHER/en_tang_archer_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_TANG_ARCHER/en_tang_archer_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_01 A2. See sprite report and QA."
+    },
+    {
+      "id": "EN_TANG_JAVELIN",
+      "category": "enemy",
+      "priority": "P1",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_TANG_JAVELIN/en_tang_javelin_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_TANG_JAVELIN/en_tang_javelin_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_TANG_JAVELIN/en_tang_javelin_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_TANG_JAVELIN/en_tang_javelin_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_01 A2. See sprite report and QA."
+    },
+    {
+      "id": "EN_TANG_CAVALRY",
+      "category": "enemy",
+      "priority": "P1",
+      "frame_w": 96,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "gallop",
+          "file": "enemy/EN_TANG_CAVALRY/en_tang_cavalry_gallop.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_TANG_CAVALRY/en_tang_cavalry_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_TANG_CAVALRY/en_tang_cavalry_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A2 cavalry redraw to EN_NGO_CAVALRY proportions. 17 frames at baseline 251, 32 colors max. Mounted height 149-160 source px, natural tucked stride. See cavalry revision QA. Awaiting review."
+    },
+    {
+      "id": "EN_TANG_TAX_OFFICIAL",
+      "category": "enemy",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_TANG_TAX_OFFICIAL/en_tang_tax_official_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_TANG_TAX_OFFICIAL/en_tang_tax_official_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_TANG_TAX_OFFICIAL/en_tang_tax_official_throw.png",
+          "frames": 6,
+          "fps": 15,
+          "loop": false,
+          "hit_frame": 4
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_TANG_TAX_OFFICIAL/en_tang_tax_official_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_TANG_TAX_OFFICIAL/en_tang_tax_official_death.png",
+          "frames": 9,
+          "fps": 15,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_01 A2. See sprite report and QA."
+    },
+    {
+      "id": "OB_MHD_EMPTY_CHEST",
+      "category": "obstacle",
+      "priority": "P1",
+      "frame_w": 32,
+      "frame_h": 24,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_MHD_EMPTY_CHEST/ob_mhd_empty_chest_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "obstacle/OB_MHD_EMPTY_CHEST/ob_mhd_empty_chest_break.png",
+          "frames": 5,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_01 A2. See sprite report and QA."
+    },
+    {
+      "id": "EN_TIGER",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_TIGER/en_tiger_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "run",
+          "file": "enemy/EN_TIGER/en_tiger_run.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_TIGER/en_tiger_attack_01.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_TIGER/en_tiger_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_TIGER/en_tiger_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "warn",
+          "file": "enemy/EN_TIGER/en_tiger_warn.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "pounce",
+          "file": "enemy/EN_TIGER/en_tiger_pounce.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_01 A2. Original five strips copied byte for byte. Warn and pounce await review."
+    },
+    {
+      "id": "OB_TRIBUTE_CART",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "roll",
+          "file": "obstacle/OB_TRIBUTE_CART/ob_tribute_cart_roll.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "obstacle/OB_TRIBUTE_CART/ob_tribute_cart_break.png",
+          "frames": 5,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A4a — generated and normalized; awaiting visual approval"
+    },
+    {
+      "id": "PJ_SPEAR",
+      "category": "projectile",
+      "priority": "P1",
+      "frame_w": 32,
+      "frame_h": 8,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "projectile/PJ_SPEAR/pj_spear_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "PJ_OIL_JAR",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "projectile/PJ_OIL_JAR/pj_oil_jar_loop.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "FX_OIL_FIRE",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "impact",
+          "file": "fx/FX_OIL_FIRE/fx_oil_fire_impact.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "OB_BOULDER",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "roll",
+          "file": "obstacle/OB_BOULDER/ob_boulder_roll.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "obstacle/OB_BOULDER/ob_boulder_break.png",
+          "frames": 5,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A2: mossy limestone; roll texture rotates; break shrinks through five frames.",
+      "visible_bbox": {
+        "x": 2,
+        "y": 3,
+        "w": 28,
+        "h": 28
+      }
+    },
+    {
+      "id": "ITEM_LND_HEAL",
+      "category": "item",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "item/ITEM_LND_HEAL/item_lnd_heal_idle.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json.",
+      "design_baseline": true,
+      "visible_bbox": {
+        "x": 3.5,
+        "y": 2.25,
+        "w": 9,
+        "h": 12.75
+      }
+    },
+    {
+      "id": "PROP_LUONG_WATCHTOWER",
+      "category": "prop",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 112,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "prop/PROP_LUONG_WATCHTOWER/prop_luong_watchtower_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A2: deck top y80 image; 92 logic above pivot; offset rear canopy. Design interpretation."
+    },
+    {
+      "id": "PJ_CROSSBOW_BOLT",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 8,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "projectile/PJ_CROSSBOW_BOLT/pj_crossbow_bolt_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A2: short right-facing bolt with iron tip and feather tail."
+    },
+    {
+      "id": "PJ_SILVER_CHEST",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "projectile/PJ_SILVER_CHEST/pj_silver_chest_loop.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A2: empty iron-banded wooden chest, six rotating poses."
+    },
+    {
+      "id": "NPC_MHD_MOTHER",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_MHD_MOTHER/npc_mhd_mother_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_MHD_MOTHER/npc_mhd_mother_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_02 Gate B1. See SPRITE_REPORT_MHD_32.md and meta/b1/qa.json. Pending team review."
+    },
+    {
+      "id": "PORTRAIT_MHD_MOTHER",
+      "category": "portrait",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_MHD_MOTHER/portrait_mhd_mother_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_02 Gate B1. See SPRITE_REPORT_MHD_32.md and meta/b1/qa.json. Pending team review."
+    },
+    {
+      "id": "NPC_MHD_SA_NAM_HERO",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_MHD_SA_NAM_HERO/npc_mhd_sa_nam_hero_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_MHD_SA_NAM_HERO/npc_mhd_sa_nam_hero_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_02 Gate B1. See SPRITE_REPORT_MHD_32.md and meta/b1/qa.json. Pending team review."
+    },
+    {
+      "id": "PORTRAIT_MHD_SA_NAM_HERO",
+      "category": "portrait",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_MHD_SA_NAM_HERO/portrait_mhd_sa_nam_hero_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_02 Gate B1. See SPRITE_REPORT_MHD_32.md and meta/b1/qa.json. Pending team review."
+    },
+    {
+      "id": "NPC_MHD_LAM_AP_ENVOY",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_MHD_LAM_AP_ENVOY/npc_mhd_lam_ap_envoy_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_MHD_LAM_AP_ENVOY/npc_mhd_lam_ap_envoy_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_02 Gate B1. See SPRITE_REPORT_MHD_32.md and meta/b1/qa.json. Pending team review."
+    },
+    {
+      "id": "PORTRAIT_MHD_LAM_AP_ENVOY",
+      "category": "portrait",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_MHD_LAM_AP_ENVOY/portrait_mhd_lam_ap_envoy_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_02 Gate B1. See SPRITE_REPORT_MHD_32.md and meta/b1/qa.json. Pending team review."
+    },
+    {
+      "id": "ICON_BUFF_MHD_POWER",
+      "category": "icon",
+      "priority": "P1",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_BUFF_MHD_POWER/icon_buff_mhd_power_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_02 Gate B2. See SPRITE_REPORT_MHD_32.md and meta/b2 for QA."
+    },
+    {
+      "id": "ICON_SK_MHD_VAN_AN_SHELL",
+      "category": "icon",
+      "priority": "P1",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_SK_MHD_VAN_AN_SHELL/icon_sk_mhd_van_an_shell_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_02 Gate B2. See SPRITE_REPORT_MHD_32.md and meta/b2 for QA."
+    },
+    {
+      "id": "ICON_SK_MHD_REINFORCE",
+      "category": "icon",
+      "priority": "P1",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_SK_MHD_REINFORCE/icon_sk_mhd_reinforce_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_02 Gate B2. See SPRITE_REPORT_MHD_32.md and meta/b2 for QA."
+    },
+    {
+      "id": "FX_MHD_VAN_AN_SHELL",
+      "category": "fx",
+      "priority": "P1",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "on",
+          "file": "fx/FX_MHD_VAN_AN_SHELL/fx_mhd_van_an_shell_on.png",
+          "frames": 4,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "hold",
+          "file": "fx/FX_MHD_VAN_AN_SHELL/fx_mhd_van_an_shell_hold.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "fx/FX_MHD_VAN_AN_SHELL/fx_mhd_van_an_shell_break.png",
+          "frames": 5,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_02 Gate B2. See SPRITE_REPORT_MHD_32.md and meta/b2 for QA."
+    },
+    {
+      "id": "BOSS_QUANG_SO_KHACH",
+      "category": "boss",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "boss/BOSS_QUANG_SO_KHACH/boss_quang_so_khach_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "boss/BOSS_QUANG_SO_KHACH/boss_quang_so_khach_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "command",
+          "file": "boss/BOSS_QUANG_SO_KHACH/boss_quang_so_khach_command.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": 3
+        },
+        {
+          "name": "attack_01",
+          "file": "boss/BOSS_QUANG_SO_KHACH/boss_quang_so_khach_attack_01.png",
+          "frames": 9,
+          "fps": 14,
+          "loop": false,
+          "hit_frame": 5,
+          "frame_w": 160
+        },
+        {
+          "name": "attack_02",
+          "file": "boss/BOSS_QUANG_SO_KHACH/boss_quang_so_khach_attack_02.png",
+          "frames": 9,
+          "fps": 14,
+          "loop": false,
+          "hit_frame": 5,
+          "frame_w": 160
+        },
+        {
+          "name": "winded",
+          "file": "boss/BOSS_QUANG_SO_KHACH/boss_quang_so_khach_winded.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "blocked",
+          "file": "boss/BOSS_QUANG_SO_KHACH/boss_quang_so_khach_blocked.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "hurt",
+          "file": "boss/BOSS_QUANG_SO_KHACH/boss_quang_so_khach_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "disarm",
+          "file": "boss/BOSS_QUANG_SO_KHACH/boss_quang_so_khach_disarm.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "flee",
+          "file": "boss/BOSS_QUANG_SO_KHACH/boss_quang_so_khach_flee.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null,
+          "frame_w": 96
+        }
+      ],
+      "qa_notes": "MHD_ART_03 Gate C1 candidate. See SPRITE_REPORT_MHD_32.md."
+    },
+    {
+      "id": "PORTRAIT_QUANG_SO_KHACH",
+      "category": "portrait",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_QUANG_SO_KHACH/portrait_quang_so_khach_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_03 Gate C1 candidate. See SPRITE_REPORT_MHD_32.md."
+    },
+    {
+      "id": "EN_TANG_ARROW_CART",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 128,
+      "frame_h": 96,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_TANG_ARROW_CART/en_tang_arrow_cart_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "fire",
+          "file": "enemy/EN_TANG_ARROW_CART/en_tang_arrow_cart_fire.png",
+          "frames": 8,
+          "fps": 14,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "charge",
+          "file": "enemy/EN_TANG_ARROW_CART/en_tang_arrow_cart_charge.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "stalled",
+          "file": "enemy/EN_TANG_ARROW_CART/en_tang_arrow_cart_stalled.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "lever_hit",
+          "file": "enemy/EN_TANG_ARROW_CART/en_tang_arrow_cart_lever_hit.png",
+          "frames": 4,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "enemy/EN_TANG_ARROW_CART/en_tang_arrow_cart_break.png",
+          "frames": 10,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_03 Gate C1 candidate. See SPRITE_REPORT_MHD_32.md. Deck and lever measured. Driver lower body is obscured."
+    },
+    {
+      "id": "EN_TANG_SHIELD_GUARD",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "blocked",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_blocked.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "shield_burn",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_shield_burn.png",
+          "frames": 8,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "bare_idle",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_bare_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "bare_walk",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_bare_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "bare_attack_01",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_bare_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_03 Gate C1 candidate. See SPRITE_REPORT_MHD_32.md."
+    },
+    {
+      "id": "EN_TANG_SCOUT",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "run",
+          "file": "enemy/EN_TANG_SCOUT/en_tang_scout_run.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_TANG_SCOUT/en_tang_scout_attack_01.png",
+          "frames": 8,
+          "fps": 28,
+          "loop": false,
+          "hit_frame": 3
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_TANG_SCOUT/en_tang_scout_death.png",
+          "frames": 6,
+          "fps": 15,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_03 Gate C1 candidate. See SPRITE_REPORT_MHD_32.md."
+    },
+    {
+      "id": "FX_MHD_REINFORCE",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 128,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "charge",
+          "file": "fx/FX_MHD_REINFORCE/fx_mhd_reinforce_charge.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "brace",
+          "file": "fx/FX_MHD_REINFORCE/fx_mhd_reinforce_brace.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_03 Gate C1 candidate. See SPRITE_REPORT_MHD_32.md."
+    },
+    {
+      "id": "PROP_MHD_BLACK_FLAG",
+      "category": "prop",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "raise",
+          "file": "prop/PROP_MHD_BLACK_FLAG/prop_mhd_black_flag_raise.png",
+          "frames": 8,
+          "fps": 10,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "wave",
+          "file": "prop/PROP_MHD_BLACK_FLAG/prop_mhd_black_flag_wave.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_03 Gate C2. See SPRITE_REPORT_MHD_32.md."
+    },
+    {
+      "id": "FX_BT_ARMOR_SPARK",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "impact",
+          "file": "fx/FX_BT_ARMOR_SPARK/fx_bt_armor_spark_impact.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Copied without redraw or recolor from assets/sprites-32bit/ba-trieu; SHA256 exact source match, see meta/gate_c2/copy_hashes.json.",
+      "source_chapter": "ba-trieu"
+    }
+  ]
+}

@@ -31,15 +31,17 @@ function updateIntro(dt) {
   tickMessage(dt);
   // Bỏ phím bấm trong lúc chạy vào — không để dồn 1 cú nhảy/đánh sau intro.
   pressed.jump = pressed.attack = pressed.dash = false;
-  let playerAnim = 'idle';
+  // Vào màn đang gánh (MHD-ENGINE E4) thì chạy vào bằng dáng gánh.
+  const idleAnim = p.burden ? 'burdenIdle' : 'idle';
+  let playerAnim = idleAnim;
 
   if (intro.phase === 'walk') {
     p.facing = 1;
     p.x = Math.min(intro.targetX, p.x + INTRO.walkSpeed * dt);
-    playerAnim = 'run';
+    playerAnim = p.burden ? 'burdenRun' : 'run';
     if (p.x >= intro.targetX) {
       // Tới nơi thì đứng yên (hội thoại dừng game ngay frame này).
-      playerAnim = 'idle';
+      playerAnim = idleAnim;
       const guide = state.guide;
       if (guide) {
         intro.phase = 'talk';

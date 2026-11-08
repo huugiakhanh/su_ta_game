@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "map_id": "MAI_HAC_DE",
+  "chapter": "mai-hac-de",
+  "pipeline": "parallax_layers",
+  "render_mode": "side_scroll_mode",
+  "engine_target": "project-native Canvas",
+  "stage": {
+    "canvas_w": 480,
+    "canvas_h": 270,
+    "stage_length": 9216,
+    "ground_y": 248,
+    "tile_size": 16
+  },
+  "design_baseline": true,
+  "assets": [
+    {
+      "id": "BG_MHD_MID_TRIBUTE_ROAD",
+      "category": "parallax",
+      "file": "bg/BG_MHD_MID_TRIBUTE_ROAD/bg_mhd_mid_tribute_road.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "MHD_ART_01 Gate A1 scenic midground only. Existing sky/far/ground layers reused in QA. See MAP_REPORT_MHD_32.md."
+    },
+    {
+      "id": "BG_MHD_MID_MOUNTAIN_PASS",
+      "file": "bg/BG_MHD_MID_MOUNTAIN_PASS/bg_mhd_mid_mountain_pass.png",
+      "category": "parallax",
+      "w": 768,
+      "h": 160,
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "density": 4,
+      "transparent": true,
+      "status": "IN_GAME",
+      "visible_bbox": {
+        "x": 0,
+        "y": 42,
+        "w": 768,
+        "h": 118
+      },
+      "anchor": "bottom-at-GROUND_Y",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "Gate A2 local repair. Original palette and both repeat-edge columns preserved. 0 vertical alpha runs >=40 px; see MAP_REPORT_MHD_32.md."
+    },
+    {
+      "id": "BG_MHD_MID_TANG_CHECKPOINT",
+      "file": "bg/BG_MHD_MID_TANG_CHECKPOINT/bg_mhd_mid_tang_checkpoint.png",
+      "category": "parallax",
+      "w": 768,
+      "h": 160,
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "density": 4,
+      "transparent": true,
+      "status": "IN_GAME",
+      "visible_bbox": {
+        "x": 0,
+        "y": 46,
+        "w": 768,
+        "h": 114
+      },
+      "anchor": "bottom-at-GROUND_Y",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "Gate A2 local repair. Original palette and both repeat-edge columns preserved. 7 vertical alpha runs >=40 px; see MAP_REPORT_MHD_32.md."
+    },
+    {
+      "id": "PROP_MHD_CAVE_MOUTH",
+      "file": "props/PROP_MHD_CAVE_MOUTH/prop_mhd_cave_mouth.png",
+      "category": "prop",
+      "w": 96,
+      "h": 64,
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "density": 4,
+      "transparent": true,
+      "status": "IN_GAME",
+      "visible_bbox": {
+        "x": 1,
+        "y": 24,
+        "w": 94,
+        "h": 40
+      },
+      "anchor": "bottom-center"
+    },
+    {
+      "id": "PROP_MHD_BUSH_COVER",
+      "file": "props/PROP_MHD_BUSH_COVER/prop_mhd_bush_cover.png",
+      "category": "prop",
+      "w": 48,
+      "h": 32,
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "density": 4,
+      "transparent": true,
+      "status": "IN_GAME",
+      "visible_bbox": {
+        "x": 1,
+        "y": 8,
+        "w": 46,
+        "h": 24
+      },
+      "anchor": "bottom-center"
+    },
+    {
+      "id": "PROP_MHD_CHECKPOINT_GATE",
+      "file": "props/PROP_MHD_CHECKPOINT_GATE/prop_mhd_checkpoint_gate.png",
+      "category": "prop",
+      "w": 192,
+      "h": 176,
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "density": 4,
+      "transparent": true,
+      "status": "IN_GAME",
+      "visible_bbox": {
+        "x": 1,
+        "y": 6,
+        "w": 190,
+        "h": 170
+      },
+      "anchor": "bottom-center-at-GROUND_Y",
+      "pivot": {
+        "x": 96,
+        "y": 176
+      },
+      "state_files": {
+        "closed": "props/PROP_MHD_CHECKPOINT_GATE/prop_mhd_checkpoint_gate.png",
+        "open": "props/PROP_MHD_CHECKPOINT_GATE_OPEN/prop_mhd_checkpoint_gate_open.png"
+      }
+    },
+    {
+      "id": "PROP_MHD_CHECKPOINT_GATE_OPEN",
+      "file": "props/PROP_MHD_CHECKPOINT_GATE_OPEN/prop_mhd_checkpoint_gate_open.png",
+      "category": "prop",
+      "w": 192,
+      "h": 176,
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "density": 4,
+      "transparent": true,
+      "status": "IN_GAME",
+      "visible_bbox": {
+        "x": 1,
+        "y": 6,
+        "w": 190,
+        "h": 170
+      },
+      "anchor": "bottom-center-at-GROUND_Y",
+      "pivot": {
+        "x": 96,
+        "y": 176
+      }
+    },
+    {
+      "id": "BG_MHD_MID_SA_NAM",
+      "category": "parallax",
+      "file": "bg/BG_MHD_MID_SA_NAM/bg_mhd_mid_sa_nam.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "MHD_ART_02 Gate B2. Midground only. Repeat and alpha scans in meta/b2/qa.json."
+    },
+    {
+      "id": "BG_MHD_MID_LAM_RIVER",
+      "category": "parallax",
+      "file": "bg/BG_MHD_MID_LAM_RIVER/bg_mhd_mid_lam_river.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "MHD_ART_02 Gate B2. Midground only. Repeat and alpha scans in meta/b2/qa.json."
+    },
+    {
+      "id": "BG_MHD_MID_TONG_BINH_GATE",
+      "category": "parallax",
+      "file": "bg/BG_MHD_MID_TONG_BINH_GATE/bg_mhd_mid_tong_binh_gate.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": false,
+      "qa_notes": "MHD_ART_03 Gate C2. Single-chunk scenic plate. See MAP_REPORT_MHD_32.md."
+    }
+  ]
+}

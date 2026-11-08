@@ -138,11 +138,13 @@
         <span class="btn-play-now">🔒 Qua chương Lý Nam Đế</span>
       </div>
 
-      <div class="hero-select-card locked" onclick="alert('Màn chơi Mai Hắc Đế đang phát triển!')">
+      {# HOME-UNLOCK: mở khi đã qua chương 4 (MHD-L1). #}
+      <div class="hero-select-card locked" data-unlock-after="4" data-route="/gameplay/levels/mai-hac-de"
+           onclick="alert('Hoàn thành chương Triệu Việt Vương để mở khóa Mai Hắc Đế!')">
         <span class="hero-badge-year">Năm 713</span>
         <strong class="hero-select-name">Mai Hắc Đế</strong>
         <small class="hero-select-sub">(Mai Thúc Loan)</small>
-        <span class="btn-play-now">🔒 Sắp ra mắt</span>
+        <span class="btn-play-now">🔒 Qua chương Triệu Việt Vương</span>
       </div>
 
       <div class="hero-select-card locked" onclick="alert('Màn chơi Phùng Hưng đang phát triển!')">

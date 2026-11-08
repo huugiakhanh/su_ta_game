@@ -1,12 +1,37 @@
 {% extends "gameplay/base.html" %}
 {# Chương Mai Hắc Đế — dùng chung 3 màn. Khung chung ở gameplay/base.html.
-   MHD-SKELETON: chưa có khe kỹ năng (Vỏ Bọc Vạn An, Viện Binh — MHD-L3). #}
+   Khe kỹ năng màn 3 = phần thưởng màn 2 (skills.js, MHD-L3). #}
 
 {% block chapter_name %}Mai Hắc Đế{% endblock %}
 {% block brand %}SUTA · MAI HẮC ĐẾ{% endblock %}
 {% block canvas_label %}Màn chơi Mai Hắc Đế{% endblock %}
 {% block item_label %}Quyển Sách Tinh Hoa đã thu thập{% endblock %}
 {% block item_glyph %}📖{% endblock %}
+
+{% block skill_slots %}
+        <div class="skill" data-skill="SK_MHD_VAN_AN_SHELL" hidden>
+          <img class="skill__icon" alt="Vỏ Bọc Vạn An" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">K</kbd>
+        </div>
+        <div class="skill" data-skill="SK_MHD_REINFORCE" hidden>
+          <img class="skill__icon" alt="Viện Binh" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">L</kbd>
+        </div>
+        <div class="skill skill--buff" data-skill="BUFF_MHD_POWER" hidden>
+          <img class="skill__icon" alt="Ý chí dân nghèo" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span>
+        </div>
+{% endblock %}
+
+{% block skill_controls %}
+          <button class="control control--skill control--skill-1" data-control="skill1" data-skill="SK_MHD_VAN_AN_SHELL" aria-label="Vỏ Bọc Vạn An" hidden><img class="control__icon" alt="" hidden><span class="control__label">VỎ</span></button>
+          <button class="control control--skill control--skill-2" data-control="skill2" data-skill="SK_MHD_REINFORCE" aria-label="Viện Binh" hidden><img class="control__icon" alt="" hidden><span class="control__label">VIỆN</span></button>
+{% endblock %}
+
+{% block skill_help %}
+      <span data-skill="SK_MHD_VAN_AN_SHELL" hidden><kbd>K</kbd> Vỏ Bọc Vạn An</span>
+      <span data-skill="SK_MHD_REINFORCE" hidden><kbd>L</kbd> Viện Binh</span>
+{% endblock %}
 
 {% block chapter_script %}
   <script type="module" src="{{ url_for('static', filename='js/levels/mai-hac-de/main.js') }}"></script>
