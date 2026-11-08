@@ -81,7 +81,7 @@ export const TRUNG_TRAC = {
       content: level2Content,
       events: level2Events,
       introMessage: 'Màn 2: Chiêu mộ hiền tài',
-      summary: state => `Bạn đã gặp đủ ${state.npcs.length} người tài và đạt ${state.score} điểm.`
+      summary: state => `Bạn đã gặp đủ ${state.npcs.length} người tài, thu thập ${state.itemsCollected}/10 sách và đạt ${state.score} điểm.`
     },
     3: {
       id: 3, title: 'Màn 3: Trận Luy Lâu', url: LEVEL_URLS[3],

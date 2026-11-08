@@ -128,6 +128,18 @@ export const LEVEL2_ZONES = [
 ];
 // Điểm kết thúc màn 2: cuối chunk cuối lùi 96px (D15 — không vẽ cổng).
 export const LEVEL2_FINISH_X = CHUNK_W * LEVEL2_CHUNKS - 96;
+// Số sách cần để gặp từng NPC màn 2 (engine `requires`) — sách chia 3 / 3 / 4.
+export const LEVEL2_NPC_BOOKS = { thiSach: 3, leChan: 6, trungNhi: 10 };
+// 8 sách cố định [chunk, localX, độ cao trên mặt đất] (DESIGN_BASELINE):
+//   ch1: trên gò; ch2: đỉnh đồi; ch3: đất; ch4: trên hố hở; ch6: đỉnh đồi;
+//   ch7: trên cầu; ch8: đỉnh đồi; ch9: đất.
+export const LEVEL2_ITEMS = [
+  [1, 432, 56], [2, 184, 56], [3, 100, 56],
+  [4, 432, 72], [6, 272, 56],
+  [7, 208, 56], [8, 480, 56], [9, 100, 56]
+];
+// 2 lính tuần mang sách [chunk, localX] — hạ mới rơi sách (`carrier` = id lính).
+export const LEVEL2_CARRIERS = [[5, 300], [8, 330]];
 
 // Câu hỏi lịch sử chặn đường (TT-QUIZ-01, DESIGN_BASELINE; điểm + luật ở engine):
 //   level1Count  số câu mỗi lượt màn 1 (rút ngẫu nhiên, không trùng).
@@ -498,5 +510,6 @@ export const TEXT = {
   bossBlocksFinish: 'Hãy hạ kiệu quan trước khi qua cổng.',
   itemPicked: (count, total) => `Đã thu thập sách lịch sử ${count}/${total}`,
   itemsMissing: count => `Bạn còn thiếu ${count} cuốn sách lịch sử.`,
+  npcLocked: (need, have) => `Cần ${need} cuốn sách lịch sử mới gặp được (đang có ${have}).`,
   rescueHint: name => `Hãy hạ lính canh đang vây ${name}!`
 };

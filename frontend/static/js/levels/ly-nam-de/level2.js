@@ -8,11 +8,13 @@
 
 import { worldX, makeHazard, setTerrain, buildTerrain, terrainHoles } from '../../engine/geometry.js';
 import {
-  makeEnemy, makeNpc, makeQuiz, makePlatform, pick, checkTerrainFootprints, checkNpcClearance, checkPlatformReach
+  makeEnemy, makeNpc, makeQuiz, makeItem, makePlatform, pick, checkTerrainFootprints, checkNpcClearance, checkPlatformReach
 } from '../../engine/entities.js';
 import { LEVEL } from '../../engine/chapter.js';
 import { GROUND_Y } from '../../engine/config.js';
-import { QUIZ, SOLDIER, HOUND, NET, RIVER, TOWER, ROCK_LEDGE, CAPTORS } from './config.js';
+import {
+  QUIZ, SOLDIER, HOUND, NET, RIVER, TOWER, ROCK_LEDGE, CAPTORS, LEVEL2_NPC_BOOKS, LEVEL2_ITEMS, LEVEL2_CARRIERS
+} from './config.js';
 import { NPC_QUESTION_POOLS } from './questions-data.js';
 
 // Khe sông chunk 2 và 7: lưới địa hình `RIVER` của màn 1 (khe 1 có thuyền, khe 2
@@ -55,10 +57,19 @@ function makeNpcCaptors(npc) {
 export function level2Content() {
   setTerrain(buildTerrain(RIVER_CHUNKS.map(chunk => ({ chunk, rows: RIVER.rows })), LEVEL.chunks));
   const npcs = [
-    makeNpc('phamTu', 3, 560),
-    makeNpc('tinhThieu', 6, 560),
-    makeNpc('trieuTuc', 9, 560)
+    makeNpc('phamTu', 3, 560, { requires: LEVEL2_NPC_BOOKS.phamTu }),
+    makeNpc('tinhThieu', 6, 560, { requires: LEVEL2_NPC_BOOKS.tinhThieu }),
+    makeNpc('trieuTuc', 9, 560, { requires: LEVEL2_NPC_BOOKS.trieuTuc })
   ];
+  // Quân mang sách: hạ mới hiện sách (engine revealCarriedItems theo `id`).
+  const carriers = LEVEL2_CARRIERS.map(([chunk, localX, kind], index) => {
+    const id = `book-carrier-${index + 1}`;
+    const make = kind === 'hound' ? makeHound : makeSoldier;
+    return {
+      enemy: { ...make(chunk, localX), id },
+      item: makeItem(chunk, localX, 40, { carrier: id })
+    };
+  });
   const hazards = [
     // chunk 1: lưới trúc
     makeNet(1, 300),
@@ -76,10 +87,9 @@ export function level2Content() {
     makeNet(6, 200)
   ];
   const enemies = [
-    // lính tuần tiễu đi tuần chunk 1; chó săn chunk 4, 8
-    makeSoldier(1, 560),
+    // chó săn chunk 4; lính tuần tiễu chunk 1 và chó săn chunk 8 mang sách
     makeHound(4, 680),
-    makeHound(8, 300),
+    ...carriers.map(carrier => carrier.enemy),
     ...npcs.flatMap(makeNpcCaptors)
   ];
   // Mỏm đá giữa khe sông thứ 2 của mỗi chunk sông.
@@ -87,7 +97,8 @@ export function level2Content() {
     makePlatform(chunk, RIVER.ledge[0], RIVER.ledge[1], ROCK_LEDGE.w, { sprite: ROCK_LEDGE.sprite }));
   // Câu hỏi chặn đường trước mỗi NPC: 1 câu rút ngẫu nhiên trong bộ của NPC.
   const quizzes = npcs.map(npc => makeQuiz(...QUIZ.level2Spots[npc.id], pick(NPC_QUESTION_POOLS[npc.id]), npc.id));
-  const content = { obstacles: [], hazards, holes: terrainHoles(), items: [], enemies, npcs, quizzes, platforms };
+  const items = [...LEVEL2_ITEMS.map(([chunk, localX, lift]) => makeItem(chunk, localX, lift)), ...carriers.map(carrier => carrier.item)];
+  const content = { obstacles: [], hazards, holes: terrainHoles(), items, enemies, npcs, quizzes, platforms };
   checkNpcClearance(content);
   checkTerrainFootprints(content);
   checkPlatformReach(content);

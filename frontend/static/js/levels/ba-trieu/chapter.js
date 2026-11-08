@@ -81,7 +81,7 @@ export const BA_TRIEU = {
       content: level2Content,
       events: level2Events,
       introMessage: 'Màn 2: Chiêu mộ hiền tài',
-      summary: state => `Bạn đạt ${state.score} điểm.`
+      summary: state => `Bạn thu thập ${state.itemsCollected}/10 Quyển Sách Tinh Hoa và đạt ${state.score} điểm.`
     },
     3: {
       id: 3, title: 'Màn 3: Chiến lũy Bồ Điền', url: LEVEL_URLS[3],

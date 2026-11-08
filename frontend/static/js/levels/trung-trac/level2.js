@@ -7,12 +7,12 @@
 import { CHUNK_W } from '../../engine/config.js';
 import { worldX, makeObstacle, makeHazard, setTerrain, buildTerrain, terrainHoles } from '../../engine/geometry.js';
 import {
-  makeEnemy, makeNpc, makeCaptors, makeQuiz, pick, keepValidBridges, checkTerrainFootprints, checkNpcClearance
+  makeEnemy, makeNpc, makeCaptors, makeQuiz, makeItem, pick, keepValidBridges, checkTerrainFootprints, checkNpcClearance
 } from '../../engine/entities.js';
 import { state } from '../../engine/state.js';
 import { openStory } from '../../engine/dialogue.js';
 import { LEVEL } from '../../engine/chapter.js';
-import { QUIZ } from './config.js';
+import { QUIZ, LEVEL2_NPC_BOOKS, LEVEL2_ITEMS, LEVEL2_CARRIERS } from './config.js';
 import { NPC_QUESTION_POOLS } from './questions-data.js';
 import { STORY_THI_SACH } from './dialogue-data.js';
 
@@ -66,10 +66,18 @@ const LEVEL2_TERRAIN = {
 export function level2Content() {
   setTerrain(buildTerrain(Object.entries(LEVEL2_TERRAIN).map(([chunk, rows]) => ({ chunk: Number(chunk), rows })), LEVEL.chunks));
   const npcs = [
-    makeNpc('thiSach', 3, 560),
-    makeNpc('leChan', 6, 560),
-    makeNpc('trungNhi', 9, 560)
+    makeNpc('thiSach', 3, 560, { requires: LEVEL2_NPC_BOOKS.thiSach }),
+    makeNpc('leChan', 6, 560, { requires: LEVEL2_NPC_BOOKS.leChan }),
+    makeNpc('trungNhi', 9, 560, { requires: LEVEL2_NPC_BOOKS.trungNhi })
   ];
+  // Lính tuần mang sách: hạ mới hiện sách (engine revealCarriedItems theo `id`).
+  const carriers = LEVEL2_CARRIERS.map(([chunk, localX], index) => {
+    const id = `book-carrier-${index + 1}`;
+    return {
+      enemy: { ...makeEnemy(worldX(chunk, localX), 22, 40, 2, false), id },
+      item: makeItem(chunk, localX, 40, { carrier: id })
+    };
+  });
   const holes = terrainHoles();
   const obstacles = [
     // chunk 1–2 — làng
@@ -112,14 +120,14 @@ export function level2Content() {
   const enemies = [
     // lính canh đi tuần giữa đường
     makeEnemy(worldX(1, 560), 22, 40, 2, false),
-    makeEnemy(worldX(5, 300), 22, 40, 2, false),
-    makeEnemy(worldX(8, 330), 22, 40, 2, false),
+    ...carriers.map(carrier => carrier.enemy),
     // lính vây NPC
     ...npcs.flatMap(makeCaptors)
   ];
   // Câu hỏi chặn đường trước mỗi NPC: 1 câu rút ngẫu nhiên trong bộ của NPC.
   const quizzes = npcs.map(npc => makeQuiz(...QUIZ.level2Spots[npc.id], pick(NPC_QUESTION_POOLS[npc.id]), npc.id));
-  const content = { obstacles: keepValidBridges(obstacles, holes), hazards, holes, items: [], enemies, npcs, quizzes };
+  const items = [...LEVEL2_ITEMS.map(([chunk, localX, lift]) => makeItem(chunk, localX, lift)), ...carriers.map(carrier => carrier.item)];
+  const content = { obstacles: keepValidBridges(obstacles, holes), hazards, holes, items, enemies, npcs, quizzes };
   checkNpcClearance(content);
   checkTerrainFootprints(content);
   return content;

@@ -9,12 +9,12 @@
 import { CHUNK_W } from '../../engine/config.js';
 import { worldX, makeObstacle, makeHazard, setTerrain, buildTerrain, terrainHoles } from '../../engine/geometry.js';
 import {
-  makeEnemy, makeNpc, makeQuiz, makePlatform, pick, checkTerrainFootprints, checkNpcClearance, checkPlatformReach
+  makeEnemy, makeNpc, makeQuiz, makeItem, makePlatform, pick, checkTerrainFootprints, checkNpcClearance, checkPlatformReach
 } from '../../engine/entities.js';
 import { state } from '../../engine/state.js';
 import { openStory } from '../../engine/dialogue.js';
 import { LEVEL } from '../../engine/chapter.js';
-import { QUIZ, LUMBERJACK, SOLDIER, BRANCH, CAPTORS } from './config.js';
+import { QUIZ, LUMBERJACK, SOLDIER, BRANCH, CAPTORS, LEVEL2_NPC_BOOKS, LEVEL2_ITEMS, LEVEL2_CARRIERS } from './config.js';
 import { NPC_QUESTION_POOLS } from './questions-data.js';
 import { STORY_QUOC_DAT } from './dialogue-data.js';
 
@@ -74,10 +74,18 @@ function makeNpcCaptors(npc) {
 export function level2Content() {
   setTerrain(buildTerrain(Object.entries(LEVEL2_TERRAIN).map(([chunk, rows]) => ({ chunk: Number(chunk), rows })), LEVEL.chunks));
   const npcs = [
-    makeNpc('quocDat', 3, 560),
-    makeNpc('hoLy', 6, 560),
-    makeNpc('bachTuong', 9, 560)
+    makeNpc('quocDat', 3, 560, { requires: LEVEL2_NPC_BOOKS.quocDat }),
+    makeNpc('hoLy', 6, 560, { requires: LEVEL2_NPC_BOOKS.hoLy }),
+    makeNpc('bachTuong', 9, 560, { requires: LEVEL2_NPC_BOOKS.bachTuong })
   ];
+  // Lính đốn gỗ mang sách: hạ mới hiện sách (engine revealCarriedItems theo `id`).
+  const carriers = LEVEL2_CARRIERS.map(([chunk, localX], index) => {
+    const id = `book-carrier-${index + 1}`;
+    return {
+      enemy: { ...makeLumberjack(chunk, localX), id },
+      item: makeItem(chunk, localX, 40, { carrier: id })
+    };
+  });
   const captors = npcs.flatMap(makeNpcCaptors);
   const holes = terrainHoles();
   const obstacles = [
@@ -102,16 +110,16 @@ export function level2Content() {
     ...captors.filter(captor => captor.kind)
   ];
   const enemies = [
-    // lính đốn gỗ đi tuần giữa đường
-    makeLumberjack(1, 560),
-    makeLumberjack(7, 560),
+    // lính đốn gỗ đi tuần giữa đường (mang sách)
+    ...carriers.map(carrier => carrier.enemy),
     ...captors.filter(captor => !captor.kind)
   ];
   // Cành cây bắc qua hố bùn chunk 7 (mép trái thân cành, cao 36 px).
   const platforms = [makePlatform(7, 274, 36, BRANCH.short.w, { sprite: BRANCH.short.sprite })];
   // Câu hỏi chặn đường trước mỗi NPC: 1 câu rút ngẫu nhiên trong bộ của NPC.
   const quizzes = npcs.map(npc => makeQuiz(...QUIZ.level2Spots[npc.id], pick(NPC_QUESTION_POOLS[npc.id]), npc.id));
-  const content = { obstacles, hazards, holes, items: [], enemies, npcs, quizzes, platforms };
+  const items = [...LEVEL2_ITEMS.map(([chunk, localX, lift]) => makeItem(chunk, localX, lift)), ...carriers.map(carrier => carrier.item)];
+  const content = { obstacles, hazards, holes, items, enemies, npcs, quizzes, platforms };
   checkNpcClearance(content);
   checkTerrainFootprints(content);
   checkPlatformReach(content);

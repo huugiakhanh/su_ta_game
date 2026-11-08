@@ -153,6 +153,17 @@ export const LEVEL2_ZONES = [
 ];
 export const LEVEL2_FAR_HILLS = { id: 'BG_BT_FAR_PLAIN', parallax: 0.2, bottomY: 230, hiddenUnderSky: [] };
 export const LEVEL2_FINISH_X = CHUNK_W * LEVEL2_CHUNKS - 96;
+// Số sách cần để gặp từng NPC màn 2 (engine `requires`) — sách chia 3 / 3 / 4.
+export const LEVEL2_NPC_BOOKS = { phamTu: 3, tinhThieu: 6, trieuTuc: 10 };
+// 8 Quyển Sách Tinh Hoa cố định [chunk, localX, độ cao trên mặt đất] (DESIGN_BASELINE):
+//   ch2, ch7: trên mỏm đá giữa khe sông; còn lại trên đất.
+export const LEVEL2_ITEMS = [
+  [2, 488, 52], [3, 100, 56],
+  [4, 250, 56], [5, 150, 56], [6, 100, 56],
+  [7, 488, 52], [8, 450, 64], [9, 100, 56]
+];
+// Quân mang sách [chunk, localX, loại] — hạ mới rơi sách (`carrier` = id quân).
+export const LEVEL2_CARRIERS = [[1, 560, 'soldier'], [8, 300, 'hound']];
 // Quân vây NPC (giải cứu): [dx tâm so với tâm NPC, đoạn tuần tra [min, max]].
 // Phạm Tu, Tinh Thiều = 1 trái + 1 phải (như engine NPC_RESCUE); cha con Triệu
 // Túc (nhóm 2 người rộng ±33) cả 2 lính bên trái, tuần tra tới chỗ người chơi
@@ -466,5 +477,6 @@ export const TEXT = {
   bossBlocksFinish: 'Hãy phá xe cống phẩm của quân Lương trước khi vào doanh trại.',
   itemPicked: (count, total) => `Đã thu thập Quyển Sách Tinh Hoa ${count}/${total}`,
   itemsMissing: count => `Bạn còn thiếu ${count} Quyển Sách Tinh Hoa.`,
+  npcLocked: (need, have) => `Cần ${need} Quyển Sách Tinh Hoa mới gặp được (đang có ${have}).`,
   rescueHint: name => `Hãy hạ quân Lương đang vây ${name}!`
 };

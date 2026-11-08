@@ -68,7 +68,8 @@ Thêm nội dung (vật cản/hazard/item/dữ liệu màn): sửa `levelN.js` +
 
 ## Màn 2 — Chiêu mộ hiền tài (TT-NPC-01, TT-L2-HARD)
 
-- 9 chunk, trời ngày, vùng `LEVEL2_ZONES`, về đích ở `LEVEL2_FINISH_X` (không cổng). Mọi thứ đặt **cố định** (không xáo), có quân Hán/bẫy/2 hố/bậc đất, `DESIGN_BASELINE`. HUD ẩn ô Sách.
+- 9 chunk, trời ngày, vùng `LEVEL2_ZONES`, về đích ở `LEVEL2_FINISH_X` (không cổng). Mọi thứ đặt **cố định** (không xáo), có quân Hán/bẫy/2 hố/bậc đất, `DESIGN_BASELINE`.
+- **10 sách** (Bình thư, câu chữ "sách lịch sử"): 8 cố định `LEVEL2_ITEMS` + 2 lính tuần mang `LEVEL2_CARRIERS` (chunk 5, 8), chia 3 / 3 / 4; NPC khoá 3 / 6 / 10 sách (`LEVEL2_NPC_BOOKS`, engine `requires`, câu `TEXT.npcLocked`).
 - Không vật cản/hazard/hố nào trong 96px quanh NPC (`checkNpcClearance()` cảnh báo).
 - **NPC** (`makeNpc()`, Thi Sách → Lê Chân → Trưng Nhị): không va chạm, quay về người chơi; chỉ NPC chưa gặp đầu tiên có tác dụng (`updateMeetings()`), giữ người chơi lại trước NPC. **Giải cứu**: mỗi NPC bị 2 lính vây (`makeCaptors()`, `captorOf`) — còn lính sống thì chỉ nhắc, hạ hết mới mở hội thoại.
 - Hội thoại: câu hỏi 3 đáp án xáo; sai −1 máu + gợi ý + làm mờ đáp án đó, chọn lại; đúng → "Vì sao đúng" → phần thưởng (`addReward` ngay), điểm theo `QUESTION_SCORE` (đúng ngay lần đầu được nhiều hơn). Gặp xong NPC mờ dần rồi biến mất. Cốt truyện **Thi Sách hy sinh** 1 lần khi vào chunk sau Thi Sách, chân dung trắng đen.

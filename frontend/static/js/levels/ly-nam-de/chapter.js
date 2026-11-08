@@ -83,7 +83,7 @@ export const LY_NAM_DE = {
       sprites: LEVEL_SPRITES[2],
       content: level2Content,
       introMessage: 'Màn 2: Chiêu mộ hiền tài',
-      summary: state => `Bạn đạt ${state.score} điểm.`
+      summary: state => `Bạn thu thập ${state.itemsCollected}/10 Quyển Sách Tinh Hoa và đạt ${state.score} điểm.`
     },
     3: {
       id: 3, title: 'Màn 3: Công phá thành Long Biên', url: LEVEL_URLS[3],
