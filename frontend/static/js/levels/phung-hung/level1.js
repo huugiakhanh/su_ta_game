@@ -34,22 +34,22 @@ function level1Quizzes() {
 }
 
 // Lính (hành vi guard của engine) đứng tâm tại worldX(chunk, localX).
-function makeSoldier(chunk, localX) {
+export function makeSoldier(chunk, localX) {
   return makeEnemy(worldX(chunk, localX) - SOLDIER.w / 2, SOLDIER.w, SOLDIER.h, SOLDIER.hp, false);
 }
 
 // Lính khiên: chỉ vỡ bởi đòn gồng (art `shield`).
-function makeShield(chunk, localX, hp, options = {}) {
+export function makeShield(chunk, localX, hp, options = {}) {
   return { ...makeSoldier(chunk, localX), art: 'shield', hp, maxHp: hp, ...options };
 }
 
 // Đá ong rơi: ẩn tới khi có người vào công tắc (updateRocks bật hình).
-function makeRock(chunk, localX) {
+export function makeRock(chunk, localX) {
   return { hazards: [{ ...makeHazard('snare', 'lateriteRock', chunk, localX, ROCK), invisible: true }] };
 }
 
 // Thợ săn trên cây: cây (prop) đứng trước trong danh sách để vẽ sau thợ săn.
-function makeTreeHunter(chunk, localX) {
+export function makeTreeHunter(chunk, localX) {
   return { hazards: [
     makeHazard('prop', 'archerTree', chunk, localX),
     makeHazard('thrower', 'treeHunter', chunk, localX + TREE.archerDx, {
@@ -206,7 +206,7 @@ export function level1Content(options = {}) {
 }
 
 // Đá ong ẩn cho tới khi công tắc kích hoạt (tránh đá treo lơ lửng giữa trời).
-function updateRocks() {
+export function updateRocks() {
   state.hazards.forEach(hazard => {
     if (hazard.kind === 'snare' && hazard.invisible && hazard.snareState !== 'idle') hazard.invisible = false;
   });

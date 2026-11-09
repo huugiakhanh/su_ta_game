@@ -1,5 +1,5 @@
 // Định nghĩa chương Phùng Hưng (chương 6) cho engine màn chơi. Hợp đồng các
-// trường: engine/chapter.js. Màn 1 thật (PH-L1); màn 2–3 còn khung (PH-SKELETON).
+// trường: engine/chapter.js. Màn 1, 2 thật (PH-L1, PH-L2); màn 3 còn khung (PH-SKELETON).
 
 import { CHUNK_W } from '../../engine/config.js';
 import {
@@ -12,7 +12,7 @@ import { QUESTIONS } from './questions-data.js';
 import { NPC_DIALOGUES, CHAPTER_END, STORY_PH_INTRO } from './dialogue-data.js';
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
 import { level1Content, level1Events, ENEMY_KINDS, onPushHit } from './level1.js';
-import { level2Content } from './level2.js';
+import { level2Content, level2Events } from './level2.js';
 import { level3Content, updateLevel3 } from './level3.js';
 
 export const PHUNG_HUNG = {
@@ -70,8 +70,9 @@ export const PHUNG_HUNG = {
       chunks: LEVEL2_CHUNKS, worldWidth: CHUNK_W * LEVEL2_CHUNKS, zones: LEVEL2_ZONES, finishX: LEVEL2_FINISH_X, gate: null,
       sprites: LEVEL_SPRITES[2],
       content: level2Content,
+      events: level2Events,
       introMessage: 'Màn 2: Tụ nghĩa chiêu hiền',
-      summary: state => `Bạn đạt ${state.score} điểm.`
+      summary: state => `Bạn thu thập ${state.itemsCollected}/10 Quyển Sách Tinh Hoa, ${state.extraCollected.weapon || 0}/3 Vũ Khí Thô Sơ và đạt ${state.score} điểm.`
     },
     3: {
       id: 3, title: 'Màn 3: Vây phủ Tống Bình', url: LEVEL_URLS[3],

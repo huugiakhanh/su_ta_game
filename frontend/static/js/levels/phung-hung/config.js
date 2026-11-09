@@ -20,7 +20,7 @@ export const MAP_MANIFEST_FILE = 'maps_ph.json';
 export const BORROWED_MAPS = [{
   root: '/static/assets/images/mai-hac-de/maps-32bit/',
   manifest: 'maps_mhd.json',
-  ids: ['BG_MHD_MID_SA_NAM', 'BG_MHD_MID_TANG_CHECKPOINT']
+  ids: ['BG_MHD_MID_TANG_CHECKPOINT']
 }, {
   root: '/static/assets/images/trung-trac/maps-32bit/',
   manifest: 'maps_tt.json',
@@ -38,14 +38,15 @@ export const TILES = { ground: 'TILESET_TT_GROUND', groundRegion: 'Z1', terrain:
 export const FAR_HILLS = { id: 'BG_LND_FAR_MIDLANDS', parallax: 0.2, bottomY: 230, hiddenUnderSky: [] };
 
 // Ảnh DOM riêng chương (chân dung).
-export const PORTRAITS = ['PORTRAIT_PHUNG_HUNG'];
+export const PORTRAITS = ['PORTRAIT_PHUNG_HUNG', 'PORTRAIT_PHUNG_HAI', 'PORTRAIT_DO_ANH_HAN', 'PORTRAIT_BO_PHA_CAN'];
 
 // Sprite canvas mỗi màn cần (chỉ nạp ảnh màn đang chơi dùng). ITEM_LND_HEAL ở mọi
 // màn: engine drawPickups tra ảnh bình máu mỗi frame kể cả khi chưa có bình nào.
 export const LEVEL_SPRITES = {
   1: ['NPC_PHUNG_HUNG', 'EN_PH_TANG_SPEARMAN', 'ITEM_LND_HEAL', 'EN_TANG_SHIELD_GUARD', 'EN_TIGER', 'EN_PH_BUFFALO',
     'OB_PH_SALT_CART', 'OB_PH_FENCE', 'OB_PH_SCARECROW', 'OB_PH_LATERITE_ROCK', 'EN_PH_TANG_HUNTER', 'PJ_CROSSBOW_BOLT', 'PROP_TQP_ARCHER_TREE'],
-  2: ['EN_PH_TANG_SPEARMAN', 'ITEM_LND_HEAL'],
+  2: ['NPC_PHUNG_HAI', 'NPC_DO_ANH_HAN', 'NPC_BO_PHA_CAN', 'EN_PH_TANG_SPEARMAN', 'ITEM_LND_HEAL', 'EN_TANG_SHIELD_GUARD',
+    'OB_PH_FENCE', 'OB_PH_LATERITE_ROCK', 'EN_PH_TANG_HUNTER', 'PJ_CROSSBOW_BOLT', 'PROP_TQP_ARCHER_TREE'],
   3: ['EN_PH_TANG_SPEARMAN', 'ITEM_LND_HEAL']
 };
 
@@ -101,13 +102,39 @@ export const ROCK = { dropHeight: 90, triggerWidth: 24, hp: 1 };
 // Thợ săn trên cây PROP_TQP_ARCHER_TREE: mặt cành hàng ảnh 99 -> cao 87, đứng lệch 13.
 export const TREE = { deck: 87, archerDx: 13, fireInterval: 2.2, fireRange: 240 };
 
-// ---- Màn 2 "Tụ nghĩa chiêu hiền" (khung) ----
-// 4 chunk nền phẳng, nền Sa Nam tạm.
-export const LEVEL2_CHUNKS = 4;
+// ---- Màn 2 "Tụ nghĩa chiêu hiền" (PH-L2, docs/SUTA_PH_TASK_L2_01.md) ----
+// 10 chunk đặt cố định: Đường Lâm 1–3, đường tiếp tế 4–6, ngoại thành Tống Bình 7–10.
+// Đích cuối chunk 10, sau Bồ Phá Cần (không cổng). Mọi số DESIGN_BASELINE.
+export const LEVEL2_CHUNKS = 10;
 export const LEVEL2_ZONES = [
-  { id: 'PH2A', x0: 0, x1: CHUNK_W * LEVEL2_CHUNKS, sky: 'BG_TT_SKY_DAY', mid: 'BG_MHD_MID_SA_NAM' }
+  { id: 'PH2A', x0: 0, x1: CHUNK_W * 3, sky: 'BG_TT_SKY_DAY', mid: 'BG_PH_MID_DUONG_LAM' },
+  { id: 'PH2B', x0: CHUNK_W * 3, x1: CHUNK_W * 6, sky: 'BG_TT_SKY_DAY', mid: 'BG_PH_MID_SUPPLY_ROAD' },
+  { id: 'PH2C', x0: CHUNK_W * 6, x1: CHUNK_W * LEVEL2_CHUNKS, sky: 'BG_TT_SKY_DAY', mid: 'BG_PH_MID_TONG_BINH_OUTSKIRTS' }
 ];
-export const LEVEL2_FINISH_X = CHUNK_W * LEVEL2_CHUNKS - 96;
+export const LEVEL2_FINISH_X = CHUNK_W * 9 + 672;
+// NPC [chunk, localX tâm, số sách, số Vũ Khí Thô Sơ] — id = khoá pool câu hỏi.
+export const LEVEL2_NPCS = {
+  phungHai: [3, 560, 3, 1],
+  doAnhHan: [6, 560, 6, 2],
+  boPhaCan: [10, 560, 10, 3]
+};
+// 2 lính vây mỗi NPC: tâm lệch `dx`, tuần trong [patrol] so với tâm NPC.
+export const CAPTORS = [{ dx: -100, patrol: [-170, -30] }, { dx: 48, patrol: [-60, 80] }];
+// Điểm đặt [chunk, localX]; sách và vũ khí [chunk, localX, độ cao trên mặt đất].
+//   sách: trước Phùng Hải 3, trước Đỗ Anh Hàn 3, trước Bồ Phá Cần 4.
+//   2 quyển do lính khiên mang (`shields`), 1 quyển + 2 vũ khí trong rào (`fences`).
+export const LEVEL2 = {
+  books: [[1, 150, 56], [3, 100, 56], [5, 180, 64], [6, 100, 56], [7, 150, 56], [9, 150, 64], [9, 480, 56]],
+  weapons: [[2, 460, 56]],
+  bookLift: 40,
+  escorts: [[1, 600], [4, 620], [7, 620], [8, 520]],
+  shields: [[2, 620], [8, 300]],
+  rocks: [[1, 350], [5, 540], [8, 660]],
+  hunters: [[2, 300], [7, 280], [9, 620]],
+  fences: [{ at: [4, 300], hide: 'book' }, { at: [5, 640], hide: 'weapon' }, { at: [9, 300], hide: 'weapon' }],
+  // Hào chông chunk 5: 6 cột = 96 px, nhảy chạy qua được (xa 115 px).
+  trench: { chunk: 5, rows: ['####################^^^^^^######################'] }
+};
 
 // ---- Màn 3 "Vây phủ Tống Bình" (khung) ----
 // Đấu trường 1 chunk, 3 đợt lính ra ở spawnX (engine makeSpawner). Nền trạm gác tạm.
@@ -132,7 +159,7 @@ export const WAVES = {
 export const QUIZ = {
   level1Count: 4,
   level1Spots: [[2, 400], [6, 400], [8, 400], [10, 400]],
-  level2Spots: { phungHai: [1, 600], doAnhHan: [2, 600], boPhaCan: [3, 600] }
+  level2Spots: { phungHai: [3, 280], doAnhHan: [6, 280], boPhaCan: [10, 280] }
 };
 
 // ---- Môi trường ----
@@ -140,7 +167,7 @@ export const OBSTACLE_TYPES = {};
 // Quyển Sách Tinh Hoa — PLACEHOLDER sprite chương 2 (strip 4 ô 16×16 logic).
 export const ITEM = { sprite: 'ITEM_BT_TINH_HOA', fps: 8 };
 export const QUIZ_STELE_ID = 'PROP_TT_QUIZ_STELE';
-export const MAP_PROPS_IN_GAME = [ITEM.sprite, QUIZ_STELE_ID, TILES.spikes, FINISH_GATE.closed, FINISH_GATE.open];
+export const MAP_PROPS_IN_GAME = [ITEM.sprite, 'ITEM_PH_WEAPON', QUIZ_STELE_ID, TILES.spikes, FINISH_GATE.closed, FINISH_GATE.open];
 
 // ---- Quân địch, hazard, đạn ----
 // Lính tuần giáo EN_PH_TANG_SPEARMAN (ô 48×48; attack_01 frame_w 128). Mũi giáo ô 4
@@ -208,7 +235,7 @@ export const HAZARD_SPRITES = {
 // Bù nhìn nhử hổ (engine makeDecoy): cao 40 logic theo sprite.
 export const SCARECROW = { sprite: 'OB_PH_SCARECROW', w: 18, h: 40 };
 
-// Vật phẩm phụ (PH-ENGINE E6). Sprite Vũ Khí Thô Sơ có ở PH_ART_02, tới lúc đó vẽ hộp dự phòng.
+// Vật phẩm phụ (PH-ENGINE E6): Vũ Khí Thô Sơ, ảnh là prop map ITEM_PH_WEAPON.
 export const EXTRA_ITEMS = {
   weapon: { sprite: 'ITEM_PH_WEAPON', fps: 8, picked: (count, total) => `Đã thu thập Vũ Khí Thô Sơ ${count}/${total}` }
 };
@@ -228,10 +255,13 @@ export const ENGINE_TEST = {
 export const PROJECTILE_SPRITES = {
   crossbowBolt: { id: 'PJ_CROSSBOW_BOLT', anim: 'idle', w: 12, h: 3 }
 };
-// NPC: Phùng Hưng dẫn màn 1; 3 NPC màn 2 thêm ở PH-L2.
+// NPC: Phùng Hưng dẫn màn 1; 3 NPC màn 2 (id = khoá pool câu hỏi).
 const NPC_ANIMS = { idle: 'idle', talk: 'talk' };
 export const NPC_SPRITES = {
-  phungHung: { id: 'NPC_PHUNG_HUNG', portrait: 'PORTRAIT_PHUNG_HUNG', anims: NPC_ANIMS }
+  phungHung: { id: 'NPC_PHUNG_HUNG', portrait: 'PORTRAIT_PHUNG_HUNG', anims: NPC_ANIMS },
+  phungHai: { id: 'NPC_PHUNG_HAI', portrait: 'PORTRAIT_PHUNG_HAI', anims: NPC_ANIMS },
+  doAnhHan: { id: 'NPC_DO_ANH_HAN', portrait: 'PORTRAIT_DO_ANH_HAN', anims: NPC_ANIMS },
+  boPhaCan: { id: 'NPC_BO_PHA_CAN', portrait: 'PORTRAIT_BO_PHA_CAN', anims: NPC_ANIMS }
 };
 // Bình hồi máu (chương 3) — chưa có quân nào rơi.
 export const PICKUPS = { heal: { id: 'ITEM_LND_HEAL', anim: 'idle' } };

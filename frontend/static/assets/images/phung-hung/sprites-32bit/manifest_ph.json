@@ -586,6 +586,325 @@
         }
       ],
       "qa_notes": "PH_ART_01 A2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "NPC_PHUNG_HAI",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_PHUNG_HAI/npc_phung_hai_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_PHUNG_HAI/npc_phung_hai_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_02 Gate B1. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "NPC_DO_ANH_HAN",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_DO_ANH_HAN/npc_do_anh_han_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_DO_ANH_HAN/npc_do_anh_han_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_02 Gate B1. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "NPC_BO_PHA_CAN",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_BO_PHA_CAN/npc_bo_pha_can_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_BO_PHA_CAN/npc_bo_pha_can_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_02 Gate B1. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "PORTRAIT_PHUNG_HAI",
+      "category": "portrait",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_PHUNG_HAI/portrait_phung_hai_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_02 Gate B1. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "PORTRAIT_DO_ANH_HAN",
+      "category": "portrait",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_DO_ANH_HAN/portrait_do_anh_han_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_02 Gate B1. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "PORTRAIT_BO_PHA_CAN",
+      "category": "portrait",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_BO_PHA_CAN/portrait_bo_pha_can_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_02 Gate B1. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "ICON_BUFF_PH_POWER",
+      "category": "icon",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_BUFF_PH_POWER/icon_buff_ph_power_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_02 Gate B2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "ICON_SK_PH_SUPPLY_CUT",
+      "category": "icon",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_SK_PH_SUPPLY_CUT/icon_sk_ph_supply_cut_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_02 Gate B2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "ICON_SK_PH_FIRE_DRUM",
+      "category": "icon",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_SK_PH_FIRE_DRUM/icon_sk_ph_fire_drum_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_02 Gate B2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "FX_PH_POWER_HIT",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "impact",
+          "file": "fx/FX_PH_POWER_HIT/fx_ph_power_hit_impact.png",
+          "frames": 5,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_02 Gate B2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "FX_PH_SUPPLY_CUT",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "hold",
+          "file": "fx/FX_PH_SUPPLY_CUT/fx_ph_supply_cut_hold.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "cast",
+          "file": "fx/FX_PH_SUPPLY_CUT/fx_ph_supply_cut_cast.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": null,
+          "frame_w": 96
+        }
+      ],
+      "qa_notes": "PH_ART_02 Gate B2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "FX_PH_FIRE_DRUM",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 128,
+      "frame_h": 96,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "cast",
+          "file": "fx/FX_PH_FIRE_DRUM/fx_ph_fire_drum_cast.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_02 Gate B2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "FX_BT_STUN",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "fx/FX_BT_STUN/fx_bt_stun_loop.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "BT_ART_03 Gate C2: generated multi-row raw sources; shared palette, binary alpha; QA, head locks, pivots and code measurements in meta/gate_c2/final_qa.json. Await Gate C2 review."
     }
   ]
 }
