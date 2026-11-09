@@ -267,6 +267,7 @@ function pushBody(p, body, push, move, dt) {
   if (walled) return;
   body.x = next.x;
   p.x += step;
+  p.pushing = true;
   if (body.pushTimer > 0) return;
   const enemy = state.enemies.find(item => item.alive && aabb(body, item));
   if (!enemy) return;
@@ -470,6 +471,7 @@ function playerAnimationState(p) {
   if (!p.grounded) return 'jump';
   const moving = Math.abs(p.vx) > 1;
   if (p.burden) return moving ? 'burdenRun' : 'burdenIdle';
+  if (p.pushing) return 'push';
   return moving ? 'run' : 'idle';
 }
 
@@ -514,6 +516,8 @@ export function updatePlayerControl(dt) {
   p.plungeGrace = Math.max(0, (p.plungeGrace || 0) - dt);
   p.plungeHintTimer = Math.max(0, (p.plungeHintTimer || 0) - dt);
   p.burdenHintTimer = Math.max(0, (p.burdenHintTimer || 0) - dt);
+  // Đặt lại mỗi frame: pushBody bật khi vật thật sự nhích được.
+  p.pushing = false;
   state.enemies.forEach(enemy => { enemy.hitTimer = Math.max(0, enemy.hitTimer - dt); });
 
   // Đang choáng (BT-L3 E2 — damage.js stunPlayer): bỏ qua phím, vẫn rơi theo trọng lực.

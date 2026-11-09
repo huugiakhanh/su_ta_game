@@ -71,3 +71,18 @@ Không có.
 - L12: người dùng chơi tay, sau đó chỉnh số `DESIGN_BASELINE` nếu cần.
 - Hào cần nhảy + lướt nên khó với điện thoại; xem lại khi chơi tay.
 - Tiếp theo: `PH_ART_02` + PH-L2.
+
+## Bổ sung: animation đẩy xe `PH_ART_PUSH` (09/11/2026)
+
+Người dùng báo thiếu sprite đẩy xe. Thêm `push` 8@10, ô 64 logic cho `PLAYER_MALE`, `PLAYER_FEMALE` (đạt ngay lượt đầu, prompt đã xoá; strip ở `images/shared/`, mục ở `manifest_shared.json`).
+
+Sửa engine: `p.pushing` trong `player.js pushBody`, `PLAYER_ANIMATIONS.push` lùi về `run` khi thiếu strip.
+
+| Kiểm tra | Kết quả |
+|---|---|
+| Đẩy xe `?layout=engine` | PASS — 60/60 frame phát `push`, không nhấp nháy, xe 76 px/s, tay khớp thành xe; nam + nữ |
+| Thả phím / lùi / nhảy | PASS — `idle` / `run` / `jump` |
+| Xe chạm mép hố | PASS — xe dừng cách hố 1,1 px, nhân vật về `idle` |
+| Hồi quy | PASS — 21 trang (18 màn, `?layout=engine` chương 5 và 6, `?viewer=1`), 0 lỗi JS; `pytest` 149 passed, 1 skipped |
+
+Chơi tay: người dùng báo ổn 09/11/2026.

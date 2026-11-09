@@ -112,7 +112,9 @@ export const PLAYER_ANIMATIONS = {
   // Đòn gồng + cưỡi (PH-ENGINE E1–E2): strip riêng của đợt PH_ART_01, chưa có thì mượn.
   charge: { anim: 'charge_hold', fallback: { anim: 'attack_01', holdFrame: 0 } },
   chargeStrike: { anim: 'charge_strike', duration: ATTACK_COOLDOWN, fallback: { anim: 'attack_01', duration: ATTACK_COOLDOWN } },
-  ride: { anim: 'ride', fallback: { anim: 'idle' } }
+  ride: { anim: 'ride', fallback: { anim: 'idle' } },
+  // Đẩy vật (PH_ART_PUSH): chỉ phát khi vật thật sự nhích, chưa có strip thì dùng run.
+  push: { anim: 'push', fallback: { anim: 'run' } }
 };
 // Ngưỡng vận tốc dọc (px logic/s) chọn ô `jump`: vy < -N ô 1 (bật lên),
 // |vy| <= N ô 2 (gần đỉnh), vy > N ô 3 (rơi). DESIGN_BASELINE.

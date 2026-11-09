@@ -130,6 +130,15 @@
           "fps": 10,
           "loop": true,
           "hit_frame": null
+        },
+        {
+          "name": "push",
+          "file": "player/PLAYER_MALE/player_male_push.png",
+          "frames": 8,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null,
+          "frame_w": 64
         }
       ],
       "qa_notes": "PLAYER_SWORD v2 Gate B 2026-11-04: complete sword bundle; pending user approval. Canonical master/rotation, near N arm above torso and opposite F shoulder; death last frames release sword. Alpha 0/255; margins >=4; one 8-connected component/frame; zero colors outside chapter palette. Players 36 colors each, icon 32; baseline 187; jump exactly 3; attack 9@21 hit4, frame9 equals idle1. Male idle/attack byte-identical approved A R2. Per-frame angle/blade/shoulders/margins: meta/sword_v2/B/qa.json and verification.json. No frontend integration. | Approved by user 2026-11-04; integrated into frontend shared (IN_GAME)."
@@ -262,6 +271,15 @@
           "fps": 10,
           "loop": true,
           "hit_frame": null
+        },
+        {
+          "name": "push",
+          "file": "player/PLAYER_FEMALE/player_female_push.png",
+          "frames": 8,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null,
+          "frame_w": 64
         }
       ],
       "qa_notes": "PLAYER_SWORD v2 Gate B 2026-11-04: complete sword bundle; pending user approval. Canonical master/rotation, near N arm above torso and opposite F shoulder; death last frames release sword. Alpha 0/255; margins >=4; one 8-connected component/frame; zero colors outside chapter palette. Players 36 colors each, icon 32; baseline 187; jump exactly 3; attack 9@21 hit4, frame9 equals idle1. Male idle/attack byte-identical approved A R2. Per-frame angle/blade/shoulders/margins: meta/sword_v2/B/qa.json and verification.json. No frontend integration. | Approved by user 2026-11-04; integrated into frontend shared (IN_GAME)."
