@@ -82,6 +82,20 @@ export const NPC_DIALOGUES = {
   }
 };
 
+// Cutscene màn 3 (PH-00 §5.2). Câu 1 là lời kể, không chân dung (PH-L3 Q4).
+export const STORY_PH_COLLAPSE = {
+  portrait: null,
+  memorial: false,
+  name: 'Tống Bình',
+  lines: ['Cao Chính Bình lo sợ phát bệnh, gục ngã trong lầu gác.']
+};
+export const STORY_PH_GATE = {
+  portrait: 'PORTRAIT_PHUNG_HUNG',
+  memorial: false,
+  name: 'Phùng Hưng',
+  lines: ['Cổng thành mở tung. Phùng Hưng tiến vào phủ đô hộ giữa tiếng hò reo.']
+};
+
 // PH-00 §5.3.
 export const CHAPTER_END = {
   title: 'Hoàn thành chương Phùng Hưng',

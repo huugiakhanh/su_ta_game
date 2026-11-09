@@ -1,12 +1,36 @@
 {% extends "gameplay/base.html" %}
-{# Chương Phùng Hưng — dùng chung 3 màn. Khung chung ở gameplay/base.html.
-   PH-SKELETON: chưa có khe kỹ năng (Khóa Lương, Hỏa Trận Trống Đồng — PH-L3). #}
+{# Chương Phùng Hưng — dùng chung 3 màn. Khung chung ở gameplay/base.html. #}
 
 {% block chapter_name %}Phùng Hưng{% endblock %}
 {% block brand %}SUTA · PHÙNG HƯNG{% endblock %}
 {% block canvas_label %}Màn chơi Phùng Hưng{% endblock %}
 {% block item_label %}Quyển Sách Tinh Hoa đã thu thập{% endblock %}
 {% block item_glyph %}📖{% endblock %}
+
+{% block skill_slots %}
+        <div class="skill" data-skill="SK_PH_SUPPLY_CUT" hidden>
+          <img class="skill__icon" alt="Khóa Lương" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">K</kbd>
+        </div>
+        <div class="skill" data-skill="SK_PH_FIRE_DRUM" hidden>
+          <img class="skill__icon" alt="Hỏa Trận Trống Đồng" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">L</kbd>
+        </div>
+        <div class="skill skill--buff" data-skill="BUFF_PH_POWER" hidden>
+          <img class="skill__icon" alt="Sức Địch Ngàn Người" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span>
+        </div>
+{% endblock %}
+
+{% block skill_controls %}
+          <button class="control control--skill control--skill-1" data-control="skill1" data-skill="SK_PH_SUPPLY_CUT" aria-label="Khóa Lương" hidden><img class="control__icon" alt="" hidden><span class="control__label">KHÓA</span></button>
+          <button class="control control--skill control--skill-2" data-control="skill2" data-skill="SK_PH_FIRE_DRUM" aria-label="Hỏa Trận Trống Đồng" hidden><img class="control__icon" alt="" hidden><span class="control__label">TRỐNG</span></button>
+{% endblock %}
+
+{% block skill_help %}
+      <span data-skill="SK_PH_SUPPLY_CUT" hidden><kbd>K</kbd> Khóa Lương</span>
+      <span data-skill="SK_PH_FIRE_DRUM" hidden><kbd>L</kbd> Hỏa Trận Trống Đồng</span>
+{% endblock %}
 
 {% block chapter_script %}
   <script type="module" src="{{ url_for('static', filename='js/levels/phung-hung/main.js') }}"></script>

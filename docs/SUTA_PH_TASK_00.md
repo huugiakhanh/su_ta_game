@@ -56,7 +56,7 @@ Mẫu tham chiếu: chương Mai Hắc Đế ([SUTA_MHD_TASK_00.md](SUTA_MHD_TAS
 | **PH-ENGINE** | **Xong 09/11** ([task card](SUTA_PH_TASK_ENGINE_01.md), [report](REPORT_PH-ENGINE.md)) E1–E6 (mục 3.5) | SKELETON |
 | **PH-L1** + `PH_ART_01` | **Xong phần code 09/11, chờ chơi tay** ([task card](SUTA_PH_TASK_L1_01.md), [report](REPORT_PH-L1.md)) Màn 1 | SKELETON, ENGINE |
 | **PH-L2** + `PH_ART_02` | **Xong phần code 09/11, chờ chơi tay** ([task card](SUTA_PH_TASK_L2_01.md), [report](REPORT_PH-L2.md)) Màn 2 | L1, mục 4 đã duyệt |
-| **PH-L3** + `PH_ART_03` | Màn 3 + cutscene | L2 |
+| **PH-L3** + `PH_ART_03` | **Xong 09/11** ([task card](SUTA_PH_TASK_L3_01.md), [report](REPORT_PH-L3.md)) Màn 3 + cutscene | L2 |
 | Nhạc | Prompt Gemini, team nộp `audio/phung-hung/level1–3.mp3` | — |
 
 Mỗi giai đoạn: kế hoạch → duyệt → code → `pytest tests` + `/verify-ui` → `/task-report`. Đổi engine thì chơi lại các màn 5 chương trước và các layout thử (`?layout=p2`, `?layout=skills`, `?layout=engine`, `?viewer=1`).
@@ -206,7 +206,7 @@ Quy ước: ✅ đáp án đúng. Câu **in nghiêng** lấy nguyên văn Excel 
 |---|---|
 | `PH_ART_01` | (prompt đã xoá, kết quả soát ở [REPORT_PH-L1.md](REPORT_PH-L1.md); Gate A1 đạt sau 2 lượt sửa, người dùng giữ, đã `IN_GAME` 09/11/2026; Gate A2 đạt sau 1 lượt sửa, đã `IN_GAME`; người dùng chốt giữ `OB_PH_SALT_CART` 4 bánh, khác prompt mục 6.4) Phùng Hưng + chân dung (theo avatar `phung_hung.png`); trâu mộng (lao, bị gạt, cưỡi); bù nhìn rơm; xe thuế muối; lính giáo; thợ săn trên cây; đá ong rơi; rào; hào chông; nền Đường Lâm + đồi đá ong + ải; animation gồng, cưỡi cho `PLAYER_MALE`/`PLAYER_FEMALE` (`manifest_shared.json`) |
 | `PH_ART_02` | (prompt đã xoá; Gate B1, B2 đã `IN_GAME` 09/11/2026, B1 sửa màu 1 lượt, B2 sửa vật phẩm 1 lượt) 3 NPC + chân dung; `ITEM_PH_WEAPON`; nền đường tiếp tế + ngoại thành; FX + icon 3 phần thưởng |
-| `PH_ART_03` | Cao Chính Bình trong lầu; tường phủ thành ban đêm; trụ gác (thường/cháy); trống đồng; đuốc; nước sôi; cổng mở; Phùng Hưng cutscene |
+| `PH_ART_03` | (prompt đã xoá; Gate C1, C2 đã `IN_GAME` 09/11/2026, C1 sửa 1 lượt: đầu boss ở `hurt`, `death` và màu đêm của lầu cổng) `BOSS_CAO_CHINH_BINH`; `BG_PH_MID_TONG_BINH_WALL_NIGHT`; `PROP_PH_TONG_BINH_GATE` + `_OPEN`; `OB_PH_WATCH_POST`; `OB_PH_BRONZE_DRUM`; `PJ_PH_TORCH`; `TR_PH_BOILING_WATER`; `NPC_PHUNG_HUNG.walk` |
 
 ## 7. VIỆC CHỜ DUYỆT
 

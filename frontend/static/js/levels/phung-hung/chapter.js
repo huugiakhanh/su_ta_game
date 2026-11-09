@@ -1,10 +1,12 @@
 // Định nghĩa chương Phùng Hưng (chương 6) cho engine màn chơi. Hợp đồng các
-// trường: engine/chapter.js. Màn 1, 2 thật (PH-L1, PH-L2); màn 3 còn khung (PH-SKELETON).
+// trường: engine/chapter.js. Màn 1, 2 (PH-L1, PH-L2); màn 3 trận Cao Chính Bình (PH-L3).
 
 import { CHUNK_W } from '../../engine/config.js';
+import { state } from '../../engine/state.js';
 import {
   SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, BORROWED_MAPS, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
   LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, FINISH_GATE, GUIDE_LOCAL_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
+  LEVEL3_FAR_HILLS, BOSS_TEXT, CARRY,
   OBSTACLE_TYPES, QUIZ_STELE_ID, MAP_PROPS_IN_GAME, HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES, NPC_SPRITES,
   ITEM, PICKUPS, REWARD_NAMES, TEXT, EXTRA_ITEMS
 } from './config.js';
@@ -13,7 +15,10 @@ import { NPC_DIALOGUES, CHAPTER_END, STORY_PH_INTRO } from './dialogue-data.js';
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
 import { level1Content, level1Events, ENEMY_KINDS, onPushHit } from './level1.js';
 import { level2Content, level2Events } from './level2.js';
-import { level3Content, updateLevel3 } from './level3.js';
+import { level3Content } from './level3.js';
+import { updateBattle, updateCutscene, ENEMY_KINDS as BATTLE_KINDS, updateBossHud, dropCarry, onThrownHit, dropHeal, onCrit, onAttackWindow } from './boss.js';
+import { PH_SKILLS } from './skills.js';
+import { DRAW_LAYERS } from './render-extras.js';
 
 export const PHUNG_HUNG = {
   id: 6,
@@ -39,15 +44,18 @@ export const PHUNG_HUNG = {
   extraItems: EXTRA_ITEMS,
   // Đòn gồng (PH-ENGINE E1, số mặc định engine CHARGE).
   charge: {},
-  enemyKinds: ENEMY_KINDS,
-  stateFields: () => ({ restUsed: false, tipIndex: 0 }),
-  hooks: { onPushHit },
+  carry: CARRY,
+  skills: PH_SKILLS,
+  enemyKinds: { ...ENEMY_KINDS, ...BATTLE_KINDS },
+  stateFields: () => ({ restUsed: false, tipIndex: 0, battle: null }),
+  hooks: { onPushHit, dropCarry, onThrownHit, dropHeal, onCrit, onAttackWindow, updateHud: updateBossHud, draw: DRAW_LAYERS },
   quizStele: QUIZ_STELE_ID,
   questions: QUESTIONS,
   dialogues: NPC_DIALOGUES,
   rewards: REWARD_NAMES,
   chapterEnd: CHAPTER_END,
-  text: TEXT,
+  // Tên trúng ở màn 3 báo câu riêng; câu khác dùng chung.
+  text: { ...TEXT, get projectileHit() { return state.battle ? BOSS_TEXT.boltHit : TEXT.projectileHit; } },
   audio: { sfx: SFX, music: MUSIC, musicFiles: MUSIC_FILES },
   // Tên màn + câu mô tả màn 1: PH-00 §5.1 (duyệt 09/11/2026).
   levels: {
@@ -77,11 +85,15 @@ export const PHUNG_HUNG = {
     3: {
       id: 3, title: 'Màn 3: Vây phủ Tống Bình', url: LEVEL_URLS[3],
       chunks: 1, worldWidth: ARENA.width, zones: LEVEL3_ZONES, finishX: ARENA.width, arena: true,
-      playerStartX: ARENA.playerStartX, gate: null,
+      playerStartX: ARENA.playerStartX, gate: null, farHills: LEVEL3_FAR_HILLS,
       sprites: LEVEL_SPRITES[3],
       content: level3Content,
-      update: updateLevel3,
+      update: updateBattle,
+      cutscene: updateCutscene,
       introMessage: 'Màn 3: Vây phủ Tống Bình',
+      // Layout thử: ?layout=skills (vào thẳng GĐ 2; thêm ?debug=1 để đủ phần thưởng).
+      testLayout: 'skills',
+      skills: true,
       summary: state => `Bạn đạt ${state.score} điểm.`
     }
   }

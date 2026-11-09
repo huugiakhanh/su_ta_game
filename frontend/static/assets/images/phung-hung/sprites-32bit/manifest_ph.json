@@ -31,6 +31,14 @@
           "fps": 8,
           "loop": true,
           "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "npc/NPC_PHUNG_HUNG/npc_phung_hung_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
         }
       ],
       "qa_notes": "See SPRITE_REPORT_PH_32.md."
@@ -905,6 +913,286 @@
         }
       ],
       "qa_notes": "BT_ART_03 Gate C2: generated multi-row raw sources; shared palette, binary alpha; QA, head locks, pivots and code measurements in meta/gate_c2/final_qa.json. Await Gate C2 review."
+    },
+    {
+      "id": "BOSS_CAO_CHINH_BINH",
+      "category": "boss",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "boss/BOSS_CAO_CHINH_BINH/boss_cao_chinh_binh_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "command",
+          "file": "boss/BOSS_CAO_CHINH_BINH/boss_cao_chinh_binh_command.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": 3
+        },
+        {
+          "name": "hurt",
+          "file": "boss/BOSS_CAO_CHINH_BINH/boss_cao_chinh_binh_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "fear",
+          "file": "boss/BOSS_CAO_CHINH_BINH/boss_cao_chinh_binh_fear.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "boss/BOSS_CAO_CHINH_BINH/boss_cao_chinh_binh_death.png",
+          "frames": 8,
+          "fps": 10,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_03 Gate C1. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "OB_PH_BRONZE_DRUM",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_PH_BRONZE_DRUM/ob_ph_bronze_drum_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "ready",
+          "file": "obstacle/OB_PH_BRONZE_DRUM/ob_ph_bronze_drum_ready.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "hit",
+          "file": "obstacle/OB_PH_BRONZE_DRUM/ob_ph_bronze_drum_hit.png",
+          "frames": 5,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": 1
+        }
+      ],
+      "qa_notes": "PH_ART_03 Gate C1. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "OB_PH_WATCH_POST",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 96,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_PH_WATCH_POST/ob_ph_watch_post_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "ignite",
+          "file": "obstacle/OB_PH_WATCH_POST/ob_ph_watch_post_ignite.png",
+          "frames": 6,
+          "fps": 14,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "burning",
+          "file": "obstacle/OB_PH_WATCH_POST/ob_ph_watch_post_burning.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_03 Gate C2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "PJ_PH_TORCH",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "projectile/PJ_PH_TORCH/pj_ph_torch_loop.png",
+          "frames": 6,
+          "fps": 14,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_03 Gate C2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "TR_PH_BOILING_WATER",
+      "category": "trap",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 112,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "trap/TR_PH_BOILING_WATER/tr_ph_boiling_water_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "warn",
+          "file": "trap/TR_PH_BOILING_WATER/tr_ph_boiling_water_warn.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "active",
+          "file": "trap/TR_PH_BOILING_WATER/tr_ph_boiling_water_active.png",
+          "frames": 6,
+          "fps": 14,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_03 Gate C2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "EN_TANG_ARCHER",
+      "category": "enemy",
+      "priority": "P1",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_TANG_ARCHER/en_tang_archer_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_TANG_ARCHER/en_tang_archer_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_TANG_ARCHER/en_tang_archer_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_TANG_ARCHER/en_tang_archer_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_01 A2. See sprite report and QA."
+    },
+    {
+      "id": "FX_OIL_FIRE",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "impact",
+          "file": "fx/FX_OIL_FIRE/fx_oil_fire_impact.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "FX_TQP_TORCH",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "fx/FX_TQP_TORCH/fx_tqp_torch_loop.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "TQP_ART_03 Gate C2 candidate; pending review. See reports and meta/c2/validation.json."
     }
   ]
 }
