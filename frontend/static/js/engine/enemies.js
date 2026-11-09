@@ -6,7 +6,7 @@
 // Enemy có `kind` riêng của chương (boss...) do CHAPTER.enemyKinds[kind].update lo.
 
 import { state, enemyArtKey } from './state.js';
-import { aabb } from './geometry.js';
+import { aabb, flatSpan } from './geometry.js';
 import { setAnim, tickAnim, getAnimMeta, hitTime, animLength } from './animation.js';
 import { CHAPTER, LEVEL } from './chapter.js';
 import { playSfx } from './audio.js';
@@ -49,8 +49,9 @@ function advanceMeleeAttack(enemy, dt, art, onEnd) {
 }
 
 // Lính canh: đi tuần trong [patrolMin, patrolMax]; người chơi trong aggroRange
-// -> quay về phía người chơi và tiến lại (không ra khỏi đoạn tuần tra); tới
-// tầm kích thì đứng lại đâm. Không bị đẩy lùi khi trúng đòn.
+// -> quay về phía người chơi và đuổi tới tầm kích thì đứng lại đâm. Khi đuổi
+// được ra khỏi đoạn tuần tra, chỉ dừng ở mép đoạn đất phẳng đang đứng (hố, bậc,
+// nước) hoặc mép màn; mất dấu thì đi về đoạn tuần tra. Không bị đẩy lùi khi trúng đòn.
 function updateGuard(enemy, dt, art) {
   const rules = art.rules;
   enemy.attackCooldown = Math.max(0, enemy.attackCooldown - dt);
@@ -63,6 +64,7 @@ function updateGuard(enemy, dt, art) {
   const center = enemy.x + enemy.w / 2;
   const toPlayer = p.x + p.w / 2 - center;
   let direction;
+  let canWalk;
   // aggroRange riêng của từng lính (vd. lính đấu trường = cả đấu trường), mặc định rules.
   // Người chơi đang ẩn trong lau sậy (TQP-ENGINE E7) thì không phát hiện —
   // `alerted` dùng cho đánh úp (player.js ambushMultiplier).
@@ -76,17 +78,27 @@ function updateGuard(enemy, dt, art) {
       return;
     }
     direction = enemy.facing;
+    // Đuổi được hết đoạn đất phẳng đang đứng (tính lúc chạy vì địa hình có thể
+    // đổi giữa trận), không rơi hố / xuyên bậc / ra khỏi màn.
+    const [flatMin, flatMax] = flatSpan(center);
+    const halfW = enemy.w / 2;
+    const nextCenter = center + direction * rules.speed * dt;
+    canWalk = nextCenter >= Math.max(flatMin, 0) + halfW
+      && nextCenter <= Math.min(flatMax, LEVEL.worldWidth) - halfW;
   } else {
-    // Bước kế tiếp sẽ ra khỏi đoạn tuần tra -> quay đầu.
+    // Bước kế tiếp sẽ ra khỏi đoạn tuần tra -> quay đầu (lính vừa đuổi ra ngoài
+    // đoạn cũng nhờ đó quay về).
     direction = enemy.facing;
     const step = direction * rules.speed * dt;
     if (center + step < enemy.patrolMin) direction = 1;
     else if (center + step > enemy.patrolMax) direction = -1;
     enemy.facing = direction;
+    const nextCenter = center + direction * rules.speed * dt;
+    canWalk = (nextCenter >= enemy.patrolMin && nextCenter <= enemy.patrolMax)
+      || (center < enemy.patrolMin && direction > 0)
+      || (center > enemy.patrolMax && direction < 0);
   }
-  // Đuổi theo người chơi thì dừng ở mép đoạn tuần tra (không ra khỏi đoạn).
-  const nextCenter = center + direction * rules.speed * dt;
-  enemy.walking = nextCenter >= enemy.patrolMin && nextCenter <= enemy.patrolMax;
+  enemy.walking = canWalk;
   if (enemy.walking) enemy.x += direction * rules.speed * dt;
 }
 

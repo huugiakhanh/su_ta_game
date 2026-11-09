@@ -57,8 +57,8 @@ Thêm nội dung (vật cản/hazard/item/dữ liệu màn): sửa `levelN.js` +
   - `prop` — chỉ vẽ (tháp canh).
   - Hết máu: `alive = false` ngay (tắt va chạm/di chuyển/đạn), phát `death`/`break` một lần rồi xoá; `corpse: true` thì nằm lại map vô hại.
 - **Đạn** (`PROJECTILE_SPRITES`): bay ngang về phía người chơi, chạm mất máu, chém trúng thì tan, quá `PROJECTILE_MAX_RANGE` thì mờ rồi tan. Hũ dầu/lửa của chiến xa là danh sách riêng `state.jars`/`state.fires`.
-- **Lính canh** `EN_HAN_GUARD` (`GUARD`, `updateGuard()`): tuần tra, người chơi vào `aggroRange` thì tiến tới (không ra khỏi đoạn tuần tra), đâm `attack_01` — sát thương chỉ ở ô `hit_frame`; bị chém trước ô hit thì huỷ cú đâm; lướt né được. `enemy.patrolMin/patrolMax/aggroRange` ghi đè `GUARD`. Lính canh + quân cảm tử dùng chung `advanceMeleeAttack()`. Mọi sát thương lên địch đi qua `strikeEnemy()`/`strikeHazard()`.
-- **Bình thư** (vật phẩm thu thập của engine — `state.items`, `ITEM`): strip `ITEM_BINH_THU`, hitbox nhặt 22×26 (cố ý lớn hơn hình), 5 vị trí cố định; đủ số mới qua cổng/kết thúc màn.
+- **Lính canh** `EN_HAN_GUARD` (`GUARD`, `updateGuard()`): tuần tra, người chơi vào `aggroRange` thì đuổi tới tầm đánh (ra khỏi đoạn tuần tra được, dừng ở mép đoạn đất phẳng), đâm `attack_01` — sát thương chỉ ở ô `hit_frame`; bị chém trước ô hit thì huỷ cú đâm; lướt né được. `enemy.patrolMin/patrolMax/aggroRange` ghi đè `GUARD`. Lính canh + quân cảm tử dùng chung `advanceMeleeAttack()`. Mọi sát thương lên địch đi qua `strikeEnemy()`/`strikeHazard()`.
+- **Quyển Sách Tinh Hoa** (vật phẩm thu thập của engine — `state.items`, `ITEM`): strip `ITEM_BT_TINH_HOA` mượn chương 2 qua `BORROWED_MAPS` (`ITEM_BINH_THU` còn trong manifest, không dùng), hitbox nhặt 22×26 (cố ý lớn hơn hình), 5 vị trí cố định; đủ số mới qua cổng/kết thúc màn.
 
 ## Màn 1 — Vượt ải
 
@@ -69,7 +69,7 @@ Thêm nội dung (vật cản/hazard/item/dữ liệu màn): sửa `levelN.js` +
 ## Màn 2 — Chiêu mộ hiền tài (TT-NPC-01, TT-L2-HARD)
 
 - 9 chunk, trời ngày, vùng `LEVEL2_ZONES`, về đích ở `LEVEL2_FINISH_X` (không cổng). Mọi thứ đặt **cố định** (không xáo), có quân Hán/bẫy/2 hố/bậc đất, `DESIGN_BASELINE`.
-- **10 sách** (Bình thư, câu chữ "sách lịch sử"): 8 cố định `LEVEL2_ITEMS` + 2 lính tuần mang `LEVEL2_CARRIERS` (chunk 5, 8), chia 3 / 3 / 4; NPC khoá 3 / 6 / 10 sách (`LEVEL2_NPC_BOOKS`, engine `requires`, câu `TEXT.npcLocked`).
+- **10 Quyển Sách Tinh Hoa**: 8 cố định `LEVEL2_ITEMS` + 2 lính tuần mang `LEVEL2_CARRIERS` (chunk 5, 8), chia 3 / 3 / 4; NPC khoá 3 / 6 / 10 sách (`LEVEL2_NPC_BOOKS`, engine `requires`, câu `TEXT.npcLocked`).
 - Không vật cản/hazard/hố nào trong 96px quanh NPC (`checkNpcClearance()` cảnh báo).
 - **NPC** (`makeNpc()`, Thi Sách → Lê Chân → Trưng Nhị): không va chạm, quay về người chơi; chỉ NPC chưa gặp đầu tiên có tác dụng (`updateMeetings()`), giữ người chơi lại trước NPC. **Giải cứu**: mỗi NPC bị 2 lính vây (`makeCaptors()`, `captorOf`) — còn lính sống thì chỉ nhắc, hạ hết mới mở hội thoại.
 - Hội thoại: câu hỏi 3 đáp án xáo; sai −1 máu + gợi ý + làm mờ đáp án đó, chọn lại; đúng → "Vì sao đúng" → phần thưởng (`addReward` ngay), điểm theo `QUESTION_SCORE` (đúng ngay lần đầu được nhiều hơn). Gặp xong NPC mờ dần rồi biến mất. Cốt truyện **Thi Sách hy sinh** 1 lần khi vào chunk sau Thi Sách, chân dung trắng đen.

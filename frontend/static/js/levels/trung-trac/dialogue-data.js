@@ -71,7 +71,7 @@ export const NPC_DIALOGUES = {
 // ---- Màn 1: Trưng Trắc gặp người chơi ở đầu màn (TT-HERO-01) ----
 // `name` hiện trên khung hội thoại. Claude soạn 13/10/2026 theo yêu cầu người
 // dùng, dựa trên tư liệu (Toàn thư / Việt sử lược: Tô Định tàn bạo, hãm hại
-// Lạc tướng; Mê Linh; Luy Lâu là trị sở). Chi tiết nhiệm vụ (binh thư, kiệu
+// Lạc tướng; Mê Linh; Luy Lâu là trị sở). Chi tiết nhiệm vụ (Sách Tinh Hoa, kiệu
 // quan, cổng Luy Lâu) là cốt truyện game, không phải sử liệu.
 export const STORY_TRUNG_TRAC_INTRO = {
   portrait: 'PORTRAIT_TRUNG_TRAC',
@@ -80,8 +80,8 @@ export const STORY_TRUNG_TRAC_INTRO = {
   lines: [
     'Ngươi là người làng bên tìm về Mê Linh, xin theo nghĩa quân phải không?',
     'Thái thú Tô Định tham lam, tàn bạo. Dân phải nộp cống nặng nề, Lạc tướng nào trái ý đều bị hắn hãm hại.',
-    'Chị em ta đang tụ nghĩa binh. Nhưng muốn đánh thành giặc, nghĩa quân phải có binh thư.',
-    'Hãy vượt các ải canh của quân Hán, tìm lại 5 bó thẻ tre binh thư, rồi hạ tên quan ngồi kiệu trấn giữ đường tới Luy Lâu.',
+    'Chị em ta đang tụ nghĩa binh. Nhưng muốn đánh thành giặc, nghĩa quân phải có Quyển Sách Tinh Hoa.',
+    'Hãy vượt các ải canh của quân Hán, tìm lại 5 Quyển Sách Tinh Hoa, rồi hạ tên quan ngồi kiệu trấn giữ đường tới Luy Lâu.',
     'Đi đi, nghĩa sĩ. Non sông họ Hùng đang chờ ngươi!'
   ]
 };

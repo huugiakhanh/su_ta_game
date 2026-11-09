@@ -26,6 +26,12 @@ export const SPRITE_MANIFEST_FILE = 'manifest_tt.json';
 // (4). Các số dưới đây là cách VẼ (vị trí, vùng).
 export const MAP_ROOT = '/static/assets/images/trung-trac/maps-32bit/';
 export const MAP_MANIFEST_FILE = 'maps_tt.json';
+// Quyển Sách Tinh Hoa mượn chương Bà Triệu, dùng chung mọi chương (engine assets.js addBorrowedMaps).
+export const BORROWED_MAPS = [{
+  root: '/static/assets/images/ba-trieu/maps-32bit/',
+  manifest: 'maps_bt.json',
+  ids: ['ITEM_BT_TINH_HOA']
+}];
 // Mặt đất dùng CHUNG 1 bộ tile (region 'Z1' trong tileset_tt_ground.json) cho
 // mọi vùng và mọi màn, chỉ tile đầu tiên của mỗi vai trò — không đổi theo
 // vùng, không biến thể theo cột (team 30/09, cho đồng bộ). Decor vẫn rải theo cột.
@@ -110,9 +116,9 @@ export const MINIBOSS = {
   fireRange: 240, fireInterval: 2.5, hitScore: 100, defeatScore: 700
 };
 
-// Bình thư (vật phẩm thu thập): strip ITEM_BINH_THU (4 ô 16x16) vẽ x1, lặp
-// fps (manifest để fps null). Hitbox nhặt 22x26 ở engine (ITEM_HITBOX).
-export const ITEM = { sprite: 'ITEM_BINH_THU', fps: 6 }; // DESIGN_BASELINE
+// Quyển Sách Tinh Hoa (vật phẩm thu thập): strip 4 ô 16x16 logic mượn chương 2,
+// vẽ x1, lặp fps. Hitbox nhặt 22x26 ở engine (ITEM_HITBOX).
+export const ITEM = { sprite: 'ITEM_BT_TINH_HOA', fps: 8 };
 
 // ---- Màn 2 "Chiêu mộ hiền tài" ----
 // (TT-NPC-01 §3.2.1; tăng độ khó TT-L2-HARD 29/09; kéo dài 9 chunk TT-QUIZ-01
@@ -508,8 +514,8 @@ export const TEXT = {
   bossContact: 'Lính giữ thành phản công!',
   bossDefeated: 'Đã đánh bại toán lính giữ thành!',
   bossBlocksFinish: 'Hãy hạ kiệu quan trước khi qua cổng.',
-  itemPicked: (count, total) => `Đã thu thập sách lịch sử ${count}/${total}`,
-  itemsMissing: count => `Bạn còn thiếu ${count} cuốn sách lịch sử.`,
-  npcLocked: (need, have) => `Cần ${need} cuốn sách lịch sử mới gặp được (đang có ${have}).`,
+  itemPicked: (count, total) => `Đã thu thập Quyển Sách Tinh Hoa ${count}/${total}`,
+  itemsMissing: count => `Bạn còn thiếu ${count} Quyển Sách Tinh Hoa.`,
+  npcLocked: (need, have) => `Cần ${need} Quyển Sách Tinh Hoa mới gặp được (đang có ${have}).`,
   rescueHint: name => `Hãy hạ lính canh đang vây ${name}!`
 };

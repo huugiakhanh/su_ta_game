@@ -4,7 +4,7 @@
 
 import { CHUNK_W } from '../../engine/config.js';
 import {
-  SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
+  SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, BORROWED_MAPS, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
   ZONES, LEVEL_CHUNKS, LEVEL_WORLD_WIDTH, FINISH_X, FINISH_GATE, GUIDE_LOCAL_X, ITEM,
   LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES, VICTORY_FLAG,
   OBSTACLE_TYPES, QUIZ_STELE_ID, MAP_PROPS_IN_GAME, HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES, NPC_SPRITES,
@@ -30,6 +30,7 @@ export const TRUNG_TRAC = {
   spriteManifest: SPRITE_MANIFEST_FILE,
   mapRoot: MAP_ROOT,
   mapManifest: MAP_MANIFEST_FILE,
+  borrowedMaps: BORROWED_MAPS,
   tiles: TILES,
   farHills: FAR_HILLS,
   mapProps: MAP_PROPS_IN_GAME,
@@ -70,9 +71,9 @@ export const TRUNG_TRAC = {
       events: level1Events,
       // Trưng Trắc chờ người chơi ở đầu màn (TT-HERO-01).
       guide: { npc: 'trungTrac', localX: GUIDE_LOCAL_X, story: STORY_TRUNG_TRAC_INTRO },
-      introMessage: 'Thu thập 5 cuốn sách, vượt chướng ngại và hạ kiệu quan.',
+      introMessage: 'Thu thập 5 Quyển Sách Tinh Hoa, vượt chướng ngại và hạ kiệu quan.',
       testLayout: 'p2',
-      summary: state => `Bạn thu thập ${state.itemsCollected}/5 sách và đạt ${state.score} điểm.`
+      summary: state => `Bạn thu thập ${state.itemsCollected}/5 Quyển Sách Tinh Hoa và đạt ${state.score} điểm.`
     },
     2: {
       id: 2, title: 'Màn 2: Chiêu mộ hiền tài', url: LEVEL_URLS[2],
@@ -81,7 +82,7 @@ export const TRUNG_TRAC = {
       content: level2Content,
       events: level2Events,
       introMessage: 'Màn 2: Chiêu mộ hiền tài',
-      summary: state => `Bạn đã gặp đủ ${state.npcs.length} người tài, thu thập ${state.itemsCollected}/10 sách và đạt ${state.score} điểm.`
+      summary: state => `Bạn đã gặp đủ ${state.npcs.length} người tài, thu thập ${state.itemsCollected}/10 Quyển Sách Tinh Hoa và đạt ${state.score} điểm.`
     },
     3: {
       id: 3, title: 'Màn 3: Trận Luy Lâu', url: LEVEL_URLS[3],
@@ -97,7 +98,7 @@ export const TRUNG_TRAC = {
       introMessageTime: 4200,
       testLayout: 'skills',
       skills: true,
-      summary: state => `Bạn thu thập ${state.itemsCollected}/5 sách và đạt ${state.score} điểm.`
+      summary: state => `Bạn thu thập ${state.itemsCollected}/5 Quyển Sách Tinh Hoa và đạt ${state.score} điểm.`
     }
   }
 };
