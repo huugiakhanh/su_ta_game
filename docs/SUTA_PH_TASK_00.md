@@ -57,7 +57,7 @@ Mẫu tham chiếu: chương Mai Hắc Đế ([SUTA_MHD_TASK_00.md](SUTA_MHD_TAS
 | **PH-L1** + `PH_ART_01` | **Xong phần code 09/11, chờ chơi tay** ([task card](SUTA_PH_TASK_L1_01.md), [report](REPORT_PH-L1.md)) Màn 1 | SKELETON, ENGINE |
 | **PH-L2** + `PH_ART_02` | **Xong phần code 09/11, chờ chơi tay** ([task card](SUTA_PH_TASK_L2_01.md), [report](REPORT_PH-L2.md)) Màn 2 | L1, mục 4 đã duyệt |
 | **PH-L3** + `PH_ART_03` | **Xong 09/11** ([task card](SUTA_PH_TASK_L3_01.md), [report](REPORT_PH-L3.md)) Màn 3 + cutscene | L2 |
-| Nhạc | Prompt Gemini, team nộp `audio/phung-hung/level1–3.mp3` | — |
+| Nhạc | **Xong 09/11** ([prompt + số đo](archive/GEMINI_PROMPT_PH_MUSIC.md)) Team nộp `audio/phung-hung/level1–3.mp3` | — |
 
 Mỗi giai đoạn: kế hoạch → duyệt → code → `pytest tests` + `/verify-ui` → `/task-report`. Đổi engine thì chơi lại các màn 5 chương trước và các layout thử (`?layout=p2`, `?layout=skills`, `?layout=engine`, `?viewer=1`).
 
