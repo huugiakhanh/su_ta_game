@@ -96,6 +96,14 @@ export function drawDebugOverlay() {
     ctx.fillStyle = '#ffffff';
     ctx.fillText(playerHidden(p) ? 'ẨN' : `sình ${p.mudTime.toFixed(1)}s`, Math.round(p.x + p.w / 2 - state.cameraX), Math.round(p.y) - 14);
   }
+  // Đòn gồng, cưỡi (PH-ENGINE E1–E2): số giây; mồi nhử (E4): khung vàng.
+  ctx.fillStyle = '#ffffff';
+  if (p.chargeTime > 0) ctx.fillText(`gồng ${p.chargeTime.toFixed(1)}s`, Math.round(p.x + p.w / 2 - state.cameraX), Math.round(p.y) - 24);
+  if (p.mounted) ctx.fillText(`cưỡi ${state.mount.time.toFixed(1)}s`, Math.round(p.x + p.w / 2 - state.cameraX), Math.round(p.y) - 24);
+  ctx.strokeStyle = '#ffe600';
+  state.decoys.filter(decoy => decoy.up).forEach(decoy => {
+    ctx.strokeRect(Math.round(decoy.x - decoy.w / 2 - state.cameraX) + .5, Math.round(decoy.footY - decoy.h) + .5, decoy.w - 1, decoy.h - 1);
+  });
   // Bục một chiều (E6–E7): xanh lơ; bục gắn hazard chưa xuất hiện thì bỏ.
   ctx.strokeStyle = '#3ce0e0';
   state.platforms.forEach(platform => {

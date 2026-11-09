@@ -12,7 +12,7 @@
 // chỉ các vùng của màn (đồi xa bỏ khi mọi vùng dùng trời che nó).
 
 import {
-  SHARED_SPRITE_ROOT, SHARED_MANIFEST_FILE, SHARED_DOM_SPRITES, TERRAIN_TILE_ROLES, GROUND_Y, VIEW_H
+  SHARED_SPRITE_ROOT, SHARED_MANIFEST_FILE, SHARED_DOM_SPRITES, CHARGE_FX_SPRITE, TERRAIN_TILE_ROLES, GROUND_Y, VIEW_H
 } from './config.js';
 import { CHAPTER, LEVEL } from './chapter.js';
 import { registerManifest, getAsset } from './animation.js';
@@ -265,7 +265,7 @@ async function loadSprites(playerSprite) {
     sprites[id] = loaded.strips;
     missing.push(...loaded.missing);
   }));
-  const levelIds = [...new Set([...(LEVEL.sprites || []), ...SHARED_DOM_SPRITES, ...(CHAPTER.domSprites || [])])];
+  const levelIds = [...new Set([...(LEVEL.sprites || []), ...SHARED_DOM_SPRITES, ...(CHAPTER.domSprites || []), ...(CHAPTER.charge ? [CHARGE_FX_SPRITE] : [])])];
   await Promise.all([
     loadIds(levelIds),
     Promise.resolve(playerSprite).then(id => loadIds(levelIds.includes(id) ? [] : [id]))

@@ -13,6 +13,10 @@ export const ui = {
   items: document.getElementById('itemValue'),
   itemHud: document.getElementById('itemHud'),
   itemIcon: document.getElementById('itemIcon'),
+  // Vật phẩm phụ (PH-ENGINE E6): ẩn ở màn không có.
+  extras: document.getElementById('extraValue'),
+  extraHud: document.getElementById('extraHud'),
+  extraIcon: document.getElementById('extraIcon'),
   score: document.getElementById('scoreValue'),
   progress: document.getElementById('progressBar'),
   loading: document.getElementById('loadingPanel'),
@@ -51,6 +55,7 @@ let lastHeartUrl = null;
 // một lượt chơi — state bị thay mỗi lần chơi lại (máu đầy lại) thì không chạy.
 let lastHudState = null;
 let lastItems = 0;
+let lastExtras = 0;
 
 export function showMessage(text, duration = 1900) {
   ui.message.textContent = text;
@@ -94,7 +99,15 @@ export function updateHud() {
   ui.items.textContent = `${state.itemsCollected}/${state.items.length}`;
   if (sameRun && state.itemsCollected > lastItems) replayAnimation(ui.itemHud, 'is-bumped');
   lastItems = state.itemsCollected;
-  updateItemIcon();
+  updateItemIcon(ui.itemIcon, CHAPTER.item?.sprite);
+  ui.extraHud.hidden = state.extras.length === 0;
+  if (state.extras.length) {
+    const picked = state.extras.filter(item => item.collected).length;
+    ui.extras.textContent = `${picked}/${state.extras.length}`;
+    if (sameRun && picked > lastExtras) replayAnimation(ui.extraHud, 'is-bumped');
+    lastExtras = picked;
+    updateItemIcon(ui.extraIcon, CHAPTER.extraItems?.[state.extras[0].kind]?.sprite);
+  }
   ui.score.textContent = state.score;
   const percent = Math.max(0, Math.min(100, state.player.x / state.finishX * 100));
   ui.progress.style.width = `${percent}%`;
@@ -125,16 +138,16 @@ function replayAnimation(node, className) {
 
 // Ô vật phẩm dùng ô đầu của strip vật phẩm (CHAPTER.item.sprite — prop trong
 // manifest map, nạp sẵn trong images.maps.props); chưa tải/thiếu thì giữ chữ tạm.
-function updateItemIcon() {
-  if (ui.itemIcon.dataset.ready) return;
-  const prop = images.maps.props[CHAPTER.item?.sprite];
+function updateItemIcon(icon, spriteId) {
+  if (icon.dataset.ready) return;
+  const prop = images.maps.props[spriteId];
   if (!prop?.image) return;
   const frames = prop.asset?.frames || 1;
-  ui.itemIcon.style.backgroundImage = `url("${prop.image.src}")`;
-  ui.itemIcon.style.backgroundSize = `${frames * 100}% 100%`;
-  ui.itemIcon.textContent = '';
-  ui.itemIcon.classList.add('status-bar__item-icon--image');
-  ui.itemIcon.dataset.ready = '1';
+  icon.style.backgroundImage = `url("${prop.image.src}")`;
+  icon.style.backgroundSize = `${frames * 100}% 100%`;
+  icon.textContent = '';
+  icon.classList.add('status-bar__item-icon--image');
+  icon.dataset.ready = '1';
 }
 
 // Ô ⏱ trên HUD — main.js gọi mỗi frame; chỉ ghi DOM khi đổi giây.

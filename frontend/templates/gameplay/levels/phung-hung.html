@@ -1,0 +1,13 @@
+{% extends "gameplay/base.html" %}
+{# Chương Phùng Hưng — dùng chung 3 màn. Khung chung ở gameplay/base.html.
+   PH-SKELETON: chưa có khe kỹ năng (Khóa Lương, Hỏa Trận Trống Đồng — PH-L3). #}
+
+{% block chapter_name %}Phùng Hưng{% endblock %}
+{% block brand %}SUTA · PHÙNG HƯNG{% endblock %}
+{% block canvas_label %}Màn chơi Phùng Hưng{% endblock %}
+{% block item_label %}Quyển Sách Tinh Hoa đã thu thập{% endblock %}
+{% block item_glyph %}📖{% endblock %}
+
+{% block chapter_script %}
+  <script type="module" src="{{ url_for('static', filename='js/levels/phung-hung/main.js') }}"></script>
+{% endblock %}

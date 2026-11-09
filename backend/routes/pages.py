@@ -154,3 +154,19 @@ def mai_hac_de_level_2():
 @pages_bp.get("/gameplay/levels/mai-hac-de/3")
 def mai_hac_de_level_3():
     return render_chapter_level("mai-hac-de", 3, "Màn 3: Công phá Tống Bình")
+
+
+# Chương Phùng Hưng (PH-SKELETON): khung 3 màn bằng asset mượn, chưa mở trên trang chủ.
+@pages_bp.get("/gameplay/levels/phung-hung")
+def phung_hung():
+    return render_chapter_level("phung-hung", 1, "Màn 1: Trai tráng Đường Lâm")
+
+
+@pages_bp.get("/gameplay/levels/phung-hung/2")
+def phung_hung_level_2():
+    return render_chapter_level("phung-hung", 2, "Màn 2: Tụ nghĩa chiêu hiền")
+
+
+@pages_bp.get("/gameplay/levels/phung-hung/3")
+def phung_hung_level_3():
+    return render_chapter_level("phung-hung", 3, "Màn 3: Vây phủ Tống Bình")

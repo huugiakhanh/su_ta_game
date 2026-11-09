@@ -60,12 +60,13 @@ export function makeEnemy(x, w, h, hp, boss, options = {}) {
 // `story` (TQP-L1) = cốt truyện ngắn (định dạng openStory) nói khi gặp, thay cho
 // hội thoại câu hỏi CHAPTER.dialogues[id]; `hint` = câu nhắc khi còn quân vây
 // (`captorOf`), thay CHAPTER.text.rescueHint (vd. bù nhìn tập võ chặn đường).
-export function makeNpc(id, chunk, localX, { requires = 0, story = null, hint = null } = {}) {
+// `extras` (PH-ENGINE E6) = { loại: số } vật phẩm phụ cũng phải đủ.
+export function makeNpc(id, chunk, localX, { requires = 0, extras = null, story = null, hint = null } = {}) {
   const centerX = worldX(chunk, localX);
   return {
     id, centerX,
     x: centerX - NPC_RULES.w / 2, y: groundYAt(centerX) - NPC_RULES.h, w: NPC_RULES.w, h: NPC_RULES.h,
-    met: false, talking: false, fade: 1, requires, story, hint
+    met: false, talking: false, fade: 1, requires, extras, story, hint
   };
 }
 
@@ -96,6 +97,19 @@ export function makeQuiz(chunk, localX, stt, npc = null) {
 export function makeItem(chunk, localX, lift, { carrier = null } = {}) {
   const x = worldX(chunk, localX);
   return { x, y: groundYAt(x) - lift, lift, collected: false, carrier, hidden: Boolean(carrier) };
+}
+
+// Vật phẩm phụ (PH-ENGINE E6) — `kind` khoá trong CHAPTER.extraItems, nằm ở danh
+// sách riêng `extras` của nội dung màn nên không tính vào số vật phẩm về đích.
+export function makeExtra(kind, chunk, localX, lift, options = {}) {
+  return { ...makeItem(chunk, localX, lift, options), kind };
+}
+
+// Mồi nhử (PH-ENGINE E4 — bù nhìn rơm): hổ `pounce` vồ mồi trong tầm trước người
+// chơi; trúng thì mồi đổ, `respawn` giây sau dựng lại. x = tâm.
+export function makeDecoy(chunk, localX, { sprite = null, w = 18, h = 40, respawn = 4 } = {}) {
+  const x = worldX(chunk, localX);
+  return { x, footY: groundYAt(x), w, h, sprite, respawn, up: true, timer: 0 };
 }
 
 // Hàng đợi sinh quân: groups (mỗi nhóm = [{type, at, dx}]) chạy lần lượt,

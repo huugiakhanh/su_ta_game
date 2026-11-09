@@ -1,8 +1,9 @@
 // Vẽ người chơi (nhân vật nam/nữ dùng chung — PLAYER_SPRITE_ID).
 
 import { state } from '../state.js';
-import { getAnimMeta, frameIndex } from '../animation.js';
-import { PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, PLAYER_JUMP_APEX_VY } from '../config.js';
+import { getAnimMeta, frameIndex, animLength } from '../animation.js';
+import { PLAYER_SPRITE_ID, PLAYER_ANIMATIONS, PLAYER_JUMP_APEX_VY, CHARGE, CHARGE_FX_SPRITE } from '../config.js';
+import { CHAPTER } from '../chapter.js';
 import { ctx, debugLabels, drawSprite, spriteImage } from './canvas.js';
 import { playerHidden } from '../damage.js';
 
@@ -15,6 +16,30 @@ function playerFrame(config, meta, p, animTime) {
     return p.vy > PLAYER_JUMP_APEX_VY ? Math.min(2, meta.frames - 1) : Math.min(1, meta.frames - 1);
   }
   return frameIndex(meta, animTime, config.duration);
+}
+
+// Hiệu ứng đòn gồng (FX_CHARGE_AURA, PH-ENGINE E1): lớp `back` + `front` kẹp nhân
+// vật. Đang tích chọn ô `build_*` theo lực gồng nên luôn khớp `hold` dù đổi số; đủ
+// lực thì lặp `hold_*`. Cùng pivot và footY với nhân vật, không cần neo riêng.
+function drawChargeLayer(p, layer, cx, footY, facing) {
+  const { hold, delay } = { ...CHARGE, ...CHAPTER.charge };
+  const name = `${p.charged ? 'hold' : 'build'}_${layer}`;
+  const meta = getAnimMeta(CHARGE_FX_SPRITE, name);
+  const image = spriteImage(CHARGE_FX_SPRITE, name);
+  if (!meta || !image) return;
+  const power = Math.max(0, (p.chargeTime - delay) / (hold - delay));
+  const frame = p.charged ? frameIndex(meta, p.chargeTime - hold) : Math.min(meta.frames - 1, Math.floor(power * meta.frames));
+  drawSprite(image, meta, frame, cx, footY, facing);
+}
+
+// Vòng lửa bung một lượt ngay lúc vừa đủ lực.
+function drawChargeBurst(p, cx, footY, facing) {
+  if (!p.charged) return;
+  const meta = getAnimMeta(CHARGE_FX_SPRITE, 'ready_burst');
+  const image = spriteImage(CHARGE_FX_SPRITE, 'ready_burst');
+  const since = p.chargeTime - ({ ...CHARGE, ...CHAPTER.charge }).hold;
+  if (!meta || !image || since >= animLength(meta)) return;
+  drawSprite(image, meta, frameIndex(meta, since), cx, footY, facing);
 }
 
 export function drawPlayer(time) {
@@ -42,8 +67,13 @@ export function drawPlayer(time) {
     debugLabels.set(p, `${key}:${config.anim} ${frame + 1}/${meta.frames}`);
     if (blinkHidden) return;
     const pivotX = Math.round(p.x + p.w / 2 - state.cameraX);
-    const footY = Math.round(p.y + p.h) + sink;
+    // Đang cưỡi (PH-ENGINE E2): vẽ trên lưng trâu, hitbox không đổi.
+    const footY = Math.round(p.y + p.h) + sink - (p.mounted ? state.mount.spec.rideTop : 0);
     const facing = p.facing < 0 ? -1 : 1;
+    // Tính theo lực, không theo animation: 0,36 s đầu nhân vật còn vung nhát chém
+    // (bấm Đánh vẫn chém ngay) nhưng lửa đã phải bắt đầu bốc lên.
+    const charging = !dead && CHAPTER.charge && p.chargeTime >= ({ ...CHARGE, ...CHAPTER.charge }).delay;
+    if (charging) drawChargeLayer(p, 'back', pivotX, footY, facing);
     if (sink) {
       // Phần chìm dưới mặt sình không vẽ.
       ctx.save();
@@ -54,6 +84,10 @@ export function drawPlayer(time) {
       ctx.restore();
     } else {
       drawSprite(image, meta, frame, pivotX, footY, facing, alpha);
+    }
+    if (charging) {
+      drawChargeLayer(p, 'front', pivotX, footY, facing);
+      drawChargeBurst(p, pivotX, footY, facing);
     }
     return;
   }

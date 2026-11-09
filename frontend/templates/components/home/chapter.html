@@ -147,11 +147,13 @@
         <span class="btn-play-now">🔒 Qua chương Triệu Việt Vương</span>
       </div>
 
-      <div class="hero-select-card locked" onclick="alert('Màn chơi Phùng Hưng đang phát triển!')">
-        <span class="hero-badge-year">Năm 766</span>
+      {# HOME-UNLOCK: mở khi đã qua chương 5 (PH-L1). #}
+      <div class="hero-select-card locked" data-unlock-after="5" data-route="/gameplay/levels/phung-hung"
+           onclick="alert('Hoàn thành chương Mai Hắc Đế để mở khóa Phùng Hưng!')">
+        <span class="hero-badge-year">Năm 791</span>
         <strong class="hero-select-name">Phùng Hưng</strong>
         <small class="hero-select-sub">(Bố Cái Đại Vương)</small>
-        <span class="btn-play-now">🔒 Sắp ra mắt</span>
+        <span class="btn-play-now">🔒 Qua chương Mai Hắc Đế</span>
       </div>
     </div>
 

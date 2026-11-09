@@ -13,7 +13,7 @@
 //   mapRoot / mapManifest         manifest môi trường (nền, tile, prop)
 //   borrowedMaps? [{ root, manifest, ids }] — asset map mượn của chương khác (chỉ các
 //                 ID liệt kê; trùng ID thì manifest chương thắng)
-//   tiles         { ground, groundRegion, terrain?, water?, waterLift?, waterDeep?, mud?, mudLift? } — ID
+//   tiles         { ground, groundRegion, terrain?, water?, waterLift?, waterDeep?, mud?, mudLift?, spikes?, spikesTop? } — ID
 //                 tileset mặt đất, vùng tile dùng chung, bộ tile ghép địa hình; water =
 //                 prop mặt nước lát trong khe sông (cột '~' của lưới địa hình — LND-ENGINE
 //                 E1; có trong mapProps); waterLift = nâng ảnh nước lên bao nhiêu px (ảnh
@@ -58,6 +58,16 @@
 //   plunge?       bật đòn bổ từ trên (TQP-ENGINE E5): đang rơi bấm Đánh = bổ; ghi đè số
 //                 PLUNGE { damage, bounce, speed, forward, boxH, grace } ({} = mặc định;
 //                 forward > 0 = bổ chéo về trước — TQP-L1)
+//   charge?       bật đòn gồng (PH-ENGINE E1): giữ Đánh rồi thả; ghi đè số CHARGE
+//                 { hold, delay, damage, moveSpeed, hintInterval } ({} = mặc định). Cờ `chargeOnly` trên
+//                 enemies[…]/hazards[…] = chỉ trúng đòn gồng; text.chargeHint = câu nhắc khi bị gạt.
+//                 hazards[…] thêm (PH-ENGINE): `tameable: { speed, time, damage, rideTop, anims: { ride } }`
+//                 (E2, đòn gồng thu phục rồi cưỡi; cần hp > 0), `rammable` (húc đổ khi cưỡi),
+//                 `pushable: { speed, damage }` (E3, cần `blocking`), `stuckOnly` + `stuckTime` +
+//                 anims.stuck? (E4, kind `pounce`: chỉ chịu đòn khi khựng vì vồ trúng mồi `state.decoys`).
+//   extraItems?   { kind: { sprite, fps?, picked(count, total) } } — vật phẩm phụ (PH-ENGINE E6):
+//                 content.extras (makeExtra), makeNpc(..., { extras: { kind: số } }),
+//                 text.npcLocked(requires, có, extras)
 //   stealth?      { ambush } — đánh úp lính chưa phát hiện từ sau lưng × ambush (E7)
 //   item?         { sprite, fps } — vật phẩm thu thập (ô HUD + vẽ)
 //   quizStele?    ID prop bia câu hỏi chặn đường
@@ -86,6 +96,7 @@
 //                 dropCarry?(target) -> kind | null, onThrownHit?(thrown, target) -> true = chương đã xử lý,
 //                 onThrownLand?(thrown), onBurdenAttack?(player) -> true = đập sọt, hết gánh,
 //                 onHazardBroken?(hazard) (MHD-ENGINE),
+//                 onChargedHit?(target), onPushHit?(body, enemy) -> true = chương đã xử lý (PH-ENGINE),
 //                 debugEntities?() -> [hộp], draw?: { beforeNpcs?(time) (vd. rồng sau lưng NPC — TQP-L2), beforeEnemies?(time),
 //                 beforePlayer?(time), afterPlayer?(time) } }
 //   levels        { [id]: LEVEL } — mỗi màn:

@@ -11,7 +11,7 @@ import { drawBackdrops } from './backdrop.js';
 import { drawGround, drawHoles, drawWaterBanks, drawMud, drawTerrainDebug } from './terrain.js';
 import {
   drawFinishGate, drawQuizSteles, drawItems, drawPickups, drawObstacles, drawPlatforms, drawHazards, drawProjectiles, drawEnemies,
-  drawNpcs, drawCarried, drawRunners
+  drawNpcs, drawCarried, drawRunners, drawExtras, drawDecoys, drawMount
 } from './entities.js';
 import { drawPlayer } from './player.js';
 import { drawDebugOverlay } from './debug.js';
@@ -37,6 +37,8 @@ export function draw(time = 0) {
   drawHoles();
   drawMud();
   drawItems(time);
+  drawExtras(time);
+  drawDecoys(time);
   drawPickups(time);
   drawObstacles();
   drawPlatforms();
@@ -48,6 +50,7 @@ export function draw(time = 0) {
   drawProjectiles();
   drawRunners();
   layers.beforePlayer?.(time);
+  drawMount();
   drawPlayer(time);
   drawCarried(time);
   layers.afterPlayer?.(time);

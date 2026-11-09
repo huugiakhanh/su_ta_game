@@ -67,6 +67,9 @@
         <div id="itemHud" class="status-bar__items" aria-label="{% block item_label %}Vật phẩm đã thu thập{% endblock %}">
           <i id="itemIcon" class="status-bar__item-icon" aria-hidden="true">{% block item_glyph %}★{% endblock %}</i><strong id="itemValue">0/0</strong>
         </div>
+        <div id="extraHud" class="status-bar__items" hidden aria-label="{% block extra_label %}Vật phẩm phụ đã thu thập{% endblock %}">
+          <i id="extraIcon" class="status-bar__item-icon" aria-hidden="true">{% block extra_glyph %}⚒{% endblock %}</i><strong id="extraValue">0/0</strong>
+        </div>
       </div>
 
       <!-- Ô kỹ năng (ui.js): ô Lướt hiện ở mọi màn; khe kỹ năng của chương (block

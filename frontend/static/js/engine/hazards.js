@@ -19,6 +19,7 @@
 //             đớp (chỉ lúc này gây sát thương + chém được) -> lặn, nghỉ `rest`.
 //   pounce  — thú vồ từ chỗ ẩn (hổ — MHD-ENGINE E2): báo trước -> bay vòng cung tới
 //             chỗ người chơi -> đứng nghỉ -> vồ tiếp nếu người chơi còn trong tầm.
+//             Có mồi nhử trong tầm (PH-ENGINE E4) thì vồ mồi, trúng thì khựng `stuck`.
 // Tuỳ chọn `callHelp` (E4 — thuyền tuần tiễu): người chơi ở gần đủ lâu mà
 // hazard chưa bị phá thì phát tín hiệu, gọi lính lên bờ (1 lần mỗi lượt).
 // Đạn có `lob` (MHD-ENGINE E3) bay vòng cung, có `landAs` thì chạm đất thành hazard
@@ -133,7 +134,7 @@ function updateHazardAnimation(hazard, dt) {
   else if (hazard.kind === 'snare') next = hazard.snareState;
   else if (hazard.kind === 'drift') next = 'move';
   else if (hazard.kind === 'lurker') next = hazard.lurkState;
-  else if (hazard.kind === 'pounce') next = hazard.pounceState;
+  else if (hazard.kind === 'pounce') next = hazard.pounceState === 'stuck' && !anims.stuck ? 'recover' : hazard.pounceState;
   else if (hazard.kind === 'patrol') next = hazard.walking ? 'move' : 'idle';
   else next = hazard.kind === 'roller' && hazard.active ? 'move' : 'idle';
   setAnim(hazard, next);
@@ -293,15 +294,27 @@ function pounceTarget(hazard, playerCenter, range) {
   return target;
 }
 
+// Mồi nhử (PH-ENGINE E4): mồi đang dựng trong `leapRange` (và trong `span`), gần nhất.
+function pounceDecoy(hazard, range) {
+  const center = hazard.x + hazard.w / 2;
+  return state.decoys
+    .filter(decoy => decoy.up && Math.abs(decoy.x - center) <= range
+      && (!hazard.span || (decoy.x >= hazard.span[0] && decoy.x <= hazard.span[1])))
+    .sort((a, b) => Math.abs(a.x - center) - Math.abs(b.x - center))[0] || null;
+}
+
 function startLeap(hazard, playerCenter, spec) {
   const center = hazard.x + hazard.w / 2;
+  const range = spec.leapRange ?? 200;
   hazard.pounceState = 'leap';
   hazard.pounceTimer = spec.leapTime ?? .7;
   hazard.leapFrom = center;
-  hazard.leapTo = pounceTarget(hazard, playerCenter, spec.leapRange ?? 200);
+  hazard.leapDecoy = pounceDecoy(hazard, range);
+  hazard.leapTo = hazard.leapDecoy ? hazard.leapDecoy.x : pounceTarget(hazard, playerCenter, range);
   hazard.facing = Math.sign(hazard.leapTo - center) || hazard.facing || -1;
   hazard.harmful = true;
-  hazard.exposed = true;
+  // `stuckOnly`: chỉ chịu đòn lúc khựng vì vồ trúng mồi.
+  hazard.exposed = !spec.stuckOnly;
   hazard.anim.time = 0;
   playSfx('trap');
 }
@@ -333,10 +346,26 @@ function updatePounce(hazard, dt, playerCenter) {
     if (hazard.pounceTimer > 0) return;
     hazard.lift = 0;
     hazard.y = hazard.baseY - hazard.h;
-    hazard.pounceState = 'recover';
-    hazard.pounceTimer = spec.recoverTime ?? 1;
     hazard.harmful = false;
     hazard.anim.time = 0;
+    const decoy = hazard.leapDecoy;
+    hazard.leapDecoy = null;
+    if (decoy?.up) {
+      decoy.up = false;
+      decoy.timer = decoy.respawn;
+      playSfx('hit');
+      hazard.pounceState = 'stuck';
+      hazard.pounceTimer = spec.stuckTime ?? 2;
+      hazard.exposed = true;
+      return;
+    }
+    hazard.pounceState = 'recover';
+    hazard.pounceTimer = spec.recoverTime ?? 1;
+  } else if (hazard.pounceState === 'stuck') {
+    if (hazard.pounceTimer > 0) return;
+    hazard.pounceState = 'recover';
+    hazard.pounceTimer = 0;
+    hazard.exposed = !spec.stuckOnly;
   } else if (hazard.pounceTimer <= 0 && near) {
     startLeap(hazard, playerCenter, spec);
   }
@@ -412,6 +441,13 @@ function updatePatrol(hazard, dt, playerCenter) {
 export function updateHazards(dt) {
   const player = state.player;
   const playerCenter = player.x + player.w / 2;
+
+  // Mồi nhử đổ (PH-ENGINE E4) dựng lại sau `respawn` giây.
+  state.decoys.forEach(decoy => {
+    if (decoy.up) return;
+    decoy.timer -= dt;
+    if (decoy.timer <= 0) decoy.up = true;
+  });
 
   state.hazards.forEach(hazard => {
     hazard.hitTimer = Math.max(0, hazard.hitTimer - dt);

@@ -14,7 +14,7 @@ import { endGame } from './end-game.js';
 // (`obstacles`) KHÔNG dùng hàm này: dash vẫn chỉ xuyên được loại requiresDash.
 // Ngay sau đòn bổ trúng (TQP-ENGINE E5) cũng miễn va chạm `plungeGrace` giây.
 export function playerImmune(p) {
-  return p.invulnerable > 0 || p.dashing || p.plungeGrace > 0;
+  return p.invulnerable > 0 || p.dashing || p.plungeGrace > 0 || p.mounted;
 }
 
 // Người chơi đang ẩn trong vùng ẩn nấp (TQP-ENGINE E7 — lau sậy): tâm thân
@@ -30,7 +30,8 @@ export function playerHidden(p = state.player) {
 // `hitsTaken` vẫn chỉ +1 mỗi lần trúng đòn.
 export function hurtPlayer(reason, amount = 1) {
   const p = state.player;
-  if (p.invulnerable > 0 || state.won) return;
+  // Đang cưỡi (PH-ENGINE E2): miễn mọi sát thương, kể cả vật cản tĩnh.
+  if (p.invulnerable > 0 || p.mounted || state.won) return;
   // Kỹ năng chặn đòn của chương (BT-L3 E1 — Khiên mây tre) -> bỏ qua sát thương.
   if (state.skills && CHAPTER.skills.blockHurt?.(reason)) return;
   playSfx('hurt');
@@ -71,9 +72,15 @@ export function respawnAfterFall() {
     return;
   }
   // Rơi xuống sông (hố `water` — LND-ENGINE E1): hiện lại ở chỗ đứng vững cuối
-  // cùng (player.js rememberSafeSpot). Hố thường: đầu chunk +72 như cũ.
+  // cùng (player.js rememberSafeSpot). Hào chông (PH-ENGINE E5) cũng vậy. Hố
+  // thường: đầu chunk +72 như cũ. Đang cưỡi mà rơi thì xuống luôn.
+  if (p.mounted) {
+    p.mounted = false;
+    state.mount = null;
+  }
   const center = p.x + p.w / 2;
-  const river = state.holes.some(hole => hole.water && center >= hole.x && center <= hole.x + hole.w);
+  const holeHere = state.holes.find(hole => center >= hole.x && center <= hole.x + hole.w);
+  const river = holeHere?.water || holeHere?.spikes;
   if (river && p.safeSpot) {
     p.x = p.safeSpot.x;
     p.y = p.safeSpot.feetY - p.normalH;
@@ -88,5 +95,5 @@ export function respawnAfterFall() {
   p.vx = 0;
   p.vy = 0;
   p.invulnerable = 1.5;
-  showMessage(CHAPTER.text.fell);
+  showMessage((holeHere?.spikes && CHAPTER.text.spikeFell) || CHAPTER.text.fell);
 }

@@ -94,10 +94,19 @@ export function playerStrike(target, strikeFn, multiplier = 1) {
 // Mục tiêu chỉ trúng đòn bổ từ trên (TQP-ENGINE E5 — lính giáo dài): cờ
 // `plungeOnly` trên sprite enemy (CHAPTER.sprites.enemies[art]) hoặc hazard.
 export function plungeOnly(target) {
-  const spec = state.enemies.includes(target)
+  return Boolean(targetSprite(target)?.plungeOnly);
+}
+
+// Mục tiêu chỉ trúng đòn gồng (PH-ENGINE E1 — lính khiên, trâu, hổ): cờ `chargeOnly`.
+export function chargeOnly(target) {
+  return Boolean(targetSprite(target)?.chargeOnly);
+}
+
+// Bảng sprite của enemy (art) hoặc hazard.
+function targetSprite(target) {
+  return state.enemies.includes(target)
     ? CHAPTER.sprites.enemies[enemyArtKey(target)]
     : CHAPTER.sprites.hazards[target.sprite];
-  return Boolean(spec?.plungeOnly);
 }
 
 // Hazard hết máu: tắt va chạm/đạn/di chuyển NGAY, phát death (break) một lần.
@@ -126,7 +135,7 @@ export function breakHazard(hazard) {
 // Vật phẩm `carrier` = hazard này (LND-ENGINE E4a) hiện ra tại tâm hazard, cao
 // `lift` như lúc đặt (x kẹp trong màn). Gọi khi hazard bị phá hoặc rời màn.
 export function revealCarriedItems(hazard) {
-  state.items.forEach(item => {
+  [...state.items, ...state.extras].forEach(item => {
     if (!item.hidden || item.carrier !== hazard.id) return;
     item.hidden = false;
     item.x = Math.max(24, Math.min(state.finishX - 24, hazard.x + hazard.w / 2));

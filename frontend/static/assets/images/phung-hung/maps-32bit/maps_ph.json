@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "map_id": "PHUNG_HUNG",
+  "chapter": "phung-hung",
+  "pipeline": "parallax_layers",
+  "render_mode": "side_scroll_mode",
+  "engine_target": "project-native Canvas",
+  "stage": {
+    "canvas_w": 480,
+    "canvas_h": 270,
+    "stage_length": 9216,
+    "ground_y": 248,
+    "tile_size": 16
+  },
+  "design_baseline": true,
+  "assets": [
+    {
+      "id": "BG_PH_MID_DUONG_LAM",
+      "category": "parallax",
+      "file": "bg/BG_PH_MID_DUONG_LAM/bg_ph_mid_duong_lam.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "See MAP_REPORT_PH_32.md."
+    },
+    {
+      "id": "BG_PH_MID_LATERITE_HILLS",
+      "category": "parallax",
+      "file": "bg/BG_PH_MID_LATERITE_HILLS/bg_ph_mid_laterite_hills.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "qa_notes": "PH_ART_01 A2. See MAP_REPORT_PH_32.md.",
+      "parallax_hint": 0.5,
+      "transition_width": 192
+    },
+    {
+      "id": "BG_PH_MID_TAX_PASS",
+      "category": "parallax",
+      "file": "bg/BG_PH_MID_TAX_PASS/bg_ph_mid_tax_pass.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "qa_notes": "PH_ART_01 A2. See MAP_REPORT_PH_32.md.",
+      "parallax_hint": 0.5,
+      "transition_width": 192
+    },
+    {
+      "id": "PROP_PH_SPIKE_TRENCH",
+      "category": "prop",
+      "file": "props/PROP_PH_SPIKE_TRENCH/prop_ph_spike_trench.png",
+      "w": 32,
+      "h": 22,
+      "density": 4,
+      "transparent": true,
+      "anchor": "top-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "qa_notes": "PH_ART_01 A2. See MAP_REPORT_PH_32.md."
+    },
+    {
+      "id": "PROP_PH_TAX_GATE",
+      "category": "prop",
+      "file": "props/PROP_PH_TAX_GATE/prop_ph_tax_gate.png",
+      "w": 192,
+      "h": 176,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-center-at-GROUND_Y",
+      "pivot": {
+        "x": 96,
+        "y": 176
+      },
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "qa_notes": "PH_ART_01 A2. See MAP_REPORT_PH_32.md.",
+      "state_files": {
+        "closed": "props/PROP_PH_TAX_GATE/prop_ph_tax_gate.png",
+        "open": "props/PROP_PH_TAX_GATE_OPEN/prop_ph_tax_gate_open.png"
+      }
+    },
+    {
+      "id": "PROP_PH_TAX_GATE_OPEN",
+      "category": "prop",
+      "file": "props/PROP_PH_TAX_GATE_OPEN/prop_ph_tax_gate_open.png",
+      "w": 192,
+      "h": 176,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-center-at-GROUND_Y",
+      "pivot": {
+        "x": 96,
+        "y": 176
+      },
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "qa_notes": "PH_ART_01 A2. See MAP_REPORT_PH_32.md."
+    }
+  ]
+}

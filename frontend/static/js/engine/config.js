@@ -108,7 +108,11 @@ export const PLAYER_ANIMATIONS = {
   plunge: { anim: 'plunge', fallback: { anim: 'attack_01', holdFrame: -1 } },
   // Gánh nặng (MHD-ENGINE E4): strip riêng của đợt MHD_ART_01, chưa có thì dùng idle/run.
   burdenIdle: { anim: 'burden_idle', fallback: { anim: 'idle' } },
-  burdenRun: { anim: 'burden_run', fallback: { anim: 'run' } }
+  burdenRun: { anim: 'burden_run', fallback: { anim: 'run' } },
+  // Đòn gồng + cưỡi (PH-ENGINE E1–E2): strip riêng của đợt PH_ART_01, chưa có thì mượn.
+  charge: { anim: 'charge_hold', fallback: { anim: 'attack_01', holdFrame: 0 } },
+  chargeStrike: { anim: 'charge_strike', duration: ATTACK_COOLDOWN, fallback: { anim: 'attack_01', duration: ATTACK_COOLDOWN } },
+  ride: { anim: 'ride', fallback: { anim: 'idle' } }
 };
 // Ngưỡng vận tốc dọc (px logic/s) chọn ô `jump`: vy < -N ô 1 (bật lên),
 // |vy| <= N ô 2 (gần đỉnh), vy > N ô 3 (rơi). DESIGN_BASELINE.
@@ -178,6 +182,14 @@ export const STEALTH = { reveal: 1 };
 // (px/s); `forward` = vận tốc lao ngang về hướng mặt lúc bấm (0 = rơi thẳng); hộp
 // đánh dưới chân cao `boxH`; `grace` giây miễn va chạm thân sau khi trúng.
 export const PLUNGE = { damage: 2, bounce: 330, speed: 520, forward: 0, boxH: 14, grace: .25 };
+// Đòn gồng (PH-ENGINE E1, DESIGN_BASELINE — chương bật bằng CHAPTER.charge, ghi đè
+// được từng số): giữ Đánh đủ `hold` giây rồi thả; sát thương `damage`; sau `delay`
+// giây giữ phím mới đi chậm ×`moveSpeed` (bấm nhanh không bị ảnh hưởng).
+export const CHARGE = { hold: .7, delay: .15, damage: 3, moveSpeed: .6, hintInterval: 3 };
+// Hiệu ứng tích lực (manifest chung) — chỉ nạp ở chương bật CHAPTER.charge.
+export const CHARGE_FX_SPRITE = 'FX_CHARGE_AURA';
+// Trâu chạy tiếp sau khi người chơi xuống (PH-ENGINE E2), giây — chỉ vẽ.
+export const MOUNT_AWAY_TIME = 1.2;
 
 // ---- NPC, câu hỏi (DESIGN_BASELINE) ----
 //   talkDistance  khoảng trống từ mép phải người chơi tới tâm NPC để mở hội thoại.

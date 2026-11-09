@@ -31,6 +31,13 @@ export function bossAlive(current = state) {
     || current.hazards.some(hazard => hazard.boss && hazard.alive);
 }
 
+// NPC còn khoá vì thiếu vật phẩm? `requires` = số vật phẩm chính (TQP-ENGINE E6),
+// `extras` = { loại: số } vật phẩm phụ (PH-ENGINE E6).
+export function npcLocked(npc, current = state) {
+  if (current.itemsCollected < (npc.requires || 0)) return true;
+  return Object.entries(npc.extras || {}).some(([kind, count]) => (current.extraCollected[kind] || 0) < count);
+}
+
 // Trạng thái khe kỹ năng của lượt chơi (màn có LEVEL.skills). `owned` = phần
 // thưởng đã nhận (tiến trình) có định nghĩa kỹ năng; phần còn lại do chương tạo.
 function createSkillState(rewards) {
@@ -107,6 +114,13 @@ export function createLevelState(options = {}) {
       // Đang gánh (MHD-ENGINE E4) / loại vật đang cầm trên tay (E1).
       burden: Boolean(burdenSpec),
       carrying: null,
+      // Đòn gồng (PH-ENGINE E1): giây đã giữ, đã đủ lực, phải thả phím mới tích lại,
+      // cú vung hiện tại là đòn gồng. Đang cưỡi (E2).
+      chargeTime: 0,
+      charged: false,
+      chargeBlocked: false,
+      chargedSwing: false,
+      mounted: false,
       // Chỗ đứng vững cuối cùng { x, feetY } — rơi sông thì hiện lại ở đây (LND-ENGINE E1).
       safeSpot: null,
       // Animation đang phát { name, time } — xem animation.js.
@@ -121,6 +135,11 @@ export function createLevelState(options = {}) {
     hazards: [],
     holes: [],
     items: [],
+    // Vật phẩm phụ (PH-ENGINE E6) + số đã nhặt theo loại; mồi nhử (E4); trâu đang cưỡi (E2).
+    extras: [],
+    extraCollected: {},
+    decoys: [],
+    mount: null,
     // Bình máu rơi khi hạ địch (LND-ENGINE E4b — combat.js dropHeal).
     pickups: [],
     // Vật người chơi ném đang bay, hiệu ứng lúc vỡ (MHD-ENGINE E1 — carry.js).

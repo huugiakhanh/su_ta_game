@@ -85,6 +85,7 @@ def test_save_time_passes_stats(client):
     {"level_id": 304, "clear_time": 60},          # chương 3 chỉ có 301–303
     {"level_id": 404, "clear_time": 60},          # chương 4 chỉ có 401–403
     {"level_id": 504, "clear_time": 60},          # chương 5 chỉ có 501–503
+    {"level_id": 604, "clear_time": 60},          # chương 6 chỉ có 601–603
     {"level_id": "101", "clear_time": 60},        # sai kiểu
     {"level_id": 101, "clear_time": 0},
     {"level_id": 101, "clear_time": -5},
@@ -161,6 +162,52 @@ def test_mai_hac_de_achievement_rules():
     assert not rules["TQP_SPEED"](ctx(fast))
 
 
+# PH-SKELETON: 3 màn Phùng Hưng đi qua render_chapter_level().
+@pytest.mark.parametrize("url, level", [
+    ("/gameplay/levels/phung-hung", 1),
+    ("/gameplay/levels/phung-hung/2", 2),
+    ("/gameplay/levels/phung-hung/3", 3),
+])
+def test_phung_hung_level_routes(client, url, level):
+    response = client.get(url)
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert f'data-level="{level}"' in page
+    assert "js/levels/phung-hung/main.js" in page
+    assert "mai-hac-de/main.js" not in page
+
+
+@pytest.mark.parametrize("level_id", [601, 602, 603])
+def test_save_time_accepts_phung_hung_levels(client, level_id):
+    login(client)
+    response = client.post("/api/game/save-time", json={"level_id": level_id, "clear_time": 60})
+    assert response.status_code == 200
+    assert client.saved[-1][1] == level_id
+
+
+def test_progress_put_chapter_6(client, monkeypatch):
+    monkeypatch.setattr(api, "known_reward_ids", lambda chapter_id: {"SK_PH_FIRE_DRUM"} if chapter_id == 6 else set())
+    login(client)
+    data = {**GOOD_PROGRESS, "rewards": ["SK_PH_FIRE_DRUM"]}
+    assert client.put("/api/game/progress/6", json=data).status_code == 200
+    assert client.progress_saved == [(USER["id"], 6, data)]
+
+
+# PH-SKELETON: luật thành tựu chương 6 (migration 011, PH-00 mục 8).
+def test_phung_hung_achievement_rules():
+    from backend.services.game_service import ACHIEVEMENT_RULES as rules
+
+    def ctx(best_times):
+        return {"best_times": best_times, "stats": {}}
+
+    fast = {601: 200.0, 602: 300.0, 603: 399.0}
+    assert rules["PH_CLEAR_1"](ctx({601: 90.0})) and not rules["PH_CLEAR_2"](ctx({601: 90.0}))
+    assert rules["PH_CHAPTER"](ctx({603: 300.0}))
+    assert rules["PH_SPEED"](ctx(fast))                        # 899 s < 15 phút
+    assert not rules["PH_SPEED"](ctx({**fast, 603: 400.0}))    # đúng 900 s -> chưa đạt
+    assert not rules["MHD_SPEED"](ctx(fast))
+
+
 # ---- Tiến trình chương (SUTA-DB-01) ----
 
 GOOD_PROGRESS = {"score": 2500, "books": 5, "rescued": 0, "level1Complete": True, "level2Complete": False,
@@ -197,7 +244,7 @@ def test_progress_put_chapter_2(client, monkeypatch):
     data = {**GOOD_PROGRESS, "rewards": ["BUFF_BT_CRIT"]}
     assert client.put("/api/game/progress/2", json=data).status_code == 200
     assert client.progress_saved == [(USER["id"], 2, data)]
-    assert client.get("/api/game/progress/6").status_code == 404
+    assert client.get("/api/game/progress/7").status_code == 404
 
 
 def test_progress_put_normalizes(client):
@@ -244,6 +291,8 @@ def test_progress_put_rejects_bad_payload(client, patch):
     ("level-403", (None, 403)),
     ("chapter-5", (5, None)),
     ("level-503", (None, 503)),
+    ("chapter-6", (6, None)),
+    ("level-603", (None, 603)),
 ])
 def test_leaderboard_scope(client, monkeypatch, scope, expected):
     calls = []
@@ -255,7 +304,7 @@ def test_leaderboard_scope(client, monkeypatch, scope, expected):
     assert calls == [(*expected, USER["id"])]
 
 
-@pytest.mark.parametrize("scope", ["chapter-6", "level-104", "level-204", "level-304", "level-404", "level-504", "level-", "level-abc", "foo", "chapter-1x"])
+@pytest.mark.parametrize("scope", ["chapter-7", "level-104", "level-204", "level-304", "level-404", "level-504", "level-604", "level-", "level-abc", "foo", "chapter-1x"])
 def test_leaderboard_bad_scope(client, scope):
     assert client.get(f"/api/game/leaderboard?scope={scope}").status_code == 400
 

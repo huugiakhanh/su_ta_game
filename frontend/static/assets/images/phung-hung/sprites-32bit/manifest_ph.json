@@ -1,0 +1,591 @@
+{
+  "chapter": "phung-hung",
+  "version": "32.A2",
+  "density": 4,
+  "pivot": "bottom-center",
+  "facing": "right",
+  "assets": [
+    {
+      "id": "NPC_PHUNG_HUNG",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_PHUNG_HUNG/npc_phung_hung_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_PHUNG_HUNG/npc_phung_hung_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "EN_PH_BUFFALO",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 96,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "charge",
+          "file": "enemy/EN_PH_BUFFALO/en_ph_buffalo_charge.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "blocked",
+          "file": "enemy/EN_PH_BUFFALO/en_ph_buffalo_blocked.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "ride",
+          "file": "enemy/EN_PH_BUFFALO/en_ph_buffalo_ride.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "EN_PH_TANG_SPEARMAN",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_PH_TANG_SPEARMAN/en_ph_tang_spearman_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_PH_TANG_SPEARMAN/en_ph_tang_spearman_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_PH_TANG_SPEARMAN/en_ph_tang_spearman_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_PH_TANG_SPEARMAN/en_ph_tang_spearman_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_PH_TANG_SPEARMAN/en_ph_tang_spearman_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "EN_TIGER",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_TIGER/en_tiger_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "run",
+          "file": "enemy/EN_TIGER/en_tiger_run.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_TIGER/en_tiger_attack_01.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_TIGER/en_tiger_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_TIGER/en_tiger_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "warn",
+          "file": "enemy/EN_TIGER/en_tiger_warn.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "pounce",
+          "file": "enemy/EN_TIGER/en_tiger_pounce.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "stuck",
+          "file": "enemy/EN_TIGER/en_tiger_stuck.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_01 A2. Original five strips copied byte for byte. Warn and pounce await review."
+    },
+    {
+      "id": "ITEM_LND_HEAL",
+      "category": "item",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "item/ITEM_LND_HEAL/item_lnd_heal_idle.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json.",
+      "design_baseline": true,
+      "visible_bbox": {
+        "x": 3.5,
+        "y": 2.25,
+        "w": 9,
+        "h": 12.75
+      }
+    },
+    {
+      "id": "PJ_CROSSBOW_BOLT",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 8,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "projectile/PJ_CROSSBOW_BOLT/pj_crossbow_bolt_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A2: short right-facing bolt with iron tip and feather tail."
+    },
+    {
+      "id": "EN_TANG_SHIELD_GUARD",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "blocked",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_blocked.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "shield_burn",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_shield_burn.png",
+          "frames": 8,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "bare_idle",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_bare_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "bare_walk",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_bare_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "bare_attack_01",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_bare_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_TANG_SHIELD_GUARD/en_tang_shield_guard_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "MHD_ART_03 Gate C1 candidate. See SPRITE_REPORT_MHD_32.md."
+    },
+    {
+      "id": "PROP_TQP_ARCHER_TREE",
+      "category": "prop",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 112,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "prop\\PROP_TQP_ARCHER_TREE\\prop_tqp_archer_tree_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A2 candidate; image_gen sources and measured QA in meta/a2. Pending visual review. See SPRITE_REPORT_TQP_32.md."
+    },
+    {
+      "id": "PORTRAIT_PHUNG_HUNG",
+      "category": "portrait",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_PHUNG_HUNG/portrait_phung_hung_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_01 A2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "EN_PH_TANG_HUNTER",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_PH_TANG_HUNTER/en_ph_tang_hunter_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_PH_TANG_HUNTER/en_ph_tang_hunter_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_PH_TANG_HUNTER/en_ph_tang_hunter_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_PH_TANG_HUNTER/en_ph_tang_hunter_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_01 A2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "OB_PH_SCARECROW",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_PH_SCARECROW/ob_ph_scarecrow_idle.png",
+          "frames": 4,
+          "fps": 6,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "down",
+          "file": "obstacle/OB_PH_SCARECROW/ob_ph_scarecrow_down.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_01 A2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "OB_PH_SALT_CART",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "roll",
+          "file": "obstacle/OB_PH_SALT_CART/ob_ph_salt_cart_roll.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "obstacle/OB_PH_SALT_CART/ob_ph_salt_cart_break.png",
+          "frames": 5,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_01 A2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "OB_PH_LATERITE_ROCK",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_PH_LATERITE_ROCK/ob_ph_laterite_rock_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "warn",
+          "file": "obstacle/OB_PH_LATERITE_ROCK/ob_ph_laterite_rock_warn.png",
+          "frames": 4,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "fall",
+          "file": "obstacle/OB_PH_LATERITE_ROCK/ob_ph_laterite_rock_fall.png",
+          "frames": 4,
+          "fps": 16,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "landed",
+          "file": "obstacle/OB_PH_LATERITE_ROCK/ob_ph_laterite_rock_landed.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "obstacle/OB_PH_LATERITE_ROCK/ob_ph_laterite_rock_break.png",
+          "frames": 5,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_01 A2. See SPRITE_REPORT_PH_32.md."
+    },
+    {
+      "id": "OB_PH_FENCE",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_PH_FENCE/ob_ph_fence_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "obstacle/OB_PH_FENCE/ob_ph_fence_break.png",
+          "frames": 5,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_01 A2. See SPRITE_REPORT_PH_32.md."
+    }
+  ]
+}

@@ -353,6 +353,34 @@ export function drawMud() {
   });
 }
 
+// Hào chông (PH-ENGINE E5): ảnh `CHAPTER.tiles.spikes` (prop map, có trong mapProps)
+// lát ngang, đỉnh ảnh ở GROUND_Y + `spikesTop`; chưa có asset thì răng chông dự phòng.
+function drawSpikes(hole, left, width) {
+  const prop = images.maps.props?.[CHAPTER.tiles?.spikes];
+  const depth = VIEW_H - GROUND_Y;
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(left, GROUND_Y, width, depth);
+  ctx.clip();
+  ctx.fillStyle = WATER_BANK;
+  ctx.fillRect(left, GROUND_Y, width, depth);
+  if (prop?.image) {
+    const w = mapWidth(prop.image);
+    const h = mapHeight(prop.image);
+    const camera = Math.round(state.cameraX);
+    const top = GROUND_Y + (CHAPTER.tiles.spikesTop || 0);
+    for (let x = Math.floor(hole.x / w) * w; x < hole.x + hole.w; x += w) {
+      drawMapImage(ctx, prop.image, 0, 0, w, h, x - camera, top);
+    }
+  } else {
+    ctx.fillStyle = '#b9b08a';
+    for (let x = left; x < left + width; x += 8) {
+      for (let row = 0; row < 8; row++) ctx.fillRect(x + 4 - Math.ceil(row / 2), GROUND_Y + 6 + row, 1 + Math.ceil(row / 2) * 2, 1);
+    }
+  }
+  ctx.restore();
+}
+
 export function drawHoles() {
   const tileset = images.maps.tileset;
   const camera = Math.round(state.cameraX);
@@ -362,6 +390,10 @@ export function drawHoles() {
     if (left + width < -24 || left > VIEW_W + 24) return;
     if (hole.water) {
       drawWater(hole, left, width);
+      return;
+    }
+    if (hole.spikes) {
+      drawSpikes(hole, left, width);
       return;
     }
     const depth = VIEW_H - GROUND_Y;

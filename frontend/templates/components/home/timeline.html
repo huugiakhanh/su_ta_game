@@ -80,11 +80,12 @@
                     <div class="t-year">Năm 713</div>
                 </div>
 
-                <div class="t-item t-bottom">
+                {# HOME-UNLOCK: mở khi đã qua chương 5 (PH-L1). #}
+                <div class="t-item t-bottom" data-unlock-after="5" data-hero="Phùng Hưng" data-route="/gameplay/levels/phung-hung">
                     <div class="t-year">Năm 791</div>
                     <div class="t-dot"></div>
                     <div class="t-card locked">
-                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <div class="lock-overlay">🔒 Qua chương Mai Hắc Đế</div>
                         <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/phung_hung.webp') }}" alt="Phùng Hưng" loading="lazy" decoding="async">
                         <div class="t-info">
                             <h4>Phùng Hưng</h4>

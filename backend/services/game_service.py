@@ -9,6 +9,7 @@ CHAPTER_BT_LEVELS = (201, 202, 203)
 CHAPTER_LND_LEVELS = (301, 302, 303)
 CHAPTER_TQP_LEVELS = (401, 402, 403)
 CHAPTER_MHD_LEVELS = (501, 502, 503)
+CHAPTER_PH_LEVELS = (601, 602, 603)
 # DESIGN_BASELINE (task card D9; chương 2: BT-00 mục 9; chương 3: LND-00 mục 9; chương 4: TQP-00 mục 9; chương 5: MHD-00 mục 9): tổng thời gian tốt nhất
 # 3 màn của chương dưới mốc này -> thành tựu "thần tốc" của chương.
 SPEED_LIMIT_SECONDS = 15 * 60
@@ -63,6 +64,11 @@ ACHIEVEMENT_RULES = {
     "MHD_CLEAR_2": _cleared(502),
     "MHD_CHAPTER": _cleared(503),
     "MHD_SPEED": _speed_for(CHAPTER_MHD_LEVELS),
+    # Chương 6 Phùng Hưng (migration 011).
+    "PH_CLEAR_1": _cleared(601),
+    "PH_CLEAR_2": _cleared(602),
+    "PH_CHAPTER": _cleared(603),
+    "PH_SPEED": _speed_for(CHAPTER_PH_LEVELS),
 }
 
 

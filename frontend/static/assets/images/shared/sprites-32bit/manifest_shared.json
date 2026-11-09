@@ -104,6 +104,32 @@
           "loop": true,
           "hit_frame": null,
           "frame_w": 80
+        },
+        {
+          "name": "charge_hold",
+          "file": "player/PLAYER_MALE/player_male_charge_hold.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null,
+          "frame_w": 80
+        },
+        {
+          "name": "charge_strike",
+          "file": "player/PLAYER_MALE/player_male_charge_strike.png",
+          "frames": 9,
+          "fps": 21,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "ride",
+          "file": "player/PLAYER_MALE/player_male_ride.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
         }
       ],
       "qa_notes": "PLAYER_SWORD v2 Gate B 2026-11-04: complete sword bundle; pending user approval. Canonical master/rotation, near N arm above torso and opposite F shoulder; death last frames release sword. Alpha 0/255; margins >=4; one 8-connected component/frame; zero colors outside chapter palette. Players 36 colors each, icon 32; baseline 187; jump exactly 3; attack 9@21 hit4, frame9 equals idle1. Male idle/attack byte-identical approved A R2. Per-frame angle/blade/shoulders/margins: meta/sword_v2/B/qa.json and verification.json. No frontend integration. | Approved by user 2026-11-04; integrated into frontend shared (IN_GAME)."
@@ -210,6 +236,32 @@
           "loop": true,
           "hit_frame": null,
           "frame_w": 80
+        },
+        {
+          "name": "charge_hold",
+          "file": "player/PLAYER_FEMALE/player_female_charge_hold.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null,
+          "frame_w": 80
+        },
+        {
+          "name": "charge_strike",
+          "file": "player/PLAYER_FEMALE/player_female_charge_strike.png",
+          "frames": 9,
+          "fps": 21,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "ride",
+          "file": "player/PLAYER_FEMALE/player_female_ride.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
         }
       ],
       "qa_notes": "PLAYER_SWORD v2 Gate B 2026-11-04: complete sword bundle; pending user approval. Canonical master/rotation, near N arm above torso and opposite F shoulder; death last frames release sword. Alpha 0/255; margins >=4; one 8-connected component/frame; zero colors outside chapter palette. Players 36 colors each, icon 32; baseline 187; jump exactly 3; attack 9@21 hit4, frame9 equals idle1. Male idle/attack byte-identical approved A R2. Per-frame angle/blade/shoulders/margins: meta/sword_v2/B/qa.json and verification.json. No frontend integration. | Approved by user 2026-11-04; integrated into frontend shared (IN_GAME)."
@@ -279,6 +331,60 @@
         }
       ],
       "qa_notes": "TT-HIBIT-02 approved by user on 2026-10-02; pending integration"
+    },
+    {
+      "id": "FX_CHARGE_AURA",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 96,
+      "frame_h": 72,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "hold_back",
+          "file": "fx/FX_CHARGE_AURA/fx_charge_aura_hold_back.png",
+          "frames": 8,
+          "fps": 14,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "hold_front",
+          "file": "fx/FX_CHARGE_AURA/fx_charge_aura_hold_front.png",
+          "frames": 8,
+          "fps": 14,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "build_back",
+          "file": "fx/FX_CHARGE_AURA/fx_charge_aura_build_back.png",
+          "frames": 7,
+          "fps": 13,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "build_front",
+          "file": "fx/FX_CHARGE_AURA/fx_charge_aura_build_front.png",
+          "frames": 7,
+          "fps": 13,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "ready_burst",
+          "file": "fx/FX_CHARGE_AURA/fx_charge_aura_ready_burst.png",
+          "frames": 6,
+          "fps": 24,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "PH_ART_FX_CHARGE Gate F1 + F2, approved by user 2026-11-09. See SPRITE_REPORT_PH_32.md."
     }
   ]
 }

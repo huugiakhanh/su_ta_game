@@ -62,6 +62,7 @@ def test_pages_render(client):
     assert client.get("/gameplay/levels/ly-nam-de/3").status_code == 200
     assert client.get("/gameplay/levels/trieu-quang-phuc/3").status_code == 200
     assert client.get("/gameplay/levels/mai-hac-de/3").status_code == 200
+    assert client.get("/gameplay/levels/phung-hung/3").status_code == 200
 
 
 def test_migrations_are_idempotent(client):
@@ -70,7 +71,7 @@ def test_migrations_are_idempotent(client):
         assert run_migrations() == []
     assert query("SELECT version FROM schema_migrations ORDER BY version") == [
         ("001_baseline",), ("002_user_avatar",), ("003_quiz_results",), ("004_user_gender",),
-        ("005_ba_trieu",), ("006_ba_trieu_rewards",), ("007_ly_nam_de",), ("008_trieu_quang_phuc",), ("009_mai_hac_de",), ("010_mai_hac_de_rename",)]
+        ("005_ba_trieu",), ("006_ba_trieu_rewards",), ("007_ly_nam_de",), ("008_trieu_quang_phuc",), ("009_mai_hac_de",), ("010_mai_hac_de_rename",), ("011_phung_hung",)]
 
 
 def test_password_is_hashed_and_login_works(client):
@@ -135,7 +136,7 @@ def test_leaderboard_uses_best_per_level(client):
     board = result["data"]
     assert [(row["rank"], row["total_score"], row["total_time"]) for row in board] == [(1, 800, 120.0), (2, 500, 90.0)]
     # Toàn game: 3 màn mỗi chương — Trưng Trắc, Bà Triệu (005), Lý Nam Đế (007), Triệu Việt Vương (008).
-    assert result["me"]["rank"] == 1 and result["levels_total"] == 15
+    assert result["me"]["rank"] == 1 and result["levels_total"] == 18
 
 
 def test_leaderboard_scopes_and_me_outside_top(client):
@@ -246,6 +247,23 @@ def test_mai_hac_de_rewards_and_achievements(client):
     assert {a["code"] for a in last["new_achievements"]} == {"MHD_CHAPTER", "MHD_SPEED"}
     gold, gems = query("SELECT gold, gems FROM users")[0]
     assert (gold, gems) == (208 + 311 + 415 + 103 + 103, 14 + 20 + 10)
+
+
+def test_phung_hung_rewards_and_achievements(client):
+    # PH-SKELETON (migration 011): qua 3 màn chương 6 -> 250/373/498 vàng + 16 KC, 4 thành tựu PH_*.
+    assert query("SELECT id, first_clear_gold, first_clear_gems FROM levels WHERE chapter_id = 6 ORDER BY id") == [
+        (601, 250, 0), (602, 373, 0), (603, 498, 16)]
+    assert query("SELECT id FROM rewards WHERE chapter_id = 6 ORDER BY id") == [
+        ("BUFF_PH_POWER",), ("SK_PH_FIRE_DRUM",), ("SK_PH_SUPPLY_CUT",)]
+    register_and_login(client)
+    first = save_time(client, 601, 200, 500, {"hits_taken": 3})
+    assert first["gold_gained"] == 250 + 124
+    assert [a["code"] for a in first["new_achievements"]] == ["PH_CLEAR_1"]
+    assert [a["code"] for a in save_time(client, 602, 300)["new_achievements"]] == ["PH_CLEAR_2"]
+    last = save_time(client, 603, 350)
+    assert {a["code"] for a in last["new_achievements"]} == {"PH_CHAPTER", "PH_SPEED"}
+    gold, gems = query("SELECT gold, gems FROM users")[0]
+    assert (gold, gems) == (250 + 373 + 498 + 124 + 124, 16 + 20 + 10)
 
 
 def test_mai_hac_de_progress_keeps_rescued(client):

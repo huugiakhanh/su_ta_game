@@ -2,7 +2,7 @@
 // tĩnh, hazard, đạn, quân địch, NPC. Bảng ánh xạ asset lấy từ CHAPTER.sprites.
 
 import { images } from '../assets.js';
-import { state, bossAlive, enemyArtKey } from '../state.js';
+import { state, bossAlive, enemyArtKey, npcLocked } from '../state.js';
 import { platformActive } from '../entities.js';
 import { getAnimMeta, frameIndex } from '../animation.js';
 import { VIEW_W, GROUND_Y, PROJECTILE_MAX_RANGE, PROJECTILE_FADE_RANGE, ITEM_BOB_AMPLITUDE, HEAL_PICKUP, HEART_ICON } from '../config.js';
@@ -109,6 +109,26 @@ export function drawItems(time) {
   });
 }
 
+// Vật phẩm phụ (PH-ENGINE E6): strip CHAPTER.extraItems[kind].sprite, như vật phẩm chính.
+export function drawExtras(time) {
+  state.extras.forEach((item, index) => {
+    if (item.collected || item.hidden) return;
+    const x = Math.round(item.x - state.cameraX);
+    if (x < -36 || x > VIEW_W + 36) return;
+    const y = Math.round(item.y) + Math.round(Math.sin(time * 4 + index) * ITEM_BOB_AMPLITUDE);
+    const spec = CHAPTER.extraItems[item.kind];
+    const prop = images.maps.props[spec.sprite];
+    if (!prop) {
+      ctx.fillStyle = '#c9a0ff';
+      ctx.fillRect(x - 8, y - 8, 16, 16);
+      return;
+    }
+    const { frame_w: fw = mapWidth(prop.image), frame_h: fh = mapHeight(prop.image), frames = 1 } = prop.asset;
+    const frame = Math.floor(time * (spec.fps ?? 8) + index) % frames;
+    drawMapImage(ctx, prop.image, frame * fw, 0, fw, fh, x - fw / 2, y - fh / 2);
+  });
+}
+
 // Bình máu rơi (LND-ENGINE E4b): sprite `CHAPTER.pickups.heal` ({ id, anim }) nếu
 // chương có, không thì icon tim chung ICON_HUD_HEART; nháy HEAL_PICKUP.blink giây cuối.
 export function drawPickups(time) {
@@ -159,6 +179,25 @@ export function drawRunners() {
   state.runners.forEach(runner => {
     drawPiece(spec.id, spec.anim, runner.age, runner.x, runner.footY, spec.w ?? 16, spec.h ?? 32, runner.direction);
   });
+}
+
+// Mồi nhử (PH-ENGINE E4): `idle` khi dựng, `down` khi đổ; thiếu ảnh thì hộp dự phòng.
+export function drawDecoys(time) {
+  state.decoys.forEach(decoy => {
+    if (decoy.sprite) drawPiece(decoy.sprite, decoy.up ? 'idle' : 'down', time, decoy.x, decoy.footY, decoy.w, decoy.up ? decoy.h : 6);
+    else drawPlaceholder({ x: decoy.x - decoy.w / 2, y: decoy.footY - (decoy.up ? decoy.h : 6), w: decoy.w, h: decoy.up ? decoy.h : 6 });
+  });
+}
+
+// Trâu đang cưỡi hoặc vừa chạy đi (PH-ENGINE E2), vẽ trước người chơi.
+export function drawMount() {
+  const mount = state.mount;
+  if (!mount) return;
+  const p = state.player;
+  const sprite = CHAPTER.sprites.hazards[mount.sprite];
+  const x = mount.riding ? p.x + p.w / 2 : mount.x;
+  const footY = mount.riding ? p.y + p.h : mount.footY;
+  drawPiece(sprite.id, mount.spec.anims.ride, mount.age, x, footY, sprite.w, sprite.h, mount.dir);
 }
 
 // Toạ độ world (trái, trên) để vẽ ảnh vật cản x1 sao cho PHẦN NHÌN THẤY trùng
@@ -374,7 +413,7 @@ export function drawNpcs(time) {
   [...state.npcs, state.guide].filter(Boolean).forEach(npc => {
     if (npc.fade <= 0) return;
     // Chưa nhặt đủ vật phẩm để gặp (TQP-ENGINE E6): vẽ mờ.
-    const alpha = npc.fade * (state.itemsCollected < (npc.requires || 0) ? .45 : 1);
+    const alpha = npc.fade * (npcLocked(npc) ? .45 : 1);
     const sprite = CHAPTER.sprites.npcs[npc.id];
     const pivotX = Math.round(npc.centerX - state.cameraX);
     if (pivotX < -60 || pivotX > VIEW_W + 60) return;

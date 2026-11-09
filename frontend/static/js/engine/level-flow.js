@@ -4,7 +4,7 @@
 // chương gắn qua LEVEL.update (trận boss), LEVEL.events (sự kiện màn),
 // LEVEL.cutscene (thay update khi state.cutscene) và CHAPTER.skills.
 
-import { state, bossAlive } from './state.js';
+import { state, bossAlive, npcLocked } from './state.js';
 import { pressed } from './input.js';
 import { showMessage, tickMessage, updateHud } from './ui.js';
 import { aabb, groundYAt } from './geometry.js';
@@ -181,6 +181,18 @@ function collectItems(p) {
       showMessage(CHAPTER.text.itemPicked(state.itemsCollected, state.items.length));
     }
   });
+  // Vật phẩm phụ (PH-ENGINE E6).
+  state.extras.forEach(item => {
+    if (item.collected || item.hidden) return;
+    const hitbox = { x: item.x - ITEM_HITBOX.w / 2, y: item.y - ITEM_HITBOX.h / 2, w: ITEM_HITBOX.w, h: ITEM_HITBOX.h };
+    if (!aabb(p, hitbox)) return;
+    item.collected = true;
+    state.extraCollected[item.kind] = (state.extraCollected[item.kind] || 0) + 1;
+    state.score += 200;
+    playSfx('item');
+    const total = state.extras.filter(extra => extra.kind === item.kind).length;
+    showMessage(CHAPTER.extraItems[item.kind].picked(state.extraCollected[item.kind], total));
+  });
 }
 
 // Người được giải cứu chạy thoát (MHD-ENGINE E5): chỉ vẽ, hết `life` thì mất.
@@ -264,10 +276,10 @@ function updateMeetings(p, dt) {
   }
   const distance = npc.centerX - (p.x + p.w);
   // NPC khoá theo số vật phẩm (TQP-ENGINE E6): thiếu thì giữ lại + nhắc, không nói chuyện.
-  if (state.itemsCollected < (npc.requires || 0)) {
+  if (npcLocked(npc)) {
     if (distance <= NPC_RESCUE.hintRange && state.rescueHintTimer <= 0 && CHAPTER.text.npcLocked) {
       state.rescueHintTimer = NPC_RESCUE.hintInterval;
-      showMessage(CHAPTER.text.npcLocked(npc.requires, state.itemsCollected), 2400);
+      showMessage(CHAPTER.text.npcLocked(npc.requires, state.itemsCollected, npc.extras), 2400);
     }
     return false;
   }

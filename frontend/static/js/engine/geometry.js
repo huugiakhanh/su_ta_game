@@ -30,9 +30,12 @@ const COLUMNS_PER_CHUNK = CHUNK_W / TERRAIN_CELL;
 // thì hiện lại ở chỗ đứng vững cuối cùng (damage.js respawnAfterFall).
 // '=' ở hàng cuối = cột SÌNH (TQP-ENGINE E1): đất đi được, cao bằng mặt đất,
 // làm chậm + lún người chơi (player.js) — dải sình: terrainMud() / inMud().
+// '^' ở hàng cuối = cột CHÔNG (PH-ENGINE E5): hố có cờ chông, rơi xuống cũng hiện
+// lại ở chỗ đứng vững cuối cùng như sông.
 export function buildTerrain(placements, chunks) {
   const levels = new Int8Array(chunks * COLUMNS_PER_CHUNK);
   const water = new Uint8Array(chunks * COLUMNS_PER_CHUNK);
+  const spikes = new Uint8Array(chunks * COLUMNS_PER_CHUNK);
   const mud = new Uint8Array(chunks * COLUMNS_PER_CHUNK);
   placements.forEach(({ chunk, rows, shift = 0 }) => {
     rows.forEach(row => {
@@ -50,6 +53,7 @@ export function buildTerrain(placements, chunks) {
       // Cột sình: không có '#' nhưng vẫn là mặt đất (level 0).
       levels[(chunk - 1) * COLUMNS_PER_CHUNK + target] = bottom === '=' ? 0 : height - 1;
       water[(chunk - 1) * COLUMNS_PER_CHUNK + target] = bottom === '~' ? 1 : 0;
+      spikes[(chunk - 1) * COLUMNS_PER_CHUNK + target] = bottom === '^' ? 1 : 0;
       mud[(chunk - 1) * COLUMNS_PER_CHUNK + target] = bottom === '=' ? 1 : 0;
     }
   });
@@ -57,7 +61,7 @@ export function buildTerrain(placements, chunks) {
     const step = Math.abs(Math.max(levels[col], 0) - Math.max(levels[col - 1], 0));
     if (step > TERRAIN_MAX_STEP) console.warn(`terrain x=${col * TERRAIN_CELL}: bậc chênh ${step} ô > ${TERRAIN_MAX_STEP}`);
   }
-  return { levels, water, mud };
+  return { levels, water, mud, spikes };
 }
 
 // Độ cao (số ô) của cột chứa x; -1 = hố. Màn phẳng / ngoài màn -> 0.
@@ -67,16 +71,17 @@ export function terrainLevelAt(worldXPosition) {
 }
 
 // Các hố của địa hình (chuỗi cột -1 liền nhau, cùng loại) dạng { x, w, water }
-// như state.holes; `water` = khe sông (cột '~').
+// như state.holes; `water` = khe sông (cột '~'), `spikes` = hào chông (cột '^').
 export function terrainHoles() {
   const holes = [];
   if (!terrain) return holes;
   terrain.levels.forEach((level, col) => {
     if (level >= 0) return;
     const water = Boolean(terrain.water?.[col]);
+    const spikes = Boolean(terrain.spikes?.[col]);
     const last = holes[holes.length - 1];
-    if (last && last.x + last.w === col * TERRAIN_CELL && last.water === water) last.w += TERRAIN_CELL;
-    else holes.push({ x: col * TERRAIN_CELL, w: TERRAIN_CELL, water });
+    if (last && last.x + last.w === col * TERRAIN_CELL && last.water === water && last.spikes === spikes) last.w += TERRAIN_CELL;
+    else holes.push({ x: col * TERRAIN_CELL, w: TERRAIN_CELL, water, spikes });
   });
   return holes;
 }
