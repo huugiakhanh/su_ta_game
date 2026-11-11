@@ -71,7 +71,7 @@ def test_migrations_are_idempotent(client):
         assert run_migrations() == []
     assert query("SELECT version FROM schema_migrations ORDER BY version") == [
         ("001_baseline",), ("002_user_avatar",), ("003_quiz_results",), ("004_user_gender",),
-        ("005_ba_trieu",), ("006_ba_trieu_rewards",), ("007_ly_nam_de",), ("008_trieu_quang_phuc",), ("009_mai_hac_de",), ("010_mai_hac_de_rename",), ("011_phung_hung",)]
+        ("005_ba_trieu",), ("006_ba_trieu_rewards",), ("007_ly_nam_de",), ("008_trieu_quang_phuc",), ("009_mai_hac_de",), ("010_mai_hac_de_rename",), ("011_phung_hung",), ("012_ngo_quyen",)]
 
 
 def test_password_is_hashed_and_login_works(client):
@@ -136,7 +136,7 @@ def test_leaderboard_uses_best_per_level(client):
     board = result["data"]
     assert [(row["rank"], row["total_score"], row["total_time"]) for row in board] == [(1, 800, 120.0), (2, 500, 90.0)]
     # Toàn game: 3 màn mỗi chương — Trưng Trắc, Bà Triệu (005), Lý Nam Đế (007), Triệu Việt Vương (008).
-    assert result["me"]["rank"] == 1 and result["levels_total"] == 18
+    assert result["me"]["rank"] == 1 and result["levels_total"] == 21
 
 
 def test_leaderboard_scopes_and_me_outside_top(client):
@@ -264,6 +264,23 @@ def test_phung_hung_rewards_and_achievements(client):
     assert {a["code"] for a in last["new_achievements"]} == {"PH_CHAPTER", "PH_SPEED"}
     gold, gems = query("SELECT gold, gems FROM users")[0]
     assert (gold, gems) == (250 + 373 + 498 + 124 + 124, 16 + 20 + 10)
+
+
+def test_ngo_quyen_rewards_and_achievements(client):
+    # NQ-SKELETON (migration 012): qua 3 màn chương 7 -> 300/448/598 vàng + 19 KC, 4 thành tựu NQ_*.
+    assert query("SELECT id, first_clear_gold, first_clear_gems FROM levels WHERE chapter_id = 7 ORDER BY id") == [
+        (701, 300, 0), (702, 448, 0), (703, 598, 19)]
+    assert query("SELECT id FROM rewards WHERE chapter_id = 7 ORDER BY id") == [
+        ("BUFF_NQ_SWIFT",), ("SK_NQ_DECOY_BOAT",), ("SK_NQ_IRON_STAKE",)]
+    register_and_login(client)
+    first = save_time(client, 701, 200, 500, {"hits_taken": 3})
+    assert first["gold_gained"] == 300 + 149
+    assert [a["code"] for a in first["new_achievements"]] == ["NQ_CLEAR_1"]
+    assert [a["code"] for a in save_time(client, 702, 300)["new_achievements"]] == ["NQ_CLEAR_2"]
+    last = save_time(client, 703, 350)
+    assert {a["code"] for a in last["new_achievements"]} == {"NQ_CHAPTER", "NQ_SPEED"}
+    gold, gems = query("SELECT gold, gems FROM users")[0]
+    assert (gold, gems) == (300 + 448 + 598 + 149 + 149, 19 + 24 + 12)
 
 
 def test_mai_hac_de_progress_keeps_rescued(client):

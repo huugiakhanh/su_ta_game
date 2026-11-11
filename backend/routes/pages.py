@@ -170,3 +170,19 @@ def phung_hung_level_2():
 @pages_bp.get("/gameplay/levels/phung-hung/3")
 def phung_hung_level_3():
     return render_chapter_level("phung-hung", 3, "Màn 3: Vây phủ Tống Bình")
+
+
+# Chương Ngô Quyền (NQ-SKELETON): khung 3 màn bằng asset mượn, chưa mở trên trang chủ.
+@pages_bp.get("/gameplay/levels/ngo-quyen")
+def ngo_quyen():
+    return render_chapter_level("ngo-quyen", 1, "Màn 1: Hành quân ra Bắc")
+
+
+@pages_bp.get("/gameplay/levels/ngo-quyen/2")
+def ngo_quyen_level_2():
+    return render_chapter_level("ngo-quyen", 2, "Màn 2: Trận địa cọc ngầm")
+
+
+@pages_bp.get("/gameplay/levels/ngo-quyen/3")
+def ngo_quyen_level_3():
+    return render_chapter_level("ngo-quyen", 3, "Màn 3: Đại thắng Bạch Đằng")

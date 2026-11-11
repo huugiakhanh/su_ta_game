@@ -1,0 +1,18 @@
+{% extends "gameplay/base.html" %}
+{# Chương Ngô Quyền — dùng chung 3 màn. Khung chung ở gameplay/base.html. NQ-SKELETON: chưa có khe kỹ năng (NQ-L3). #}
+
+{% block chapter_name %}Ngô Quyền{% endblock %}
+{% block brand %}SUTA · NGÔ QUYỀN{% endblock %}
+{% block canvas_label %}Màn chơi Ngô Quyền{% endblock %}
+{% block item_label %}Quyển Sách Tinh Hoa đã thu thập{% endblock %}
+{% block item_glyph %}📖{% endblock %}
+
+{% block skill_slots %}{% endblock %}
+
+{% block skill_controls %}{% endblock %}
+
+{% block skill_help %}{% endblock %}
+
+{% block chapter_script %}
+  <script type="module" src="{{ url_for('static', filename='js/levels/ngo-quyen/main.js') }}"></script>
+{% endblock %}

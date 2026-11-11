@@ -1,0 +1,602 @@
+[
+  {
+    "id": 1,
+    "question": "Ngô Quyền sinh ra tại vùng đất nào?",
+    "options": [
+      "Chu Diên",
+      "Mê Linh",
+      "Đường Lâm",
+      "Hoa Lư"
+    ],
+    "correct": 2,
+    "explanation": "Ông sinh ra tại Đường Lâm (Sơn Tây, Hà Nội), vùng đất \"hai Vua\"."
+  },
+  {
+    "id": 2,
+    "question": "Cha của Ngô Quyền tên là gì?",
+    "options": [
+      "Ngô Tốn",
+      "Ngô Mân",
+      "Ngô Xương Ngập",
+      "Ngô Nhật Khánh"
+    ],
+    "correct": 1,
+    "explanation": "Ngô Mân là Châu mục Đường Lâm, cha của Ngô Quyền."
+  },
+  {
+    "id": 3,
+    "question": "Ngô Quyền là con rể của nhân vật lịch sử nổi tiếng nào?",
+    "options": [
+      "Khúc Hạo",
+      "Dương Đình Nghệ",
+      "Kiều Công Tiễn",
+      "Đinh Bộ Lĩnh"
+    ],
+    "correct": 1,
+    "explanation": "Ông là nha tướng và được Dương Đình Nghệ gả con gái cho."
+  },
+  {
+    "id": 4,
+    "question": "Trận chiến lịch sử làm nên tên tuổi của Ngô Quyền diễn ra trên con sông nào?",
+    "options": [
+      "Sông Hồng",
+      "Sông Tô Lịch",
+      "Sông Bạch Đằng",
+      "Sông Lam"
+    ],
+    "correct": 2,
+    "explanation": "Trận Bạch Đằng năm 938 là đỉnh cao nghệ thuật quân sự của ông."
+  },
+  {
+    "id": 5,
+    "question": "Quân xâm lược mà Ngô Quyền đánh bại trong trận Bạch Đằng thuộc triều đại nào?",
+    "options": [
+      "Nhà Nam Hán",
+      "Nhà Đường",
+      "Nhà Tống",
+      "Nhà Lương"
+    ],
+    "correct": 0,
+    "explanation": "Ngô Quyền đã đánh tan quân Nam Hán xâm lược."
+  },
+  {
+    "id": 6,
+    "question": "Kẻ đã ám sát Dương Đình Nghệ để đoạt chức Tiết độ sứ là ai?",
+    "options": [
+      "Hoằng Tháo",
+      "Khúc Thừa Mỹ",
+      "Kiều Công Tiễn",
+      "Đỗ Cảnh Thạc"
+    ],
+    "correct": 2,
+    "explanation": "Kiều Công Tiễn phản trắc đã sát hại Dương Đình Nghệ."
+  },
+  {
+    "id": 7,
+    "question": "Kiều Công Tiễn sau khi giết Dương Đình Nghệ đã có hành động bán nước nào?",
+    "options": [
+      "Cắt đất cho giặc",
+      "Chạy sang Nam Hán",
+      "Sai người cầu cứu nhà Nam Hán",
+      "Nộp vũ khí"
+    ],
+    "correct": 2,
+    "explanation": "Bị cô lập, hắn sai người sang cầu cứu quân Nam Hán sang xâm lược."
+  },
+  {
+    "id": 8,
+    "question": "Thái tử nhà Nam Hán chỉ huy đạo quân thủy xâm lược nước ta là ai?",
+    "options": [
+      "Lưu Cung",
+      "Lưu Hoằng Tháo",
+      "Trần Bá Tiên",
+      "Mã Viện"
+    ],
+    "correct": 1,
+    "explanation": "Lưu Hoằng Tháo (Hoằng Tháo) được vua cha cử làm tướng tiên phong."
+  },
+  {
+    "id": 9,
+    "question": "Vua nhà Nam Hán thời điểm quân Nam Hán xâm lược nước ta lần 2 là ai?",
+    "options": [
+      "Lưu Nghiễm (Lưu Cung)",
+      "Tôn Quyền",
+      "Lý Uyên",
+      "Triệu Đà"
+    ],
+    "correct": 0,
+    "explanation": "Lưu Nghiễm tự mình làm tướng đóng quân ở Hải Môn làm hậu thuẫn cho con trai."
+  },
+  {
+    "id": 10,
+    "question": "Khi quân Nam Hán chưa tiến vào bờ, Ngô Quyền đã có hành động quân sự gì đầu tiên?",
+    "options": [
+      "Đắp thành ở cửa biển",
+      "Vượt biển đánh Hải Môn",
+      "Kéo quân ra Bắc giết Kiều Công Tiễn",
+      "Bỏ chạy lên rừng"
+    ],
+    "correct": 2,
+    "explanation": "Ông diệt trừ Kiều Công Tiễn để yên bề hậu phương trước khi đánh ngoại xâm."
+  },
+  {
+    "id": 11,
+    "question": "Để phá thủy quân Nam Hán, Ngô Quyền đã dùng kế sách gì nổi bật nhất?",
+    "options": [
+      "Đóng cọc gỗ bịt sắt dưới lòng sông Bạch Đằng",
+      "Dùng hỏa công đốt thuyền",
+      "Xây đập ngăn sông",
+      "Thả thuốc độc xuống sông"
+    ],
+    "correct": 0,
+    "explanation": "Ông cho chặt gỗ tốt, đẽo nhọn bịt sắt cắm xuống cửa biển làm bẫy ngầm."
+  },
+  {
+    "id": 12,
+    "question": "Chiến thuật của Ngô Quyền phụ thuộc vào hiện tượng tự nhiên nào?",
+    "options": [
+      "Gió mùa Đông Bắc",
+      "Nhật thực",
+      "Chế độ thủy triều",
+      "Động đất"
+    ],
+    "correct": 2,
+    "explanation": "Ông tính toán chính xác chu kỳ lên xuống của thủy triều trên sông Bạch Đằng."
+  },
+  {
+    "id": 13,
+    "question": "Ngô Quyền đã làm gì để dụ địch tiến vào bãi cọc?",
+    "options": [
+      "Cho quân cầm cờ vẫy",
+      "Cho thuyền nhẹ ra khiêu chiến rồi giả vờ thua chạy",
+      "Bỏ lại thuyền bè trống không",
+      "Mắng chửi địch"
+    ],
+    "correct": 1,
+    "explanation": "Kế khiêu chiến giả thua đã đánh trúng sự kiêu ngạo của Hoằng Tháo."
+  },
+  {
+    "id": 14,
+    "question": "Kết quả của trận thủy chiến Bạch Đằng năm 938 là gì?",
+    "options": [
+      "Thắng lợi một nửa",
+      "Hai bên giảng hòa",
+      "Quân Nam Hán bị tiêu diệt hoàn toàn, Hoằng Tháo tử trận",
+      "Ngô Quyền thất bại"
+    ],
+    "correct": 2,
+    "explanation": "Thuyền giặc vỡ nát, Hoằng Tháo chết đuối, quân Nam Hán đại bại."
+  },
+  {
+    "id": 15,
+    "question": "Ý nghĩa lịch sử to lớn nhất của chiến thắng Bạch Đằng năm 938 là gì?",
+    "options": [
+      "Mở rộng lãnh thổ",
+      "Chấm dứt hơn 1000 năm Bắc thuộc, mở ra kỷ nguyên độc lập lâu dài",
+      "Tiêu diệt được giặc cướp biển",
+      "Trả thù cho Dương Đình Nghệ"
+    ],
+    "correct": 1,
+    "explanation": "Trận chiến đánh dấu sự chấm dứt vĩnh viễn ách đô hộ của phong kiến phương Bắc."
+  },
+  {
+    "id": 16,
+    "question": "Sau chiến thắng Bạch Đằng, Ngô Quyền xưng Vương vào năm nào?",
+    "options": [
+      "938",
+      "939",
+      "944",
+      "905"
+    ],
+    "correct": 1,
+    "explanation": "Mùa xuân năm 939, ông xưng Vương (Ngô Vương)."
+  },
+  {
+    "id": 17,
+    "question": "Ngô Quyền đã chọn nơi nào làm kinh đô cho triều đại mới?",
+    "options": [
+      "Đường Lâm",
+      "Hoa Lư",
+      "Cổ Loa",
+      "Thăng Long"
+    ],
+    "correct": 2,
+    "explanation": "Ông chọn Cổ Loa (kinh đô cũ của thời Âu Lạc) làm kinh đô, thể hiện ý chí nối tiếp quốc thống."
+  },
+  {
+    "id": 18,
+    "question": "Ngô Quyền trị vì đất nước được bao nhiêu năm?",
+    "options": [
+      "10 năm",
+      "5 năm",
+      "15 năm",
+      "20 năm"
+    ],
+    "correct": 1,
+    "explanation": "Ông xưng Vương năm 939 và mất năm 944 (trị vì được khoảng 5 năm)."
+  },
+  {
+    "id": 19,
+    "question": "Sau khi Ngô Quyền xưng vương, ông đã bãi bỏ chức vụ gì của chính quyền đô hộ phương Bắc?",
+    "options": [
+      "Thái thú",
+      "Huyện lệnh",
+      "Tiết độ sứ",
+      "Lạc tướng"
+    ],
+    "correct": 2,
+    "explanation": "Xưng Vương là sự khẳng định độc lập hoàn toàn, bãi bỏ chức Tiết độ sứ phụ thuộc phương Bắc."
+  },
+  {
+    "id": 20,
+    "question": "Ai là người đang đóng quân ở Hải Môn, nghe tin Hoằng Tháo chết đã thương khóc, thu tàn quân rút về?",
+    "options": [
+      "Lưu Nghiễm (vua Nam Hán)",
+      "Lục Dận",
+      "Tô Định",
+      "Mã Viện"
+    ],
+    "correct": 0,
+    "explanation": "Vua Lưu Nghiễm đang đóng quân ở Hải Môn nghe tin con chết bèn thương khóc rút quân."
+  },
+  {
+    "id": 21,
+    "question": "Trước trận Bạch Đằng năm 938, sông Bạch Đằng có tên gọi khác là gì?",
+    "options": [
+      "Sông Rừng",
+      "Sông Hồng",
+      "Sông Cả",
+      "Sông Lam"
+    ],
+    "correct": 0,
+    "explanation": "Theo truyền thuyết và dân gian, vùng cửa biển này xưa có tên là sông Rừng."
+  },
+  {
+    "id": 22,
+    "question": "Vợ của Ngô Quyền, con gái Dương Đình Nghệ tên là gì?",
+    "options": [
+      "Dương Thị Như Hoa",
+      "Dương Vân Nga",
+      "Dương Thị (Dương Vương Hậu)",
+      "Ỷ Lan"
+    ],
+    "correct": 2,
+    "explanation": "Bà được Ngô Quyền lập làm Vương Hậu sau khi lên ngôi."
+  },
+  {
+    "id": 23,
+    "question": "Lời bình: 'dùng quân mới họp của đất Việt ta mà phá được trăm vạn quân của Lưu Hoằng Tháo… mưu giỏi mà đánh cũng giỏi' là của sử gia nào nói về Ngô Quyền?",
+    "options": [
+      "Lê Văn Hưu",
+      "Trần Trọng Kim",
+      "Ngô Sĩ Liên",
+      "Phan Huy Chú"
+    ],
+    "correct": 0,
+    "explanation": "Lời bàn của Lê Văn Hưu được chép lại trong Đại Việt sử ký toàn thư."
+  },
+  {
+    "id": 24,
+    "question": "Chế độ cai trị của Ngô Vương được xây dựng theo mô hình nào?",
+    "options": [
+      "Dân chủ",
+      "Cộng hòa",
+      "Triều đình quân chủ tập quyền sơ khai",
+      "Phân phong chư hầu"
+    ],
+    "correct": 2,
+    "explanation": "Ông thiết lập triều đình, đặt bá quan văn võ, quy định triều phục."
+  },
+  {
+    "id": 25,
+    "question": "Sông Bạch Đằng chảy qua địa phận hai tỉnh/thành phố nào ngày nay?",
+    "options": [
+      "Hải Phòng và Quảng Ninh",
+      "Thái Bình và Nam Định",
+      "Hà Nội và Hưng Yên",
+      "Thanh Hóa và Nghệ An"
+    ],
+    "correct": 0,
+    "explanation": "Sông Bạch Đằng là ranh giới tự nhiên giữa Quảng Ninh (thị xã Quảng Yên) và Hải Phòng (huyện Thủy Nguyên)."
+  },
+  {
+    "id": 26,
+    "question": "Trước Ngô Quyền, nhân vật lịch sử nào đã đặt nền móng giành quyền tự chủ đầu thế kỷ 10?",
+    "options": [
+      "Lý Bí",
+      "Khúc Thừa Dụ",
+      "Phùng Hưng",
+      "Triệu Quang Phục"
+    ],
+    "correct": 1,
+    "explanation": "Năm 905, Khúc Thừa Dụ xưng Tiết độ sứ, đặt nền móng cho quyền tự chủ."
+  },
+  {
+    "id": 27,
+    "question": "Sự kiện Ngô Quyền mất (944) đã dẫn đến hệ lụy lịch sử gì sau đó?",
+    "options": [
+      "Đất nước thái bình",
+      "Đất nước bị Nam Hán chiếm lại",
+      "Loạn 12 sứ quân",
+      "Nhường ngôi cho Đinh Bộ Lĩnh"
+    ],
+    "correct": 2,
+    "explanation": "Cái chết của ông và sự chuyên quyền của Dương Tam Kha dẫn đến loạn 12 sứ quân."
+  },
+  {
+    "id": 28,
+    "question": "Ngô Quyền ủy thác con trưởng Ngô Xương Ngập cho ai trước khi mất?",
+    "options": [
+      "Dương Tam Kha",
+      "Kiều Công Hãn",
+      "Đinh Bộ Lĩnh",
+      "Trần Lãm"
+    ],
+    "correct": 0,
+    "explanation": "Ông ủy thác cho em vợ là Dương Tam Kha, nhưng sau đó Dương Tam Kha cướp ngôi."
+  },
+  {
+    "id": 29,
+    "question": "Theo Toàn thư, ai bàn kế đóng cọc bịt sắt dưới cửa biển Bạch Đằng?",
+    "options": [
+      "Ngô Quyền",
+      "Kiều Công Tiễn",
+      "Lưu Hoằng Tháo",
+      "Dương Tam Kha"
+    ],
+    "correct": 0,
+    "explanation": "Toàn thư chép lời Ngô Quyền bàn với tướng tá: đóng cọc lớn vạt nhọn bịt sắt ở cửa biển."
+  },
+  {
+    "id": 30,
+    "question": "Trong 3 lần chiến thắng trên sông Bạch Đằng của dân tộc, trận của Ngô Quyền là lần thứ mấy?",
+    "options": [
+      "Lần thứ 1",
+      "Lần thứ 2",
+      "Lần thứ 3",
+      "Lần thứ 4"
+    ],
+    "correct": 0,
+    "explanation": "Đây là trận Bạch Đằng đầu tiên (lần 2 năm 981 của Lê Hoàn, lần 3 năm 1288 của Trần Hưng Đạo)."
+  },
+  {
+    "id": 31,
+    "question": "Đầu những cây cọc Bạch Đằng được làm thế nào?",
+    "options": [
+      "Vót nhọn và bịt sắt",
+      "Bọc đồng",
+      "Tẩm thuốc độc",
+      "Để nguyên gốc cây"
+    ],
+    "correct": 0,
+    "explanation": "Cọc lớn vót nhọn, đầu bịt sắt, cắm ngầm ở cửa sông."
+  },
+  {
+    "id": 32,
+    "question": "Ngô Quyền bắt đầu rèn luyện và tập hợp lực lượng ở vùng nào trước khi ra Bắc?",
+    "options": [
+      "Đường Lâm (Sơn Tây)",
+      "Ái Châu (Thanh Hóa)",
+      "Hoan Châu (Nghệ An)",
+      "Giao Châu (Hà Nội)"
+    ],
+    "correct": 1,
+    "explanation": "Dưới trướng Dương Đình Nghệ, ông được giao cai quản trấn giữ Ái Châu (Thanh Hóa)."
+  },
+  {
+    "id": 33,
+    "question": "Thời gian từ lúc Ngô Quyền hạ sát Kiều Công Tiễn đến lúc thủy quân Nam Hán kéo sang là bao lâu?",
+    "options": [
+      "Rất ngắn (chỉ vài tháng trong năm 938)",
+      "Vài năm",
+      "Hơn 10 năm",
+      "Không xác định được"
+    ],
+    "correct": 0,
+    "explanation": "Ông hành quân thần tốc, diệt Tiễn trước khi quân Hán kịp tới để dập tắt nội loạn."
+  },
+  {
+    "id": 34,
+    "question": "Thuyền chiến của quân Nam Hán có đặc điểm gì so với thuyền của quân ta?",
+    "options": [
+      "Nhỏ gọn hơn",
+      "Bằng kích thước",
+      "Rất to lớn, cồng kềnh (lâu thuyền)",
+      "Không có buồm"
+    ],
+    "correct": 2,
+    "explanation": "Thuyền giặc to lớn chở được nhiều quân, nhưng lại là điểm yếu chết người khi mắc cạn ở cửa sông hẹp."
+  },
+  {
+    "id": 35,
+    "question": "Đình thờ Ngô Quyền và lăng mộ của ông hiện nay nằm ở đâu?",
+    "options": [
+      "Cổ Loa (Đông Anh, Hà Nội)",
+      "Đường Lâm (Sơn Tây, Hà Nội)",
+      "Thủy Nguyên (Hải Phòng)",
+      "Quảng Yên (Quảng Ninh)"
+    ],
+    "correct": 1,
+    "explanation": "Lăng mộ và đền thờ của ông được đặt tại quê hương Đường Lâm."
+  },
+  {
+    "id": 36,
+    "question": "Ngoài Cổ Loa và Đường Lâm, địa phương nào có nhiều đền thờ Ngô Quyền và các tướng lĩnh của ông nhất?",
+    "options": [
+      "Hải Dương",
+      "Hải Phòng",
+      "Thanh Hóa",
+      "Ninh Bình"
+    ],
+    "correct": 1,
+    "explanation": "Vùng Thủy Nguyên và Hải An (Hải Phòng) gần khu vực sông Bạch Đằng có rất nhiều đền miếu thờ ông và tướng sĩ."
+  },
+  {
+    "id": 37,
+    "question": "Khúc Hạo, người tiền bối của Ngô Quyền, nổi tiếng với chính sách cốt lõi nào?",
+    "options": [
+      "\"Khoan giản an lạc\"",
+      "\"Ngụ binh ư nông\"",
+      "\"Thanh dã\"",
+      "\"Kháng chiến trường kỳ\""
+    ],
+    "correct": 0,
+    "explanation": "Khúc Hạo thi hành chính sách \"Khoan giản an lạc\" để bồi dưỡng sức dân sau ách Bắc thuộc."
+  },
+  {
+    "id": 38,
+    "question": "Đánh giá về Ngô Quyền, Đại Việt sử ký toàn thư chép lời Lê Văn Hưu: 'mưu giỏi mà đánh cũng giỏi'. Câu này nhấn mạnh tài năng gì của ông?",
+    "options": [
+      "Chính trị và Ngoại giao",
+      "Thao lược quân sự và tư duy chiến lược xuất chúng",
+      "Quản lý kinh tế",
+      "Phát triển văn hóa"
+    ],
+    "correct": 1,
+    "explanation": "Lời khen ngợi cho mưu kế dụ địch và cách lợi dụng địa thế Bạch Đằng vô tiền khoáng hậu."
+  },
+  {
+    "id": 39,
+    "question": "Từ khi Triệu Đà thôn tính Âu Lạc (179 TCN) đến chiến thắng Bạch Đằng của Ngô Quyền (938) là khoảng bao nhiêu năm?",
+    "options": [
+      "Hơn 500 năm",
+      "Gần 1000 năm",
+      "Hơn 1110 năm",
+      "800 năm"
+    ],
+    "correct": 2,
+    "explanation": "Hơn 1100 năm Bắc thuộc đã bị Ngô Quyền chấm dứt hoàn toàn."
+  },
+  {
+    "id": 40,
+    "question": "Chiến thắng của Ngô Quyền đã đập tan giấc mộng bành trướng xuống phương Nam của triều đại nào?",
+    "options": [
+      "Nhà Tống",
+      "Nhà Nam Hán",
+      "Nhà Minh",
+      "Nhà Nguyên"
+    ],
+    "correct": 1,
+    "explanation": "Nhà Nam Hán hoảng sợ và từ bỏ hoàn toàn mộng xâm lược nước ta sau trận thua này."
+  },
+  {
+    "id": 41,
+    "question": "Lê Văn Hưu nói quân Hoằng Tháo có \"trăm vạn\". Con số ấy nên hiểu thế nào?",
+    "options": [
+      "Lối nói phóng đại để ca ngợi chiến công",
+      "Số quân chính xác",
+      "Số thuyền",
+      "Số dân Nam Hán"
+    ],
+    "correct": 0,
+    "explanation": "Sử gia dùng lối nói phóng đại; các nhà nghiên cứu ước quân Nam Hán khoảng 2 vạn."
+  },
+  {
+    "id": 42,
+    "question": "Con đường tiến quân của quân Nam Hán vào nước ta chủ yếu bằng đường nào?",
+    "options": [
+      "Chỉ đường bộ",
+      "Chỉ đường thủy qua cửa biển Bạch Đằng",
+      "Đường bộ qua Lạng Sơn",
+      "Đường thủy qua sông Hồng"
+    ],
+    "correct": 1,
+    "explanation": "Chúng tiến công bằng đường thủy qua vịnh Hạ Long tiến vào cửa sông Bạch Đằng."
+  },
+  {
+    "id": 43,
+    "question": "Ngô Quyền mất năm bao nhiêu tuổi?",
+    "options": [
+      "Khoảng 40 tuổi",
+      "Khoảng 47 tuổi",
+      "Khoảng 60 tuổi",
+      "Khoảng 70 tuổi"
+    ],
+    "correct": 1,
+    "explanation": "Ông sinh năm 898, mất năm 944, thọ 47 tuổi."
+  },
+  {
+    "id": 44,
+    "question": "Chức danh \"Tiết độ sứ\" trước thời Ngô Quyền về bản chất mang ý nghĩa gì?",
+    "options": [
+      "Quan cai trị của chính quyền trung ương phương Bắc",
+      "Vua độc lập hoàn toàn",
+      "Quan địa phương tự chủ",
+      "Thủ lĩnh tôn giáo"
+    ],
+    "correct": 0,
+    "explanation": "Là chức quan đại diện cho Bắc triều cai quản một phương (dù thời họ Khúc, ta dùng danh xưng này để tự chủ ngầm)."
+  },
+  {
+    "id": 45,
+    "question": "Năm xưng Vương 939 của Ngô Quyền được coi là năm mở đầu cho thời kỳ nào của Việt Nam?",
+    "options": [
+      "Thời kỳ Bắc thuộc lần 3",
+      "Thời kỳ xây dựng quốc gia phong kiến độc lập tự chủ",
+      "Thời kỳ cát cứ địa phương",
+      "Thời đại Hùng Vương"
+    ],
+    "correct": 1,
+    "explanation": "Đánh dấu sự xác lập nền độc lập vững chắc và hệ thống quân chủ tự chủ."
+  },
+  {
+    "id": 46,
+    "question": "Con trai thứ hai của Ngô Quyền là ai, người về sau cùng xưng Vương (Hậu Ngô Vương)?",
+    "options": [
+      "Ngô Xương Ngập",
+      "Ngô Xương Văn",
+      "Ngô Nhật Khánh",
+      "Ngô Cảnh Hựu"
+    ],
+    "correct": 1,
+    "explanation": "Ngô Xương Văn (Nam Tấn Vương) cùng anh là Ngô Xương Ngập trị vì đất nước sau khi phế truất Dương Tam Kha."
+  },
+  {
+    "id": 47,
+    "question": "Kẻ phản trắc Kiều Công Tiễn bị Ngô Quyền tiêu diệt ở đâu?",
+    "options": [
+      "Thành Đại La",
+      "Cổ Loa",
+      "Ái Châu",
+      "Hải Môn"
+    ],
+    "correct": 0,
+    "explanation": "Năm 938, Ngô Quyền từ Ái Châu kéo quân ra Đại La diệt Kiều Công Tiễn."
+  },
+  {
+    "id": 48,
+    "question": "Cuộc chiến Bạch Đằng của Ngô Quyền kéo dài trong bao lâu?",
+    "options": [
+      "Vài tháng",
+      "Cả năm trời",
+      "Rất chóng vánh, giải quyết xong trong một ngày",
+      "Hơn 10 năm"
+    ],
+    "correct": 2,
+    "explanation": "Nhờ mưu phục kích hoàn hảo, quân giặc bị tiêu diệt gọn gàng, nhanh chóng khi nước triều rút."
+  },
+  {
+    "id": 49,
+    "question": "Kiều Công Tiễn giết Dương Đình Nghệ vào năm nào?",
+    "options": [
+      "937",
+      "930",
+      "938",
+      "944"
+    ],
+    "correct": 0,
+    "explanation": "Mùa xuân năm 937, Kiều Công Tiễn giết Dương Đình Nghệ để đoạt chức."
+  },
+  {
+    "id": 50,
+    "question": "Hiện nay có thể xem một cây cọc gỗ của trận Bạch Đằng 938 ở đâu?",
+    "options": [
+      "Bảo tàng khu di tích Tràng Kênh (Hải Phòng)",
+      "Bảo tàng Cổ Loa",
+      "Lăng Ngô Quyền",
+      "Hoàng thành Thăng Long"
+    ],
+    "correct": 0,
+    "explanation": "Một cây cọc gỗ của trận 938 được trưng bày ở bảo tàng khu di tích Tràng Kênh."
+  }
+]

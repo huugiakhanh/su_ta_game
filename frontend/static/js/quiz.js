@@ -37,6 +37,7 @@ const QUIZ_BANKS = {
     'mai-hac-de': { url: '/static/assets/question/mai-hac-de-question.json', excluded: [] },
     // Phùng Hưng: 50 câu, đối chiếu ở docs/RESEARCH_PH_QUESTIONS.md (người dùng duyệt 09/11).
     'phung-hung': { url: '/static/assets/question/phung-hung-question.json', excluded: [] },
+    'ngo-quyen': { url: '/static/assets/question/ngo-quyen-question.json', excluded: [] },
 };
 const DEFAULT_CHAPTER = 'trung-trac';
 let currentChapter = null;
