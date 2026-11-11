@@ -3,7 +3,7 @@
 
 import { images } from '../assets.js';
 import { state } from '../state.js';
-import { groundYAt, terrainLevelAt } from '../geometry.js';
+import { groundYAt, terrainLevelAt, terrainFlats } from '../geometry.js';
 import { VIEW_W, VIEW_H, GROUND_Y, TERRAIN_CELL, GROUND_FALLBACK_COLOR, GROUND_DECOR_DENSITY } from '../config.js';
 import { CHAPTER } from '../chapter.js';
 import { ctx, drawMapImage, mapWidth, mapHeight } from './canvas.js';
@@ -279,9 +279,16 @@ const HOLE_DEPTH_BANDS = [[0, 6, .15], [6, 12, .35], [12, 17, .55], [17, 22, .75
 const WATER_FALLBACK = { top: 8, body: 'rgba(38, 104, 150, .82)', crest: 'rgba(170, 220, 240, .9)' };
 const WATER_BANK = '#2b1d12';
 
+// Thủy triều (NQ-ENGINE E2): nước ròng thì mặt nước hạ `tide.spec.rise` px.
+export function tideDrop() {
+  if (!state.tide) return 0;
+  return Math.round((1 - state.tide.level) * (state.tide.spec.rise || 0));
+}
+
 function drawWater(hole, left, width) {
   const prop = images.maps.props?.[CHAPTER.tiles?.water];
   const depth = VIEW_H - GROUND_Y;
+  const drop = tideDrop();
   ctx.save();
   ctx.beginPath();
   ctx.rect(left, GROUND_Y, width, depth);
@@ -291,15 +298,15 @@ function drawWater(hole, left, width) {
     const h = mapHeight(prop.image);
     const camera = Math.round(state.cameraX);
     // Lát theo toạ độ thế giới để các khe sông nối liền một mặt nước.
-    const top = GROUND_Y - (CHAPTER.tiles.waterLift || 0);
+    const top = GROUND_Y - (CHAPTER.tiles.waterLift || 0) + drop;
     for (let x = Math.floor(hole.x / w) * w; x < hole.x + hole.w; x += w) {
       drawMapImage(ctx, prop.image, 0, 0, w, h, x - camera, top);
     }
   } else {
     ctx.fillStyle = WATER_FALLBACK.body;
-    ctx.fillRect(left, GROUND_Y + WATER_FALLBACK.top, width, depth - WATER_FALLBACK.top);
+    ctx.fillRect(left, GROUND_Y + WATER_FALLBACK.top + drop, width, depth - WATER_FALLBACK.top - drop);
     ctx.fillStyle = WATER_FALLBACK.crest;
-    ctx.fillRect(left, GROUND_Y + WATER_FALLBACK.top, width, 2);
+    ctx.fillRect(left, GROUND_Y + WATER_FALLBACK.top + drop, width, 2);
   }
   ctx.restore();
 }
@@ -350,6 +357,44 @@ export function drawMud() {
       drawMapImage(ctx, prop.image, 0, 0, w, h, x - camera, top);
     }
     ctx.restore();
+  });
+}
+
+// Bãi triều (NQ-ENGINE E2) lúc lộ: ảnh `CHAPTER.tiles.flat` lát ngang (đỉnh ở GROUND_Y
+// − `flatLift`), thiếu thì dải cát ướt dự phòng; đang lên (`rising`) thì phủ màng nước
+// nhấp nháy báo sắp ngập. Lúc ngập bãi là cột nước, drawHoles vẽ như sông.
+const FLAT_FALLBACK = { lift: 2, height: 9, body: 'rgba(122, 104, 76, .95)', crest: 'rgba(168, 150, 112, .95)', film: 'rgba(90, 160, 200, .55)' };
+
+export function drawFlats(time = 0) {
+  if (!state.tide) return;
+  const phase = state.tide.phase;
+  if (phase === 'high' || phase === 'falling') return;
+  const camera = Math.round(state.cameraX);
+  const prop = images.maps.props?.[CHAPTER.tiles?.flat];
+  terrainFlats().forEach(span => {
+    const left = Math.round(span.x) - camera;
+    const width = Math.round(span.w);
+    if (left + width < -24 || left > VIEW_W + 24) return;
+    if (prop?.image) {
+      const w = mapWidth(prop.image);
+      const h = mapHeight(prop.image);
+      const top = GROUND_Y - (CHAPTER.tiles.flatLift || 0);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(left, top, width, h);
+      ctx.clip();
+      for (let x = Math.floor(span.x / w) * w; x < span.x + span.w; x += w) drawMapImage(ctx, prop.image, 0, 0, w, h, x - camera, top);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = FLAT_FALLBACK.body;
+      ctx.fillRect(left, GROUND_Y - FLAT_FALLBACK.lift, width, FLAT_FALLBACK.height);
+      ctx.fillStyle = FLAT_FALLBACK.crest;
+      ctx.fillRect(left, GROUND_Y - FLAT_FALLBACK.lift, width, 2);
+    }
+    if (phase === 'rising' && Math.floor(time * 4) % 2 === 0) {
+      ctx.fillStyle = FLAT_FALLBACK.film;
+      ctx.fillRect(left, GROUND_Y - FLAT_FALLBACK.lift, width, 4);
+    }
   });
 }
 

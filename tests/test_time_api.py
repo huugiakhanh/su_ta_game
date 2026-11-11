@@ -139,6 +139,25 @@ def test_progress_put_chapter_5_keeps_rescued(client, monkeypatch):
     assert client.progress_saved == [(USER["id"], 5, data)]
 
 
+# NQ-ENGINE E5: số cọc đã cắm ở màn 2 chương 7 (cột stakes, migration 013), 0–6.
+@pytest.mark.parametrize("stakes, status", [(0, 200), (3, 200), (6, 200), (7, 400), (-1, 400), ("3", 400), (2.5, 400)])
+def test_progress_put_stakes_range(client, monkeypatch, stakes, status):
+    monkeypatch.setattr(api, "known_reward_ids", lambda chapter_id: set())
+    login(client)
+    data = {**GOOD_PROGRESS, "stakes": stakes, "rewards": []}
+    assert client.put("/api/game/progress/7", json=data).status_code == status
+    if status == 200:
+        assert client.progress_saved == [(USER["id"], 7, data)]
+
+
+def test_progress_put_without_stakes_defaults_to_zero(client):
+    # Tiến trình chương khác / tab mở trước migration 013 không có trường này.
+    login(client)
+    data = {key: value for key, value in GOOD_PROGRESS.items() if key != "stakes"}
+    assert client.put("/api/game/progress/1", json=data).status_code == 200
+    assert client.progress_saved == [(USER["id"], 1, GOOD_PROGRESS)]
+
+
 def test_progress_put_without_rescued_defaults_to_zero(client):
     # Tiến trình chương cũ (tab mở từ trước migration 009) không có trường này.
     login(client)
@@ -257,7 +276,7 @@ def test_ngo_quyen_achievement_rules():
 
 # ---- Tiến trình chương (SUTA-DB-01) ----
 
-GOOD_PROGRESS = {"score": 2500, "books": 5, "rescued": 0, "level1Complete": True, "level2Complete": False,
+GOOD_PROGRESS = {"score": 2500, "books": 5, "rescued": 0, "stakes": 0, "level1Complete": True, "level2Complete": False,
                  "level3Complete": False, "rewards": ["SK_LE_CHAN_ARROW_RAIN"], "times": {"1": 83.2}}
 
 

@@ -182,6 +182,19 @@ export function drawRunners() {
 }
 
 // Mồi nhử (PH-ENGINE E4): `idle` khi dựng, `down` khi đổ; thiếu ảnh thì hộp dự phòng.
+// Mốc cắm cọc (NQ-ENGINE E5): `CHAPTER.stakes = { sprite, w, h }`, anim `spot` (mốc
+// trống, chỉ vẽ khi đất lộ) / `planted`; thiếu ảnh thì hộp tạm.
+export function drawStakeSpots(time) {
+  if (!state.stakeSpots.length) return;
+  const spec = CHAPTER.stakes || { w: 8, h: 24 };
+  state.stakeSpots.forEach(spot => {
+    if (!spot.planted && state.holes.some(hole => spot.x > hole.x && spot.x < hole.x + hole.w)) return;
+    const h = spot.planted ? spec.h : 6;
+    if (spec.sprite) drawPiece(spec.sprite, spot.planted ? 'planted' : 'spot', time, spot.x, spot.footY, spec.w, h);
+    else drawPlaceholder({ x: spot.x - spec.w / 2, y: spot.footY - h, w: spec.w, h });
+  });
+}
+
 export function drawDecoys(time) {
   state.decoys.forEach(decoy => {
     if (decoy.sprite) drawPiece(decoy.sprite, decoy.up ? 'idle' : 'down', time, decoy.x, decoy.footY, decoy.w, decoy.up ? decoy.h : 6);
@@ -273,9 +286,11 @@ export function drawHazards(time, submerged = false) {
     if (!drawn) {
       if (hazard.kind === 'vent') drawVentFallback(hazard);
       else if (hazard.kind === 'drift') drawDriftFallback(hazard);
+      else if (hazard.kind === 'gust') drawGustFallback(hazard, time);
+      else if (hazard.kind === 'whirl') drawWhirlFallback(hazard, time);
       else if (hazard.kind === 'lurker' && hazard.lurkState === 'warn') drawBubblesFallback(hazard, time);
       else drawPlaceholder(hazard);
-      const extra = hazard.kind === 'vent' ? ` ${hazard.ventState}` : hazard.kind === 'lurker' ? ` ${hazard.lurkState}` : '';
+      const extra = hazard.kind === 'vent' ? ` ${hazard.ventState}` : hazard.kind === 'gust' ? ` ${hazard.gustState}` : hazard.kind === 'lurker' ? ` ${hazard.lurkState}` : '';
       debugLabels.set(hazard, `${hazard.sprite} (placeholder${extra})`);
       return;
     }
@@ -296,6 +311,40 @@ function drawVentFallback(hazard) {
   const alpha = hazard.ventState === 'active' ? .45 : hazard.ventState === 'warn' ? .35 + .25 * Math.sin(hazard.phase * 20) : .25;
   ctx.fillStyle = `rgba(150, 70, 190, ${alpha})`;
   ctx.fillRect(x, bottom - height, Math.round(hazard.w), height);
+}
+
+// Gió ngược thiếu asset (NQ-ENGINE E3): vệt gió trắng chạy theo hướng gió; warn thưa
+// và mờ, active dày; off không vẽ.
+function drawGustFallback(hazard, time) {
+  if (!hazard.gustState || hazard.gustState === 'off') return;
+  const sprite = CHAPTER.sprites.hazards[hazard.sprite];
+  const dir = hazard.dir ?? sprite?.dir ?? -1;
+  const left = Math.round(hazard.x - state.cameraX);
+  const bottom = Math.round(hazard.y + hazard.h);
+  const count = hazard.gustState === 'active' ? 7 : 3;
+  ctx.fillStyle = hazard.gustState === 'active' ? 'rgba(235, 245, 255, .7)' : 'rgba(235, 245, 255, .35)';
+  for (let i = 0; i < count; i += 1) {
+    const span = hazard.w + 40;
+    const offset = ((time * 220 * -dir) + i * span / count) % span;
+    const x = dir < 0 ? left + hazard.w - ((offset + span) % span) : left + ((offset + span) % span) - 40;
+    const y = bottom - 10 - ((i * 37) % Math.max(12, hazard.h - 12));
+    ctx.fillRect(Math.round(x), y, 24, 1);
+  }
+}
+
+// Xoáy nước thiếu asset (NQ-ENGINE E4): 2 vòng elip xoay trên mặt nước + vạch `core`.
+function drawWhirlFallback(hazard, time) {
+  const sprite = CHAPTER.sprites.hazards[hazard.sprite];
+  const cx = Math.round(hazard.x + hazard.w / 2 - state.cameraX);
+  const cy = GROUND_Y + 10;
+  ctx.save();
+  ctx.strokeStyle = 'rgba(200, 235, 255, .75)';
+  [sprite?.core || 12, (sprite?.radius || 48) * .6].forEach((r, i) => {
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, r, Math.max(3, r / 4), (time * (i ? 1.5 : -2.5)) % (Math.PI * 2) * .1, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+  ctx.restore();
 }
 
 // Khói trôi thiếu asset (TODO_MISSING): mảng xám lục bán trong suốt.

@@ -63,6 +63,8 @@ export function createLevelState(options = {}) {
   const guide = options.intro && LEVEL.guide ? makeNpc(LEVEL.guide.npc, 1, LEVEL.guide.localX) : null;
   // Gánh nặng (MHD-ENGINE E4): LEVEL.burden hoặc nội dung màn (layout thử) khai báo.
   const burdenSpec = content.burden ?? LEVEL.burden;
+  // `tideSpec` (không phải `tide`) để `...content` bên dưới không đè state.tide.
+  const tideSpec = content.tideSpec ?? LEVEL.tide ?? null;
   return {
     // phase: walk -> talk (đang hội thoại với guide) -> done; onDone do main.js gán.
     intro: options.intro ? { phase: 'walk', targetX: startX, onDone: null } : null,
@@ -155,6 +157,16 @@ export function createLevelState(options = {}) {
     mud: terrainMud(),
     // Vùng ẩn nấp [{ x, w }] (TQP-ENGINE E7 — lau sậy), nội dung màn khai báo `covers`.
     covers: [],
+    // Thủy triều (NQ-ENGINE E2 — tide.js): số `spec` = content.tideSpec (layout thử) hoặc
+    // LEVEL.tide; null ở màn không có triều.
+    tide: tideSpec ? { spec: tideSpec, phase: 'low', time: tideSpec.offset || 0, level: 0, forced: null } : null,
+    // Số cọc tối thiểu để về đích (E5): content (layout thử) hoặc LEVEL.
+    stakesRequired: content.stakesRequired ?? LEVEL.stakesRequired ?? 0,
+    // Vùng nấp gió [{ x, w }] (E3 — hazard `gust`), nội dung màn khai báo `shelters`.
+    shelters: [],
+    // Mốc cắm cọc (E5 — entities.js makeStakeSpot) + số cọc đã cắm trong lượt.
+    stakeSpots: [],
+    stakesPlanted: 0,
     ...(CHAPTER.stateFields?.() || {}),
     ...content,
     burden: burdenSpec ? { ...BURDEN, ...burdenSpec } : null,

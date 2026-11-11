@@ -3,7 +3,7 @@
 
 import { state } from './state.js';
 import { keys, pressed } from './input.js';
-import { aabb, groundYAt, terrainLevelAt, inMud } from './geometry.js';
+import { aabb, groundYAt, terrainLevelAt, inMud, onFlat } from './geometry.js';
 import { setAnim, tickAnim, getAnimMeta, hitTime } from './animation.js';
 import {
   FOOT_MARGIN, TERRAIN_CELL, GROUND_Y, MOVE_SPEED, GRAVITY, JUMP_FORCE, DASH_SPEED, DASH_TIME, DASH_COOLDOWN,
@@ -87,7 +87,9 @@ function rememberSafeSpot(p) {
   const safe = p.platform
     ? p.platform.x + inset <= center && p.platform.x + p.platform.w - inset >= center
     : pointHasGround(center - reach) && pointHasGround(center + reach) && !state.holes.some(hole =>
-      hole.x < center + reach && hole.x + hole.w > center - reach);
+      hole.x < center + reach && hole.x + hole.w > center - reach)
+      // Bãi triều (NQ-ENGINE E2) sẽ ngập khi triều lên — không làm chỗ đứng vững.
+      && !onFlat(center - reach) && !onFlat(center) && !onFlat(center + reach);
   if (safe) p.safeSpot = { x: p.x, feetY: p.y + p.h };
 }
 
@@ -280,9 +282,51 @@ export function releaseBurden() {
   state.player.burden = false;
 }
 
+// Bắt đầu gánh giữa màn (NQ-ENGINE E5 — vác cọc từ đống cọc `burdenSource`).
+// Số đi chậm/nhảy thấp theo LEVEL.burden (nếu có) hoặc BURDEN mặc định.
+export function startBurden() {
+  const p = state.player;
+  p.burden = true;
+  cancelCharge(p);
+  state.burden = state.burden || { ...BURDEN, ...(LEVEL.burden || {}) };
+}
+
+// Đống cọc (hazard có cờ sprite `burdenSource`): chạm vào khi tay không, đứng đất,
+// không trên thuyền thì vác lên.
+function pickBurdenSource(p) {
+  if (p.burden || p.carrying || p.mounted || !p.grounded || p.platform?.attached) return;
+  const source = state.hazards.find(hazard => hazard.alive && CHAPTER.sprites.hazards[hazard.sprite]?.burdenSource && aabb(p, hazard));
+  if (!source) return;
+  startBurden();
+  playSfx('item');
+  const message = CHAPTER.sprites.hazards[source.sprite].burdenSource.message || CHAPTER.text.stakePicked;
+  if (message) showMessage(message);
+}
+
+// Mốc cắm cọc gần nhất trong `reach` (NQ-ENGINE E5). Mốc chỉ dùng được khi đất
+// dưới mốc đang lộ (bãi triều lúc nước ròng).
+const STAKE_REACH = 28;
+function plantStake(p) {
+  const center = p.x + p.w / 2;
+  const spot = state.stakeSpots.find(item => !item.planted && Math.abs(item.x - center) <= STAKE_REACH);
+  if (!spot) return false;
+  if (!pointHasGround(spot.x)) {
+    if (CHAPTER.text.stakeFlooded) showMessage(CHAPTER.text.stakeFlooded);
+    return true;
+  }
+  spot.planted = true;
+  state.stakesPlanted += 1;
+  releaseBurden();
+  playSfx('reward');
+  CHAPTER.hooks?.onStakePlanted?.(spot);
+  if (CHAPTER.text.stakePlanted) showMessage(CHAPTER.text.stakePlanted(state.stakesPlanted, state.stakeSpots.length));
+  return true;
+}
+
 // Đang gánh mà bấm Đánh: chương trả true (đứng gần xe cống) thì đập sọt, hết gánh,
 // vung đòn như thường; không thì chỉ nhắc, tối đa 1 lần mỗi `hintInterval` giây.
 function attackWhileBurdened(p) {
+  if (state.stakeSpots.length && plantStake(p)) return;
   if (CHAPTER.hooks?.onBurdenAttack?.(p)) {
     releaseBurden();
     startAttack();
@@ -472,6 +516,9 @@ function playerAnimationState(p) {
   const moving = Math.abs(p.vx) > 1;
   if (p.burden) return moving ? 'burdenRun' : 'burdenIdle';
   if (p.pushing) return 'push';
+  // Đứng trên thuyền lái (NQ-ENGINE E1): chèo khi thuyền đang chạy.
+  const boat = p.platform?.attached?.kind === 'boat' ? p.platform.attached : null;
+  if (boat) return Math.abs(boat.vx || 0) > 4 ? 'row' : 'idle';
   return moving ? 'run' : 'idle';
 }
 
@@ -533,6 +580,14 @@ export function updatePlayerControl(dt) {
   }
   const move = p.stun > 0 || p.mounted ? 0 : Number(keys.right) - Number(keys.left);
   if (!p.dashing && move !== 0) p.facing = move;
+  // Đứng trên thuyền lái (NQ-ENGINE E1): ←/→ lái thuyền (hazards.js updateBoat),
+  // người đứng yên trên boong; không lướt.
+  const boat = p.grounded && p.platform?.attached?.kind === 'boat' && platformActive(p.platform) ? p.platform.attached : null;
+  if (boat) {
+    pressed.dash = false;
+    boat.drive = move;
+  }
+  pickBurdenSource(p);
 
   if (pressed.dash && !p.burden) startDash();
   pressed.dash = false;
@@ -547,10 +602,15 @@ export function updatePlayerControl(dt) {
   } else if (p.mounted) {
     p.facing = state.mount.dir;
     p.vx = state.mount.dir * state.mount.spec.speed;
+  } else if (boat) {
+    p.vx = 0;
   } else {
     const chargeSlow = chargingNow(p) ? chargeSpec().moveSpeed : 1;
     p.vx = move * MOVE_SPEED * (inMudNow ? mud.speed : 1) * (p.burden ? state.burden.speed : 1) * chargeSlow;
   }
+  // Gió ngược (NQ-ENGINE E3 — hazards.js updateGust cộng từ frame trước).
+  if (!p.mounted) p.vx += p.windVx || 0;
+  p.windVx = 0;
 
   if (pressed.jump && p.grounded && !p.dashing) {
     p.vy = -JUMP_FORCE * (inMudNow ? mud.jump : 1) * (p.burden ? state.burden.jump : 1);

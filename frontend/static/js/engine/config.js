@@ -114,7 +114,9 @@ export const PLAYER_ANIMATIONS = {
   chargeStrike: { anim: 'charge_strike', duration: ATTACK_COOLDOWN, fallback: { anim: 'attack_01', duration: ATTACK_COOLDOWN } },
   ride: { anim: 'ride', fallback: { anim: 'idle' } },
   // Đẩy vật (PH_ART_PUSH): chỉ phát khi vật thật sự nhích, chưa có strip thì dùng run.
-  push: { anim: 'push', fallback: { anim: 'run' } }
+  push: { anim: 'push', fallback: { anim: 'run' } },
+  // Lái thuyền (NQ-ENGINE E1): strip `row` (NQ_ART_01, không bắt buộc); thiếu thì đứng yên.
+  row: { anim: 'row', fallback: { anim: 'idle' } }
 };
 // Ngưỡng vận tốc dọc (px logic/s) chọn ô `jump`: vy < -N ô 1 (bật lên),
 // |vy| <= N ô 2 (gần đỉnh), vy > N ô 3 (rơi). DESIGN_BASELINE.

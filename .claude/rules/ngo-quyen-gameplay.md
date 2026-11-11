@@ -7,7 +7,7 @@ paths:
 
 # Màn chơi chương Ngô Quyền (chương 7)
 
-Kế hoạch + quyết định đã chốt: [docs/SUTA_NQ_TASK_00.md](../../docs/SUTA_NQ_TASK_00.md) (duyệt hết 11/11/2026). Lộ trình: NQ-SKELETON (xong, [task card](../../docs/SUTA_NQ_TASK_SKELETON_01.md), [report](../../docs/REPORT_NQ-SKELETON.md)) → NQ-ENGINE (E1–E5: thuyền lái, thủy triều, gió ngược, xoáy nước, cắm cọc) → `NQ_ART_01` + NQ-L1 → `NQ_ART_02` + NQ-L2 → `NQ_ART_03` + NQ-L3. Cấu trúc theo mẫu chương Phùng Hưng (rule `phung-hung-gameplay.md`); cơ chế chung ở engine (rule `engine.md`).
+Kế hoạch + quyết định đã chốt: [docs/SUTA_NQ_TASK_00.md](../../docs/SUTA_NQ_TASK_00.md) (duyệt hết 11/11/2026). Lộ trình: NQ-SKELETON (xong, [task card](../../docs/SUTA_NQ_TASK_SKELETON_01.md), [report](../../docs/REPORT_NQ-SKELETON.md)) → NQ-ENGINE (xong, [task card](../../docs/SUTA_NQ_TASK_ENGINE_01.md), [report](../../docs/REPORT_NQ-ENGINE.md): thuyền lái, thủy triều + bãi triều, gió ngược, xoáy nước, cắm cọc + cột `stakes`, đạn choáng — rule `engine.md` mục NQ-ENGINE) → `NQ_ART_01` + NQ-L1 → `NQ_ART_02` + NQ-L2 → `NQ_ART_03` + NQ-L3. Cấu trúc theo mẫu chương Phùng Hưng (rule `phung-hung-gameplay.md`); cơ chế chung ở engine (rule `engine.md`).
 
 ## Trạng thái: khung PLACEHOLDER (NQ-SKELETON)
 
@@ -16,6 +16,7 @@ Kế hoạch + quyết định đã chốt: [docs/SUTA_NQ_TASK_00.md](../../docs
 - **Màn 1** (6 chunk): 3 lính, 1 đá rơi, 5 sách cố định, 4 câu hỏi từ `LEVEL1_QUESTION_POOL`; đích cuối chunk 6.
 - **Màn 2** (4 chunk): 2 lính, 3 câu hỏi chặn đường lần lượt pool `duongDinhNghe` → `kieuCongHan` → `ngoXuongNgap`; chưa có NPC.
 - **Màn 3**: đấu trường 1 chunk, 3 đợt lính (`WAVES`, `makeSpawner`); `updateArena` gọi `endGame(true)` khi `state.spawner.done`.
+- Layout thử `?layout=engine` (màn 1, `ENGINE_TEST` trong `config.js`, `engineTestLayout` trong `level1.js`), hộp dự phòng tới `NQ_ART_01`, triều 6/2/6/2 s: thuyền + khe sông 320 px + xoáy chunk 1; 2 vùng gió + 2 đá nấp chunk 2; bãi triều 192 px + khe sông + thuyền 2 + 2 cọc ngầm `tideOnly: 'low'` chunk 3; đống cọc + 3 mốc trên bãi (cần 2) chunk 4; lính quăng lưới (`net`: `lob` + `stun` 1) + 1 lính chunk 5. Thuyền: boong ở GROUND_Y + 2 lúc nước lớn (`BOAT_FLOAT` 14, `ride.top` 4).
 - Người chơi là nghĩa sĩ nam/nữ chung; Ngô Quyền sẽ là NPC dẫn màn 1 + nhân vật cutscene màn 3.
 - **Không import file nào của chương khác** — bảng nào cần thì khai báo lại trong `config.js` chương này.
 

@@ -73,6 +73,10 @@
         <div id="extraHud" class="status-bar__items" hidden aria-label="{% block extra_label %}Vật phẩm phụ đã thu thập{% endblock %}">
           <i id="extraIcon" class="status-bar__item-icon" aria-hidden="true">{% block extra_glyph %}⚒{% endblock %}</i><strong id="extraValue">0/0</strong>
         </div>
+        <!-- Thủy triều (NQ-ENGINE E2): pha + giây còn lại, chỉ hiện ở màn có LEVEL.tide. -->
+        <div id="tideHud" class="status-bar__items status-bar__tide" hidden aria-label="Thủy triều">
+          <i class="status-bar__item-icon" aria-hidden="true">🌊</i><strong id="tideValue"></strong>
+        </div>
       </div>
 
       <!-- Ô kỹ năng (ui.js): ô Lướt hiện ở mọi màn; khe kỹ năng của chương (block

@@ -129,6 +129,20 @@ export const ENEMY_SPRITES = {
   arena: { ...SOLDIER_ART, rules: { ...GUARD, speed: 70, aggroRange: CHUNK_W }, defeatMessage: 'Đã đánh bại lính giặc.' }
 };
 export const HAZARD_SPRITES = {
+  // ---- NQ-ENGINE (layout thử) — PLACEHOLDER, chưa có sprite (NQ_ART_01) ----
+  boat: {
+    id: 'OB_NQ_BOAT', w: 64, h: 16, ride: { top: 4, inset: 6 }, boat: { speed: 140, drag: 3 },
+    anims: { idle: 'idle', move: 'row' }
+  },
+  whirl: { id: 'FX_NQ_WHIRLPOOL', w: 40, h: 8, radius: 64, core: 10, pull: 70, anims: { idle: 'idle' } },
+  gust: {
+    id: 'FX_NQ_GUST', w: 256, h: 90, dir: -1, force: 120, cycle: { off: 1.6, warn: .8, active: 1.6 },
+    anims: { idle: 'idle', warn: 'warn', active: 'active' }
+  },
+  shelterRock: { id: 'OB_NQ_WIND_ROCK', w: 28, h: 36, anims: { idle: 'idle' } },
+  hiddenStake: { id: 'OB_NQ_HIDDEN_STAKE', w: 10, h: 22, tideOnly: 'low', damage: 1, anims: { idle: 'idle' }, hitMessage: 'Bạn va phải cọc ngầm!' },
+  stakePile: { id: 'OB_NQ_STAKE_PILE', w: 30, h: 20, burdenSource: {}, anims: { idle: 'idle' } },
+  netThrower: { id: 'EN_NQ_NET_THROWER', w: 20, h: 34, muzzle: 26, anims: { idle: 'idle', throw: 'throw', hurt: 'hurt', death: 'death' } },
   // PLACEHOLDER — đá ong rơi chương 6 (chương 6 không có OB_BOULDER), thay ở NQ-L1.
   lateriteRock: {
     id: 'OB_PH_LATERITE_ROCK', w: 24, h: 24, warnTime: .5, fallSpeed: 300, stun: .4, damage: 1, blocking: true,
@@ -136,7 +150,41 @@ export const HAZARD_SPRITES = {
     springMessage: 'Đá rung chuyển trên đầu!', hitMessage: 'Bạn bị đá rơi trúng!', breakMessage: 'Đá vỡ tan!'
   }
 };
-export const PROJECTILE_SPRITES = {};
+export const PROJECTILE_SPRITES = {
+  // Lưới quăng từ bè (NQ-ENGINE E6): vòng cung, trúng thì choáng, không mất máu.
+  // PLACEHOLDER — chưa có sprite, vẽ hộp tới NQ_ART_02.
+  net: { id: 'PJ_NQ_NET', anim: 'idle', w: 16, h: 10, lob: { flightTime: .9, gravity: 700 }, stun: 1, damage: 0, hitMessage: 'Bạn bị lưới chụp trúng!' }
+};
+
+// ---- Layout thử `?layout=engine` (NQ-ENGINE) — PLACEHOLDER, vẽ hộp tới NQ_ART_01 ----
+//   chunk 1: bến + thuyền trong khe sông 320 px + xoáy nước;
+//   chunk 2: 2 vùng gió lệch nhịp + 2 đá chắn;
+//   chunk 3: bãi triều 192 px + khe sông + thuyền thứ 2 + 2 cọc ngầm theo triều;
+//   chunk 4: đống cọc + 3 mốc trên bãi triều (cần 2);
+//   chunk 5: lính quăng lưới + 1 lính giáo.
+// Triều chu kỳ ngắn để thử nhanh. Mọi số DESIGN_BASELINE.
+export const ENGINE_TEST = {
+  terrain: [
+    { chunk: 1, rows: ['##########~~~~~~~~~~~~~~~~~~~~##################'] },
+    { chunk: 3, rows: ['########,,,,,,,,,,,,~~~~~~~~~~~~################'] },
+    { chunk: 4, rows: ['##########,,,,,,,,,,,,,,,,,,,,,,,,,,,,##########'] }
+  ],
+  tide: { low: 6, warn: 2, high: 6, rise: 10 },
+  boats: [[1, 220], [3, 420]],
+  whirl: [1, 400],
+  gusts: [[2, 250, 0], [2, 560, 1.6]],
+  shelters: [[2, 180], [2, 500]],
+  hiddenStakes: [[3, 455], [3, 485]],
+  pile: [4, 100],
+  stakeSpots: [[4, 260], [4, 380], [4, 500]],
+  stakesRequired: 2,
+  netThrower: [5, 620],
+  soldier: [5, 320]
+};
+// Thuyền nổi: đáy ảnh chìm `BOAT_FLOAT` px dưới mặt đất -> boong cao GROUND_Y + 2.
+export const BOAT_FLOAT = 14;
+// Mốc cắm cọc (engine CHAPTER.stakes): chưa có sprite.
+export const STAKES = { w: 8, h: 28 };
 export const NPC_SPRITES = {};
 // Bình hồi máu (chương 3) — chưa có quân nào rơi.
 export const PICKUPS = { heal: { id: 'ITEM_LND_HEAL', anim: 'idle' } };
@@ -164,5 +212,15 @@ export const TEXT = {
   itemPicked: (count, total) => `Đã thu thập Quyển Sách Tinh Hoa ${count}/${total}`,
   itemsMissing: count => `Bạn còn thiếu ${count} Quyển Sách Tinh Hoa.`,
   rescueHint: name => `Hãy hạ quân giặc đang vây ${name}!`,
-  npcLocked: (requires, have) => `Cần ${requires} Quyển Sách Tinh Hoa (đã có ${have}).`
+  npcLocked: (requires, have) => `Cần ${requires} Quyển Sách Tinh Hoa (đã có ${have}).`,
+  // NQ-ENGINE (câu kỹ thuật, không phải nội dung lịch sử).
+  tideRising: 'Nước triều sắp lên! Rời khỏi bãi bùn.',
+  tideFalling: 'Nước triều đang rút.',
+  gustWarn: 'Gió ngược sắp thổi! Nấp sau tảng đá.',
+  whirlHit: 'Thuyền bị xoáy nước cuốn!',
+  stakePicked: 'Đã vác cọc. Ra bãi bùn lúc nước ròng để cắm.',
+  stakePlanted: (count, total) => `Đã cắm cọc ${count}/${total}`,
+  stakeFlooded: 'Nước đang lớn, chưa cắm cọc được.',
+  stakesMissing: count => `Cần cắm thêm ${count} cọc nữa.`,
+  burdenHint: 'Đang vác cọc: tới mốc trên bãi bùn rồi bấm Đánh để cắm.'
 };

@@ -9,10 +9,10 @@ import { CHAPTER } from '../chapter.js';
 import { images } from '../assets.js';
 import { ctx, debugLabels } from './canvas.js';
 import { drawBackdrops } from './backdrop.js';
-import { drawGround, drawHoles, drawWaterBanks, drawMud, drawTerrainDebug } from './terrain.js';
+import { drawGround, drawHoles, drawWaterBanks, drawMud, drawFlats, drawTerrainDebug } from './terrain.js';
 import {
   drawFinishGate, drawQuizSteles, drawItems, drawPickups, drawObstacles, drawPlatforms, drawHazards, drawProjectiles, drawEnemies,
-  drawNpcs, drawCarried, drawRunners, drawExtras, drawDecoys, drawMount
+  drawNpcs, drawCarried, drawRunners, drawExtras, drawDecoys, drawStakeSpots, drawMount
 } from './entities.js';
 import { drawPlayer } from './player.js';
 import { drawDebugOverlay } from './debug.js';
@@ -47,9 +47,11 @@ export function draw(time = 0) {
   drawHazards(time, true);
   drawHoles();
   drawMud();
+  drawFlats(time);
   drawItems(time);
   drawExtras(time);
   drawDecoys(time);
+  drawStakeSpots(time);
   drawPickups(time);
   drawObstacles();
   drawPlatforms();

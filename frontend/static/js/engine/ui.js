@@ -17,6 +17,9 @@ export const ui = {
   extras: document.getElementById('extraValue'),
   extraHud: document.getElementById('extraHud'),
   extraIcon: document.getElementById('extraIcon'),
+  // Thủy triều (NQ-ENGINE E2): ẩn ở màn không có triều.
+  tideHud: document.getElementById('tideHud'),
+  tide: document.getElementById('tideValue'),
   score: document.getElementById('scoreValue'),
   progress: document.getElementById('progressBar'),
   loading: document.getElementById('loadingPanel'),
@@ -101,7 +104,16 @@ export function updateHud() {
   if (sameRun && state.itemsCollected > lastItems) replayAnimation(ui.itemHud, 'is-bumped');
   lastItems = state.itemsCollected;
   updateItemIcon(ui.itemIcon, CHAPTER.item?.sprite);
-  ui.extraHud.hidden = state.extras.length === 0;
+  // Mốc cắm cọc (NQ-ENGINE E5) dùng chung ô vật phẩm phụ khi màn không có vật phụ.
+  const stakeHud = !state.extras.length && state.stakeSpots.length > 0;
+  ui.extraHud.hidden = state.extras.length === 0 && !stakeHud;
+  if (stakeHud) {
+    ui.extras.textContent = `${state.stakesPlanted}/${state.stakeSpots.length}`;
+    if (sameRun && state.stakesPlanted > lastExtras) replayAnimation(ui.extraHud, 'is-bumped');
+    lastExtras = state.stakesPlanted;
+    updateItemIcon(ui.extraIcon, CHAPTER.stakeIcon);
+  }
+  updateTideHud();
   if (state.extras.length) {
     const picked = state.extras.filter(item => item.collected).length;
     ui.extras.textContent = `${picked}/${state.extras.length}`;
@@ -117,6 +129,20 @@ export function updateHud() {
   updateDashHud();
   updateSkillHud();
   CHAPTER.hooks?.updateHud?.();
+}
+
+// Ô thủy triều: "Ròng"/"Lên!"/"Lớn"/"Rút" + giây còn lại của pha; nhấp nháy lúc báo lên.
+const TIDE_LABELS = { low: 'Ròng', rising: 'Lên!', high: 'Lớn', falling: 'Rút' };
+function updateTideHud() {
+  const tide = state.tide;
+  ui.tideHud.hidden = !tide;
+  if (!tide) return;
+  const spec = tide.spec;
+  const length = tide.phase === 'low' ? spec.low : tide.phase === 'high' ? spec.high : spec.warn;
+  const forced = tide.forced && tide.phase === tide.forced;
+  const left = forced ? '' : ` ${Math.max(0, Math.ceil(length - tide.time))}s`;
+  ui.tide.textContent = `${TIDE_LABELS[tide.phase]}${left}`;
+  ui.tideHud.classList.toggle('is-warning', tide.phase === 'rising');
 }
 
 // Một tim: icon ICON_HUD_HEART; chưa tải xong/thiếu thì chữ ♥ tạm.

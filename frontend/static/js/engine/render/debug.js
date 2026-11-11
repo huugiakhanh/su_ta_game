@@ -59,6 +59,38 @@ export function drawDebugOverlay() {
   state.covers.forEach(cover => {
     ctx.strokeRect(Math.round(cover.x - state.cameraX) + .5, GROUND_Y - 60.5, Math.round(cover.w) - 1, 60);
   });
+  // NQ-ENGINE: vùng nấp gió (xanh lá nhạt), vùng gió (trắng), tầm xoáy (lam) + lõi
+  // (đỏ), mốc cắm cọc (vàng), triều (chữ góc trái).
+  ctx.strokeStyle = '#b8ffb0';
+  state.shelters.forEach(zone => {
+    ctx.strokeRect(Math.round(zone.x - state.cameraX) + .5, GROUND_Y - 50.5, Math.round(zone.w) - 1, 50);
+  });
+  state.hazards.forEach(hazard => {
+    if (!hazard.alive) return;
+    const spec = CHAPTER.sprites.hazards[hazard.sprite];
+    const cx = Math.round(hazard.x + hazard.w / 2 - state.cameraX);
+    if (hazard.kind === 'gust') {
+      ctx.strokeStyle = hazard.gustState === 'active' ? '#ffffff' : '#9aa4b0';
+      ctx.strokeRect(Math.round(hazard.x - state.cameraX) + .5, Math.round(hazard.y) + .5, Math.round(hazard.w) - 1, Math.round(hazard.h) - 1);
+    } else if (hazard.kind === 'whirl') {
+      ctx.strokeStyle = '#58a8ff';
+      ctx.strokeRect(cx - spec.radius + .5, GROUND_Y - 4.5, spec.radius * 2 - 1, 10);
+      ctx.strokeStyle = '#ff5050';
+      ctx.strokeRect(cx - spec.core + .5, GROUND_Y - 2.5, spec.core * 2 - 1, 6);
+    } else if (hazard.kind === 'boat') {
+      const hole = state.holes.find(item => item.water && hazard.x + hazard.w / 2 >= item.x && hazard.x + hazard.w / 2 <= item.x + item.w);
+      ctx.fillStyle = '#58a8ff';
+      if (hole) ctx.fillRect(Math.round(hole.x - state.cameraX), GROUND_Y + 2, Math.round(hole.w), 2);
+    }
+  });
+  ctx.strokeStyle = '#ffe600';
+  state.stakeSpots.forEach(spot => {
+    ctx.strokeRect(Math.round(spot.x - 28 - state.cameraX) + .5, Math.round(spot.footY) - 30.5, 56, 30);
+  });
+  if (state.tide) {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(`triều ${state.tide.phase} ${state.tide.time.toFixed(1)}s lv ${state.tide.level.toFixed(2)}`, 8, 100);
+  }
   // Khói trôi (E2): vạch quãng trôi; cá sấu (E3): vạch tầm kích hoạt; gọi viện (E4): đồng hồ.
   state.hazards.forEach(hazard => {
     if (!hazard.alive) return;

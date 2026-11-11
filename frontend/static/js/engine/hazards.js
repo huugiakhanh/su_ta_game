@@ -28,6 +28,16 @@
 // Hazard có `ride` (sprite) mang một bục một chiều trên lưng (E7 — voi rừng):
 // bục đi theo hazard; người chơi đứng trên lưng thì không bị va chạm thân.
 // Hazard đang chết (dying) chỉ phát nốt animation, không va chạm/di chuyển.
+// NQ-ENGINE:
+//   boat  — thuyền lái (E1): người chơi đứng trên bục `ride` thì ←/→ (player.js gán
+//           `boat.drive`) đẩy thuyền trong khúc nước chứa nó; thả phím thì trôi chậm lại.
+//           Nổi theo triều (tide.level). Ra khỏi nước (bãi vừa lộ) thì trôi về lòng sông.
+//   whirl — xoáy nước (E4): kéo thuyền trong `radius` về tâm `pull` px/s; tâm thuyền
+//           vào `core` thì người trên thuyền −1 máu về chỗ đứng vững, thuyền về chỗ cũ.
+//   gust  — gió ngược (E3): nhịp `cycle` như vent; lúc active đẩy người chơi trong vùng
+//           (không trong state.shelters, không trên thuyền) `dir × force` px/s.
+//   Cờ sprite `tideOnly: 'low'|'high'` (E2): ngoài pha triều đó thì vô hại, vẽ
+//   `anims.submerged` (thiếu thì ẩn) — cọc ngầm.
 
 import { state } from './state.js';
 import { showMessage } from './ui.js';
@@ -38,7 +48,8 @@ import {
 } from './config.js';
 import { CHAPTER } from './chapter.js';
 import { playSfx } from './audio.js';
-import { hurtPlayer, stunPlayer, playerImmune, playerHidden } from './damage.js';
+import { hurtPlayer, stunPlayer, playerImmune, playerHidden, respawnAfterFall } from './damage.js';
+import { tideActive } from './tide.js';
 import { revealCarriedItems } from './combat.js';
 import { makeEnemy } from './entities.js';
 
@@ -125,6 +136,8 @@ function updateHazardAnimation(hazard, dt) {
   let next;
   hazard.blockTimer = Math.max(0, (hazard.blockTimer || 0) - dt);
   if (hazard.dying) next = 'death';
+  // Cọc ngầm đang ngập (NQ-ENGINE E2).
+  else if (hazard.submerged && anims.submerged) next = 'submerged';
   // Vừa gạt đòn chém ngang (plungeOnly — player.js blockedByGuard).
   else if (hazard.blockTimer > 0 && anims.blocked) next = 'blocked';
   else if (hazard.hitTimer > 0 && anims.hurt) next = 'hurt';
@@ -136,6 +149,8 @@ function updateHazardAnimation(hazard, dt) {
   else if (hazard.kind === 'lurker') next = hazard.lurkState;
   else if (hazard.kind === 'pounce') next = hazard.pounceState === 'stuck' && !anims.stuck ? 'recover' : hazard.pounceState;
   else if (hazard.kind === 'patrol') next = hazard.walking ? 'move' : 'idle';
+  else if (hazard.kind === 'gust') next = hazard.gustState === 'off' ? 'idle' : hazard.gustState;
+  else if (hazard.kind === 'boat') next = Math.abs(hazard.vx || 0) > 4 && anims.move ? 'move' : 'idle';
   else next = hazard.kind === 'roller' && hazard.active ? 'move' : 'idle';
   setAnim(hazard, next);
   tickAnim(hazard, dt);
@@ -438,6 +453,90 @@ function updatePatrol(hazard, dt, playerCenter) {
   hazard.x += hazard.speed * dt;
 }
 
+// ---- NQ-ENGINE E1/E3/E4 ----
+
+// Khúc nước (khe sông, gồm bãi triều đang ngập) chứa x, hoặc null.
+function waterSpanAt(x) {
+  const hole = state.holes.find(item => item.water && x >= item.x && x <= item.x + item.w);
+  return hole ? { x0: hole.x, x1: hole.x + hole.w } : null;
+}
+
+// Mặt nước hạ khi nước ròng (cùng công thức render/terrain.js tideDrop).
+function waterDrop() {
+  const rise = state.tide?.spec.rise;
+  return state.tide && rise ? Math.round((1 - state.tide.level) * rise) : 0;
+}
+
+function updateBoat(hazard, dt) {
+  const spec = spriteOf(hazard).boat || {};
+  if (hazard.homeX === undefined) hazard.homeX = hazard.x;
+  if (hazard.floatBase === undefined) hazard.floatBase = hazard.baseY;
+  const speed = spec.speed ?? 140;
+  const drag = spec.drag ?? 3;
+  const drive = hazard.drive || 0;
+  hazard.drive = 0;
+  hazard.vx = hazard.vx || 0;
+  if (drive) {
+    hazard.vx = drive * speed;
+    hazard.facing = drive;
+  } else hazard.vx -= hazard.vx * Math.min(1, drag * dt);
+  // Lực kéo của xoáy (E4) là vận tốc cộng thêm trong frame này, không tích vào vx.
+  const pull = hazard.pull || 0;
+  hazard.pull = 0;
+  const center = hazard.x + hazard.w / 2;
+  const span = waterSpanAt(center);
+  if (!span) {
+    // Bãi vừa lộ dưới thuyền: trôi về khúc nước gần nhất.
+    const water = state.holes.filter(item => item.water);
+    const nearest = water.sort((a, b) => Math.abs(a.x + a.w / 2 - center) - Math.abs(b.x + b.w / 2 - center))[0];
+    if (nearest) hazard.vx = Math.sign(nearest.x + nearest.w / 2 - center) * speed;
+    hazard.x += hazard.vx * dt;
+  } else {
+    hazard.x = Math.max(span.x0, Math.min(span.x1 - hazard.w, hazard.x + (hazard.vx + pull) * dt));
+    if (hazard.x === span.x0 || hazard.x === span.x1 - hazard.w) hazard.vx = 0;
+  }
+  hazard.baseY = hazard.floatBase + waterDrop();
+  hazard.y = hazard.baseY - hazard.h;
+}
+
+function updateWhirl(hazard, player) {
+  const spec = spriteOf(hazard);
+  const cx = hazard.x + hazard.w / 2;
+  state.hazards.forEach(boat => {
+    if (boat.kind !== 'boat' || !boat.alive) return;
+    const gap = cx - (boat.x + boat.w / 2);
+    if (Math.abs(gap) > spec.radius) return;
+    boat.pull = (boat.pull || 0) + Math.sign(gap) * spec.pull;
+    if (Math.abs(gap) > spec.core) return;
+    if (player.platform?.attached === boat) {
+      respawnAfterFall();
+      if (spec.hitMessage || CHAPTER.text.whirlHit) showMessage(spec.hitMessage || CHAPTER.text.whirlHit);
+    }
+    boat.x = boat.homeX ?? boat.x;
+    boat.vx = 0;
+  });
+}
+
+// Nhịp gió như vent: off -> warn -> active.
+function updateGust(hazard, dt, player) {
+  const spec = spriteOf(hazard);
+  const { off, warn, active } = spec.cycle;
+  hazard.phase = (hazard.phase || 0) + dt;
+  const t = hazard.phase % (off + warn + active);
+  hazard.gustState = t < off ? 'off' : t < off + warn ? 'warn' : 'active';
+  const center = player.x + player.w / 2;
+  if (center < hazard.x || center > hazard.x + hazard.w) return;
+  if (hazard.gustState === 'warn' && !hazard.warned) {
+    hazard.warned = true;
+    const message = spec.warnMessage || CHAPTER.text.gustWarn;
+    if (message) showMessage(message);
+  }
+  if (hazard.gustState !== 'active') return;
+  const sheltered = state.shelters.some(zone => center >= zone.x && center <= zone.x + zone.w);
+  const boat = player.platform?.attached?.kind === 'boat';
+  if (!sheltered && !boat) player.windVx = (player.windVx || 0) + (hazard.dir ?? spec.dir ?? -1) * spec.force;
+}
+
 export function updateHazards(dt) {
   const player = state.player;
   const playerCenter = player.x + player.w / 2;
@@ -481,6 +580,9 @@ export function updateHazards(dt) {
       }
     }
 
+    if (hazard.kind === 'boat') updateBoat(hazard, dt);
+    if (hazard.kind === 'whirl') updateWhirl(hazard, player);
+    if (hazard.kind === 'gust') updateGust(hazard, dt, player);
     if (hazard.kind === 'patrol') updatePatrol(hazard, dt, playerCenter);
     if (hazard.kind === 'vent') updateVent(hazard, dt);
     if (hazard.kind === 'drift') updateDrift(hazard, dt, playerCenter);
@@ -533,6 +635,12 @@ export function updateHazards(dt) {
     updateHazardAnimation(hazard, dt);
 
     const spec = spriteOf(hazard);
+    // Cọc ngầm theo triều (NQ-ENGINE E2): ngoài pha `tideOnly` thì vô hại.
+    if (spec?.tideOnly) {
+      hazard.submerged = !tideActive(spec.tideOnly);
+      hazard.harmful = !hazard.submerged;
+      hazard.invisible = hazard.submerged && !spec.anims.submerged;
+    }
     // `ignoreDash` (vent): lướt KHÔNG miễn sát thương, chỉ còn nhấp nháy sau khi trúng đòn.
     const immune = spec?.ignoreDash ? player.invulnerable > 0 : playerImmune(player);
     if (hazard.harmful && !immune && aabb(player, hazard) && !ridingOn(hazard, player)) {
@@ -581,6 +689,19 @@ function updateLob(projectile, dt) {
   }
 }
 
+// Đạn trúng người chơi: −`damage` máu (mặc định 1). Đạn choáng (NQ-ENGINE E6 —
+// `stun` giây, lưới): không có `damage` thì chỉ choáng; có thì trừ máu rồi choáng.
+function hitPlayer(projectile) {
+  const spec = CHAPTER.sprites.projectiles[projectile.sprite];
+  const message = spec?.hitMessage || CHAPTER.text.projectileHit;
+  if (spec?.stun) {
+    if (spec.damage) hurtPlayer(message, spec.damage);
+    stunPlayer(message, spec.stun);
+    return;
+  }
+  hurtPlayer(message, spec?.damage ?? 1);
+}
+
 export function updateProjectiles(dt) {
   const player = state.player;
   state.projectiles.forEach(projectile => {
@@ -589,7 +710,7 @@ export function updateProjectiles(dt) {
       updateLob(projectile, dt);
       if (projectile.alive && !playerImmune(player) && aabb(player, projectile)) {
         projectile.alive = false;
-        hurtPlayer(CHAPTER.text.projectileHit, CHAPTER.sprites.projectiles[projectile.sprite]?.damage ?? 1);
+        hitPlayer(projectile);
       }
       return;
     }
@@ -616,7 +737,7 @@ export function updateProjectiles(dt) {
     // Đang dash thì đạn bay xuyên qua (không tan, không trừ máu).
     if (!playerImmune(player) && aabb(player, projectile)) {
       projectile.alive = false;
-      hurtPlayer(CHAPTER.text.projectileHit, CHAPTER.sprites.projectiles[projectile.sprite]?.damage ?? 1);
+      hitPlayer(projectile);
     }
   });
   state.projectiles = state.projectiles.filter(projectile => projectile.alive);

@@ -30,6 +30,8 @@ VALID_GENDERS = {"male", "female"}
 MAX_BOOKS = 99
 # Số dân phu cứu được ở màn 1 chương 5 (cột chapter_progress.rescued, migration 009).
 MAX_RESCUED = 5
+# Số cọc đã cắm ở màn 2 chương 7 (cột chapter_progress.stakes, migration 013 — NQ-ENGINE E5).
+MAX_STAKES = 6
 # Số câu tối đa 1 lượt trắc nghiệm ở /quiz (ngân hàng câu hiện có 50 câu) — SUTA-QUIZ-LB.
 MAX_QUIZ_QUESTIONS = 200
 
@@ -57,8 +59,10 @@ def parse_progress(data, reward_ids):
     if not isinstance(data, dict):
         return None
     score, books, rescued = data.get("score", 0), data.get("books", 0), data.get("rescued", 0)
+    stakes = data.get("stakes", 0)
     rewards, times = data.get("rewards", []), data.get("times", {})
-    if not is_int(score) or not is_int(books, high=MAX_BOOKS) or not is_int(rescued, high=MAX_RESCUED):
+    if (not is_int(score) or not is_int(books, high=MAX_BOOKS) or not is_int(rescued, high=MAX_RESCUED)
+            or not is_int(stakes, high=MAX_STAKES)):
         return None
     if (not isinstance(rewards, list) or len(set(rewards)) != len(rewards)
             or not all(isinstance(r, str) and r in reward_ids for r in rewards)):
@@ -73,7 +77,7 @@ def parse_progress(data, reward_ids):
         if not isinstance(flag, bool):
             return None
         flags[f"level{level}Complete"] = flag
-    return {"score": score, "books": books, "rescued": rescued, "rewards": rewards, "times": times, **flags}
+    return {"score": score, "books": books, "rescued": rescued, "stakes": stakes, "rewards": rewards, "times": times, **flags}
 
 
 def is_avatar(value):

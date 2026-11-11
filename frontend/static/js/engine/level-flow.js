@@ -18,6 +18,7 @@ import { updatePlayerControl, updateAttack, updatePlayerAnimation } from './play
 import { updateEnemies, updateSpawner, touchEnemies } from './enemies.js';
 import { updateHazards, updateProjectiles } from './hazards.js';
 import { updateThrown } from './carry.js';
+import { updateTide } from './tide.js';
 import { endGame } from './end-game.js';
 
 // Cảnh vào màn (TT-HERO-01), người chơi không điều khiển: tự chạy từ ngoài mép
@@ -117,6 +118,8 @@ export function update(dt) {
   if (guide?.met && guide.fade > 0) guide.fade = Math.max(0, guide.fade - dt / NPC_RULES.fadeTime);
 
   const p = state.player;
+  // Thủy triều (NQ-ENGINE E2) đổi địa hình bãi trước khi tính chân người chơi.
+  updateTide(dt);
   updatePlayerControl(dt);
 
   updateAttack();
@@ -156,6 +159,11 @@ export function update(dt) {
     } else if (state.npcs.some(npc => !npc.met)) {
       p.x = state.finishX - 18;
       p.vx = 0;
+    } else if (state.stakesPlanted < state.stakesRequired) {
+      // Cắm cọc (NQ-ENGINE E5): thiếu số cọc tối thiểu thì giữ lại như thiếu sách.
+      p.x = state.finishX - 18;
+      p.vx = 0;
+      showMessage(CHAPTER.text.stakesMissing(state.stakesRequired - state.stakesPlanted));
     } else {
       endGame(true);
     }

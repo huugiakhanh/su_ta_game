@@ -29,11 +29,12 @@ export function levelUrl(id) {
 
 // `level<N>Complete` cho mọi màn của chương; `books` = số vật phẩm thu thập ở màn 1
 // (tên trường giữ nguyên dữ liệu đã lưu trên server); `rescued` = số dân phu cứu được
-// ở màn 1 chương Mai Hắc Đế (chương khác luôn 0 — migration 009).
+// ở màn 1 chương Mai Hắc Đế (chương khác luôn 0 — migration 009); `stakes` = số cọc
+// đã cắm ở màn có `stakeSpots` (chương Ngô Quyền màn 2 — NQ-ENGINE E5, migration 013).
 function emptyProgress() {
   const flags = Object.fromEntries(levelIds().map(id => [`level${id}Complete`, false]));
   // `times`: giây qua từng màn của chương đang chơi ({ 1: 83.2, 2: ... }).
-  return { score: 0, books: 0, rescued: 0, ...flags, rewards: [], times: {} };
+  return { score: 0, books: 0, rescued: 0, stakes: 0, ...flags, rewards: [], times: {} };
 }
 
 function storageGet(key) {

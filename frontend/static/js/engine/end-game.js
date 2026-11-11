@@ -32,12 +32,14 @@ export function endGame(won) {
   if (won && LEVEL.id === 1) {
     const flags = Object.fromEntries(levelIds().map(id => [`level${id}Complete`, id === 1]));
     progress = saveProgress({
-      score: state.score, books: state.itemsCollected, rescued: state.rescued, ...flags, rewards: [],
+      score: state.score, books: state.itemsCollected, rescued: state.rescued, stakes: state.stakesPlanted, ...flags, rewards: [],
       times: { 1: seconds }
     });
   } else if (won) {
     progress = saveProgress({
-      score: state.score, [`level${LEVEL.id}Complete`]: true, times: { ...readProgress().times, [LEVEL.id]: seconds }
+      score: state.score, [`level${LEVEL.id}Complete`]: true, times: { ...readProgress().times, [LEVEL.id]: seconds },
+      // Màn có mốc cắm cọc (NQ-ENGINE E5) ghi số cọc; màn khác giữ giá trị cũ.
+      ...(state.stakeSpots.length ? { stakes: state.stakesPlanted } : {})
     });
   }
   ui.next.hidden = !toNextLevel;

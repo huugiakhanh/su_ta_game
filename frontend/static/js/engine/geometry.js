@@ -32,11 +32,14 @@ const COLUMNS_PER_CHUNK = CHUNK_W / TERRAIN_CELL;
 // làm chậm + lún người chơi (player.js) — dải sình: terrainMud() / inMud().
 // '^' ở hàng cuối = cột CHÔNG (PH-ENGINE E5): hố có cờ chông, rơi xuống cũng hiện
 // lại ở chỗ đứng vững cuối cùng như sông.
+// ',' ở hàng cuối = cột BÃI TRIỀU (NQ-ENGINE E2): nước ròng là mặt đất (level 0),
+// nước lớn là cột nước như '~' — đổi bằng setTide(); lúc dựng là nước ròng.
 export function buildTerrain(placements, chunks) {
   const levels = new Int8Array(chunks * COLUMNS_PER_CHUNK);
   const water = new Uint8Array(chunks * COLUMNS_PER_CHUNK);
   const spikes = new Uint8Array(chunks * COLUMNS_PER_CHUNK);
   const mud = new Uint8Array(chunks * COLUMNS_PER_CHUNK);
+  const flats = new Uint8Array(chunks * COLUMNS_PER_CHUNK);
   placements.forEach(({ chunk, rows, shift = 0 }) => {
     rows.forEach(row => {
       if (row.length !== COLUMNS_PER_CHUNK) console.warn(`terrain chunk ${chunk}: hàng dài ${row.length} ô, cần ${COLUMNS_PER_CHUNK}`, row);
@@ -50,8 +53,9 @@ export function buildTerrain(placements, chunks) {
       const target = col + shift;
       if (target < 0 || target >= COLUMNS_PER_CHUNK) continue;
       const bottom = rows[rows.length - 1][col];
-      // Cột sình: không có '#' nhưng vẫn là mặt đất (level 0).
-      levels[(chunk - 1) * COLUMNS_PER_CHUNK + target] = bottom === '=' ? 0 : height - 1;
+      // Cột sình, bãi triều: không có '#' nhưng vẫn là mặt đất (level 0).
+      levels[(chunk - 1) * COLUMNS_PER_CHUNK + target] = bottom === '=' || bottom === ',' ? 0 : height - 1;
+      flats[(chunk - 1) * COLUMNS_PER_CHUNK + target] = bottom === ',' ? 1 : 0;
       water[(chunk - 1) * COLUMNS_PER_CHUNK + target] = bottom === '~' ? 1 : 0;
       spikes[(chunk - 1) * COLUMNS_PER_CHUNK + target] = bottom === '^' ? 1 : 0;
       mud[(chunk - 1) * COLUMNS_PER_CHUNK + target] = bottom === '=' ? 1 : 0;
@@ -61,7 +65,39 @@ export function buildTerrain(placements, chunks) {
     const step = Math.abs(Math.max(levels[col], 0) - Math.max(levels[col - 1], 0));
     if (step > TERRAIN_MAX_STEP) console.warn(`terrain x=${col * TERRAIN_CELL}: bậc chênh ${step} ô > ${TERRAIN_MAX_STEP}`);
   }
-  return { levels, water, mud, spikes };
+  return { levels, water, mud, spikes, flats };
+}
+
+// Thủy triều (NQ-ENGINE E2): nước lớn -> cột bãi triều thành cột nước, nước ròng ->
+// mặt đất. Trả về true nếu địa hình có bãi triều (gọi xong phải gán lại state.holes).
+export function setTide(high) {
+  if (!terrain?.flats) return false;
+  let any = false;
+  terrain.flats.forEach((flag, col) => {
+    if (!flag) return;
+    any = true;
+    terrain.levels[col] = high ? -1 : 0;
+    terrain.water[col] = high ? 1 : 0;
+  });
+  return any;
+}
+
+// x nằm trên cột bãi triều? (dù đang ngập hay lộ)
+export function onFlat(worldXPosition) {
+  return Boolean(terrain?.flats?.[Math.floor(worldXPosition / TERRAIN_CELL)]);
+}
+
+// Dải bãi triều { x, w } (vẽ lớp bùn lúc nước ròng — render/terrain.js).
+export function terrainFlats() {
+  const spans = [];
+  if (!terrain?.flats) return spans;
+  terrain.flats.forEach((flag, col) => {
+    if (!flag) return;
+    const last = spans[spans.length - 1];
+    if (last && last.x + last.w === col * TERRAIN_CELL) last.w += TERRAIN_CELL;
+    else spans.push({ x: col * TERRAIN_CELL, w: TERRAIN_CELL });
+  });
+  return spans;
 }
 
 // Độ cao (số ô) của cột chứa x; -1 = hố. Màn phẳng / ngoài màn -> 0.
@@ -195,7 +231,7 @@ export function makeHazard(kind, sprite, chunk, localX, options = {}) {
     alarmFor: options.alarmFor || null,
     alarmed: false,
     // Snare chỉ gây sát thương lúc rơi (hazards.js tự xử lý, không qua va chạm chung).
-    harmful: options.harmful ?? (kind !== 'prop' && kind !== 'snare' && kind !== 'drift' && kind !== 'lurker' && kind !== 'pounce'),
+    harmful: options.harmful ?? !['prop', 'snare', 'drift', 'lurker', 'pounce', 'boat', 'whirl', 'gust'].includes(kind),
     hp,
     maxHp: hp,
     hitTimer: 0,

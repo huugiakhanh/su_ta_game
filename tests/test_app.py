@@ -71,7 +71,7 @@ def test_migrations_are_idempotent(client):
         assert run_migrations() == []
     assert query("SELECT version FROM schema_migrations ORDER BY version") == [
         ("001_baseline",), ("002_user_avatar",), ("003_quiz_results",), ("004_user_gender",),
-        ("005_ba_trieu",), ("006_ba_trieu_rewards",), ("007_ly_nam_de",), ("008_trieu_quang_phuc",), ("009_mai_hac_de",), ("010_mai_hac_de_rename",), ("011_phung_hung",), ("012_ngo_quyen",)]
+        ("005_ba_trieu",), ("006_ba_trieu_rewards",), ("007_ly_nam_de",), ("008_trieu_quang_phuc",), ("009_mai_hac_de",), ("010_mai_hac_de_rename",), ("011_phung_hung",), ("012_ngo_quyen",), ("013_progress_stakes",)]
 
 
 def test_password_is_hashed_and_login_works(client):
@@ -291,6 +291,15 @@ def test_mai_hac_de_progress_keeps_rescued(client):
     assert client.get("/api/game/progress/5").get_json()["progress"]["rescued"] == 4
 
 
+def test_ngo_quyen_progress_keeps_stakes(client):
+    # NQ-ENGINE E5: số cọc đã cắm lưu rồi đọc lại đúng (cột stakes, migration 013).
+    register_and_login(client)
+    data = {"score": 100, "books": 5, "stakes": 4, "level1Complete": True, "level2Complete": True, "rewards": [],
+            "times": {"1": 90.5, "2": 120}}
+    assert client.put("/api/game/progress/7", json=data).status_code == 200
+    assert client.get("/api/game/progress/7").get_json()["progress"]["stakes"] == 4
+
+
 def test_cleared_chapters(client):
     # HOME-UNLOCK: chương 1 chỉ tính đã qua khi qua màn cuối (103).
     register_and_login(client)
@@ -315,7 +324,7 @@ def test_progress_roundtrip(client):
     # T6
     register_and_login(client)
     assert client.get("/api/game/progress/1").json["progress"] is None
-    data = {"score": 3000, "books": 5, "rescued": 0, "level1Complete": True, "level2Complete": True, "level3Complete": False,
+    data = {"score": 3000, "books": 5, "rescued": 0, "stakes": 0, "level1Complete": True, "level2Complete": True, "level3Complete": False,
             "rewards": ["SK_TRUNG_NHI_SHADOW", "BUFF_Y_CHI_KIEN_CUONG"], "times": {"1": 80.5, "2": 120}}
     assert client.put("/api/game/progress/1", json=data).status_code == 200
     got = client.get("/api/game/progress/1").json["progress"]

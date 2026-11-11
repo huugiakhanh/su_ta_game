@@ -65,6 +65,13 @@
 //                 (E2, đòn gồng thu phục rồi cưỡi; cần hp > 0), `rammable` (húc đổ khi cưỡi),
 //                 `pushable: { speed, damage }` (E3, cần `blocking`), `stuckOnly` + `stuckTime` +
 //                 anims.stuck? (E4, kind `pounce`: chỉ chịu đòn khi khựng vì vồ trúng mồi `state.decoys`).
+//                 NQ-ENGINE: hazard kind `boat` (sprite `boat: { speed, drag }` + `ride`; đặt trong khe
+//                 sông với `floatY`, người đứng trên bục thì ←/→ lái — E1), `whirl` (`radius`, `core`,
+//                 `pull` — E4), `gust` (`cycle`, `force`, `dir`, `warnMessage?` — E3); cờ sprite
+//                 `tideOnly: 'low'|'high'` + anims.submerged? (E2), `burdenSource: { message? }` (E5);
+//                 projectiles[…].stun (giây choáng, `damage` 0 = chỉ choáng — E6), `hitMessage?`.
+//   stakes?       { sprite?, w, h } — mốc cắm cọc (NQ-ENGINE E5, anim `spot`/`planted`; thiếu = hộp)
+//   stakeIcon?    ID prop map làm icon ô đếm cọc (dùng chung ô vật phẩm phụ #extraHud)
 //   extraItems?   { kind: { sprite, fps?, picked(count, total) } } — vật phẩm phụ (PH-ENGINE E6):
 //                 content.extras (makeExtra), makeNpc(..., { extras: { kind: số } }),
 //                 text.npcLocked(requires, có, extras)
@@ -97,6 +104,7 @@
 //                 onThrownLand?(thrown), onBurdenAttack?(player) -> true = đập sọt, hết gánh,
 //                 onHazardBroken?(hazard) (MHD-ENGINE),
 //                 onChargedHit?(target), onPushHit?(body, enemy) -> true = chương đã xử lý (PH-ENGINE),
+//                 onStakePlanted?(spot) (NQ-ENGINE E5),
 //                 debugEntities?() -> [hộp], draw?: { beforeNpcs?(time) (vd. rồng sau lưng NPC — TQP-L2), beforeEnemies?(time),
 //                 beforePlayer?(time), afterPlayer?(time) } }
 //   levels        { [id]: LEVEL } — mỗi màn:
@@ -115,7 +123,10 @@
 //                  (`story` = cốt truyện ngắn thay hội thoại câu hỏi, `hint` = câu nhắc khi còn
 //                  quân vây `captorOf` — TQP-L1); dải sình tự lấy
 //                  từ địa hình)
-//                  (đặt địa hình bằng setTerrain/buildTerrain trước khi dựng nội dung)
+//                  (đặt địa hình bằng setTerrain/buildTerrain trước khi dựng nội dung; cột ','
+//                  = bãi triều — NQ-ENGINE E2)
+//                  NQ-ENGINE: `shelters: [{ x, w }]` vùng nấp gió (E3), `stakeSpots` (makeStakeSpot — E5),
+//                  `tideSpec`/`stakesRequired` ghi đè LEVEL.tide/LEVEL.stakesRequired (layout thử)
 //     events?(player, dt)  sự kiện riêng mỗi frame (sau câu hỏi + gặp NPC)
 //     update?(dt)  chạy mỗi frame sau quân/đạn (trận boss)
 //     cutscene?(dt) thay update() khi state.cutscene khác null
@@ -123,6 +134,9 @@
 //     introMessage, introMessageTime?  thông báo nhiệm vụ đầu màn
 //     testLayout?  tên layout thử `?layout=` của màn
 //     skills?      true = bật khe kỹ năng (phần thưởng đã nhận) ở màn này
+//     tide?        { low, warn, high, rise, offset? } — thủy triều (NQ-ENGINE E2 — tide.js): giây
+//                  nước ròng / báo trước / nước lớn, px mặt nước hạ lúc ròng; ô HUD #tideHud
+//     stakesRequired? số cọc tối thiểu phải cắm mới về đích (NQ-ENGINE E5; `stakes` ghi vào tiến trình)
 //     burden?      { speed?, jump? } — vào màn đang gánh nặng (MHD-ENGINE E4; content.burden ghi đè cho layout thử)
 //     summary(state)  câu tổng kết panel qua màn
 //     blockedMessage?(state)  thông báo khi chạm đích mà boss còn sống

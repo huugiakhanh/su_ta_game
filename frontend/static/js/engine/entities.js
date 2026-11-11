@@ -112,6 +112,13 @@ export function makeDecoy(chunk, localX, { sprite = null, w = 18, h = 40, respaw
   return { x, footY: groundYAt(x), w, h, sprite, respawn, up: true, timer: 0 };
 }
 
+// Mốc cắm cọc (NQ-ENGINE E5): `content.stakeSpots`. x = tâm; cắm được khi đất dưới
+// mốc lộ (bãi triều lúc nước ròng) — player.js plantStake. Vẽ theo CHAPTER.stakes.
+export function makeStakeSpot(chunk, localX) {
+  const x = worldX(chunk, localX);
+  return { x, footY: groundYAt(x), planted: false };
+}
+
 // Hàng đợi sinh quân: groups (mỗi nhóm = [{type, at, dx}]) chạy lần lượt,
 // nhóm sau bắt đầu khi nhóm trước chết hết + gap giây (kể cả nhóm đầu). loop =
 // lặp lại; không lặp thì `done` = true khi nhóm cuối đã chết hết.

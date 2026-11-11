@@ -57,7 +57,7 @@ Thư viện `ngo-quyen` (`library_heroes.json`) không có điểm mâu thuẫn 
 |---|---|---|
 | **NQ-00** | **Xong 11/11**: task card này + RESEARCH, đã duyệt hết | — |
 | **NQ-SKELETON** | **Xong 11/11** ([task card](SUTA_NQ_TASK_SKELETON_01.md), [report](REPORT_NQ-SKELETON.md)) Thư mục chương, template, route `pages.py`, migration `012`, `VALID_*` trong `api.py`, `game_service.py` (`CHAPTER_NQ_LEVELS`), thẻ trang chủ, JSON câu hỏi + script, `QUIZ_BANKS`, rule `.claude/rules/ngo-quyen-gameplay.md` (+ bảng rule `CLAUDE.md`), test | NQ-00 |
-| **NQ-ENGINE** | E1–E5 (mục 3.5) + `?layout=engine` màn 1 | SKELETON |
+| **NQ-ENGINE** | **Xong 11/11** ([task card](SUTA_NQ_TASK_ENGINE_01.md), [report](REPORT_NQ-ENGINE.md)) E1–E5 (mục 3.5) + E6 đạn choáng + `?layout=engine` màn 1 | SKELETON |
 | **NQ-L1** + `NQ_ART_01` | Màn 1 | SKELETON, ENGINE |
 | **NQ-L2** + `NQ_ART_02` | Màn 2 | L1, mục 4 đã duyệt |
 | **NQ-L3** + `NQ_ART_03` | Màn 3 + cutscene | L2 |
