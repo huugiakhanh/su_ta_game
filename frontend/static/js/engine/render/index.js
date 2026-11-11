@@ -6,6 +6,7 @@ import { state } from '../state.js';
 import { debug } from '../input.js';
 import { VIEW_W, VIEW_H } from '../config.js';
 import { CHAPTER } from '../chapter.js';
+import { images } from '../assets.js';
 import { ctx, debugLabels } from './canvas.js';
 import { drawBackdrops } from './backdrop.js';
 import { drawGround, drawHoles, drawWaterBanks, drawMud, drawTerrainDebug } from './terrain.js';
@@ -18,11 +19,21 @@ import { drawDebugOverlay } from './debug.js';
 
 export { canvas, fitCanvas } from './canvas.js';
 
+// Cùng màu nền `.loading-note--blocking` (game.css).
+const LOADING_FILL = '#120c08';
+
 export function draw(time = 0) {
   ctx.imageSmoothingEnabled = false;
   ctx.clearRect(0, 0, VIEW_W, VIEW_H);
   debugLabels.clear();
   if (!state) return;
+  // Chưa tải xong asset: nền tối (màn hình chờ DOM nằm trên), không vẽ màn bằng
+  // màu/hộp tạm.
+  if (!images.loaded) {
+    ctx.fillStyle = LOADING_FILL;
+    ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+    return;
+  }
   const layers = CHAPTER.hooks?.draw || {};
   // Rung màn hình (BT-L3 E3): lệch camera ngang trong frame này rồi trả lại.
   const shake = state.cameraShake;

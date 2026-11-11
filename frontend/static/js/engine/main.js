@@ -2,7 +2,7 @@
 // cho chương được truyền vào (ENGINE-01). `main.js` của mỗi chương chỉ gọi
 // boot() với object định nghĩa chương (xem chapter.js của engine).
 
-import { images, loadAssets } from './assets.js';
+import { images, loadAssets, loadProgress } from './assets.js';
 import { state, setState, createLevelState } from './state.js';
 import { ui, showMessage, updateHud, updateTimeHud } from './ui.js';
 import { clearInput, bindInput } from './input.js';
@@ -77,7 +77,20 @@ function frame(timestamp) {
     draw(timestamp / 1000);
     updateTimeHud(levelTime());
   }
+  if (!images.loaded) updateLoadingProgress();
   requestAnimationFrame(frame);
+}
+
+// Màn hình chờ: "Đang tải bản đồ... x/y" + thanh tiến độ. Tổng số ảnh tăng dần
+// khi manifest được đọc, nên giữ thanh không lùi.
+let loadingShown = { text: '', ratio: 0 };
+function updateLoadingProgress() {
+  const { requested, done } = loadProgress;
+  const text = requested ? `Đang tải bản đồ... ${done}/${requested}` : 'Đang tải bản đồ...';
+  const ratio = Math.max(loadingShown.ratio, requested ? done / requested : 0);
+  if (text !== loadingShown.text) ui.loadingText.textContent = text;
+  if (ratio !== loadingShown.ratio) ui.loadingBar.style.width = `${Math.round(ratio * 100)}%`;
+  loadingShown = { text, ratio };
 }
 
 async function initAssets(playerSprite) {
@@ -89,6 +102,7 @@ async function initAssets(playerSprite) {
   if (notices.length) console.warn('SUTA thiếu asset:', notices);
   // Thiếu asset thì giữ dòng báo trên khung chơi (không chặn chơi); đủ thì ẩn.
   ui.loadingText.textContent = notices.length ? `Đang chạy với placeholder tạm: ${notices.join('; ')}.` : '';
+  ui.loading.classList.remove('loading-note--blocking');
   ui.loading.hidden = !notices.length;
   console.info(`SUTA màn ${LEVEL.id} đã nạp — nền:`, Object.keys(images.maps.layers), 'sprite:', Object.keys(images.sprites));
   draw();

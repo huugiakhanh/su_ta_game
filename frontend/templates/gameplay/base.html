@@ -27,10 +27,13 @@
 
     <section class="stage-wrap">
       <canvas id="gameCanvas" width="480" height="270" aria-label="{% block canvas_label %}Màn chơi{% endblock %}"></canvas>
-      <!-- Dòng báo tải asset (TT-HERO-01: vào màn là nhân vật tự chạy vào).
-           Tải xong thì ẩn; thiếu asset thì giữ lời báo. -->
-      <div id="loadingPanel" class="loading-note" role="status" hidden>
+      <!-- Màn hình chờ tải asset (TT-HERO-01: vào màn là nhân vật tự chạy vào).
+           Đang tải: lớp `--blocking` che khung chơi + thanh tiến độ (canvas vẽ nền
+           tối, không vẽ màn tạm). Tải xong thì ẩn; thiếu asset thì thành dòng báo
+           nhỏ ở đáy khung. -->
+      <div id="loadingPanel" class="loading-note loading-note--blocking" role="status" hidden>
         <p id="loadingText">Đang tải bản đồ...</p>
+        <div class="loading-note__bar" aria-hidden="true"><i id="loadingBar"></i></div>
       </div>
 
       <!-- Chọn nhân vật (hero.js): khách lần đầu / tài khoản cũ chưa có giới tính /

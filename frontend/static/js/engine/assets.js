@@ -35,11 +35,21 @@ export const images = {
   loaded: false
 };
 
+// Đếm ảnh đã yêu cầu / đã xong (thành công hoặc lỗi) — main.js hiện tiến độ
+// trên màn hình chờ. `requested` tăng dần khi manifest được đọc nên tỉ lệ có
+// thể lùi; người hiển thị tự giữ cho thanh tiến độ không lùi.
+export const loadProgress = { requested: 0, done: 0 };
+
 export function loadImage(src, optional = false) {
+  loadProgress.requested += 1;
   return new Promise(resolve => {
     const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => resolve(optional ? null : { failed: true, src });
+    const finish = value => {
+      loadProgress.done += 1;
+      resolve(value);
+    };
+    image.onload = () => finish(image);
+    image.onerror = () => finish(optional ? null : { failed: true, src });
     image.src = src;
   });
 }
@@ -136,29 +146,33 @@ async function loadMapAssets() {
   await addBorrowedMaps(byId);
   const missing = [];
 
-  await Promise.all(backdropIds().map(async id => {
+  // Nền, tileset, bộ tile địa hình và prop tải song song (trước đây prop chờ
+  // nền xong mới bắt đầu — kéo dài thời gian chờ vào màn).
+  const backdropsReady = Promise.all(backdropIds().map(async id => {
     const entry = await loadMapEntry(id, byId);
     if (entry) layers[id] = entry.image;
     else missing.push(id);
   }));
 
-  let tileset = null;
-  const ground = await loadTilesetEntry(CHAPTER.tiles.ground, byId);
-  if (ground) {
+  const tilesetReady = loadTilesetEntry(CHAPTER.tiles.ground, byId).then(ground => {
+    if (!ground) {
+      missing.push(CHAPTER.tiles.ground);
+      return null;
+    }
     const slice = ground.meta.runtime_slice;
     if (slice && GROUND_Y + slice.surface_height + slice.fill_visible_height !== VIEW_H) {
       console.warn('tileset: surface + fill không phủ đúng tới đáy khung', slice);
     }
-    tileset = { image: ground.entry.image, tileW: ground.meta.tile_size.w, tileH: ground.meta.tile_size.h, regions: indexTiles(ground.meta) };
-  } else missing.push(CHAPTER.tiles.ground);
-  const terrain = await loadTerrainTiles(byId);
+    return { image: ground.entry.image, tileW: ground.meta.tile_size.w, tileH: ground.meta.tile_size.h, regions: indexTiles(ground.meta) };
+  });
+  const terrainReady = loadTerrainTiles(byId);
 
   // Vật cản, vật phẩm, cổng: giữ kèm mục manifest để render đọc cỡ/bbox/pivot.
   // Asset có `state_files` (bia đá câu hỏi: active/done; cột đá) thì nạp thêm
   // ảnh từng trạng thái vào `states[tên]` cùng mật độ với ảnh chính (thiếu ảnh
   // trạng thái nào thì bỏ trạng thái đó).
   const props = {};
-  await Promise.all(CHAPTER.mapProps.map(async id => {
+  const propsReady = Promise.all(CHAPTER.mapProps.map(async id => {
     const entry = await loadMapEntry(id, byId);
     if (!entry) {
       missing.push(id);
@@ -173,6 +187,7 @@ async function loadMapAssets() {
     }));
     props[id] = { image: entry.image, asset: entry.asset, states };
   }));
+  const [, tileset, terrain] = await Promise.all([backdropsReady, tilesetReady, terrainReady, propsReady]);
   return { layers, tileset, terrain, props, missing };
 }
 

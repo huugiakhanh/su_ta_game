@@ -622,3 +622,14 @@ def test_trieu_quang_phuc_achievement_rules():
     assert not rules["TQP_SPEED"](ctx({**fast, 403: 400.0}))    # đúng 900 s -> chưa đạt
     assert not rules["TQP_SPEED"](ctx({301: 100.0, 302: 100.0, 303: 100.0}))
     assert not rules["LND_SPEED"](ctx(fast))
+
+
+def test_static_assets_are_cached_but_code_is_not(client):
+    asset = client.get("/static/assets/images/shared/sprites-32bit/manifest_shared.json")
+    assert asset.status_code == 200
+    assert asset.cache_control.max_age == 24 * 60 * 60
+    assert asset.cache_control.public
+    assert not asset.cache_control.no_cache
+    code = client.get("/static/js/engine/main.js")
+    assert code.status_code == 200
+    assert code.cache_control.max_age != 24 * 60 * 60

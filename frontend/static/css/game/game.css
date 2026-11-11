@@ -554,6 +554,39 @@ kbd {
 }
 .loading-note[hidden] { display: none; }
 .loading-note p { margin: 0; }
+.loading-note__bar { display: none; }
+/* Đang tải: che cả khung chơi, chữ + thanh tiến độ ở giữa. */
+.loading-note--blocking {
+  inset: 0;
+  bottom: 0;
+  left: 0;
+  transform: none;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 0;
+  background: #120c08;
+  font-size: 15px;
+}
+.loading-note--blocking .loading-note__bar {
+  display: block;
+  width: min(280px, 60%);
+  height: 8px;
+  border: 1px solid #6b4a2b;
+  border-radius: 4px;
+  background: #241810;
+  overflow: hidden;
+}
+.loading-note__bar i {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: #d9a441;
+  transition: width .15s linear;
+}
 /* Trên menu cài đặt (z 5) vì "Đổi nhân vật" mở từ đó. */
 .hero-picker { z-index: 6; background: rgba(9, 7, 5, .55); backdrop-filter: none; }
 .hero-picker__options { display: flex; gap: 16px; justify-content: center; }
