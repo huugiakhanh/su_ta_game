@@ -25,10 +25,18 @@ def create_app(config_class=Config):
 
     @app.after_request
     def cache_static_assets(response):
-        # Ảnh/âm thanh/manifest trong static/assets ít đổi: cho trình duyệt giữ 1
-        # ngày, vào màn lần sau không phải hỏi lại server từng file. JS/CSS vẫn
-        # theo mặc định (hỏi lại mỗi lần) để sửa code có tác dụng ngay.
-        if request.path.startswith(STATIC_ASSET_PREFIX) and response.status_code in (200, 304):
+        # Ảnh/âm thanh trong static/assets ít đổi: cho trình duyệt giữ 1 ngày,
+        # vào màn lần sau không phải hỏi lại server từng file. JSON (manifest
+        # sprite/map, metadata tileset) là nguồn đường dẫn/frame của engine nên
+        # luôn hỏi lại (no-cache -> 304 nếu không đổi), chép asset mới có tác
+        # dụng ngay. JS/CSS vẫn theo mặc định (hỏi lại mỗi lần).
+        if not request.path.startswith(STATIC_ASSET_PREFIX) or response.status_code not in (200, 304):
+            return response
+        if request.path.endswith(".json"):
+            response.cache_control.public = None
+            response.cache_control.max_age = None
+            response.cache_control.no_cache = True
+        else:
             response.cache_control.no_cache = None
             response.cache_control.public = True
             response.cache_control.max_age = STATIC_ASSET_MAX_AGE

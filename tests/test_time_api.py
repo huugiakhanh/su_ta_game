@@ -693,11 +693,22 @@ def test_trieu_quang_phuc_achievement_rules():
 
 
 def test_static_assets_are_cached_but_code_is_not(client):
-    asset = client.get("/static/assets/images/shared/sprites-32bit/manifest_shared.json")
-    assert asset.status_code == 200
-    assert asset.cache_control.max_age == 24 * 60 * 60
-    assert asset.cache_control.public
-    assert not asset.cache_control.no_cache
+    image = client.get("/static/assets/images/shared/sprites-32bit/fx/FX_CHARGE_AURA/fx_charge_aura_build_back.png")
+    assert image.status_code == 200
+    assert image.cache_control.max_age == 24 * 60 * 60
+    assert image.cache_control.public
+    assert not image.cache_control.no_cache
+    # ASSET-CACHE-01: manifest JSON luôn hỏi lại server (304 khi không đổi) để
+    # chép asset mới có tác dụng ngay, không đợi hết 24 h.
+    manifest_url = "/static/assets/images/shared/sprites-32bit/manifest_shared.json"
+    manifest = client.get(manifest_url)
+    assert manifest.status_code == 200
+    assert manifest.cache_control.no_cache
+    assert manifest.cache_control.max_age is None
+    assert not manifest.cache_control.public
+    again = client.get(manifest_url, headers={"If-None-Match": manifest.headers["ETag"]})
+    assert again.status_code == 304
+    assert again.cache_control.no_cache
     code = client.get("/static/js/engine/main.js")
     assert code.status_code == 200
     assert code.cache_control.max_age != 24 * 60 * 60
