@@ -107,11 +107,12 @@
                     <div class="t-year">Năm 905</div>
                 </div>
 
-                <div class="t-item t-bottom">
+                {# HOME-UNLOCK: mở khi đã qua chương 6 (NQ-L1). #}
+                <div class="t-item t-bottom" data-unlock-after="6" data-hero="Ngô Quyền" data-route="/gameplay/levels/ngo-quyen">
                     <div class="t-year">Năm 938</div>
                     <div class="t-dot"></div>
                     <div class="t-card locked">
-                        <div class="lock-overlay">🔒 Chờ mở khóa</div>
+                        <div class="lock-overlay">🔒 Qua chương Phùng Hưng</div>
                         <img src="{{ url_for('static', filename='assets/images/characters/avatar/thumb/ngo_quyen.webp') }}" alt="Ngô Quyền" loading="lazy" decoding="async">
                         <div class="t-info">
                             <h4>Ngô Quyền</h4>

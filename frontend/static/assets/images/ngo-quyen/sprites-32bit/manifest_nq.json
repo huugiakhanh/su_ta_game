@@ -1,0 +1,545 @@
+{
+  "chapter": "ngo-quyen",
+  "version": "32.A2",
+  "density": 4,
+  "pivot": "bottom-center",
+  "facing": "right",
+  "assets": [
+    {
+      "id": "OB_NQ_BOAT",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 24,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_NQ_BOAT/ob_nq_boat_idle.png",
+          "frames": 6,
+          "fps": 6,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "move",
+          "file": "obstacle/OB_NQ_BOAT/ob_nq_boat_move.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "NPC_NGO_QUYEN",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_NGO_QUYEN/npc_ngo_quyen_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_NGO_QUYEN/npc_ngo_quyen_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "npc/NPC_NGO_QUYEN/npc_ngo_quyen_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "EN_NQ_KCT_SPEARMAN",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_NQ_KCT_SPEARMAN/en_nq_kct_spearman_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_NQ_KCT_SPEARMAN/en_nq_kct_spearman_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_NQ_KCT_SPEARMAN/en_nq_kct_spearman_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_NQ_KCT_SPEARMAN/en_nq_kct_spearman_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_NQ_KCT_SPEARMAN/en_nq_kct_spearman_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "EN_NQ_KCT_ARCHER",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_NQ_KCT_ARCHER/en_nq_kct_archer_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_NQ_KCT_ARCHER/en_nq_kct_archer_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_NQ_KCT_ARCHER/en_nq_kct_archer_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_NQ_KCT_ARCHER/en_nq_kct_archer_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_01 Gate A2. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "EN_KIEU_CONG_TIEN",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_KIEU_CONG_TIEN/en_kieu_cong_tien_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_KIEU_CONG_TIEN/en_kieu_cong_tien_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_KIEU_CONG_TIEN/en_kieu_cong_tien_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 160
+        },
+        {
+          "name": "blocked",
+          "file": "enemy/EN_KIEU_CONG_TIEN/en_kieu_cong_tien_blocked.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_KIEU_CONG_TIEN/en_kieu_cong_tien_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_KIEU_CONG_TIEN/en_kieu_cong_tien_death.png",
+          "frames": 8,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_01 Gate A2. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "PORTRAIT_NGO_QUYEN",
+      "category": "portrait",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_NGO_QUYEN/portrait_ngo_quyen_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_01 Gate A2. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "PORTRAIT_KIEU_CONG_TIEN",
+      "category": "portrait",
+      "priority": "P1",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "left",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_KIEU_CONG_TIEN/portrait_kieu_cong_tien_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_01 Gate A2. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "FX_NQ_WHIRLPOOL",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "fx/FX_NQ_WHIRLPOOL/fx_nq_whirlpool_idle.png",
+          "frames": 8,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_01 Gate A2. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "FX_NQ_GUST",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 256,
+      "frame_h": 96,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "fx/FX_NQ_GUST/fx_nq_gust_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "warn",
+          "file": "fx/FX_NQ_GUST/fx_nq_gust_warn.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "active",
+          "file": "fx/FX_NQ_GUST/fx_nq_gust_active.png",
+          "frames": 6,
+          "fps": 14,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_01 Gate A2. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "OB_NQ_WIND_ROCK",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_NQ_WIND_ROCK/ob_nq_wind_rock_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_01 Gate A2. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "EN_CROCODILE",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "warn",
+          "file": "enemy\\EN_CROCODILE\\en_crocodile_warn.png",
+          "frames": 4,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack",
+          "file": "enemy\\EN_CROCODILE\\en_crocodile_attack.png",
+          "frames": 8,
+          "fps": 8,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "dive",
+          "file": "enemy\\EN_CROCODILE\\en_crocodile_dive.png",
+          "frames": 3,
+          "fps": 10,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy\\EN_CROCODILE\\en_crocodile_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Gate A2 candidate; image_gen sources and measured QA in meta/a2. Pending visual review. See SPRITE_REPORT_TQP_32.md."
+    },
+    {
+      "id": "OB_BOULDER",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "roll",
+          "file": "obstacle/OB_BOULDER/ob_boulder_roll.png",
+          "frames": 8,
+          "fps": 18,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "obstacle/OB_BOULDER/ob_boulder_break.png",
+          "frames": 5,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A2: mossy limestone; roll texture rotates; break shrinks through five frames.",
+      "visible_bbox": {
+        "x": 2,
+        "y": 3,
+        "w": 28,
+        "h": 28
+      }
+    },
+    {
+      "id": "ITEM_LND_HEAL",
+      "category": "item",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "item/ITEM_LND_HEAL/item_lnd_heal_idle.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "LND_ART_02 Gate B2; visual review pending. Existing palette only; fixed per-asset scale, baseline and body roots. See meta/gate_b2/qa.json.",
+      "design_baseline": true,
+      "visible_bbox": {
+        "x": 3.5,
+        "y": 2.25,
+        "w": 9,
+        "h": 12.75
+      }
+    },
+    {
+      "id": "FX_BT_STUN",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "fx/FX_BT_STUN/fx_bt_stun_loop.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Copied without redraw or recolor from assets/sprites-32bit/ba-trieu; SHA256 exact source match, see meta/gate_c2/copy_hashes.json.",
+      "source_chapter": "ba-trieu"
+    },
+    {
+      "id": "PJ_SPEAR",
+      "category": "projectile",
+      "priority": "P1",
+      "frame_w": 32,
+      "frame_h": 8,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "projectile/PJ_SPEAR/pj_spear_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "PJ_CROSSBOW_BOLT",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 8,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "projectile/PJ_CROSSBOW_BOLT/pj_crossbow_bolt_idle.png",
+          "frames": 1,
+          "fps": 1,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A2: short right-facing bolt with iron tip and feather tail."
+    }
+  ]
+}

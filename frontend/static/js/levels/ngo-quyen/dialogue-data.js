@@ -4,6 +4,25 @@
 
 export const NPC_DIALOGUES = {};
 
+// Ngô Quyền dẫn màn 1 (NQ-00 §5.1).
+export const STORY_NQ_INTRO = {
+  portrait: 'PORTRAIT_NGO_QUYEN',
+  memorial: false,
+  name: 'Ngô Quyền',
+  lines: [
+    'Ta là Ngô Quyền, người Đường Lâm, trấn giữ Ái Châu. Kiều Công Tiễn đã giết chủ tướng Dương Đình Nghệ, lại rước giặc Nam Hán vào nhà.',
+    'Đường ra Bắc nhiều sông nước. Lên thuyền nhỏ ở bến, giữ vững tay chèo!'
+  ]
+};
+
+// Kiều Công Tiễn khi gặp (mini-boss màn 1, NQ-00 §5.1).
+export const STORY_NQ_KCT = {
+  portrait: 'PORTRAIT_KIEU_CONG_TIEN',
+  memorial: false,
+  name: 'Kiều Công Tiễn',
+  lines: ['Ngô Quyền! Quân Nam Hán sắp tới, ngươi chẳng làm gì được ta!']
+};
+
 // Panel kết chương (NQ-00 §5.3, duyệt 11/11/2026).
 export const CHAPTER_END = {
   title: 'Hoàn thành chương Ngô Quyền',

@@ -1,18 +1,19 @@
 // Định nghĩa chương Ngô Quyền (chương 7) cho engine màn chơi. Hợp đồng các
-// trường: engine/chapter.js. NQ-SKELETON: 3 màn tối giản bằng asset mượn
-// (PLACEHOLDER) — NQ-ENGINE + NQ-L1/L2/L3 thay nội dung.
+// trường: engine/chapter.js. Màn 1 thật (NQ-L1); màn 2–3 khung NQ-SKELETON
+// (PLACEHOLDER tới NQ-L2/L3).
 
 import { CHUNK_W } from '../../engine/config.js';
 import {
   SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, BORROWED_MAPS, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
-  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
+  LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, FINISH_GATE, GUIDE_LOCAL_X, CARRY, PLUNGE, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
   OBSTACLE_TYPES, QUIZ_STELE_ID, MAP_PROPS_IN_GAME, HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES, NPC_SPRITES,
   ITEM, PICKUPS, REWARD_NAMES, TEXT, STAKES
 } from './config.js';
 import { QUESTIONS } from './questions-data.js';
-import { NPC_DIALOGUES, CHAPTER_END } from './dialogue-data.js';
+import { NPC_DIALOGUES, CHAPTER_END, STORY_NQ_INTRO } from './dialogue-data.js';
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
-import { level1Content, level1Events } from './level1.js';
+import { level1Content, level1Events, dropCarry } from './level1.js';
+import { DRAW_LAYERS } from './render-extras.js';
 import { level2Content } from './level2.js';
 import { level3Content, updateArena } from './level3.js';
 
@@ -39,6 +40,11 @@ export const NGO_QUYEN = {
   pickups: PICKUPS,
   // Mốc cắm cọc (NQ-ENGINE E5).
   stakes: STAKES,
+  // Lao ném (màn 1, lính vùng Đại La rơi) + đòn bổ hạ Kiều Công Tiễn (Q1).
+  carry: CARRY,
+  plunge: PLUNGE,
+  stateFields: () => ({ restUsed: false, tipIndex: 0, javelinHintShown: false, kctTalked: false }),
+  hooks: { dropCarry, draw: DRAW_LAYERS },
   quizStele: QUIZ_STELE_ID,
   questions: QUESTIONS,
   dialogues: NPC_DIALOGUES,
@@ -50,10 +56,12 @@ export const NGO_QUYEN = {
   levels: {
     1: {
       id: 1, title: 'Màn 1: Hành quân ra Bắc', url: LEVEL_URLS[1],
-      chunks: LEVEL1_CHUNKS, worldWidth: CHUNK_W * LEVEL1_CHUNKS, zones: LEVEL1_ZONES, finishX: LEVEL1_FINISH_X, gate: null,
+      chunks: LEVEL1_CHUNKS, worldWidth: CHUNK_W * LEVEL1_CHUNKS, zones: LEVEL1_ZONES, finishX: LEVEL1_FINISH_X, gate: FINISH_GATE,
       sprites: LEVEL_SPRITES[1],
       content: level1Content,
       events: level1Events,
+      // Ngô Quyền chờ người chơi ở đầu màn (thoại NQ-00 §5.1).
+      guide: { npc: 'ngoQuyen', localX: GUIDE_LOCAL_X, story: STORY_NQ_INTRO },
       introMessage: 'Màn 1: Hành quân ra Bắc — Năm 937, Kiều Công Tiễn giết Dương Đình Nghệ rồi cầu cứu nhà Nam Hán. Năm 938, hãy cùng Ngô Quyền từ Ái Châu ra Bắc, thu đủ 5 Quyển Sách Tinh Hoa.',
       introMessageTime: 4200,
       // Layout thử cơ chế NQ-ENGINE: ?layout=engine.

@@ -58,7 +58,7 @@ Thư viện `ngo-quyen` (`library_heroes.json`) không có điểm mâu thuẫn 
 | **NQ-00** | **Xong 11/11**: task card này + RESEARCH, đã duyệt hết | — |
 | **NQ-SKELETON** | **Xong 11/11** ([task card](SUTA_NQ_TASK_SKELETON_01.md), [report](REPORT_NQ-SKELETON.md)) Thư mục chương, template, route `pages.py`, migration `012`, `VALID_*` trong `api.py`, `game_service.py` (`CHAPTER_NQ_LEVELS`), thẻ trang chủ, JSON câu hỏi + script, `QUIZ_BANKS`, rule `.claude/rules/ngo-quyen-gameplay.md` (+ bảng rule `CLAUDE.md`), test | NQ-00 |
 | **NQ-ENGINE** | **Xong 11/11** ([task card](SUTA_NQ_TASK_ENGINE_01.md), [report](REPORT_NQ-ENGINE.md)) E1–E5 (mục 3.5) + E6 đạn choáng + `?layout=engine` màn 1 | SKELETON |
-| **NQ-L1** + `NQ_ART_01` | Màn 1 | SKELETON, ENGINE |
+| **NQ-L1** + `NQ_ART_01` | **Xong 12/11** ([task card](SUTA_NQ_TASK_L1_01.md), [report](REPORT_NQ-L1.md)), người dùng chơi thử ổn. `NQ_ART_01` Gate A1 + A2 duyệt 11/11 (quân Kiều Công Tiễn màu A tím than, thêm `#493953` `#635274`; `row` vẽ 3 lần, chèo 30 px logic), prompt đã xoá | SKELETON, ENGINE |
 | **NQ-L2** + `NQ_ART_02` | Màn 2 | L1, mục 4 đã duyệt |
 | **NQ-L3** + `NQ_ART_03` | Màn 3 + cutscene | L2 |
 | Nhạc | Prompt Gemini `audio/ngo-quyen/level1–3.mp3` | — |
@@ -220,7 +220,7 @@ Dòng chú "Tương truyền" trên đầu khung thoại (như 4.2).
 
 | Đợt | Nội dung |
 |---|---|
-| `NQ_ART_01` | Ngô Quyền NPC + chân dung (theo avatar `ngo_quyen.png`); thuyền nhỏ người chơi lái + animation `boat` cho `PLAYER_MALE`/`PLAYER_FEMALE` (`manifest_shared.json`); lính giáo dài Kiều Công Tiễn; cung thủ thành; mini-boss Kiều Công Tiễn + chân dung; xoáy nước; tảng đá chắn gió + FX gió; bó lao; nền bến Ái Châu, sông núi, ngoài thành Đại La |
+| `NQ_ART_01` | **Xong, IN_GAME 12/11** — danh sách thật ở `manifest_nq.json`/`maps_nq.json` (khác dự kiến: bỏ bó lao — dùng `PJ_SPEAR`; animation tên `row`; thêm ụ thành + cổng Đại La). Dự kiến ban đầu: Ngô Quyền NPC + chân dung (theo avatar `ngo_quyen.png`); thuyền nhỏ người chơi lái + animation `boat` cho `PLAYER_MALE`/`PLAYER_FEMALE` (`manifest_shared.json`); lính giáo dài Kiều Công Tiễn; cung thủ thành; mini-boss Kiều Công Tiễn + chân dung; xoáy nước; tảng đá chắn gió + FX gió; bó lao; nền bến Ái Châu, sông núi, ngoài thành Đại La |
 | `NQ_ART_02` | 3 NPC màn 2 + chân dung; lính thủy Nam Hán trên bè + lưới; thuyền hỏa công; cọc gỗ (vác, cắm, ngầm/nhô); mốc cắm cọc; đồng hồ triều HUD; nền rừng ven sông + bãi cửa sông Bạch Đằng; FX + icon 3 phần thưởng |
 | `NQ_ART_03` | `BOSS_LUU_HOANG_THAO` (đứng lâu thuyền + đấu kiếm trên boong) + chân dung; lâu thuyền (nguyên, mắc cọc, nghiêng, mảng giáp vỡ); máy bắn đá trên thuyền; nền cửa sông lúc triều rút; FX nước rút, gỗ vỡ |
 
