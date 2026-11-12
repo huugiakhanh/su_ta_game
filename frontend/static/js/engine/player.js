@@ -606,7 +606,9 @@ export function updatePlayerControl(dt) {
     p.vx = 0;
   } else {
     const chargeSlow = chargingNow(p) ? chargeSpec().moveSpeed : 1;
-    p.vx = move * MOVE_SPEED * (inMudNow ? mud.speed : 1) * (p.burden ? state.burden.speed : 1) * chargeSlow;
+    // Kỹ năng bị động tăng tốc chạy của chương (NQ-L3 — Thần Tốc Hành Quân).
+    const skillSpeed = state.skills ? CHAPTER.skills.moveFactor?.() ?? 1 : 1;
+    p.vx = move * MOVE_SPEED * (inMudNow ? mud.speed : 1) * (p.burden ? state.burden.speed : 1) * chargeSlow * skillSpeed;
   }
   // Gió ngược (NQ-ENGINE E3 — hazards.js updateGust cộng từ frame trước).
   if (!p.mounted) p.vx += p.windVx || 0;

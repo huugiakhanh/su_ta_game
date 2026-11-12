@@ -477,7 +477,8 @@ function updateBoat(hazard, dt) {
   hazard.drive = 0;
   hazard.vx = hazard.vx || 0;
   if (drive) {
-    hazard.vx = drive * speed;
+    // Kỹ năng bị động tăng tốc của chương cũng nhân tốc độ chèo (NQ-L3).
+    hazard.vx = drive * speed * (state.skills ? CHAPTER.skills.moveFactor?.() ?? 1 : 1);
     hazard.facing = drive;
   } else hazard.vx -= hazard.vx * Math.min(1, drag * dt);
   // Lực kéo của xoáy (E4) là vận tốc cộng thêm trong frame này, không tích vào vx.

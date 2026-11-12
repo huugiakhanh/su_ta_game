@@ -17,6 +17,7 @@ Engine ở `frontend/static/js/engine/` chạy **mọi chương**. Phần riêng
 - Module là DAG, không phụ thuộc vòng: `damage` → `end-game`; `combat`; `hazards`/`enemies` → `damage` (`hazards` → thêm `combat` + `entities` cho lính gọi viện); `player` → `damage` + `combat` + `carry`; `carry` → `combat`; `render/player` + `render/debug` → `damage` (`playerHidden`); `level-flow` → tất cả; `main` → `level-flow`. Code chương được import engine thoải mái.
 - Câu chữ có tên riêng chương (quân Hán, sách, kiệu quan...) **không** ghi trong engine: lấy từ `CHAPTER.text`, hoặc từ thông báo gắn trên sprite (`breakMessage`, `attackMessage`...).
 - Thay đổi engine ảnh hưởng mọi chương. Đổi hành vi engine thì kiểm cả 3 màn Trưng Trắc (+ `?layout=p2`, `?layout=skills`, `?viewer=1`), layout thử cơ chế `?layout=engine` ở màn 1 Bà Triệu (bục, bục trên hố, chướng khí, voi rừng, đá lăn), `?layout=engine` ở màn 1 Lý Nam Đế (bẫy lưới, sông + thuyền, cung thủ bắn chéo, xe chở sách, chó săn, bình máu) và `?layout=engine` ở màn 1 Triệu Việt Vương (sình, khói trôi, cá sấu, thuyền gọi viện, lính giáo dài + đòn bổ, ẩn nấp + đánh úp, NPC khoá sách, 7 máu) , `?layout=engine` ở màn 1 Mai Hắc Đế (gánh nặng, xe chặn đường thả người, hổ vồ, hòm rỗng nằm lại, ném hũ dầu) và `?layout=engine` ở màn 1 Phùng Hưng (đòn gồng, thu phục + cưỡi, xe đẩy, mồi nhử, hào chông, vật phẩm phụ) và `?layout=engine` ở màn 1 Ngô Quyền (thuyền lái, xoáy, gió + đá nấp, bãi triều + cọc ngầm, đống cọc + mốc cắm, lưới choáng).
+- Hazard có `action` bị `hazards.js` coi là đang ném (bắn `hazard.projectile` ở hit_frame): vật chỉ vẽ cần animation riêng thì tự đặt `anim` sau `updateHazards` (vd. lâu thuyền NQ-L3 `ship.pose`).
 - Ô trình duyệt ẩn thì `requestAnimationFrame` không chạy: kiểm luồng bằng cách `import()` module engine trong console rồi gọi `update(1/60)` + `setKey()` (đồng hồ màn không chạy trong cách này).
 
 ## Module
@@ -73,6 +74,9 @@ Engine ở `frontend/static/js/engine/` chạy **mọi chương**. Phần riêng
 - **Cắm cọc**: hazard cờ `burdenSource` (đống cọc) — chạm khi tay không, đứng đất, không trên thuyền thì `startBurden()` (số `LEVEL.burden` hoặc `BURDEN`). Gánh + đứng trong 28 px của mốc chưa cắm + bấm Đánh: đất dưới mốc lộ thì cắm (`state.stakesPlanted`, `hooks.onStakePlanted`, `text.stakePlanted`), đang ngập thì `text.stakeFlooded`. Đích giữ lại khi thiếu `stakesRequired` (`text.stakesMissing`). Ô đếm dùng chung `#extraHud` khi màn không có vật phẩm phụ. Tiến trình `stakes` (0–6, cột `chapter_progress.stakes` — migration 013).
 - **Đạn choáng**: `projectiles[…].stun` → `stunPlayer` thay `hurtPlayer` (có `damage` > 0 thì trừ máu rồi choáng); dùng được với `lob`.
 - **Strip vác riêng** (NQ-L2): `CHAPTER.burdenAnims = { idle, run }` thay `burden_idle`/`burden_run` khi strip có trong manifest (`render/player.js`); chương không khai báo thì như cũ.
+- **Số cọc sang màn sau** (NQ-L3): `main.js` truyền `stakes` (tiến trình) vào `LEVEL.content(options)`.
+- **Lớp giữa thay thế** (NQ-L3): vùng có `midAlt` thì `assets.js` nạp thêm; chương đặt `state.midAlt` (0..1) để `backdrop.js` hoà lớp giữa sang đó (t ≥ 1 vẽ thẳng; canvas phụ cỡ 0 thì vẽ thẳng).
+- **Hệ số tốc độ kỹ năng** (NQ-L3): `CHAPTER.skills.moveFactor?()` nhân tốc độ chạy (`player.js`) và chèo thuyền (`hazards.js updateBoat`).
 - **NPC hồi tưởng** (NQ-L2): `sprites.npcs[id].memorial` vẽ NPC xám (`ctx.filter`) + alpha ×0,7; `dialogues[id].memorial: true` làm chân dung khung thoại NPC trắng đen (cốt truyện giữ quy ước `memorial !== false`).
 
 ## Khe kỹ năng

@@ -96,20 +96,34 @@ function blendContext(width, height) {
   return blend;
 }
 
+// Lớp giữa thay thế (NQ-L3): vùng có `midAlt` và chương đặt `state.midAlt` (0..1)
+// thì hoà lớp giữa sang `midAlt` theo t đó (vd. nền nước rút khi triều hạ).
+function midScenery() {
+  const scene = sceneryAt('mid');
+  const alt = LEVEL.zones[zoneIndexAt(state.cameraX + VIEW_W / 2)].midAlt;
+  if (!alt || !(state.midAlt > 0) || scene.to) return scene;
+  return { from: scene.from, to: alt, t: Math.min(1, state.midAlt) };
+}
+
 function drawMidground() {
-  const { from, to, t } = sceneryAt('mid');
+  const { from, to, t } = midScenery();
   const a = images.maps.layers[from];
   const b = to ? images.maps.layers[to] : null;
   if (!a && !b) return;
   const height = mapHeight(a || b);
   const top = GROUND_Y - height;
-  if (!b || !a) {
-    // Không hoà (hoặc thiếu 1 ảnh): vẽ thẳng ảnh đang có.
+  if (!b || !a || t >= 1) {
+    // Không hoà (hoặc thiếu 1 ảnh, hoặc đã hoà hết sang B): vẽ thẳng ảnh đang có.
     if (!b) drawTiledLayer(ctx, a, MID_PARALLAX, top);
     else drawTiledLayer(ctx, b, MID_PARALLAX, top);
     return;
   }
   const blend = blendContext(VIEW_W, height);
+  // Canvas phụ cỡ 0 (khung chơi chưa có cỡ — vd. ô trình duyệt ẩn): vẽ thẳng ảnh đang chiếm ưu thế.
+  if (!blendCanvas.width || !blendCanvas.height) {
+    drawTiledLayer(ctx, t < .5 ? a : b, MID_PARALLAX, top);
+    return;
+  }
   blend.globalCompositeOperation = 'source-over';
   blend.clearRect(0, 0, VIEW_W, height);
   blend.globalCompositeOperation = 'lighter';

@@ -1,6 +1,6 @@
 // Thoại chương Ngô Quyền. Nội dung đã duyệt 11/11/2026 (docs/SUTA_NQ_TASK_00.md
 // §4–5) là Source of Truth, chép NGUYÊN VĂN, không tự sửa. Thoại dẫn màn 1, 3 NPC
-// màn 2 và cutscene màn 3 đưa vào ở NQ-L1/L2/L3.
+// màn 2 và cutscene màn 3 đưa vào ở NQ-L1/L2/L3 (đã đủ).
 
 // Màn 2 — 3 NPC (NQ-00 §4.1–4.3, duyệt 11/11/2026): đáp án đúng đứng đầu (engine tự
 // xáo khi hiện). `title` = chú thích nguyên văn Excel ô A1 + dòng chú "Hồi tưởng năm
@@ -90,6 +90,18 @@ export const STORY_NQ_KCT = {
   memorial: false,
   name: 'Kiều Công Tiễn',
   lines: ['Ngô Quyền! Quân Nam Hán sắp tới, ngươi chẳng làm gì được ta!']
+};
+
+// Cutscene màn 3 (NQ-00 §5.2, duyệt nguyên văn 11/11/2026); khung cốt truyện dùng
+// chân dung + tên Ngô Quyền (NQ-L3 Q1, duyệt 12/11/2026).
+export const STORY_NQ_VICTORY = {
+  portrait: 'PORTRAIT_NGO_QUYEN',
+  memorial: false,
+  name: 'Ngô Quyền',
+  lines: [
+    'Nước triều rút, lâu thuyền Nam Hán mắc cọc vỡ nát. Lưu Hoằng Tháo bỏ mạng giữa dòng Bạch Đằng.',
+    'Vua Nam Hán đóng quân ở Hải Môn nghe tin, thương khóc thu quân về nước.'
+  ]
 };
 
 // Panel kết chương (NQ-00 §5.3, duyệt 11/11/2026).

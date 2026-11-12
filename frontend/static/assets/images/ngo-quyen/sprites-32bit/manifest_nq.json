@@ -1049,6 +1049,379 @@
         }
       ],
       "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "PJ_FIRE_ARROW",
+      "category": "projectile",
+      "priority": "P1",
+      "frame_w": 24,
+      "frame_h": 8,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "projectile/PJ_FIRE_ARROW/pj_fire_arrow_loop.png",
+          "frames": 6,
+          "fps": 24,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "A5 approved by user on 2026-10-02; status remains NORMALIZED pending integration"
+    },
+    {
+      "id": "FX_BT_ARMOR_SPARK",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "impact",
+          "file": "fx/FX_BT_ARMOR_SPARK/fx_bt_armor_spark_impact.png",
+          "frames": 4,
+          "fps": 20,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "Copied without redraw or recolor from assets/sprites-32bit/ba-trieu; SHA256 exact source match, see meta/gate_c2/copy_hashes.json.",
+      "source_chapter": "ba-trieu"
+    },
+    {
+      "id": "BOSS_LUU_HOANG_THAO",
+      "category": "boss",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "boss/BOSS_LUU_HOANG_THAO/boss_luu_hoang_thao_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "boss/BOSS_LUU_HOANG_THAO/boss_luu_hoang_thao_attack_01.png",
+          "frames": 9,
+          "fps": 14,
+          "loop": false,
+          "hit_frame": 5,
+          "frame_w": 160
+        },
+        {
+          "name": "walk",
+          "file": "boss/BOSS_LUU_HOANG_THAO/boss_luu_hoang_thao_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "command",
+          "file": "boss/BOSS_LUU_HOANG_THAO/boss_luu_hoang_thao_command.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": 3
+        },
+        {
+          "name": "attack_02",
+          "file": "boss/BOSS_LUU_HOANG_THAO/boss_luu_hoang_thao_attack_02.png",
+          "frames": 9,
+          "fps": 14,
+          "loop": false,
+          "hit_frame": 6,
+          "frame_w": 160
+        },
+        {
+          "name": "stagger",
+          "file": "boss/BOSS_LUU_HOANG_THAO/boss_luu_hoang_thao_stagger.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "hurt",
+          "file": "boss/BOSS_LUU_HOANG_THAO/boss_luu_hoang_thao_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "boss/BOSS_LUU_HOANG_THAO/boss_luu_hoang_thao_death.png",
+          "frames": 8,
+          "fps": 10,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_03 Gates C1/C2; normalized for review. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "OB_NH_TOWER_SHIP",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 256,
+      "frame_h": 128,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_NH_TOWER_SHIP/ob_nh_tower_ship_idle.png",
+          "frames": 6,
+          "fps": 6,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "impale",
+          "file": "obstacle/OB_NH_TOWER_SHIP/ob_nh_tower_ship_impale.png",
+          "frames": 8,
+          "fps": 10,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "stuck",
+          "file": "obstacle/OB_NH_TOWER_SHIP/ob_nh_tower_ship_stuck.png",
+          "frames": 6,
+          "fps": 6,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "sink",
+          "file": "obstacle/OB_NH_TOWER_SHIP/ob_nh_tower_ship_sink.png",
+          "frames": 8,
+          "fps": 8,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_03 Gates C1/C2; normalized for review. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "PORTRAIT_LUU_HOANG_THAO",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_LUU_HOANG_THAO/portrait_luu_hoang_thao_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_03 Gate C2. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "OB_NH_SHIP_ARMOR",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 24,
+      "frame_h": 24,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_NH_SHIP_ARMOR/ob_nh_ship_armor_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "crack",
+          "file": "obstacle/OB_NH_SHIP_ARMOR/ob_nh_ship_armor_crack.png",
+          "frames": 4,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "obstacle/OB_NH_SHIP_ARMOR/ob_nh_ship_armor_break.png",
+          "frames": 6,
+          "fps": 14,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_03 Gate C2. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "OB_NH_SHIP_CATAPULT",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 40,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_NH_SHIP_CATAPULT/ob_nh_ship_catapult_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "fire",
+          "file": "obstacle/OB_NH_SHIP_CATAPULT/ob_nh_ship_catapult_fire.png",
+          "frames": 8,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": 5
+        }
+      ],
+      "qa_notes": "NQ_ART_03 Gate C2. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "EN_NH_ARCHER",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_NH_ARCHER/en_nh_archer_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_NH_ARCHER/en_nh_archer_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_NH_ARCHER/en_nh_archer_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_NH_ARCHER/en_nh_archer_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_03 Gate C2. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "OB_NQ_JAVELIN_RAFT",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_NQ_JAVELIN_RAFT/ob_nq_javelin_raft_idle.png",
+          "frames": 4,
+          "fps": 6,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_03 Gate C2. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "FX_NQ_WOOD_SPLINTER",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "burst",
+          "file": "fx/FX_NQ_WOOD_SPLINTER/fx_nq_wood_splinter_burst.png",
+          "frames": 6,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_03 Gate C2. See SPRITE_REPORT_NQ_32.md."
+    },
+    {
+      "id": "FX_NQ_SPLASH",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 24,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "burst",
+          "file": "fx/FX_NQ_SPLASH/fx_nq_splash_burst.png",
+          "frames": 6,
+          "fps": 14,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_03 Gate C2. See SPRITE_REPORT_NQ_32.md."
     }
   ]
 }

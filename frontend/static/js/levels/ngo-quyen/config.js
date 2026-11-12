@@ -4,8 +4,8 @@
 // NQ-L1 (docs/SUTA_NQ_TASK_L1_01.md): asset riêng `images/ngo-quyen/` (đợt
 // NQ_ART_01, IN_GAME 12/11/2026); trời, tile, bia câu hỏi của chương 1, sách của
 // chương 2, đồi xa + nước sông của chương 3 qua BORROWED_MAPS. Màn 2–3 vẫn là
-// khung NQ-SKELETON (PLACEHOLDER tới NQ-L3). Màn 2 thật (NQ-L2,
-// docs/SUTA_NQ_TASK_L2_01.md, asset đợt NQ_ART_02). Không import file nào của
+// Màn 2 (NQ-L2, docs/SUTA_NQ_TASK_L2_01.md, asset NQ_ART_02), màn 3 (NQ-L3,
+// docs/SUTA_NQ_TASK_L3_01.md, asset NQ_ART_03). Không import file nào của
 // chương 1–6. Mọi số DESIGN_BASELINE.
 
 import { CHUNK_W } from '../../engine/config.js';
@@ -46,7 +46,8 @@ export const FAR_HILLS = { id: 'BG_LND_FAR_MIDLANDS', parallax: 0.2, bottomY: 23
 // Ảnh DOM riêng chương (chân dung).
 export const PORTRAITS = [
   'PORTRAIT_NGO_QUYEN', 'PORTRAIT_KIEU_CONG_TIEN',
-  'PORTRAIT_DUONG_DINH_NGHE', 'PORTRAIT_KIEU_CONG_HAN', 'PORTRAIT_NGO_XUONG_NGAP'
+  'PORTRAIT_DUONG_DINH_NGHE', 'PORTRAIT_KIEU_CONG_HAN', 'PORTRAIT_NGO_XUONG_NGAP', 'PORTRAIT_LUU_HOANG_THAO',
+  'ICON_BUFF_NQ_SWIFT', 'ICON_SK_NQ_IRON_STAKE', 'ICON_SK_NQ_DECOY_BOAT'
 ];
 
 // Sprite canvas mỗi màn cần (chỉ nạp ảnh màn đang chơi dùng). ITEM_LND_HEAL ở mọi
@@ -57,8 +58,10 @@ export const LEVEL_SPRITES = {
   1: ['NPC_NGO_QUYEN', 'EN_NQ_KCT_SPEARMAN', 'EN_NQ_KCT_ARCHER', 'EN_KIEU_CONG_TIEN', 'OB_NQ_BOAT', 'FX_NQ_WHIRLPOOL',
     'FX_NQ_GUST', 'OB_NQ_WIND_ROCK', 'EN_CROCODILE', 'OB_BOULDER', 'PJ_SPEAR', 'PJ_CROSSBOW_BOLT', 'ITEM_LND_HEAL', ...STAKE_SPRITES],
   2: ['NPC_DUONG_DINH_NGHE', 'NPC_KIEU_CONG_HAN', 'NPC_NGO_XUONG_NGAP', 'EN_NH_SOLDIER', 'EN_NQ_KCT_SPEARMAN',
-    'OB_NQ_BOAT', 'OB_NQ_FIRE_BOAT', 'EN_CROCODILE', 'FX_NQ_GUST', 'OB_NQ_WIND_ROCK', 'ITEM_LND_HEAL', ...STAKE_SPRITES],
-  3: ['EN_NQ_KCT_SPEARMAN', 'ITEM_LND_HEAL']
+    'OB_NQ_BOAT', 'OB_NQ_FIRE_BOAT', 'EN_CROCODILE', 'FX_NQ_GUST', 'OB_NQ_WIND_ROCK', 'ITEM_LND_HEAL', 'PJ_SPEAR', ...STAKE_SPRITES],
+  3: ['BOSS_LUU_HOANG_THAO', 'OB_NH_TOWER_SHIP', 'OB_NH_SHIP_ARMOR', 'OB_NH_SHIP_CATAPULT', 'EN_NH_ARCHER', 'EN_NH_SOLDIER',
+    'OB_NQ_JAVELIN_RAFT', 'OB_NQ_BOAT', 'OB_BOULDER', 'PJ_FIRE_ARROW', 'PJ_SPEAR', 'FX_NQ_WOOD_SPLINTER', 'FX_NQ_SPLASH',
+    'FX_BT_ARMOR_SPARK', 'FX_NQ_IRON_STAKE', 'FX_NQ_DECOY_BOAT', 'ITEM_LND_HEAL']
 };
 
 // URL trang từng màn (route ở backend/routes/pages.py).
@@ -198,20 +201,82 @@ export const LEVEL2 = {
   ]
 };
 
-// ---- Màn 3 "Đại thắng Bạch Đằng" — PLACEHOLDER, thay ở NQ-L3 ----
-// Đấu trường 1 chunk, 3 đợt lính ra từ mép phải; hết đợt 3 + hết quân thì thắng.
-export const ARENA = { width: CHUNK_W, playerStartX: 170, spawnX: CHUNK_W - 60, edge: 40 };
+// ---- Màn 3 "Đại thắng Bạch Đằng" (NQ-L3, docs/SUTA_NQ_TASK_L3_01.md) ----
+// Đấu trường 1 chunk: bờ trái `#` x 0–96, còn lại bãi triều `,` (nước lớn = sông,
+// nước rút = bùn). GĐ 1 ép triều lớn, GĐ 2 ép triều rút (`forceTide`).
+export const ARENA = { width: CHUNK_W, playerStartX: 40 };
+export const LEVEL3_TERRAIN = [{ chunk: 1, rows: ['######' + ','.repeat(42)] }];
+// Triều chỉ do chương ép: low/high dài vô hạn, `warn` = thời gian chuyển.
+export const LEVEL3_TIDE = { low: 9999, warn: 1.5, high: 9999, rise: 0 };
+// Nền: trận đánh lúc nước lớn, hoà sang nước rút (`midAlt`, state.midAlt 0..1 — engine NQ-L3).
 export const LEVEL3_ZONES = [
-  { id: 'NQ3', x0: 0, x1: ARENA.width, sky: 'BG_TT_SKY_DAY', mid: 'BG_NQ_MID_AI_CHAU_RIVER' }
+  { id: 'NQ3', x0: 0, x1: ARENA.width, sky: 'BG_TT_SKY_DAY', mid: 'BG_NQ_MID_BACH_DANG_BATTLE', midAlt: 'BG_NQ_MID_BACH_DANG_LOW_TIDE' }
 ];
-// Mỗi đợt: quân ra ở giây `at` tính từ đầu đợt, lệch `dx` so với spawnX.
-export const WAVES = {
-  gap: 1.5,
-  groups: [
-    [{ at: 0 }, { at: 1.2, dx: -40 }],
-    [{ at: 0 }, { at: 1, dx: -40 }, { at: 2 }],
-    [{ at: 0 }, { at: .8, dx: -40 }, { at: 1.6 }]
-  ]
+// Lâu thuyền OB_NH_TOWER_SHIP (ô 256×128, mũi quay phải trong ảnh -> code lật quay trái).
+// Đáy ô chìm 12 dưới mặt nước (GROUND_Y + WATER_SURFACE): đáy ở GROUND_Y + 20.
+// Boong hàng 56 trên đáy (GROUND_Y − 36), dài x 58–224 của ô (gốc = mép trái) ->
+// khi lật: pivot −96 … +70. 6 tâm giáp (−76…64 bước 28, −37) logic từ pivot khi chưa
+// lật. `startX`/`stuckX` = pivot GĐ 1 / sau khi tiến vào bãi cọc. Mắc cọc nghiêng
+// 1,2° xuống mũi (`tilt`). `hull` = vùng chặn người chơi (lật): pivot −118 … +120.
+export const SHIP = {
+  id: 'OB_NH_TOWER_SHIP', startX: 608, stuckX: 488, advanceTime: 2,
+  bottom: 20, deck: 56, deckFrom: -78, deckTo: 78, hullFrom: -118, hullTo: 120, wallH: 160,
+  armor: [-76, -48, -20, 8, 36, 64], armorY: 37, armorHp: 2, tilt: .021
+};
+// Máy bắn đá OB_NH_SHIP_CATAPULT (ô 48×40) trên boong ở pivot thuyền + `dx`
+// (lật). Đá rời rổ ô 5 tại (+18,25; 27 trên chân) — lật về phía người chơi.
+// Mỗi `interval` giây: boss `command` -> máy bắn -> đá OB_BOULDER bay `flightTime`
+// tới vạch báo (x người chơi lúc ra lệnh). Hitbox w×h, trúng −1 máu.
+export const CATAPULT = {
+  id: 'OB_NH_SHIP_CATAPULT', dx: 46, release: { x: 18.25, y: 27 }, interval: 3.6,
+  boulder: 'OB_BOULDER', flightTime: 1, gravity: 520, w: 14, h: 14, radius: 9
+};
+// 2 cung thủ EN_NH_ARCHER trên boong (thrower hp 1, tên PJ_FIRE_ARROW nhắm người
+// chơi, nhả ô 5 tại +9,25; 26 trên chân). Hạ rồi hồi sinh sau `respawn` giây (GĐ 1–2).
+export const DECK_ARCHERS = { dx: [-74, -40], interval: 2.8, stagger: 1.4, range: 420, respawn: 8 };
+// Bè lao OB_NQ_JAVELIN_RAFT (ô 48×16): trôi qua lại trong [from, to] (GĐ 1), chạm
+// thì cầm 1 lao; hết lao `refill` giây. GĐ 2 nằm lại trên bùn.
+export const RAFTS = { xs: [200, 360], from: 140, to: 420, speed: 26, w: 40, refill: 5, sink: 4 };
+// Thanh Nhử địch GĐ 1.
+export const BAIT = { max: 100, hull: 20, archer: 15, decoy: 25 };
+// Lưu Hoằng Tháo BOSS_LUU_HOANG_THAO (ô 64×64, attack_01/02 frame_w 160): sọ→chân
+// ~44 -> thân 26×44. Chém ngang `attack_01` ô 5 mũi +48,25 cao 23 trên chân; bổ
+// `attack_02` ô 6 tầm 41 cao 9,75. `blades` = vùng lưỡi [near, reach] × [low, high]
+// (trên chân). Phản đòn: lướt trong `dodgeWindow` giây trước ô hit -> `stagger`
+// `staggerTime` giây, đòn chém ×`counter`, tối đa `counterHits` đòn mỗi lần khựng (đòn cuối
+// làm hắn hoàn hồn — chơi thử harness: không giới hạn thì 1 lần khựng chém 4 đòn = hết
+// 8 máu); sau attack_02 ô 7–9 (kiếm cắm ván) chém được.
+export const BOSS = {
+  id: 'BOSS_LUU_HOANG_THAO', w: 26, h: 44, hp: 10, dx: 10, speed: 40, reach: 46, rest: 1.2,
+  dodgeWindow: .25, staggerTime: 1.5, counter: 2, counterHits: 2, plantFrom: 6 / 9, hintInterval: 3.5, defeatScore: 1500,
+  blades: {
+    attack_01: { near: 6, reach: 50, low: 10, high: 30 },
+    attack_02: { near: 6, reach: 43, low: 0, high: 24 }
+  }
+};
+// Lính Nam Hán nhảy từ boong xuống bùn ở GĐ 2 (art `nh`).
+export const MUD_SOLDIERS = { interval: 6, max: 2, spawnDx: -130 };
+// Kỹ năng (NQ-00 §3.4, DESIGN_BASELINE). Icon là ảnh DOM (PORTRAITS).
+export const SKILLS = {
+  BUFF_NQ_SWIFT: { slot: null, factor: 1.2, icon: 'ICON_BUFF_NQ_SWIFT' },
+  SK_NQ_IRON_STAKE: { slot: 'skill1', cooldown: 14, range: 220, damage: 2, stun: 1, fx: 'FX_NQ_IRON_STAKE', icon: 'ICON_SK_NQ_IRON_STAKE' },
+  SK_NQ_DECOY_BOAT: { slot: 'skill2', cooldown: 16, dashTime: .4, dashSpeed: 300, guard: 3, fx: 'FX_NQ_DECOY_BOAT', icon: 'ICON_SK_NQ_DECOY_BOAT' }
+};
+// Cutscene kết chương.
+export const NQ_CUTSCENE = { fallHold: .8, sinkHold: .6 };
+// Câu thông báo trong trận (NQ-L3 §5, Claude soạn, không phải nội dung lịch sử; duyệt Q4 12/11/2026).
+export const BOSS_TEXT = {
+  phase1: 'Nước lớn! Nhặt lao trên bè, ném vào lâu thuyền để nhử giặc vào bãi cọc.',
+  javelin: 'Đã nhặt lao. Nhảy lên rồi bấm Đánh để ném cao.',
+  phase2: 'Nước rút! Lâu thuyền mắc cọc — phá nốt giáp mạn thuyền.',
+  armorBroken: n => `Bãi cọc đã phá ${n} mảng giáp!`,
+  boardDeck: 'Nhảy lên boong!',
+  bossGuard: 'Hoằng Tháo gạt đòn! Lướt né đúng lúc hắn chém để phản đòn.',
+  counter: 'Hắn hở thế — chém!',
+  noStakeSpot: 'Chưa có chỗ dựng cọc.',
+  boulderHit: 'Bạn bị đá máy bắn đá trúng!',
+  arrowHit: 'Bạn trúng tên lửa!',
+  bladeHit: 'Bạn bị Hoằng Tháo chém trúng!'
 };
 
 // Câu hỏi chặn đường (điểm + luật ở engine):
@@ -230,7 +295,7 @@ export const OBSTACLE_TYPES = {};
 // Quyển Sách Tinh Hoa — sprite chương 2 (strip 4 ô 16×16 logic).
 export const ITEM = { sprite: 'ITEM_BT_TINH_HOA', fps: 8 };
 export const QUIZ_STELE_ID = 'PROP_TT_QUIZ_STELE';
-export const MAP_PROPS_IN_GAME = [ITEM.sprite, QUIZ_STELE_ID, TILES.water, TILES.flat, RAMPART.prop, FINISH_GATE.closed, FINISH_GATE.open];
+export const MAP_PROPS_IN_GAME = [ITEM.sprite, QUIZ_STELE_ID, TILES.water, TILES.flat, RAMPART.prop, FINISH_GATE.closed, FINISH_GATE.open, 'PROP_NQ_STAKE_FIELD'];
 
 // ---- Quân địch, hazard, đạn ----
 // Lính giáo dài EN_NQ_KCT_SPEARMAN (ô 48×48, attack_01 frame_w 128): sọ→chân 34;
@@ -273,8 +338,20 @@ export const ENEMY_SPRITES = {
     attackMessage: 'Bạn bị lính Nam Hán chém trúng!', contactMessage: 'Bạn va phải lính Nam Hán!',
     defeatMessage: 'Đã hạ lính Nam Hán.'
   },
-  // Màn 3: lính đấu trường đuổi khắp đấu trường.
-  arena: { ...SOLDIER_ART, rules: { ...GUARD, speed: 70, aggroRange: CHUNK_W }, defeatMessage: 'Đã đánh bại lính giặc.' }
+  // Màn 3: lính Nam Hán xuống bùn (GĐ 2) đuổi khắp đấu trường.
+  mud: {
+    id: 'EN_NH_SOLDIER', behavior: 'guard', rules: { ...NH_GUARD, speed: 60, aggroRange: CHUNK_W }, anims: SPEAR_ANIMS,
+    attackMessage: 'Bạn bị lính Nam Hán chém trúng!', contactMessage: 'Bạn va phải lính Nam Hán!', defeatMessage: 'Đã hạ lính Nam Hán.'
+  },
+  // Màn 3: Lưu Hoằng Tháo (enemy kind `hoangThao`, boss.js) + mảng giáp mạn thuyền (`shipArmor`).
+  hoangThao: {
+    id: 'BOSS_LUU_HOANG_THAO',
+    anims: {
+      idle: 'idle', walk: 'walk', command: 'command', attack_01: 'attack_01', attack_02: 'attack_02',
+      stagger: 'stagger', hurt: 'hurt', death: 'death'
+    }
+  },
+  shipArmor: { id: 'OB_NH_SHIP_ARMOR', anims: { idle: 'idle', crack: 'crack', break: 'break', death: 'break' } }
 };
 export const HAZARD_SPRITES = {
   // NQ-ENGINE E1: thuyền OB_NQ_BOAT (ô 64×24, boong hàng ảnh 46 = 12,5 logic trên đáy).
@@ -317,11 +394,31 @@ export const HAZARD_SPRITES = {
     id: 'EN_NH_NET_RAFT', w: 20, h: 34, muzzle: 26, anims: { idle: 'idle', throw: 'throw', hurt: 'hurt', death: 'death' },
     hitMessage: 'Bạn va phải lính Nam Hán!', breakMessage: 'Đã hạ thuyền do thám Nam Hán!'
   },
+  // ---- Màn 3 (NQ_ART_03) ----
+  // Lâu thuyền: hazard `prop` nổi (vẽ trước lớp nước); animation do boss.js đặt qua
+  // `action` (idle/impale/stuck/sink). Hộp không dùng va chạm.
+  // `ride` = mặt boong (bục gắn thuyền, engine không vẽ): hộp cao 100 trên đáy -> boong
+  // ở +44 = 56 trên đáy; inset 40 -> pivot −78 … +78. Bục chỉ dùng được khi
+  // `ship.active` (boss.js bật lúc mở boong ở GĐ 2).
+  ship: {
+    id: 'OB_NH_TOWER_SHIP', w: 236, h: 100, ride: { top: 44, inset: 40 },
+    anims: { idle: 'idle', impale: 'impale', stuck: 'stuck', sink: 'sink' }
+  },
+  // Vùng chặn thân lâu thuyền (ẩn): `blocking` — đứng được trên nóc (GĐ 3 = mặt boong).
+  shipHull: { w: 238, h: 160, blocking: true },
+  // Cung thủ trên boong (thrower đứng cao, hp 1).
+  deckArcher: {
+    id: 'EN_NH_ARCHER', w: 20, h: 34, muzzle: 26, muzzleX: 9.25,
+    anims: { idle: 'idle', throw: 'throw', hurt: 'hurt', death: 'death' },
+    hitMessage: 'Bạn va phải cung thủ Nam Hán!', breakMessage: 'Đã hạ cung thủ Nam Hán!'
+  },
   // Thuyền hỏa công OB_NQ_FIRE_BOAT (ô 64×32): kind `drift` trôi trong khe sông.
   fireBoat: { id: 'OB_NQ_FIRE_BOAT', w: 52, h: 18, anims: { move: 'move', idle: 'move' }, hitMessage: 'Bạn bị thuyền lửa thiêu trúng!' }
 };
 export const PROJECTILE_SPRITES = {
   crossbowBolt: { id: 'PJ_CROSSBOW_BOLT', anim: 'idle', w: 12, h: 3, hitMessage: 'Bạn trúng tên!' },
+  // Tên lửa cung thủ Nam Hán màn 3 (PJ_FIRE_ARROW ô 24×8).
+  fireArrow: { id: 'PJ_FIRE_ARROW', anim: 'loop', w: 14, h: 4, hitMessage: 'Bạn trúng tên lửa!' },
   // Lưới quăng từ bè (NQ-ENGINE E6): vòng cung, trúng thì choáng, không mất máu.
   net: { id: 'PJ_NQ_NET', anim: 'idle', w: 16, h: 10, lob: { flightTime: .9, gravity: 700 }, stun: 1, damage: 0, hitMessage: 'Bạn bị lưới chụp trúng!' }
 };

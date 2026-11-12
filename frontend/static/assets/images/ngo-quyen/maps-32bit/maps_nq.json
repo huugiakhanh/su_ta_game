@@ -196,6 +196,58 @@
       "tileable_x": true,
       "qa_notes": "NQ_ART_02 Gate B2. MAP_REPORT_NQ_32.md",
       "surface_row": 0
+    },
+    {
+      "id": "BG_NQ_MID_BACH_DANG_BATTLE",
+      "category": "parallax",
+      "file": "bg/BG_NQ_MID_BACH_DANG_BATTLE/bg_nq_mid_bach_dang_battle.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "NQ_ART_03 Gate C1. See MAP_REPORT_NQ_32.md."
+    },
+    {
+      "id": "BG_NQ_MID_BACH_DANG_LOW_TIDE",
+      "category": "parallax",
+      "file": "bg/BG_NQ_MID_BACH_DANG_LOW_TIDE/bg_nq_mid_bach_dang_low_tide.png",
+      "w": 768,
+      "h": 160,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-at-GROUND_Y",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "parallax_hint": 0.5,
+      "transition_width": 192,
+      "qa_notes": "NQ_ART_03 Gate C1. See MAP_REPORT_NQ_32.md."
+    },
+    {
+      "id": "PROP_NQ_STAKE_FIELD",
+      "category": "prop",
+      "file": "props/PROP_NQ_STAKE_FIELD/prop_nq_stake_field.png",
+      "w": 64,
+      "h": 32,
+      "density": 4,
+      "transparent": true,
+      "anchor": "bottom-center",
+      "frames": 1,
+      "fps": null,
+      "priority": "P0",
+      "status": "IN_GAME",
+      "tileable_x": true,
+      "qa_notes": "NQ_ART_03 Gate C2. See MAP_REPORT_NQ_32.md."
     }
   ]
 }

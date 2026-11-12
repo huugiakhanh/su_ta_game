@@ -114,6 +114,9 @@
 //     id, title, url, chunks, worldWidth, zones, finishX
 //     gate?        { closed, open, worldX, flag?, sink? } — cổng vẽ tại worldX (null = không cổng);
 //                  sink = px chìm thêm xuống đất khi đáy hình cách đáy ảnh
+//     zones[i].midAlt? lớp giữa thay thế, hoà sang theo `state.midAlt` (0..1, chương đặt — NQ-L3)
+//     content(options): options = { layout, score, rewards, stakes (số cọc tiến trình — NQ-L3) }
+//     (khe kỹ năng) CHAPTER.skills.moveFactor?() -> hệ số tốc độ chạy + chèo thuyền (NQ-L3)
 //     arena?       true = đấu trường: tường 2 đầu, không về đích, camera neo tâm
 //     playerStartX? mép trái hitbox người chơi lúc vào màn (mặc định PLAYER_START_X)
 //     tiles?       ghi đè từng khoá của CHAPTER.tiles cho riêng màn này (vd. ảnh nước — TQP-L2)

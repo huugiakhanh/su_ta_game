@@ -60,7 +60,7 @@ Thư viện `ngo-quyen` (`library_heroes.json`) không có điểm mâu thuẫn 
 | **NQ-ENGINE** | **Xong 11/11** ([task card](SUTA_NQ_TASK_ENGINE_01.md), [report](REPORT_NQ-ENGINE.md)) E1–E5 (mục 3.5) + E6 đạn choáng + `?layout=engine` màn 1 | SKELETON |
 | **NQ-L1** + `NQ_ART_01` | **Xong 12/11** ([task card](SUTA_NQ_TASK_L1_01.md), [report](REPORT_NQ-L1.md)), người dùng chơi thử ổn. `NQ_ART_01` Gate A1 + A2 duyệt 11/11 (quân Kiều Công Tiễn màu A tím than, thêm `#493953` `#635274`; `row` vẽ 3 lần, chèo 30 px logic), prompt đã xoá | SKELETON, ENGINE |
 | **NQ-L2** + `NQ_ART_02` | Màn 2. Asset `NQ_ART_02` xong 12/11; code xong 12/11 ([task card](SUTA_NQ_TASK_L2_01.md), [report](REPORT_NQ-L2.md)), người dùng chơi thử ổn 12/11 | L1, mục 4 đã duyệt |
-| **NQ-L3** + `NQ_ART_03` | Màn 3 + cutscene | L2 |
+| **NQ-L3** + `NQ_ART_03` | Màn 3 + cutscene. Asset `NQ_ART_03` xong 12/11; code xong 12/11 ([task card](SUTA_NQ_TASK_L3_01.md), [report](REPORT_NQ-L3.md)), chờ chơi thử | L2 |
 | Nhạc | Prompt Gemini `audio/ngo-quyen/level1–3.mp3` | — |
 
 Mỗi giai đoạn: kế hoạch → duyệt → code → `pytest tests` + `/verify-ui` → `/task-report`. Đổi engine thì chơi lại các màn 6 chương trước và các layout thử (`?layout=p2`, `?layout=skills`, `?layout=engine`, `?viewer=1`).

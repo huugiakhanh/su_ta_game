@@ -89,7 +89,8 @@ function backdropIds() {
   const hills = LEVEL.farHills ?? CHAPTER.farHills;
   const skies = LEVEL.zones.map(zone => zone.sky);
   const hillsVisible = hills && skies.some(sky => !hills.hiddenUnderSky.includes(sky));
-  return [...new Set([...LEVEL.zones.flatMap(zone => [zone.sky, zone.mid]), ...(hillsVisible ? [hills.id] : [])])];
+  // `midAlt` = lớp giữa thay thế của vùng (NQ-L3: nền nước rút), chương hoà sang qua `state.midAlt`.
+  return [...new Set([...LEVEL.zones.flatMap(zone => [zone.sky, zone.mid, zone.midAlt].filter(Boolean)), ...(hillsVisible ? [hills.id] : [])])];
 }
 
 // Gom tile theo vùng và vai trò (surface / fill / left-edge / right-edge /

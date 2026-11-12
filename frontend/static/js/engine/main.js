@@ -138,7 +138,9 @@ export async function boot(chapter) {
   levelOptions = {
     layout: LEVEL.testLayout && params.get('layout') === LEVEL.testLayout ? LEVEL.testLayout : null,
     score: LEVEL.id > 1 && progress ? progress.score : 0,
-    rewards: progress?.rewards || []
+    rewards: progress?.rewards || [],
+    // Số cọc đã cắm ở màn trước (NQ-L3 — chương Ngô Quyền màn 3 đọc trong LEVEL.content).
+    stakes: progress?.stakes ?? 0
   };
 
   initAudio();

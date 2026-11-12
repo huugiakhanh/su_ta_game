@@ -1,5 +1,5 @@
 {% extends "gameplay/base.html" %}
-{# Chương Ngô Quyền — dùng chung 3 màn. Khung chung ở gameplay/base.html. NQ-SKELETON: chưa có khe kỹ năng (NQ-L3). #}
+{# Chương Ngô Quyền — dùng chung 3 màn. Khung chung ở gameplay/base.html. Khe kỹ năng màn 3 (NQ-L3). #}
 
 {% block chapter_name %}Ngô Quyền{% endblock %}
 {% block brand %}SUTA · NGÔ QUYỀN{% endblock %}
@@ -7,11 +7,30 @@
 {% block item_label %}Quyển Sách Tinh Hoa đã thu thập{% endblock %}
 {% block item_glyph %}📖{% endblock %}
 
-{% block skill_slots %}{% endblock %}
+{% block skill_slots %}
+        <div class="skill" data-skill="SK_NQ_IRON_STAKE" hidden>
+          <img class="skill__icon" alt="Cọc Sắt Bạch Đằng" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">K</kbd>
+        </div>
+        <div class="skill" data-skill="SK_NQ_DECOY_BOAT" hidden>
+          <img class="skill__icon" alt="Thuyền Nhẹ Khiêu Chiến" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span><kbd class="skill__key">L</kbd>
+        </div>
+        <div class="skill skill--buff" data-skill="BUFF_NQ_SWIFT" hidden>
+          <img class="skill__icon" alt="Thần Tốc Hành Quân" width="64" height="64">
+          <i class="skill__cd"></i><span class="skill__time"></span>
+        </div>
+{% endblock %}
 
-{% block skill_controls %}{% endblock %}
+{% block skill_controls %}
+          <button class="control control--skill control--skill-1" data-control="skill1" data-skill="SK_NQ_IRON_STAKE" aria-label="Cọc Sắt Bạch Đằng" hidden><img class="control__icon" alt="" hidden><span class="control__label">CỌC</span></button>
+          <button class="control control--skill control--skill-2" data-control="skill2" data-skill="SK_NQ_DECOY_BOAT" aria-label="Thuyền Nhẹ Khiêu Chiến" hidden><img class="control__icon" alt="" hidden><span class="control__label">THUYỀN</span></button>
+{% endblock %}
 
-{% block skill_help %}{% endblock %}
+{% block skill_help %}
+      <span data-skill="SK_NQ_IRON_STAKE" hidden><kbd>K</kbd> Cọc Sắt Bạch Đằng</span>
+      <span data-skill="SK_NQ_DECOY_BOAT" hidden><kbd>L</kbd> Thuyền Nhẹ Khiêu Chiến</span>
+{% endblock %}
 
 {% block chapter_script %}
   <script type="module" src="{{ url_for('static', filename='js/levels/ngo-quyen/main.js') }}"></script>
