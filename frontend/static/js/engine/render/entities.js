@@ -457,6 +457,7 @@ export function drawEnemies() {
 // quay về phía người chơi. `idle`, hoặc `talk` khi đang nói thoại — cả hai
 // lặp theo đồng hồ chung `time` (game tạm dừng lúc hội thoại nên không dùng
 // đồng hồ riêng tick trong mô phỏng). Gặp xong thì mờ dần theo npc.fade.
+const MEMORIAL_ALPHA = .7;
 export function drawNpcs(time) {
   // + NPC dẫn đầu màn (state.guide — TT-HERO-01), vẽ như NPC.
   [...state.npcs, state.guide].filter(Boolean).forEach(npc => {
@@ -467,7 +468,11 @@ export function drawNpcs(time) {
     const pivotX = Math.round(npc.centerX - state.cameraX);
     if (pivotX < -60 || pivotX > VIEW_W + 60) return;
     const pose = { anim: { name: npc.talking ? 'talk' : 'idle', time } };
-    const drawn = sprite && drawAnimated(sprite.id, sprite.anims, null, pose, pivotX, npc.y + npc.h, facingDirection(npc.centerX, 0, true), alpha);
+    // NPC hồi tưởng (NQ-L2 L2-E2, `memorial`): vẽ xám + mờ.
+    ctx.save();
+    if (sprite?.memorial) ctx.filter = 'grayscale(1)';
+    const drawn = sprite && drawAnimated(sprite.id, sprite.anims, null, pose, pivotX, npc.y + npc.h, facingDirection(npc.centerX, 0, true), alpha * (sprite.memorial ? MEMORIAL_ALPHA : 1));
+    ctx.restore();
     if (!drawn) {
       drawPlaceholder(npc, alpha);
       debugLabels.set(npc, `${npc.id} (placeholder)`);

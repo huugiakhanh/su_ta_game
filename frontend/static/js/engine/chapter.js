@@ -70,6 +70,8 @@
 //                 `pull` — E4), `gust` (`cycle`, `force`, `dir`, `warnMessage?` — E3); cờ sprite
 //                 `tideOnly: 'low'|'high'` + anims.submerged? (E2), `burdenSource: { message? }` (E5);
 //                 projectiles[…].stun (giây choáng, `damage` 0 = chỉ choáng — E6), `hitMessage?`.
+//   burdenAnims?  { idle, run } — strip vác riêng của chương (NQ-L2, vd. stake_idle/stake_run);
+//                 thiếu trong manifest thì dùng burden_idle/burden_run -> idle/run
 //   stakes?       { sprite?, w, h } — mốc cắm cọc (NQ-ENGINE E5, anim `spot`/`planted`; thiếu = hộp)
 //   stakeIcon?    ID prop map làm icon ô đếm cọc (dùng chung ô vật phẩm phụ #extraHud)
 //   extraItems?   { kind: { sprite, fps?, picked(count, total) } } — vật phẩm phụ (PH-ENGINE E6):
@@ -78,7 +80,8 @@
 //   stealth?      { ambush } — đánh úp lính chưa phát hiện từ sau lưng × ambush (E7)
 //   item?         { sprite, fps } — vật phẩm thu thập (ô HUD + vẽ)
 //   quizStele?    ID prop bia câu hỏi chặn đường
-//   questions     bộ câu hỏi (stt -> câu); dialogues: thoại NPC (id -> thoại)
+//   questions     bộ câu hỏi (stt -> câu); dialogues: thoại NPC (id -> thoại; `memorial: true`
+//                 = chân dung trắng đen — hồi tưởng, NQ-L2; sprites.npcs[id].memorial = vẽ NPC xám mờ)
 //   rewards       id phần thưởng -> tên (nhận khi trả lời đúng câu NPC)
 //   chapterEnd    { title, text(score) } — panel hết chương
 //   text          câu chữ thông báo chung (xem TEXT trong config.js của chương)

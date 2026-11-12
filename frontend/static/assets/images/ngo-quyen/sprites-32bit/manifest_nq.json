@@ -540,6 +540,515 @@
         }
       ],
       "qa_notes": "A2: short right-facing bolt with iron tip and feather tail."
+    },
+    {
+      "id": "EN_NH_SOLDIER",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_NH_SOLDIER/en_nh_soldier_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "walk",
+          "file": "enemy/EN_NH_SOLDIER/en_nh_soldier_walk.png",
+          "frames": 8,
+          "fps": 11,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "attack_01",
+          "file": "enemy/EN_NH_SOLDIER/en_nh_soldier_attack_01.png",
+          "frames": 9,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": 4,
+          "frame_w": 128
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_NH_SOLDIER/en_nh_soldier_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_NH_SOLDIER/en_nh_soldier_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B1. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "NPC_DUONG_DINH_NGHE",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_DUONG_DINH_NGHE/npc_duong_dinh_nghe_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_DUONG_DINH_NGHE/npc_duong_dinh_nghe_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B1. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "NPC_KIEU_CONG_HAN",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_KIEU_CONG_HAN/npc_kieu_cong_han_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_KIEU_CONG_HAN/npc_kieu_cong_han_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B1. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "NPC_NGO_XUONG_NGAP",
+      "category": "npc",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "npc/NPC_NGO_XUONG_NGAP/npc_ngo_xuong_ngap_idle.png",
+          "frames": 6,
+          "fps": 9,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "talk",
+          "file": "npc/NPC_NGO_XUONG_NGAP/npc_ngo_xuong_ngap_talk.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B1. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "PORTRAIT_DUONG_DINH_NGHE",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_DUONG_DINH_NGHE/portrait_duong_dinh_nghe_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "PORTRAIT_KIEU_CONG_HAN",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_KIEU_CONG_HAN/portrait_kieu_cong_han_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "PORTRAIT_NGO_XUONG_NGAP",
+      "category": "portrait",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 64,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "portrait/PORTRAIT_NGO_XUONG_NGAP/portrait_ngo_xuong_ngap_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "EN_NH_NET_RAFT",
+      "category": "enemy",
+      "priority": "P0",
+      "frame_w": 96,
+      "frame_h": 48,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "enemy/EN_NH_NET_RAFT/en_nh_net_raft_idle.png",
+          "frames": 6,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "throw",
+          "file": "enemy/EN_NH_NET_RAFT/en_nh_net_raft_throw.png",
+          "frames": 8,
+          "fps": 16,
+          "loop": false,
+          "hit_frame": 5
+        },
+        {
+          "name": "hurt",
+          "file": "enemy/EN_NH_NET_RAFT/en_nh_net_raft_hurt.png",
+          "frames": 3,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "enemy/EN_NH_NET_RAFT/en_nh_net_raft_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "PJ_NQ_NET",
+      "category": "projectile",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 16,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "projectile/PJ_NQ_NET/pj_nq_net_idle.png",
+          "frames": 4,
+          "fps": 12,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "OB_NQ_FIRE_BOAT",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "move",
+          "file": "obstacle/OB_NQ_FIRE_BOAT/ob_nq_fire_boat_move.png",
+          "frames": 6,
+          "fps": 10,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "death",
+          "file": "obstacle/OB_NQ_FIRE_BOAT/ob_nq_fire_boat_death.png",
+          "frames": 6,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "OB_NQ_STAKE_PILE",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 24,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_NQ_STAKE_PILE/ob_nq_stake_pile_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "OB_NQ_STAKE_SPOT",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "spot",
+          "file": "obstacle/OB_NQ_STAKE_SPOT/ob_nq_stake_spot_spot.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "planted",
+          "file": "obstacle/OB_NQ_STAKE_SPOT/ob_nq_stake_spot_planted.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "OB_NQ_HIDDEN_STAKE",
+      "category": "obstacle",
+      "priority": "P0",
+      "frame_w": 16,
+      "frame_h": 24,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "obstacle/OB_NQ_HIDDEN_STAKE/ob_nq_hidden_stake_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "ICON_BUFF_NQ_SWIFT",
+      "category": "icon",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_BUFF_NQ_SWIFT/icon_buff_nq_swift_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "ICON_SK_NQ_IRON_STAKE",
+      "category": "icon",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_SK_NQ_IRON_STAKE/icon_sk_nq_iron_stake_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "ICON_SK_NQ_DECOY_BOAT",
+      "category": "icon",
+      "priority": "P0",
+      "frame_w": 32,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "idle",
+          "file": "icon/ICON_SK_NQ_DECOY_BOAT/icon_sk_nq_decoy_boat_idle.png",
+          "frames": 1,
+          "fps": null,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "FX_NQ_IRON_STAKE",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 48,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "rise",
+          "file": "fx/FX_NQ_IRON_STAKE/fx_nq_iron_stake_rise.png",
+          "frames": 6,
+          "fps": 18,
+          "loop": false,
+          "hit_frame": null
+        },
+        {
+          "name": "hold",
+          "file": "fx/FX_NQ_IRON_STAKE/fx_nq_iron_stake_hold.png",
+          "frames": 4,
+          "fps": 8,
+          "loop": true,
+          "hit_frame": null
+        },
+        {
+          "name": "break",
+          "file": "fx/FX_NQ_IRON_STAKE/fx_nq_iron_stake_break.png",
+          "frames": 5,
+          "fps": 12,
+          "loop": false,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
+    },
+    {
+      "id": "FX_NQ_DECOY_BOAT",
+      "category": "fx",
+      "priority": "P0",
+      "frame_w": 64,
+      "frame_h": 32,
+      "density": 4,
+      "pivot": "bottom-center",
+      "facing": "right",
+      "status": "IN_GAME",
+      "animations": [
+        {
+          "name": "loop",
+          "file": "fx/FX_NQ_DECOY_BOAT/fx_nq_decoy_boat_loop.png",
+          "frames": 6,
+          "fps": 14,
+          "loop": true,
+          "hit_frame": null
+        }
+      ],
+      "qa_notes": "NQ_ART_02 Gate B2. SPRITE_REPORT_NQ_32.md"
     }
   ]
 }

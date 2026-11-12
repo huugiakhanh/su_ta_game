@@ -81,7 +81,9 @@ function open(next) {
   const id = portraitId(next.portraitNpc, next.portraitId);
   el.portrait.hidden = !(id && setSpriteImage(el.portrait, id));
   // Cốt truyện mặc định chân dung trắng đen (Thi Sách); `memorial: false` = màu.
-  el.portrait.classList.toggle('dialogue__portrait--memorial', next.kind === 'story' && next.data.memorial !== false);
+  // Thoại NPC thì ngược lại: chỉ trắng đen khi `memorial: true` (hồi tưởng — NQ-L2).
+  const memorial = next.kind === 'story' ? next.data.memorial !== false : next.kind === 'npc' && next.data.memorial === true;
+  el.portrait.classList.toggle('dialogue__portrait--memorial', memorial);
   el.panel.classList.add('panel--visible');
   duckMusic(true);
   playSfx(next.kind === 'quiz' ? 'quizOpen' : 'talk');

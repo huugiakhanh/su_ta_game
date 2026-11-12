@@ -1,20 +1,20 @@
 // Định nghĩa chương Ngô Quyền (chương 7) cho engine màn chơi. Hợp đồng các
-// trường: engine/chapter.js. Màn 1 thật (NQ-L1); màn 2–3 khung NQ-SKELETON
-// (PLACEHOLDER tới NQ-L2/L3).
+// trường: engine/chapter.js. Màn 1 (NQ-L1), màn 2 (NQ-L2) thật; màn 3 khung
+// NQ-SKELETON (PLACEHOLDER tới NQ-L3).
 
 import { CHUNK_W } from '../../engine/config.js';
 import {
   SPRITE_ROOT, SPRITE_MANIFEST_FILE, MAP_ROOT, MAP_MANIFEST_FILE, BORROWED_MAPS, TILES, FAR_HILLS, PORTRAITS, LEVEL_SPRITES, LEVEL_URLS,
   LEVEL1_CHUNKS, LEVEL1_ZONES, LEVEL1_FINISH_X, FINISH_GATE, GUIDE_LOCAL_X, CARRY, PLUNGE, LEVEL2_CHUNKS, LEVEL2_ZONES, LEVEL2_FINISH_X, ARENA, LEVEL3_ZONES,
   OBSTACLE_TYPES, QUIZ_STELE_ID, MAP_PROPS_IN_GAME, HAZARD_SPRITES, ENEMY_SPRITES, PROJECTILE_SPRITES, NPC_SPRITES,
-  ITEM, PICKUPS, REWARD_NAMES, TEXT, STAKES
+  ITEM, PICKUPS, REWARD_NAMES, TEXT, STAKES, BURDEN_ANIMS, LEVEL2_TIDE, LEVEL2_STAKES_REQUIRED
 } from './config.js';
 import { QUESTIONS } from './questions-data.js';
 import { NPC_DIALOGUES, CHAPTER_END, STORY_NQ_INTRO } from './dialogue-data.js';
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
 import { level1Content, level1Events, dropCarry } from './level1.js';
 import { DRAW_LAYERS } from './render-extras.js';
-import { level2Content } from './level2.js';
+import { level2Content, level2Events } from './level2.js';
 import { level3Content, updateArena } from './level3.js';
 
 export const NGO_QUYEN = {
@@ -40,6 +40,8 @@ export const NGO_QUYEN = {
   pickups: PICKUPS,
   // Mốc cắm cọc (NQ-ENGINE E5).
   stakes: STAKES,
+  // Vác cọc phát strip riêng stake_idle/stake_run (NQ-L2 L2-E1).
+  burdenAnims: BURDEN_ANIMS,
   // Lao ném (màn 1, lính vùng Đại La rơi) + đòn bổ hạ Kiều Công Tiễn (Q1).
   carry: CARRY,
   plunge: PLUNGE,
@@ -73,8 +75,12 @@ export const NGO_QUYEN = {
       chunks: LEVEL2_CHUNKS, worldWidth: CHUNK_W * LEVEL2_CHUNKS, zones: LEVEL2_ZONES, finishX: LEVEL2_FINISH_X, gate: null,
       sprites: LEVEL_SPRITES[2],
       content: level2Content,
+      events: level2Events,
+      // Thủy triều + cắm cọc (NQ-ENGINE E2, E5): cắm đủ 3/6 mới về đích.
+      tide: LEVEL2_TIDE,
+      stakesRequired: LEVEL2_STAKES_REQUIRED,
       introMessage: 'Màn 2: Trận địa cọc ngầm',
-      summary: state => `Bạn đạt ${state.score} điểm.`
+      summary: state => `Bạn thu thập ${state.itemsCollected}/10 Quyển Sách Tinh Hoa, cắm ${state.stakesPlanted}/6 cọc và đạt ${state.score} điểm.`
     },
     3: {
       id: 3, title: 'Màn 3: Đại thắng Bạch Đằng', url: LEVEL_URLS[3],

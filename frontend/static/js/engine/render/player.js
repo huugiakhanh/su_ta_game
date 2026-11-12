@@ -7,6 +7,8 @@ import { CHAPTER } from '../chapter.js';
 import { ctx, debugLabels, drawSprite, spriteImage } from './canvas.js';
 import { playerHidden } from '../damage.js';
 
+const BURDEN_ANIM_KEYS = { burdenIdle: 'idle', burdenRun: 'run' };
+
 // Ô của animation người chơi cần vẽ (0-based) theo cấu hình PLAYER_ANIMATIONS.
 function playerFrame(config, meta, p, animTime) {
   if (config.holdFrame !== undefined) return config.holdFrame < 0 ? meta.frames - 1 : config.holdFrame;
@@ -55,7 +57,11 @@ export function drawPlayer(time) {
   const animTime = dead ? Math.max(0, time - p.deathTime) : (p.anim?.time || 0);
   // Animation chưa có trong manifest (vd. `plunge` chờ Codex) -> `fallback`.
   let config = PLAYER_ANIMATIONS[key];
-  if (config.fallback && !getAnimMeta(PLAYER_SPRITE_ID, config.anim)) config = config.fallback;
+  // Strip vác riêng của chương (NQ-L2 L2-E1, vd. `stake_idle`): có trong manifest thì
+  // dùng, thiếu thì như cũ (burden_idle/burden_run -> idle/run).
+  const own = BURDEN_ANIM_KEYS[key] && CHAPTER.burdenAnims?.[BURDEN_ANIM_KEYS[key]];
+  if (own && getAnimMeta(PLAYER_SPRITE_ID, own)) config = { anim: own };
+  else if (config.fallback && !getAnimMeta(PLAYER_SPRITE_ID, config.anim)) config = config.fallback;
   const meta = getAnimMeta(PLAYER_SPRITE_ID, config.anim);
   const image = spriteImage(PLAYER_SPRITE_ID, config.anim);
   // Lún sình (TQP-ENGINE E1) vẽ chìm xuống; đang ẩn nấp (E7) vẽ mờ.

@@ -40,10 +40,10 @@ export function makeSoldier(chunk, localX) {
   return makeEnemy(worldX(chunk, localX) - SOLDIER.w / 2, SOLDIER.w, SOLDIER.h, SOLDIER.hp, false);
 }
 
-const makeBoat = (chunk, localX) => makeHazard('boat', 'boat', chunk, localX, { floatY: BOAT_FLOAT, groundY: GROUND_Y });
+export const makeBoat = (chunk, localX) => makeHazard('boat', 'boat', chunk, localX, { floatY: BOAT_FLOAT, groundY: GROUND_Y });
 
 // Vùng gió + đá nấp ở giữa; vùng nấp là dải `SHELTER.w` sát mép trái đá.
-function makeGust(chunk, localX, phase = 0) {
+export function makeGust(chunk, localX, phase = 0) {
   const rock = makeHazard('prop', 'shelterRock', chunk, localX);
   return {
     hazards: [{ ...makeHazard('gust', 'gust', chunk, localX), phase }, rock],
@@ -113,7 +113,7 @@ function engineTestLayout() {
       ...t.shelters.map(spot => makeHazard('prop', 'shelterRock', ...spot)),
       ...t.hiddenStakes.map(spot => makeHazard('prop', 'hiddenStake', ...spot, { groundY: GROUND_Y + 6 })),
       makeHazard('prop', 'stakePile', ...t.pile),
-      makeHazard('thrower', 'netThrower', ...t.netThrower, { projectile: 'net', fireInterval: 2.5, fireRange: 260, aim: false })
+      makeHazard('thrower', 'netRaft', ...t.netRaft, { projectile: 'net', fireInterval: 2.5, fireRange: 260, aim: false })
     ],
     shelters: t.shelters.map(zone),
     stakeSpots: t.stakeSpots.map(spot => makeStakeSpot(...spot)),
@@ -175,8 +175,8 @@ export function dropCarry(target) {
 // Thuyền trống về chỗ đậu ban đầu (`homeX`) khi người chơi đứng trên bờ trái
 // khe đó — rơi xuống sông giữa dòng thì về chỗ đứng vững ở bờ trái, thuyền phải
 // ở đó để đi lại (không thì kẹt: khe 2–4 quá tầm nhảy + lướt). Khe 3 có 2 thuyền:
-// cả 2 về chỗ (thuyền bên kia xoáy đậu giữa dòng).
-function returnBoats(p) {
+// cả 2 về chỗ (thuyền bên kia xoáy đậu giữa dòng). Màn 2 dùng lại (level2.js).
+export function returnBoats(p) {
   if (!p.grounded || p.platform) return;
   const center = p.x + p.w / 2;
   state.hazards.forEach(boat => {

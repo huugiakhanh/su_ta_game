@@ -72,6 +72,8 @@ Engine ở `frontend/static/js/engine/` chạy **mọi chương**. Phần riêng
 - **Xoáy nước** (kind `whirl`): thuyền có tâm trong `radius` nhận thêm vận tốc `pull` về tâm (không tích vào `vx`, nên chèo ngược thoát được); tâm vào `core` thì người trên thuyền `respawnAfterFall` (−1 máu, về `p.safeSpot`), thuyền về `homeX`.
 - **Cắm cọc**: hazard cờ `burdenSource` (đống cọc) — chạm khi tay không, đứng đất, không trên thuyền thì `startBurden()` (số `LEVEL.burden` hoặc `BURDEN`). Gánh + đứng trong 28 px của mốc chưa cắm + bấm Đánh: đất dưới mốc lộ thì cắm (`state.stakesPlanted`, `hooks.onStakePlanted`, `text.stakePlanted`), đang ngập thì `text.stakeFlooded`. Đích giữ lại khi thiếu `stakesRequired` (`text.stakesMissing`). Ô đếm dùng chung `#extraHud` khi màn không có vật phẩm phụ. Tiến trình `stakes` (0–6, cột `chapter_progress.stakes` — migration 013).
 - **Đạn choáng**: `projectiles[…].stun` → `stunPlayer` thay `hurtPlayer` (có `damage` > 0 thì trừ máu rồi choáng); dùng được với `lob`.
+- **Strip vác riêng** (NQ-L2): `CHAPTER.burdenAnims = { idle, run }` thay `burden_idle`/`burden_run` khi strip có trong manifest (`render/player.js`); chương không khai báo thì như cũ.
+- **NPC hồi tưởng** (NQ-L2): `sprites.npcs[id].memorial` vẽ NPC xám (`ctx.filter`) + alpha ×0,7; `dialogues[id].memorial: true` làm chân dung khung thoại NPC trắng đen (cốt truyện giữ quy ước `memorial !== false`).
 
 ## Khe kỹ năng
 
