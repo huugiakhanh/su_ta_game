@@ -51,7 +51,7 @@ Thay đổi hành vi / số ngoài card:
 - L3-7 cutscene nguyên văn §5.2 (đọc DOM), panel §5.3, tiến trình `level3Complete: true` — PASS. Thành tựu server chưa chạy (cần DB test).
 - L3-8 đồ hoạ (chụp): lâu thuyền mũi trái nổi đúng mặt nước, boss + 2 cung thủ trên boong, giáp khớp ô ở cả `idle` và `stuck`, bãi cọc + nền nước rút, cảnh chìm (người chơi rơi xuống bùn phát `victory`) — PASS.
 - L3-9 hồi quy 900 frame + bấm K/L: chương 1 (màn 1, 3), 2, 3 (màn 1, 3), 4, 5 (màn 1, 3), 6 (màn 1, 3), 7 (màn 1, `?layout=engine`, màn 2, 3, `?layout=lowtide`) — không lỗi — PASS.
-- L3-10 người dùng chơi thử — **CHƯA CHẠY**.
+- L3-10 người dùng chơi thử cả 3 màn (12/11) — ổn — PASS.
 
 ## Vấn đề asset
 - Không có lỗi ảnh. Ghi chú: `stuck` nghiêng 1,2° — code bù toạ độ giáp + boss + máy bắn đá theo `tilt`.
@@ -59,5 +59,5 @@ Thay đổi hành vi / số ngoài card:
 ## Câu hỏi cho team / TODO
 - **Cache JS** (gặp khi thử): Flask trả cả file `.js` với `max-age=86400` như manifest JSON. Phiên sửa cache (nhánh `claude/epic-almeida-83ccb8`) chỉ chuyển `.json` sang `no-cache`. Sau khi cập nhật code, trình duyệt đã chơi trong 24 giờ có thể nạp lẫn `config.js` cũ với `boss.js` mới (thiếu export → màn 3 không chạy). Đề xuất mở rộng sửa cache cho `.js`.
 - Người dùng chơi thử: độ khó 3 GĐ (nhịp đá 3,6 s, tên 2,8 s, cửa sổ né 0,25 s, boss 10 máu / 2 đòn mỗi lần khựng), thời gian cả màn.
-- Nhạc riêng chương 7 vẫn `TODO_MISSING` (đang dùng nhạc chương 6).
+- Nhạc riêng chương 7: xong 12/11 (`docs/archive/GEMINI_PROMPT_NQ_MUSIC.md`).
 - TODO engine (từ NQ-L1): nhảy khỏi thuyền đang chạy không mang theo vận tốc thuyền.

@@ -1,11 +1,11 @@
-// Âm thanh riêng chương Ngô Quyền. TODO_MISSING: nhạc nền riêng chương (prompt
-// Gemini ở bước Nhạc của NQ-00). PLACEHOLDER — tạm phát nhạc chương 6 Phùng Hưng.
+// Âm thanh riêng chương Ngô Quyền. Nhạc nền riêng chương (Gemini, prompt
+// docs/archive/GEMINI_PROMPT_NQ_MUSIC.md, 12/11/2026).
 // Định dạng: xem engine/sfx-data.js.
 
 export const MUSIC_FILES = {
-  level1: '/static/assets/audio/phung-hung/level1.mp3',
-  level2: '/static/assets/audio/phung-hung/level2.mp3',
-  level3: '/static/assets/audio/phung-hung/level3.mp3'
+  level1: '/static/assets/audio/ngo-quyen/level1.mp3',
+  level2: '/static/assets/audio/ngo-quyen/level2.mp3',
+  level3: '/static/assets/audio/ngo-quyen/level3.mp3'
 };
 
 export const MUSIC = {};
