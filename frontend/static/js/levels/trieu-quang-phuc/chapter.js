@@ -57,10 +57,10 @@ export const TRIEU_QUANG_PHUC = {
   stealth: { ambush: 2 },
   skills: TQP_SKILLS,
   enemyKinds: ENEMY_KINDS,
-  // Cờ nghỉ chân + câu hướng dẫn khu rèn luyện màn 1 (level1Events); giây từ lúc
+  // Câu hướng dẫn khu rèn luyện màn 1 (level1Events); giây từ lúc
   // rồng vàng hiện ở màn 2 (null = chưa hiện — level2Events); tiến trình trận
   // boss màn 3 (level3Content).
-  stateFields: () => ({ restUsed: false, tipIndex: 0, dragonTime: null, battle: null }),
+  stateFields: () => ({ tipIndex: 0, dragonTime: null, battle: null }),
   hooks: {
     // Bình máu rơi khi hạ địch: chỉ màn 3, theo tỉ lệ HEAL_DROP (boss.js dropHeal).
     dropHeal,

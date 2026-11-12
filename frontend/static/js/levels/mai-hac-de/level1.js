@@ -6,12 +6,12 @@
 //     định chunk 11 (ném hòm rỗng nằm lại, 2 lính hộ tống, chết rơi sách);
 //   - 5 xe cống = 5 dân phu (`rescued`); 5 Quyển Sách Tinh Hoa (2 cố định + 2
 //     trong xe + 1 từ quan thu thuế); 4 câu hỏi chặn đường;
-//   - sự kiện: câu hướng dẫn đoạn gánh, kỵ binh báo trước rồi phi ra, nghỉ chân.
+//   - sự kiện: câu hướng dẫn đoạn gánh, kỵ binh báo trước rồi phi ra; nghỉ chân = bình máu nằm sẵn.
 // Layout thử `?layout=engine` (MHD-ENGINE). Mọi số DESIGN_BASELINE.
 
 import { worldX, makeHazard, setTerrain, buildTerrain, terrainHoles } from '../../engine/geometry.js';
 import { state } from '../../engine/state.js';
-import { makeEnemy, makeQuiz, makeItem, shuffle, pick, checkTerrainFootprints } from '../../engine/entities.js';
+import { makeEnemy, makeQuiz, makeItem, makeRestHeal, shuffle, pick, checkTerrainFootprints } from '../../engine/entities.js';
 import { breakHazard } from '../../engine/combat.js';
 import { showMessage } from '../../engine/ui.js';
 import { playSfx } from '../../engine/audio.js';
@@ -246,7 +246,9 @@ export function level1Content(options = {}) {
     npcs: [],
     quizzes: level1Quizzes(),
     bushes: layout.bushes,
-    caves: layout.caves
+    caves: layout.caves,
+    // Nghỉ chân: bình máu nằm sẵn (NQ-REST-01).
+    pickups: [makeRestHeal(REST.chunk, REST.localX)]
   };
   checkTerrainFootprints(content);
   return content;
@@ -271,7 +273,7 @@ export function updateCavalry(p, dt) {
 }
 
 // Sự kiện mỗi frame: câu hướng dẫn đoạn gánh (1 lần mỗi câu, theo thứ tự); kỵ
-// binh báo trước; nghỉ chân hồi 1 máu (1 lần).
+// binh báo trước.
 export function level1Events(p, dt) {
   if (state.layoutTest) return;
   const tip = BURDEN_ROAD.tips[state.tipIndex];
@@ -280,10 +282,4 @@ export function level1Events(p, dt) {
     showMessage(tip[2], 3200);
   }
   updateCavalry(p, dt);
-  if (!state.restUsed && p.x > worldX(REST.chunk, REST.localX)) {
-    state.restUsed = true;
-    state.health = Math.min(state.maxHealth, state.health + 1);
-    playSfx('heal');
-    showMessage('Nghỉ chân: hồi 1 máu.');
-  }
 }

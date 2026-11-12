@@ -93,7 +93,7 @@ export const MINIBOSS = {
 };
 // Hố chông tre cố định chunk 11 (ngoài 10 nhóm xáo) — đủ 12 chướng ngại.
 export const FIXED_PIT = { chunk: 11, localX: 220 };
-// Nghỉ chân hồi 1 máu (Q2) — 1 lần khi vượt điểm này.
+// Nghỉ chân (Q2) — bình máu nằm sẵn ở điểm này (engine makeRestHeal).
 export const REST = { chunk: 9, localX: 282 };
 // 5 Quyển Sách Tinh Hoa cố định: [chunk, localX, độ cao trên mặt đất].
 export const LEVEL1_ITEMS = [[2, 390, 56], [4, 640, 60], [6, 300, 64], [7, 600, 72], [9, 420, 60]];

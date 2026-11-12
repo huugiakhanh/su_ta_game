@@ -11,13 +11,12 @@
 import { worldX, makeHazard, setTerrain, buildTerrain, terrainHoles } from '../../engine/geometry.js';
 import { GROUND_Y } from '../../engine/config.js';
 import {
-  makeEnemy, makeNpc, makeQuiz, makeItem, makeStakeSpot, pick, checkTerrainFootprints, checkNpcClearance
+  makeEnemy, makeNpc, makeQuiz, makeItem, makeStakeSpot, makeRestHeal, pick, checkTerrainFootprints, checkNpcClearance
 } from '../../engine/entities.js';
 import { state } from '../../engine/state.js';
 import { showMessage } from '../../engine/ui.js';
-import { playSfx } from '../../engine/audio.js';
 import {
-  QUIZ, SOLDIER, LEVEL2, LEVEL2_CHUNKS, LEVEL2_TERRAIN, LEVEL2_NPCS, CAPTORS, BOAT_FLOAT, WATER_SURFACE, TEXT
+  QUIZ, SOLDIER, LEVEL2, LEVEL2_CHUNKS, LEVEL2_TERRAIN, LEVEL2_NPCS, CAPTORS, BOAT_FLOAT, WATER_SURFACE
 } from './config.js';
 import { NPC_QUESTION_POOLS } from './questions-data.js';
 import { makeBoat, makeGust, returnBoats } from './level1.js';
@@ -76,6 +75,7 @@ export function level2Content() {
     stakeSpots: L.stakeSpots.map(spot => makeStakeSpot(...spot)),
     holes: terrainHoles(),
     items: L.books.map(([chunk, localX, lift]) => makeItem(chunk, localX, lift)),
+    pickups: [makeRestHeal(...L.rest)],
     enemies: [
       ...L.soldiers.map(spot => makeNhSoldier(...spot)),
       ...npcEntries.flatMap(({ npc, art }) => makeCaptors(npc, art))
@@ -90,18 +90,12 @@ export function level2Content() {
 }
 
 // Sự kiện mỗi frame: thuyền trống về bến, câu hướng dẫn (1 lần mỗi câu, theo thứ
-// tự x), nghỉ chân hồi 1 máu.
+// tự x). Nghỉ chân là bình máu nằm sẵn (engine makeRestHeal).
 export function level2Events(p) {
   returnBoats(p);
   const tip = LEVEL2.tips[state.tipIndex];
   if (tip && p.x > worldX(tip[0], tip[1])) {
     state.tipIndex += 1;
     showMessage(tip[2], 3200);
-  }
-  if (!state.restUsed && p.x > worldX(...LEVEL2.rest)) {
-    state.restUsed = true;
-    state.health = Math.min(state.maxHealth, state.health + 1);
-    playSfx('heal');
-    showMessage(TEXT.rest);
   }
 }

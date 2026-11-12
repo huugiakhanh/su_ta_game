@@ -13,7 +13,7 @@ import {
 import { QUESTIONS } from './questions-data.js';
 import { NPC_DIALOGUES, CHAPTER_END, STORY_BA_TRIEU_INTRO } from './dialogue-data.js';
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
-import { level1Content, level1Events } from './level1.js';
+import { level1Content } from './level1.js';
 import { level2Content, level2Events } from './level2.js';
 import { level3Content } from './level3.js';
 import { updateBattle, updateCutscene, ENEMY_KINDS, updateBossHud, battleDebugEntities } from './boss.js';
@@ -49,8 +49,8 @@ export const BA_TRIEU = {
   audio: { sfx: SFX, music: MUSIC, musicFiles: MUSIC_FILES },
   skills: BT_SKILLS,
   enemyKinds: ENEMY_KINDS,
-  // Cờ nghỉ chân màn 1 (level1Events); tiến trình trận boss màn 3 (level3Content).
-  stateFields: () => ({ restUsed: false, battle: null }),
+  // Tiến trình trận boss màn 3 (level3Content).
+  stateFields: () => ({ battle: null }),
   hooks: {
     updateHud: updateBossHud,
     onCrit: showCrit,
@@ -63,7 +63,6 @@ export const BA_TRIEU = {
       chunks: LEVEL1_CHUNKS, worldWidth: CHUNK_W * LEVEL1_CHUNKS, zones: LEVEL1_ZONES, finishX: LEVEL1_FINISH_X, gate: FINISH_GATE,
       sprites: LEVEL_SPRITES[1],
       content: level1Content,
-      events: level1Events,
       // Bà Triệu chờ người chơi ở đầu màn (thoại BT-L1 §3, duyệt 17/10/2026).
       guide: { npc: 'baTrieu', localX: GUIDE_LOCAL_X, story: STORY_BA_TRIEU_INTRO },
       // BT-00 §5.1 (nguyên văn, duyệt 17/10/2026).

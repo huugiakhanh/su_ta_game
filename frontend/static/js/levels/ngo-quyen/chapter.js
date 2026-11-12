@@ -45,7 +45,7 @@ export const NGO_QUYEN = {
   // Lao ném (màn 1, lính vùng Đại La rơi) + đòn bổ hạ Kiều Công Tiễn (Q1).
   carry: CARRY,
   plunge: PLUNGE,
-  stateFields: () => ({ restUsed: false, tipIndex: 0, javelinHintShown: false, kctTalked: false }),
+  stateFields: () => ({ tipIndex: 0, javelinHintShown: false, kctTalked: false }),
   hooks: { dropCarry, draw: DRAW_LAYERS },
   quizStele: QUIZ_STELE_ID,
   questions: QUESTIONS,

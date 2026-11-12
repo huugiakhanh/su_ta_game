@@ -53,8 +53,8 @@ export const TRUNG_TRAC = {
   skills: TT_SKILLS,
   enemyKinds: ENEMY_KINDS,
   // Trường state riêng chương: hũ dầu đang bay, đám lửa, mũi tên kỹ năng, mưa
-  // tên trên thành, tiến trình trận (màn 3); cờ nghỉ chân (màn 1).
-  stateFields: () => ({ jars: [], fires: [], arrows: [], wallArrows: [], battle: null, restUsed: false }),
+  // tên trên thành, tiến trình trận (màn 3).
+  stateFields: () => ({ jars: [], fires: [], arrows: [], wallArrows: [], battle: null }),
   hooks: {
     updateHud: updateBossHud,
     onAttackWindow: reflectJarsInBox,

@@ -105,7 +105,7 @@ export const MINIBOSS = {
   chunk: 11, localX: 420, hp: 6, speed: 30, patrol: 90, fireInterval: 2.2, fireRange: 240,
   itemLift: 40, escorts: [250, 600]
 };
-// Nghỉ chân hồi 1 máu — 1 lần khi vượt điểm này (giữa đèo).
+// Nghỉ chân — bình máu nằm sẵn ở điểm này (engine makeRestHeal) (giữa đèo).
 export const REST = { chunk: 7, localX: 200 };
 // 2 Quyển Sách Tinh Hoa cố định [chunk, localX, độ cao trên mặt đất] (đầu
 // chunk, ngoài 2 ô đặt nhóm); 2 quyển trong xe chở sách (chunk 6, 9), 1 quyển
