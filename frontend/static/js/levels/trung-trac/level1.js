@@ -1,15 +1,14 @@
 // Màn 1 "Vượt ải": 11 nhóm chướng ngại xáo mỗi lượt + mini-boss kiệu quan +
-// 5 bình thư + 4 câu hỏi chặn đường; layout thử `?layout=p2`. Sự kiện 1 lần:
-// nghỉ chân, dòng cốt truyện.
+// 5 bình thư + 4 câu hỏi chặn đường; layout thử `?layout=p2`. Nghỉ chân =
+// bình máu nằm sẵn (pickups); sự kiện 1 lần: dòng cốt truyện.
 
 import { worldX, makeObstacle, makeHazard, setTerrain, buildTerrain, terrainHoles } from '../../engine/geometry.js';
 import {
-  makeEnemy, makeQuiz, makeItem, shuffle, keepValidBridges, checkTerrainFootprints
+  makeEnemy, makeQuiz, makeItem, makeRestHeal, shuffle, keepValidBridges, checkTerrainFootprints
 } from '../../engine/entities.js';
 import { state } from '../../engine/state.js';
 import { showMessage } from '../../engine/ui.js';
-import { playSfx } from '../../engine/audio.js';
-import { TERRAIN_CELL, MAX_HEALTH } from '../../engine/config.js';
+import { TERRAIN_CELL } from '../../engine/config.js';
 import { LEVEL } from '../../engine/chapter.js';
 import { MINIBOSS, QUIZ } from './config.js';
 import { LEVEL1_QUESTION_POOL } from './questions-data.js';
@@ -199,22 +198,17 @@ export function level1Content(options) {
     // Boss Tô Định KHÔNG ở màn 1 — để dành cho màn 3 (TT-NPC-01).
     enemies: testP2 ? [] : layout.enemies,
     npcs: [],
-    quizzes: testP2 ? [] : level1Quizzes()
+    quizzes: testP2 ? [] : level1Quizzes(),
+    // Nghỉ chân chunk 9: bình máu nằm sẵn (NQ-REST-01).
+    pickups: testP2 ? [] : [makeRestHeal(9, 282)]
   };
   checkTerrainFootprints(content);
   return content;
 }
 
-// Mốc sự kiện 1 lần của màn 1 (giữ nguyên theo D1–D2): nghỉ chân chunk 9,
-// dòng cốt truyện chunk 10.
+// Mốc sự kiện 1 lần của màn 1 (D2): dòng cốt truyện chunk 10. Nghỉ chân chunk 9
+// (D1) là bình máu trong `pickups` (NQ-REST-01).
 export function level1Events(p) {
-  if (!state.restUsed && p.x > worldX(9, 282)) {
-    state.restUsed = true;
-    state.health = Math.min(MAX_HEALTH, state.health + 1);
-    playSfx('heal');
-    showMessage('Nghỉ chân: hồi 1 máu.');
-  }
-
   if (!state.storyShown && p.x > worldX(10, 312)) {
     state.storyShown = true;
     showMessage('Mê Linh, năm 40: nghĩa quân tập hợp, chuẩn bị phất cờ khởi nghĩa.', 3600);

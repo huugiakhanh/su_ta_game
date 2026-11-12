@@ -52,9 +52,9 @@ export const MAI_HAC_DE = {
   rescue: RESCUE,
   skills: MHD_SKILLS,
   enemyKinds: { ...ENGINE_TEST_KINDS, ...ENEMY_KINDS },
-  // Cờ nghỉ chân + câu hướng dẫn đoạn gánh màn 1 (level1Events); tiến trình trận
+  // Câu hướng dẫn đoạn gánh màn 1 (level1Events); tiến trình trận
   // boss màn 3 (level3Content).
-  stateFields: () => ({ restUsed: false, tipIndex: 0, battle: null }),
+  stateFields: () => ({ tipIndex: 0, battle: null }),
   hooks: {
     // Đang gánh mà bấm Đánh: màn thật đập sọt ở xe cống đầu tiên (level1.js).
     onBurdenAttack: p => (testing() ? ENGINE_TEST_HOOKS.onBurdenAttack(p) : burdenAttackAtCart(p)),

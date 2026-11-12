@@ -47,7 +47,7 @@ export const PHUNG_HUNG = {
   carry: CARRY,
   skills: PH_SKILLS,
   enemyKinds: { ...ENEMY_KINDS, ...BATTLE_KINDS },
-  stateFields: () => ({ restUsed: false, tipIndex: 0, battle: null }),
+  stateFields: () => ({ tipIndex: 0, battle: null }),
   hooks: { onPushHit, dropCarry, onThrownHit, dropHeal, onCrit, onAttackWindow, updateHud: updateBossHud, draw: DRAW_LAYERS },
   quizStele: QUIZ_STELE_ID,
   questions: QUESTIONS,

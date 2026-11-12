@@ -122,8 +122,10 @@ export const TRAINING = {
 // 11, 6 đòn bổ (hp 12 — đòn bổ engine PLUNGE.damage 2); chết rơi 1 Quyển Sách
 // Tinh Hoa (`itemLift` trên mặt đất); 2 lính tuần hộ tống `escorts` (localX).
 export const MINIBOSS = { chunk: 11, localX: 420, hp: 12, itemLift: 40, escorts: [250, 600] };
-// Nghỉ chân hồi 1 máu — 1 lần khi vượt điểm này (đầu đầm lầy).
-export const REST = { chunk: 8, localX: 200 };
+// Nghỉ chân — bình máu nằm sẵn ở điểm này (engine makeRestHeal), đầu đầm lầy.
+// localX 60 (trước là mốc vô hình ở 200): ô xáo `a` (260 ± 60) hay đè cọc tre/
+// chông lên 200 (14/200 lượt mô phỏng), ở 60 thì 0/200 — NQ-REST-01.
+export const REST = { chunk: 8, localX: 60 };
 // 4 Quyển Sách Tinh Hoa cố định [chunk, localX, độ cao trên mặt đất] (đầu
 // chunk, ngoài 2 ô đặt nhóm và ngoài dải sình ô `a` — sớm nhất x 96); quyển
 // thứ 5 rơi từ đội trưởng.

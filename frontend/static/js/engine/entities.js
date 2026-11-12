@@ -4,7 +4,7 @@
 // (makeObstacle, makeHazard, makeProjectile). Không đụng state đang chơi.
 
 import { worldX, groundYAt, flatSpan, terrainLevelAt } from './geometry.js';
-import { NPC_RULES, NPC_RESCUE, TERRAIN_CELL, JUMP_FORCE, GRAVITY } from './config.js';
+import { NPC_RULES, NPC_RESCUE, TERRAIN_CELL, JUMP_FORCE, GRAVITY, HEAL_PICKUP } from './config.js';
 import { CHAPTER } from './chapter.js';
 import { createAnim } from './animation.js';
 
@@ -97,6 +97,15 @@ export function makeQuiz(chunk, localX, stt, npc = null) {
 export function makeItem(chunk, localX, lift, { carrier = null } = {}) {
   const x = worldX(chunk, localX);
   return { x, y: groundYAt(x) - lift, lift, collected: false, carrier, hidden: Boolean(carrier) };
+}
+
+// Điểm nghỉ chân (NQ-REST-01): bình máu nằm sẵn trên đất tại tâm `localX`, không
+// hết hạn — đưa vào `pickups` của nội dung màn. Nhặt/vẽ như bình máu rơi
+// (level-flow updatePickups, render drawPickups): chỉ nhặt khi thiếu máu.
+export function makeRestHeal(chunk, localX) {
+  const { w, h } = HEAL_PICKUP;
+  const center = worldX(chunk, localX);
+  return { x: center - w / 2, y: groundYAt(center) - h, w, h, vy: 0, life: Infinity };
 }
 
 // Vật phẩm phụ (PH-ENGINE E6) — `kind` khoá trong CHAPTER.extraItems, nằm ở danh

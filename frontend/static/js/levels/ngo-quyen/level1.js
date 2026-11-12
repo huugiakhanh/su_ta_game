@@ -10,11 +10,10 @@
 import { worldX, makeHazard, setTerrain, buildTerrain, terrainHoles } from '../../engine/geometry.js';
 import { GROUND_Y, CHUNK_W } from '../../engine/config.js';
 import {
-  makeEnemy, makeQuiz, makeItem, makeStakeSpot, shuffle, checkTerrainFootprints
+  makeEnemy, makeQuiz, makeItem, makeRestHeal, makeStakeSpot, shuffle, checkTerrainFootprints
 } from '../../engine/entities.js';
 import { state } from '../../engine/state.js';
 import { showMessage } from '../../engine/ui.js';
-import { playSfx } from '../../engine/audio.js';
 import { openStory } from '../../engine/dialogue.js';
 import {
   QUIZ, SOLDIER, KCT, LEVEL1, LEVEL1_CHUNKS, RIVERS, SLOTS, SLOT_JITTER, SHUFFLED_CHUNKS, BOULDER, RAMPART,
@@ -160,7 +159,9 @@ export function level1Content(options = {}) {
       ...layout.enemies
     ],
     npcs: [],
-    quizzes: level1Quizzes()
+    quizzes: level1Quizzes(),
+    // Nghỉ chân: bình máu nằm sẵn (NQ-REST-01).
+    pickups: [makeRestHeal(...L.rest)]
   };
   checkTerrainFootprints(content);
   return content;
@@ -189,7 +190,7 @@ export function returnBoats(p) {
 }
 
 // Sự kiện mỗi frame: câu hướng dẫn (1 lần mỗi câu, theo thứ tự), nhặt lao lần đầu,
-// nghỉ chân, Kiều Công Tiễn lên tiếng.
+// Kiều Công Tiễn lên tiếng.
 export function level1Events(p) {
   if (state.layoutTest) return;
   returnBoats(p);
@@ -201,12 +202,6 @@ export function level1Events(p) {
   if (p.carrying === 'javelin' && !state.javelinHintShown) {
     state.javelinHintShown = true;
     showMessage(TEXT.javelinPicked, 2800);
-  }
-  if (!state.restUsed && p.x > worldX(...LEVEL1.rest)) {
-    state.restUsed = true;
-    state.health = Math.min(state.maxHealth, state.health + 1);
-    playSfx('heal');
-    showMessage(TEXT.rest);
   }
   if (!state.kctTalked && p.x > worldX(...LEVEL1.kctTalk)) {
     state.kctTalked = true;

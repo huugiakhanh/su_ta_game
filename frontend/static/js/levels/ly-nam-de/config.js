@@ -105,7 +105,7 @@ export const MINIBOSS = {
 };
 // Bẫy lưới cố định chunk 9 (ngoài 10 nhóm xáo) — đủ 12 chướng ngại.
 export const FIXED_NET = { chunk: 9, localX: 480 };
-// Nghỉ chân hồi 1 máu (Q4) — 1 lần khi vượt điểm này (đầu trạm kiểm soát).
+// Nghỉ chân (Q4) — bình máu nằm sẵn ở điểm này (engine makeRestHeal) (đầu trạm kiểm soát).
 export const REST = { chunk: 8, localX: 200 };
 // 3 Quyển Sách Tinh Hoa cố định [chunk, localX, độ cao trên mặt đất]; 2 quyển
 // còn lại nằm trong xe cống phẩm nhỏ và xe trâu mini-boss (Q2).

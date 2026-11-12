@@ -499,7 +499,6 @@ export const TEXT = {
   bossContact: 'Kiều Công Tiễn phản công!',
   bossDefeated: 'Đã đánh bại Kiều Công Tiễn!',
   bossBlocksFinish: 'Hãy hạ Kiều Công Tiễn trước.',
-  rest: 'Nghỉ chân: hồi 1 máu.',
   plungeHint: 'Kiều Công Tiễn gạt đòn chém ngang — nhảy lên, đang rơi thì bấm Đánh để bổ xuống, hoặc ném lao!',
   javelinPicked: 'Đã nhặt lao. Bấm Đánh để ném.',
   itemPicked: (count, total) => `Đã thu thập Quyển Sách Tinh Hoa ${count}/${total}`,

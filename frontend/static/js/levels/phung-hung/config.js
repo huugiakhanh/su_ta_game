@@ -356,7 +356,6 @@ export const TEXT = {
   bossDefeated: 'Đã đánh bại quân Đường!',
   bossBlocksFinish: 'Hãy hạ mãnh hổ và lính gác ải trước.',
   gateGuardBlock: 'Lính gác không hề hấn. Hãy đẩy xe húc chúng!',
-  rest: 'Nghỉ chân: hồi 1 máu.',
   itemPicked: (count, total) => `Đã thu thập Quyển Sách Tinh Hoa ${count}/${total}`,
   itemsMissing: count => `Bạn còn thiếu ${count} Quyển Sách Tinh Hoa.`,
   rescueHint: name => `Hãy hạ quân Đường đang vây ${name}!`,

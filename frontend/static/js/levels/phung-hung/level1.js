@@ -12,9 +12,8 @@ import { GROUND_Y } from '../../engine/config.js';
 import { tickAnim } from '../../engine/animation.js';
 import { strike } from '../../engine/combat.js';
 import { showMessage } from '../../engine/ui.js';
-import { playSfx } from '../../engine/audio.js';
 import {
-  makeEnemy, makeQuiz, makeItem, makeExtra, makeDecoy, makeNpc, shuffle, pick, checkTerrainFootprints
+  makeEnemy, makeQuiz, makeItem, makeRestHeal, makeExtra, makeDecoy, makeNpc, shuffle, pick, checkTerrainFootprints
 } from '../../engine/entities.js';
 import {
   QUIZ, SOLDIER, ENGINE_TEST, LEVEL1_CHUNKS, SCARECROW, LEVEL1, SLOTS, SLOT_JITTER, ROCK, TREE, TEXT
@@ -199,7 +198,9 @@ export function level1Content(options = {}) {
       ...layout.enemies
     ],
     npcs: [],
-    quizzes: level1Quizzes()
+    quizzes: level1Quizzes(),
+    // Nghỉ chân: bình máu nằm sẵn (NQ-REST-01).
+    pickups: [makeRestHeal(...LEVEL1.rest)]
   };
   checkTerrainFootprints(content);
   return content;
@@ -212,7 +213,7 @@ export function updateRocks() {
   });
 }
 
-// Sự kiện mỗi frame: câu hướng dẫn (1 lần mỗi câu, theo thứ tự), đá ong, nghỉ chân.
+// Sự kiện mỗi frame: câu hướng dẫn (1 lần mỗi câu, theo thứ tự), đá ong.
 export function level1Events(p) {
   if (state.layoutTest) return;
   updateRocks();
@@ -220,11 +221,5 @@ export function level1Events(p) {
   if (tip && p.x > worldX(tip[0], tip[1])) {
     state.tipIndex += 1;
     showMessage(tip[2], 3200);
-  }
-  if (!state.restUsed && p.x > worldX(...LEVEL1.rest)) {
-    state.restUsed = true;
-    state.health = Math.min(state.maxHealth, state.health + 1);
-    playSfx('heal');
-    showMessage(TEXT.rest);
   }
 }

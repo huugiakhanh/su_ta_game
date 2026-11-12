@@ -16,7 +16,7 @@ Từ ENGINE-01, mọi cơ chế dùng chung (người chơi nam/nữ, vật lý,
 - `main.js` — 3 dòng: `boot(TRUNG_TRAC)` (engine/main.js).
 - `chapter.js` — object định nghĩa chương `TRUNG_TRAC` (hợp đồng: `engine/chapter.js`): asset, bảng sprite, câu hỏi/thoại, phần thưởng, âm thanh, khe kỹ năng, `enemyKinds`, `hooks`, và **`levels`** = thông số từng màn (độ dài, vùng, đích, cổng, sprite nạp, `content`, `events`, `update`, `cutscene`, `guide`, thông báo đầu màn, layout thử, câu tổng kết). Engine đọc màn đang chơi qua `LEVEL.*`, **không** dùng thẳng `ZONES`/`LEVEL_CHUNKS`/`FINISH_GATE` (đó chỉ là số của màn 1).
 - `config.js` — hằng số thuần RIÊNG chương: asset path (`SPRITE_ROOT`, `MAP_ROOT`, `TILES`, `FAR_HILLS`, `PORTRAITS`), `LEVEL_SPRITES` (sprite mỗi màn nạp), `LEVEL_URLS`, vùng cảnh/đích/cổng từng màn, bảng ánh xạ (`OBSTACLE_TYPES`, `HAZARD_SPRITES`, `ENEMY_SPRITES` + `GUARD`/`RUSHER`, `PROJECTILE_SPRITES`, `NPC_SPRITES`), `MINIBOSS`, `ITEM` (bình thư), `QUIZ` (vị trí mốc), `ARENA`, `BOSS_TD`, `WAVES`, `WALL_ARROWS`, `SKILLS`, `REWARD_NAMES`, `BOSS_TEXT`, `TEXT` (câu thông báo engine dùng). Hằng số chung (vật lý, người chơi, NPC...) ở `engine/config.js`.
-- `level1.js` — `OBSTACLE_GROUPS`, xáo vật cản, mini-boss, layout thử P2, `level1Content()`, `level1Events()` (nghỉ chân, dòng cốt truyện).
+- `level1.js` — `OBSTACLE_GROUPS`, xáo vật cản, mini-boss, layout thử P2, `level1Content()`, `level1Events()` (dòng cốt truyện); nghỉ chân chunk 9 = bình máu nằm sẵn trong `pickups` (engine `makeRestHeal`, icon tim chung).
 - `level2.js` — `LEVEL2_TERRAIN`, `level2Content()`, `level2Events()` (cốt truyện Thi Sách).
 - `level3.js` — `level3Content()`, dựng quân đấu trường (`makeArenaGuard`, `makeRusher`, `spawnArenaEnemy`, `makeArenaSpawner`), chiến xa, Tô Định đi bộ, cột đá.
 - `boss.js` — trận boss: chiến xa + hũ dầu + lửa + cột đá, `updateBattle()` (= `LEVEL.update`), giai đoạn 2–3, mưa tên trên thành, `updateCutscene()` (= `LEVEL.cutscene`), `ENEMY_KINDS` (chariot, foot), ô boss HUD, hộp F2.
@@ -64,7 +64,7 @@ Thêm nội dung (vật cản/hazard/item/dữ liệu màn): sửa `levelN.js` +
 
 - Đúng **12 chướng ngại kể cả mini-boss** (~1/chunk): 10 nhóm trong `OBSTACLE_GROUPS` + mini-boss. Thứ tự **xáo mỗi lượt** (`randomizeObstacles()`): chunk 1 chỉ nhóm dễ, tháp canh + lính gác + kỵ binh luôn đi chung, mini-boss cố định chunk 11, mỗi nhóm lệch ±60px. Thêm/bớt vật cản thì giữ con số này trừ khi được yêu cầu khác.
 - **Cổng đích** `PROP_LUYLAU_GATE` tại `FINISH_X`, **không hitbox** (trigger ở engine `level-flow.js`), đổi sang `_OPEN` khi mini-boss đã hạ + đủ sách (`bossAlive()`).
-- Câu hỏi chặn đường: 4 câu không trùng rút từ `LEVEL1_QUESTION_POOL` mỗi lượt, ở chunk 3, 5, 8, 10. Mốc nghỉ chân và dòng cốt truyện (`level1Events()`) đang tạm giữ.
+- Câu hỏi chặn đường: 4 câu không trùng rút từ `LEVEL1_QUESTION_POOL` mỗi lượt, ở chunk 3, 5, 8, 10. Dòng cốt truyện (`level1Events()`) đang tạm giữ; nghỉ chân là bình máu nằm sẵn (NQ-REST-01).
 
 ## Màn 2 — Chiêu mộ hiền tài (TT-NPC-01, TT-L2-HARD)
 

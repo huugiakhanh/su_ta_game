@@ -11,7 +11,7 @@ Lý do quyết định: `docs/archive/SUTA_DB_TASK_01.md`, `REPORT_SUTA-DB-01.md
 
 ## Cấu trúc
 
-- `__init__.py` — application factory `create_app()` (+ `after_request` đặt `Cache-Control: public, max-age=86400` cho `/static/assets/*`; JS/CSS giữ `no-cache`. Asset thay ảnh cùng tên thì người chơi có thể thấy bản cũ tới 1 ngày); `config.py` — biến môi trường (`.env` qua python-dotenv).
+- `__init__.py` — application factory `create_app()` (+ `after_request` đặt `Cache-Control: public, max-age=86400` cho `/static/assets/*` trừ `.json`; `.json` dưới đó (manifest sprite/map, tileset) và JS/CSS giữ `no-cache` → hỏi lại mỗi lần, 304 nếu không đổi — ASSET-CACHE-01. Asset thay ảnh cùng tên thì người chơi có thể thấy bản cũ tới 1 ngày); `config.py` — biến môi trường (`.env` qua python-dotenv).
 - `db.py` — kết nối psycopg2 (`db_cursor(commit=...)`) + `run_migrations()` (gọi trong `app.py`).
 - `routes/pages.py` — route trả HTML; `routes/api.py` — `/login`, `/register`, `/api/*`. Không viết SQL trong route.
 - `repositories/` — user, progress, record (BXH game), quiz (BXH quiz), achievement. `services/game_service.py` — `complete_level()`: kỷ lục + thưởng + thành tựu trong **1 transaction**.

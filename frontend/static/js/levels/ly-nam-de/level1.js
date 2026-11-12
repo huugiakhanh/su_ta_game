@@ -3,17 +3,14 @@
 // lưới cố định chunk 9 + mini-boss xe cống phẩm trâu kéo cố định chunk 11 =
 // đúng 12 chướng ngại; 5 Quyển Sách Tinh Hoa (3 cố định + 1 trong xe nhỏ + 1
 // trong xe trâu); 4 câu hỏi chặn đường; Lý Bí đứng chờ đầu màn (chapter.js
-// guide). Sự kiện 1 lần: nghỉ chân hồi 1 máu. Layout thử `?layout=engine`.
+// guide). Nghỉ chân: bình máu nằm sẵn. Layout thử `?layout=engine`.
 // Mọi số DESIGN_BASELINE.
 
 import { worldX, makeHazard, setTerrain, buildTerrain, terrainHoles } from '../../engine/geometry.js';
 import {
-  makeEnemy, makeQuiz, makeItem, makePlatform, shuffle, pick, checkTerrainFootprints, checkPlatformReach
+  makeEnemy, makeQuiz, makeItem, makeRestHeal, makePlatform, shuffle, pick, checkTerrainFootprints, checkPlatformReach
 } from '../../engine/entities.js';
-import { state } from '../../engine/state.js';
-import { showMessage } from '../../engine/ui.js';
-import { playSfx } from '../../engine/audio.js';
-import { GROUND_Y, TERRAIN_CELL, MAX_HEALTH } from '../../engine/config.js';
+import { GROUND_Y, TERRAIN_CELL } from '../../engine/config.js';
 import {
   QUIZ, SOLDIER, HOUND, ENGINE_TEST, LEVEL1_CHUNKS, MINIBOSS, FIXED_NET, REST, LEVEL1_ITEMS, NET, RIVER, TOWER,
   ROCK_LEDGE
@@ -226,19 +223,12 @@ export function level1Content(options = {}) {
     enemies: [...layout.enemies, ...boss.escorts],
     npcs: [],
     quizzes: level1Quizzes(),
-    platforms: layout.platforms
+    platforms: layout.platforms,
+    // Nghỉ chân (Q4): bình máu nằm sẵn (NQ-REST-01).
+    pickups: [makeRestHeal(REST.chunk, REST.localX)]
   };
   checkTerrainFootprints(content);
   checkPlatformReach(content);
   return content;
 }
 
-// Sự kiện 1 lần (Q4): nghỉ chân hồi 1 máu khi vượt REST.
-export function level1Events(p) {
-  if (!state.restUsed && p.x > worldX(REST.chunk, REST.localX)) {
-    state.restUsed = true;
-    state.health = Math.min(MAX_HEALTH, state.health + 1);
-    playSfx('heal');
-    showMessage('Nghỉ chân: hồi 1 máu.');
-  }
-}

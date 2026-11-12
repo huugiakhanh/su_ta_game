@@ -5,16 +5,15 @@
 //     ĐƯỢC PHÉP + bẫy chông cố định chunk 9 + mini-boss đội trưởng giáo dài cố
 //     định chunk 11 (2 lính hộ tống, chết rơi sách);
 //   - 5 Quyển Sách Tinh Hoa (4 cố định + 1 từ đội trưởng), 4 câu hỏi chặn đường;
-//   - sự kiện: câu hướng dẫn khu rèn luyện, rắn lao ra từ bụi cỏ, nghỉ chân hồi 1 máu.
+//   - sự kiện: câu hướng dẫn khu rèn luyện, rắn lao ra từ bụi cỏ; nghỉ chân = bình máu nằm sẵn.
 // Layout thử `?layout=engine` (TQP-ENGINE). Mọi số DESIGN_BASELINE.
 
 import { worldX, makeHazard, makeObstacle, setTerrain, buildTerrain, terrainHoles } from '../../engine/geometry.js';
 import {
-  makeEnemy, makeNpc, makeQuiz, makeItem, makePlatform, shuffle, pick, checkTerrainFootprints, checkPlatformReach
+  makeEnemy, makeNpc, makeQuiz, makeItem, makeRestHeal, makePlatform, shuffle, pick, checkTerrainFootprints, checkPlatformReach
 } from '../../engine/entities.js';
 import { state } from '../../engine/state.js';
 import { showMessage } from '../../engine/ui.js';
-import { playSfx } from '../../engine/audio.js';
 import { GROUND_Y, TERRAIN_CELL } from '../../engine/config.js';
 import {
   QUIZ, SOLDIER, CAPTAIN, SNAKE, LEVEL1_CHUNKS, ENGINE_TEST, MINIBOSS, REST, LEVEL1_ITEMS, TRAINING, SLOTS,
@@ -267,7 +266,9 @@ export function level1Content(options = {}) {
     npcs: [yard.npc],
     quizzes: level1Quizzes(),
     platforms: layout.platforms,
-    tufts: layout.tufts
+    tufts: layout.tufts,
+    // Nghỉ chân: bình máu nằm sẵn (NQ-REST-01).
+    pickups: [makeRestHeal(REST.chunk, REST.localX)]
   };
   checkTerrainFootprints(content);
   checkPlatformReach(content);
@@ -288,7 +289,7 @@ export function wakeAmbushers(p) {
 }
 
 // Sự kiện mỗi frame: câu hướng dẫn khu rèn luyện (1 lần mỗi câu, theo thứ tự);
-// rắn trong bụi cỏ lao ra khi người chơi tới gần; nghỉ chân hồi 1 máu (1 lần).
+// rắn trong bụi cỏ lao ra khi người chơi tới gần.
 export function level1Events(p) {
   const tip = TRAINING.tips[state.tipIndex];
   if (tip && p.x > worldX(tip[0], tip[1])) {
@@ -296,10 +297,4 @@ export function level1Events(p) {
     showMessage(tip[2], 3200);
   }
   wakeAmbushers(p);
-  if (!state.restUsed && p.x > worldX(REST.chunk, REST.localX)) {
-    state.restUsed = true;
-    state.health = Math.min(state.maxHealth, state.health + 1);
-    playSfx('heal');
-    showMessage('Nghỉ chân: hồi 1 máu.');
-  }
 }

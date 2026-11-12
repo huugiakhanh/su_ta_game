@@ -13,7 +13,7 @@ import {
 import { QUESTIONS } from './questions-data.js';
 import { NPC_DIALOGUES, CHAPTER_END, STORY_LY_BI_INTRO } from './dialogue-data.js';
 import { SFX, MUSIC, MUSIC_FILES } from './audio-data.js';
-import { level1Content, level1Events } from './level1.js';
+import { level1Content } from './level1.js';
 import { level2Content } from './level2.js';
 import { level3Content } from './level3.js';
 import { updateBattle, updateCutscene, ENEMY_KINDS, updateBossHud, battleDebugEntities, dropHeal } from './boss.js';
@@ -50,8 +50,8 @@ export const LY_NAM_DE = {
   audio: { sfx: SFX, music: MUSIC, musicFiles: MUSIC_FILES },
   skills: LND_SKILLS,
   enemyKinds: ENEMY_KINDS,
-  // Cờ nghỉ chân màn 1 (level1Events); tiến trình trận boss màn 3 (level3Content).
-  stateFields: () => ({ restUsed: false, battle: null }),
+  // Tiến trình trận boss màn 3 (level3Content).
+  stateFields: () => ({ battle: null }),
   hooks: {
     // Bình máu rơi khi hạ địch (engine LND-ENGINE E4b): layout thử `?layout=engine`
     // luôn rơi; màn 3 theo tỉ lệ + buff Lương thảo dồi dào (boss.js dropHeal).
@@ -67,7 +67,6 @@ export const LY_NAM_DE = {
       chunks: LEVEL1_CHUNKS, worldWidth: CHUNK_W * LEVEL1_CHUNKS, zones: LEVEL1_ZONES, finishX: LEVEL1_FINISH_X, gate: FINISH_GATE,
       sprites: LEVEL_SPRITES[1],
       content: level1Content,
-      events: level1Events,
       // Lý Bí chờ người chơi ở đầu màn (thoại LND-00 §5.2, duyệt 31/10/2026).
       guide: { npc: 'lyBi', localX: GUIDE_LOCAL_X, story: STORY_LY_BI_INTRO },
       introMessage: 'Màn 1: Từ quan chiêu binh — Đầu thế kỷ 6, thứ sử Tiêu Tư nhà Lương tàn bạo, tham nhũng. Hãy theo Lý Bí tập hợp lực lượng, thu đủ 5 Quyển Sách Tinh Hoa.',
